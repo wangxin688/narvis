@@ -1,0 +1,38 @@
+version: '1.0'
+services:
+  postgres:
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=netty
+      - POSTGRES_USER=netty
+      - POSTGRES_PASSWORD=netty
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./data/redis:/data
+    environment:
+      - PASSWORD=netty
+  
+  alertmanager:
+    image: prom/alertmanager
+    restart: unless-stopped
+    volumes:
+      - ./data/alertmanager:/data
+      - ./config/alertmanager:/config
+    user: root
+    ports:
+      - '9093:9093'
+    command:
+      - '--config.file=/config/alertmanager.yml'
+      - '--web.config.file=/config/alertmanager-web.yml'
+    extra_hosts:
+      - host.docker.internal:host-gateway

@@ -1,0 +1,60 @@
+jwt:
+  secret_key: 'secret'
+  algorithm: 'HS256'
+  access_token_expire_minutes: 1440
+  refresh_token_expire_minutes: 10080
+
+zap:
+  level: info
+  prefix: '[go-netty/server]'
+  format: console # json or console
+  show_line: true
+  encode_level: LowercaseColorLevelEncoder
+  stacktrace_key: stacktrace
+
+postgres:
+  host: localhost
+  port: 5432
+  username: netty
+  password: netty
+  db_name: netty
+  max_idle_conns: 10
+  max_open_conns: 100
+  log_mode: "silent" # debug, silent
+
+redis:
+  user_cluster: false
+  addr: 127.0.0.1:6379
+  password: ""
+  db: 0
+  cluster_addrs:
+    # - 127.0.0.1:6379
+    # - 127.0.0.1:6379
+    # - 127.0.0.1:6379
+  
+cors:
+  mode: allow-all # 放行模式: allow-all, 放行全部; whitelist, 白名单模式, 来自白名单内域名的请求添加 cors 头; strict-whitelist 严格白名单模式, 白名单外的请求一律拒绝
+  whitelist:
+    - allow-origin: example1.com
+      allow-headers: Content-Type,AccessToken,X-CSRF-Token, Authorization, Token,X-Token,X-User-Id
+      allow-methods: POST, GET, OPTIONS, DELETE, PUT, PATCH, HEAD
+      expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type, X-Request-Id
+      allow-credentials: true # 布尔值
+
+    - allow-origin: example2.com
+      allow-headers: content-type
+      allow-methods: POST, GET, OPTIONS, DELETE, PUT, PATCH, HEAD
+      expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type, X-Request-Id
+      allow-credentials: true # 布尔值
+
+system:
+  router_prefix: /api/v1
+  base_url: http://127.0.0.1:8000
+
+sentry:
+  dsn: ""
+  enable_tracing: true
+  traces_sample_rate: 0.7
+  release: "v0.0.1"
+
+env: dev
