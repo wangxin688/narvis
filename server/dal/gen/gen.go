@@ -17,8 +17,8 @@ import (
 
 var (
 	Q                        = new(Query)
-	ActionLog                *actionLog
 	Alert                    *alert
+	AlertActionLog           *alertActionLog
 	AlertGroup               *alertGroup
 	Block                    *block
 	Circuit                  *circuit
@@ -52,8 +52,8 @@ var (
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
-	ActionLog = &Q.ActionLog
 	Alert = &Q.Alert
+	AlertActionLog = &Q.AlertActionLog
 	AlertGroup = &Q.AlertGroup
 	Block = &Q.Block
 	Circuit = &Q.Circuit
@@ -88,8 +88,8 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:                       db,
-		ActionLog:                newActionLog(db, opts...),
 		Alert:                    newAlert(db, opts...),
+		AlertActionLog:           newAlertActionLog(db, opts...),
 		AlertGroup:               newAlertGroup(db, opts...),
 		Block:                    newBlock(db, opts...),
 		Circuit:                  newCircuit(db, opts...),
@@ -125,8 +125,8 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
-	ActionLog                actionLog
 	Alert                    alert
+	AlertActionLog           alertActionLog
 	AlertGroup               alertGroup
 	Block                    block
 	Circuit                  circuit
@@ -163,8 +163,8 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:                       db,
-		ActionLog:                q.ActionLog.clone(db),
 		Alert:                    q.Alert.clone(db),
+		AlertActionLog:           q.AlertActionLog.clone(db),
 		AlertGroup:               q.AlertGroup.clone(db),
 		Block:                    q.Block.clone(db),
 		Circuit:                  q.Circuit.clone(db),
@@ -208,8 +208,8 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:                       db,
-		ActionLog:                q.ActionLog.replaceDB(db),
 		Alert:                    q.Alert.replaceDB(db),
+		AlertActionLog:           q.AlertActionLog.replaceDB(db),
 		AlertGroup:               q.AlertGroup.replaceDB(db),
 		Block:                    q.Block.replaceDB(db),
 		Circuit:                  q.Circuit.replaceDB(db),
@@ -243,8 +243,8 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
-	ActionLog                IActionLogDo
 	Alert                    IAlertDo
+	AlertActionLog           IAlertActionLogDo
 	AlertGroup               IAlertGroupDo
 	Block                    IBlockDo
 	Circuit                  ICircuitDo
@@ -278,8 +278,8 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		ActionLog:                q.ActionLog.WithContext(ctx),
 		Alert:                    q.Alert.WithContext(ctx),
+		AlertActionLog:           q.AlertActionLog.WithContext(ctx),
 		AlertGroup:               q.AlertGroup.WithContext(ctx),
 		Block:                    q.Block.WithContext(ctx),
 		Circuit:                  q.Circuit.WithContext(ctx),

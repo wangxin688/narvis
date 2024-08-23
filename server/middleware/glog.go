@@ -11,22 +11,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/wangxin688/narvis/common/constants"
 	"github.com/wangxin688/narvis/server/global"
 	"go.uber.org/zap"
 )
+
+var XRequestIDHeaderName = "X-Request-ID"
 
 func ZapLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 开始时间
 		startTime := time.Now()
 		// 获取或生成request id
-		requestId := global.XRequestId.Get()
-		if requestId == "" {
-			_requestId := uuid.New().String()
-			global.XRequestId.Set(_requestId)
-			c.Writer.Header().Set(constants.XRequestID, _requestId)
-			requestId = _requestId
+		requestID := global.XRequestID.Get()
+		if requestID == "" {
+			_requestID := uuid.New().String()
+			global.XRequestID.Set(_requestID)
+			c.Writer.Header().Set(XRequestIDHeaderName, _requestID)
+			requestID = _requestID
 		}
 		// 处理请求
 		c.Next()
@@ -43,7 +44,7 @@ func ZapLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 		// 请求IP
 		clientIP := c.ClientIP()
 		// 日志格式
-		logger.Info(requestId,
+		logger.Info(requestID,
 			zap.Int("status", statusCode),
 			zap.String("method", reqMethod),
 			zap.String("path", reqPath),
@@ -53,7 +54,7 @@ func ZapLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 
 		if len(c.Errors) > 0 {
 			for _, e := range c.Errors.Errors() {
-				zap.L().Error("Request error", zap.String("request_id", requestId), zap.String("error", e))
+				zap.L().Error("Request error", zap.String("request_id", requestID), zap.String("error", e))
 			}
 		}
 	}

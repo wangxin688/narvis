@@ -10,9 +10,12 @@ import (
 	"github.com/wangxin688/narvis/server/global"
 )
 
+var AuthorizationString = "Authorization"
+var AuthorizationBearer = "Bearer"
+
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString := c.GetHeader(consts.AuthorizationString)
+		tokenString := c.GetHeader(AuthorizationString)
 
 		if tokenString == "" {
 			c.AbortWithStatusJSON(
@@ -28,7 +31,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		parts := strings.Split(tokenString, "")
-		if len(parts) != 2 || parts[0] != consts.AuthorizationBearer {
+		if len(parts) != 2 || parts[0] != AuthorizationBearer {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, gin.H{
 					"error": gin.H{
@@ -77,7 +80,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			)
 			return
 		case consts.ErrorOk:
-			global.UserId.Set(tokenClaims.UserId)
+			global.UserID.Set(tokenClaims.UserID)
 			return
 		}
 
@@ -85,9 +88,9 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-// func permissionCheck(userId string) gin.HandlerFunc {
+// func permissionCheck(userID string) gin.HandlerFunc {
 // 	return func(c *gin.Context) {
-// 		if !checkUserPermission(userId) {
+// 		if !checkUserPermission(userID) {
 // 			c.AbortWithStatusJSON(
 // 				http.StatusUnauthorized, gin.H{
 // 					"error": gin.H{
@@ -103,6 +106,6 @@ func AuthMiddleware() gin.HandlerFunc {
 // 	}
 // }
 
-// func checkUserPermission(userId string) bool {
+// func checkUserPermission(userID string) bool {
 
 // }

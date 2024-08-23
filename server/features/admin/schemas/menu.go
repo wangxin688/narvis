@@ -31,7 +31,7 @@ type MenuCreate struct {
 	Name     string  `json:"name" binding:"required"`
 	Redirect *string `json:"redirect"`
 	Meta     *Meta   `json:"meta"`
-	ParentId *string `json:"parent_id" binding:"omitempty,uuid"`
+	ParentID *string `json:"parent_id" binding:"omitempty,uuid"`
 }
 
 type MenuUpdate struct {
@@ -39,7 +39,7 @@ type MenuUpdate struct {
 	Name     *string `json:"name" binding:"omitempty"`
 	Redirect *string `json:"redirect" binding:"omitempty"`
 	Meta     *Meta   `json:"meta" binding:"omitempty"`
-	ParentId *string `json:"parent_id" binding:"omitempty,uuid"`
+	ParentID *string `json:"parent_id" binding:"omitempty,uuid"`
 }
 
 type MenuTree struct {
@@ -47,7 +47,7 @@ type MenuTree struct {
 	Path     string      `json:"path"`
 	Name     string      `json:"name"`
 	Redirect *string     `json:"redirect"`
-	ParentId *string     `json:"parent_id"`
+	ParentID *string     `json:"parent_id"`
 	Meta     *Meta       `json:"meta"`
 	Children []*MenuTree `json:"children"`
 }

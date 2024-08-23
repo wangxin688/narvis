@@ -57,6 +57,6 @@ type AlertSilenceCreate struct {
 }
 
 type AlertSilenceUpdate struct {
-	Id string `json:"id"`
+	ID string `json:"id"`
 	AlertSilenceCreate
 }

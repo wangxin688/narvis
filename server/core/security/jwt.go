@@ -25,18 +25,18 @@ type AccessToken struct {
 }
 
 type Claims struct {
-	UserId    string `json:"user_id"`
+	UserID    string `json:"user_id"`
 	Username  string `json:"username"`
 	Refreshed bool   `json:"refreshed"`
 	jwt.StandardClaims
 }
 
-func CreateAccessToken(userId string, username string, refresh bool, expire time.Duration) (token string, expiresAt int64, issuedAt int64) {
+func CreateAccessToken(userID string, username string, refresh bool, expire time.Duration) (token string, expiresAt int64, issuedAt int64) {
 	now := time.Now()
 	expiresAt = now.Add(expire).Unix()
 	issuedAt = now.Unix()
 	claims := Claims{
-		UserId:    userId,
+		UserID:    userID,
 		Username:  username,
 		Refreshed: refresh,
 		StandardClaims: jwt.StandardClaims{
@@ -49,13 +49,13 @@ func CreateAccessToken(userId string, username string, refresh bool, expire time
 	return token, expiresAt, issuedAt
 }
 
-func GenerateTokenResponse(userId string, username string) AccessToken {
+func GenerateTokenResponse(userID string, username string) AccessToken {
 	accessToken, expiresAt, issuedAt := CreateAccessToken(
-		userId, username, false, time.Duration(core.Settings.Jwt.AccessTokenExpiredMinute))
+		userID, username, false, time.Duration(core.Settings.Jwt.AccessTokenExpiredMinute))
 
 	// Create a refresh token
 	refreshToken, refreshExpiresAt, refreshIssuedAt := CreateAccessToken(
-		userId, username, true, time.Duration(core.Settings.Jwt.RefreshTokenExpiredMinute))
+		userID, username, true, time.Duration(core.Settings.Jwt.RefreshTokenExpiredMinute))
 	return AccessToken{
 		TokenType:             AuthorizationBearer,
 		AccessToken:           accessToken,
@@ -122,7 +122,7 @@ func GenerateRefreshTokenResponse(tokenString string) AccessToken {
 	_, _ = jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(core.Settings.Jwt.SecretKey), nil
 	})
-	return GenerateTokenResponse(claims.UserId, claims.Username)
+	return GenerateTokenResponse(claims.UserID, claims.Username)
 }
 
 // Hash password

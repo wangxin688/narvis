@@ -7,16 +7,25 @@ var BlockSearchFields = []string{"prefix"}
 var PrefixSearchFields = []string{"prefix"}
 var VlanSearchFields = []string{"name", "vid"}
 
+var BlockTableName = "ipam_block"
+var PrefixTableName = "ipam_prefix"
+var IpAddressTableName = "ipam_ip_address"
+var VlanTableName = "ipam_vlan"
+
 type Block struct {
 	global.BaseDbModel
 
 	Prefix         string       `gorm:"type:cidr;not null"`
 	Description    *string      `gorm:"default:null"`
-	OrganizationId string       `gorm:"type:uuid;index"`
+	OrganizationID string       `gorm:"type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
 // method: family, child_prefixes, utilization
+
+func (Block) TableName() string {
+	return BlockTableName
+}
 
 type Prefix struct {
 	Prefix         string       `gorm:"type:cidr;index;not null;uniqueIndex:idx_prefix_organization_id;index"`
@@ -25,15 +34,19 @@ type Prefix struct {
 	Status         *string      `gorm:"default:Active"`
 	IsPool         *bool        `gorm:"default:false"`
 	MarkAsFull     *bool        `gorm:"default:false"`
-	VlanId         *string      `gorm:"type:uuid;default:null"`
+	VlanID         *string      `gorm:"type:uuid;default:null"`
 	Vlan           Vlan         `gorm:"constraint:Ondelete:SET NULL"`
-	SiteId         *string      `gorm:"type:uuid;index"`
+	SiteID         *string      `gorm:"type:uuid;index"`
 	Site           Site         `gorm:"constraint:Ondelete:SET NULL"`
-	OrganizationId string       `gorm:"type:uuid;uniqueIndex:idx_prefix_organization_id;index"`
+	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_prefix_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 	// TODO: Add utilization
 	// TODO: Add child prefixes
 	// TODO: Add family
+}
+
+func (Prefix) TableName() string {
+	return PrefixTableName
 }
 
 type IpAddress struct {
@@ -43,8 +56,12 @@ type IpAddress struct {
 	Status         string       `gorm:"default:Active"`
 	DnsName        *string      `gorm:"default:null"`
 	AssignTo       *string      `gorm:"default:null"`
-	OrganizationId string       `gorm:"type:uuid;uniqueIndex:idx_address_organization_id;index"`
+	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_address_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+}
+
+func (IpAddress) TableName() string {
+	return IpAddressTableName
 }
 
 type Vlan struct {
@@ -53,8 +70,12 @@ type Vlan struct {
 	Vid            uint32       `gorm:"not null;uniqueIndex:idx_vid_site_id"` // 1-4094 and vxlan range
 	Description    *string      `gorm:"default:null"`
 	Status         string       `gorm:"default:Active"`
-	SiteId         string       `gorm:"type:uuid;uniqueIndex:idx_vid_site_id;index"`
+	SiteID         string       `gorm:"type:uuid;uniqueIndex:idx_vid_site_id;index"`
 	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationId string       `gorm:"type:uuid;index"`
+	OrganizationID string       `gorm:"type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+}
+
+func (Vlan) TableName() string {
+	return VlanTableName
 }

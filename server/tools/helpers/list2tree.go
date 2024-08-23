@@ -1,8 +1,8 @@
 package helpers
 
 type TreeNodeInterface[T any] interface {
-	GetId() T
-	GetParentId() *T
+	GetID() T
+	GetParentID() *T
 	SetChildren([]TreeNodeInterface[T])
 	GetChildren() []TreeNodeInterface[T]
 }
@@ -96,12 +96,12 @@ func List2Tree[T comparable, N TreeNodeInterface[T]](nodes []N) []N {
 
 	var roots []N
 	for _, node := range nodes {
-		idMap[node.GetId()] = node
+		idMap[node.GetID()] = node
 	}
 	for _, node := range nodes {
-		parentId := node.GetParentId()
-		if parentId != nil {
-			if parentNode, ok := idMap[*parentId]; ok {
+		parentID := node.GetParentID()
+		if parentID != nil {
+			if parentNode, ok := idMap[*parentID]; ok {
 				parentNode.SetChildren(append(parentNode.GetChildren(), node))
 			}
 		} else {

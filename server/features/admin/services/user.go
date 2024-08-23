@@ -16,9 +16,9 @@ func NewUserService() *UserService {
 }
 
 // when new organization created, create a new admin user
-func (u *UserService) CreateAdminUser(enterpriseCode string, orgId string, password string) (*schemas.User, error) {
+func (u *UserService) CreateAdminUser(enterpriseCode string, orgID string, password string) (*schemas.User, error) {
 	roleService := NewRoleService()
-	roleId, err := roleService.CreateAdminRole(orgId)
+	roleID, err := roleService.CreateAdminRole(orgID)
 	if err != nil {
 		return nil, err
 	}
@@ -26,8 +26,8 @@ func (u *UserService) CreateAdminUser(enterpriseCode string, orgId string, passw
 		Username: "Administrator",
 		Email:    "admin@" + enterpriseCode + ".com",
 		Password: password,
-		Group:    models.Group{OrganizationId: orgId, Name: "Administrator Group", RoleId: roleId},
-		RoleId:   roleId,
+		Group:    models.Group{OrganizationID: orgID, Name: "Administrator Group", RoleID: roleID},
+		RoleID:   roleID,
 		AuthType: 1,
 	}
 
@@ -40,19 +40,19 @@ func (u *UserService) CreateAdminUser(enterpriseCode string, orgId string, passw
 		Email:    newUser.Email,
 		AuthType: newUser.AuthType,
 		Group: schemas.GroupShort{
-			Id:   newUser.Group.Id,
+			ID:   newUser.Group.ID,
 			Name: newUser.Group.Name,
 		},
 		Role: schemas.RoleShort{
-			Id:   newUser.Role.Id,
+			ID:   newUser.Role.ID,
 			Name: newUser.Role.Name,
 		},
 	}, nil
 }
 
-func (u *UserService) GetUserById(id string) (*schemas.User, error) {
-	orgId := global.OrganizationId.Get()
-	user, err := u.Where(gen.User.Id.Eq(id), gen.User.OrganizationId.Eq(orgId)).First()
+func (u *UserService) GetUserByID(id string) (*schemas.User, error) {
+	orgID := global.OrganizationID.Get()
+	user, err := u.Where(gen.User.ID.Eq(id), gen.User.OrganizationID.Eq(orgID)).First()
 	// Preload(gen.User.Group).
 	// Preload(gen.User.Role).First()
 	if err != nil {
@@ -64,11 +64,11 @@ func (u *UserService) GetUserById(id string) (*schemas.User, error) {
 		Email:    user.Email,
 		AuthType: user.AuthType,
 		Group: schemas.GroupShort{
-			Id:   user.Group.Id,
+			ID:   user.Group.ID,
 			Name: user.Group.Name,
 		},
 		Role: schemas.RoleShort{
-			Id:   user.Role.Id,
+			ID:   user.Role.ID,
 			Name: user.Role.Name,
 		},
 	}, nil

@@ -78,8 +78,8 @@ func configureRouter(router *gin.Engine) {
 }
 
 func healthHandler(c *gin.Context) {
-	global.OrganizationId.Set(uuid.New().String())
-	core.Logger.Info("organization id: " + global.OrganizationId.Get())
+	global.OrganizationID.Set(uuid.New().String())
+	core.Logger.Info("organization id: " + global.OrganizationID.Get())
 	c.Set("id", c.Param("id"))
 	core.Logger.Info("path: " + c.FullPath()) // full path test
 	testThreadLocal()
@@ -95,7 +95,7 @@ func testHandler(c *gin.Context) {
 }
 
 func testThreadLocal() {
-	orgId := global.OrganizationId.Get()
+	orgID := global.OrganizationID.Get()
 
-	core.Logger.Info("organization id: " + orgId)
+	core.Logger.Info("organization id: " + orgID)
 }

@@ -4,9 +4,16 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/common/constants"
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/core/config"
+)
+
+type CorsMode string
+
+const (
+	CorsAllowAllMode  CorsMode = "allow-all"
+	CorsWhiteListMode CorsMode = "whitelist"
+	CorsStrictMode    CorsMode = "strict-whitelist"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -14,7 +21,7 @@ func CORSMiddleware() gin.HandlerFunc {
 		method := c.Request.Method
 		origin := c.Request.Header.Get("Origin")
 		c.Header("Access-Control-Allow-Origin", origin)
-		c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token,X-Token,X-User-Id")
+		c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token,X-Token,X-User-ID")
 		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS,DELETE,PUT")
 		c.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type, New-Token, New-Expires-At")
 		c.Header("Access-Control-Allow-Credentials", "true")
@@ -27,7 +34,7 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 
 func CORSByConfig() gin.HandlerFunc {
-	if core.Settings.Cors.Mode == string(constants.CorsAllowAllMode) {
+	if core.Settings.Cors.Mode == string(CorsAllowAllMode) {
 		return CORSMiddleware()
 	}
 	return func(c *gin.Context) {
@@ -45,7 +52,7 @@ func CORSByConfig() gin.HandlerFunc {
 		}
 
 		// 严格白名单模式且未通过检查，直接拒绝处理请求
-		if whitelist == nil && core.Settings.Cors.Mode == string(constants.CorsStrictMode) && !(c.Request.Method == "GET" && c.Request.URL.Path == "/health") {
+		if whitelist == nil && core.Settings.Cors.Mode == string(CorsStrictMode) && !(c.Request.Method == "GET" && c.Request.URL.Path == "/health") {
 			c.AbortWithStatus(http.StatusForbidden)
 		} else {
 			// 非严格白名单模式，无论是否通过检查均放行所有 OPTIONS 方法

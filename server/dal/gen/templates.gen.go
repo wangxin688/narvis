@@ -26,12 +26,12 @@ func newTemplate(db *gorm.DB, opts ...gen.DOOption) template {
 
 	tableName := _template.templateDo.TableName()
 	_template.ALL = field.NewAsterisk(tableName)
-	_template.Id = field.NewString(tableName, "id")
+	_template.ID = field.NewString(tableName, "id")
 	_template.CreatedAt = field.NewTime(tableName, "created_at")
 	_template.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_template.Manufacturer = field.NewString(tableName, "manufacturer")
 	_template.ProductFamily = field.NewString(tableName, "product_family")
-	_template.TemplateId = field.NewString(tableName, "template_id")
+	_template.TemplateID = field.NewString(tableName, "template_id")
 
 	_template.fillFieldMap()
 
@@ -42,12 +42,12 @@ type template struct {
 	templateDo
 
 	ALL           field.Asterisk
-	Id            field.String
+	ID            field.String
 	CreatedAt     field.Time
 	UpdatedAt     field.Time
 	Manufacturer  field.String
 	ProductFamily field.String
-	TemplateId    field.String
+	TemplateID    field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -64,12 +64,12 @@ func (t template) As(alias string) *template {
 
 func (t *template) updateTableName(table string) *template {
 	t.ALL = field.NewAsterisk(table)
-	t.Id = field.NewString(table, "id")
+	t.ID = field.NewString(table, "id")
 	t.CreatedAt = field.NewTime(table, "created_at")
 	t.UpdatedAt = field.NewTime(table, "updated_at")
 	t.Manufacturer = field.NewString(table, "manufacturer")
 	t.ProductFamily = field.NewString(table, "product_family")
-	t.TemplateId = field.NewString(table, "template_id")
+	t.TemplateID = field.NewString(table, "template_id")
 
 	t.fillFieldMap()
 
@@ -87,12 +87,12 @@ func (t *template) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (t *template) fillFieldMap() {
 	t.fieldMap = make(map[string]field.Expr, 6)
-	t.fieldMap["id"] = t.Id
+	t.fieldMap["id"] = t.ID
 	t.fieldMap["created_at"] = t.CreatedAt
 	t.fieldMap["updated_at"] = t.UpdatedAt
 	t.fieldMap["manufacturer"] = t.Manufacturer
 	t.fieldMap["product_family"] = t.ProductFamily
-	t.fieldMap["template_id"] = t.TemplateId
+	t.fieldMap["template_id"] = t.TemplateID
 }
 
 func (t template) clone(db *gorm.DB) template {

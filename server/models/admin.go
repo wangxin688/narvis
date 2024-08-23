@@ -10,6 +10,12 @@ var UserSearchFields = []string{"username", "email"}
 var RoleSearchFields = []string{"name"}
 var GroupSearchFields = []string{"name"}
 
+var UserTableName = "sys_user"
+var RoleTableName = "sys_role"
+var GroupTableName = "sys_group"
+var MenuTableName = "sys_menu"
+var PermissionTableName = "sys_permission"
+
 type Transition struct {
 	Name            string `json:"name"`
 	EnterTransition string `json:"enterTransition"`
@@ -40,13 +46,17 @@ type User struct {
 	Email          string       `gorm:"uniqueIndex:idx_user_email_organization_id;not null;index"`
 	Password       string       `gorm:"not null"`
 	Avatar         *string      `gorm:"default:null"`
-	GroupId        string       `gorm:"type:uuid;not null"`
+	GroupID        string       `gorm:"type:uuid;not null"`
 	Group          Group        `gorm:"constraint:Ondelete:RESTRICT"`
-	RoleId         string       `gorm:"type:uuid,not null"`
+	RoleID         string       `gorm:"type:uuid,not null"`
 	Role           Role         `gorm:"constraint:Ondelete:RESTRICT"`
 	AuthType       uint8        `gorm:"type:smallint;default:0"`
-	OrganizationId string       `gorm:"type:uuid;uniqueIndex:idx_user_email_organization_id;not null"`
+	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_user_email_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+}
+
+func (User) TableName() string {
+	return UserTableName
 }
 
 type Role struct {
@@ -54,18 +64,26 @@ type Role struct {
 	Name           string       `gorm:"uniqueIndex:idx_role_name_organization_id;not null"`
 	Description    *string      `gorm:"default:null"`
 	Menus          Menu         `gorm:"many2many:role_menus"`
-	OrganizationId string       `gorm:"type:uuid;uniqueIndex:idx_role_name_organization_id;not null"`
+	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_role_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+}
+
+func (Role) TableName() string {
+	return RoleTableName
 }
 
 type Group struct {
 	global.BaseDbModel
 	Name           string       `gorm:"uniqueIndex:idx_group_name_organization_id;not null"`
 	Description    *string      `gorm:"default:null"`
-	RoleId         string       `gorm:"type:uuid;not null"`
+	RoleID         string       `gorm:"type:uuid;not null"`
 	Role           Role         `gorm:"constraint:Ondelete:RESTRICT"`
-	OrganizationId string       `gorm:"tye:uuid;uniqueIndex:idx_group_name_organization_id;not null"`
+	OrganizationID string       `gorm:"tye:uuid;uniqueIndex:idx_group_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+}
+
+func (Group) TableName() string {
+	return GroupTableName
 }
 
 type Permission struct {
@@ -78,13 +96,17 @@ type Permission struct {
 	Menu        []*Menu                           `gorm:"many2many:menu_permissions"`
 }
 
+func (Permission) TableName() string {
+	return PermissionTableName
+}
+
 type Menu struct {
 	global.BaseDbModel
 	Path       string                   `gorm:"unique;not null"`
 	Name       string                   `gorm:"not null"`
 	Redirect   *string                  `gorm:"default:null"`
-	ParentId   *string                  `gorm:"default:null;type:uuid"`
-	Parent     *Menu                    `gorm:"constraint:Ondelete:RESTRICT;references:Id"`
+	ParentID   *string                  `gorm:"default:null;type:uuid"`
+	Parent     *Menu                    `gorm:"constraint:Ondelete:RESTRICT;references:ID"`
 	Meta       datatypes.JSONType[Meta] `gorm:"type:json"`
 	Permission []*Permission            `gorm:"many2many:menu_permissions"`
 }

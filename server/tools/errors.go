@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	consts "github.com/wangxin688/narvis/common/constants"
+	"github.com/wangxin688/narvis/server/global"
 )
 
 type GenericError struct {
@@ -40,6 +41,6 @@ func NewExistError(resource, field, value string) *GenericError {
 
 // Create a new generic internal server error
 func NewInternalServerError(g *gin.Context) *GenericError {
-	requestId := g.Value(consts.XRequestID)
-	return NewError(consts.ErrorInternalServerError, string(consts.ErrorInternalServerErrorMsg), requestId)
+	requestID := global.XRequestID.Get()
+	return NewError(consts.ErrorInternalServerError, string(consts.ErrorInternalServerErrorMsg), requestID)
 }

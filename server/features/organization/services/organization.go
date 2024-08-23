@@ -18,7 +18,7 @@ func (o *OrganizationService) validateLocalAuth(authConfig *schemas.AuthConfig) 
 }
 
 func (o *OrganizationService) validateOauth2Auth(authConfig *schemas.SlackAuthConfig) bool {
-	return authConfig.ClientId != "" && authConfig.ClientSecret != ""
+	return authConfig.ClientID != "" && authConfig.ClientSecret != ""
 }
 
 // func (o *OrganizationService) CreateOrganization(organization *schemas.OrganizationCreate) (error, *schemas.Organization) {

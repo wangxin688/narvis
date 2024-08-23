@@ -26,16 +26,16 @@ func newProxy(db *gorm.DB, opts ...gen.DOOption) proxy {
 
 	tableName := _proxy.proxyDo.TableName()
 	_proxy.ALL = field.NewAsterisk(tableName)
-	_proxy.Id = field.NewString(tableName, "id")
+	_proxy.ID = field.NewString(tableName, "id")
 	_proxy.CreatedAt = field.NewTime(tableName, "created_at")
 	_proxy.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_proxy.Name = field.NewString(tableName, "name")
 	_proxy.Active = field.NewBool(tableName, "active")
 	_proxy.SecretKey = field.NewString(tableName, "secret_key")
 	_proxy.IpAddress = field.NewString(tableName, "ip_address")
-	_proxy.ProxyId = field.NewString(tableName, "proxy_id")
+	_proxy.ProxyID = field.NewString(tableName, "proxy_id")
 	_proxy.LastSeen = field.NewTime(tableName, "last_seen")
-	_proxy.OrganizationId = field.NewString(tableName, "organization_id")
+	_proxy.OrganizationID = field.NewString(tableName, "organization_id")
 	_proxy.Organization = proxyBelongsToOrganization{
 		db: db.Session(&gorm.Session{}),
 
@@ -51,16 +51,16 @@ type proxy struct {
 	proxyDo
 
 	ALL            field.Asterisk
-	Id             field.String
+	ID             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
 	Active         field.Bool
 	SecretKey      field.String
 	IpAddress      field.String
-	ProxyId        field.String
+	ProxyID        field.String
 	LastSeen       field.Time
-	OrganizationId field.String
+	OrganizationID field.String
 	Organization   proxyBelongsToOrganization
 
 	fieldMap map[string]field.Expr
@@ -78,16 +78,16 @@ func (p proxy) As(alias string) *proxy {
 
 func (p *proxy) updateTableName(table string) *proxy {
 	p.ALL = field.NewAsterisk(table)
-	p.Id = field.NewString(table, "id")
+	p.ID = field.NewString(table, "id")
 	p.CreatedAt = field.NewTime(table, "created_at")
 	p.UpdatedAt = field.NewTime(table, "updated_at")
 	p.Name = field.NewString(table, "name")
 	p.Active = field.NewBool(table, "active")
 	p.SecretKey = field.NewString(table, "secret_key")
 	p.IpAddress = field.NewString(table, "ip_address")
-	p.ProxyId = field.NewString(table, "proxy_id")
+	p.ProxyID = field.NewString(table, "proxy_id")
 	p.LastSeen = field.NewTime(table, "last_seen")
-	p.OrganizationId = field.NewString(table, "organization_id")
+	p.OrganizationID = field.NewString(table, "organization_id")
 
 	p.fillFieldMap()
 
@@ -105,16 +105,16 @@ func (p *proxy) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (p *proxy) fillFieldMap() {
 	p.fieldMap = make(map[string]field.Expr, 11)
-	p.fieldMap["id"] = p.Id
+	p.fieldMap["id"] = p.ID
 	p.fieldMap["created_at"] = p.CreatedAt
 	p.fieldMap["updated_at"] = p.UpdatedAt
 	p.fieldMap["name"] = p.Name
 	p.fieldMap["active"] = p.Active
 	p.fieldMap["secret_key"] = p.SecretKey
 	p.fieldMap["ip_address"] = p.IpAddress
-	p.fieldMap["proxy_id"] = p.ProxyId
+	p.fieldMap["proxy_id"] = p.ProxyID
 	p.fieldMap["last_seen"] = p.LastSeen
-	p.fieldMap["organization_id"] = p.OrganizationId
+	p.fieldMap["organization_id"] = p.OrganizationID
 
 }
 

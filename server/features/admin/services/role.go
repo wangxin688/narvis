@@ -14,20 +14,19 @@ func NewRoleService() *RoleService {
 	return &RoleService{}
 }
 
-func (r *RoleService) CreateAdminRole(organizationId string) (string, error) {
+func (r *RoleService) CreateAdminRole(organizationID string) (string, error) {
 	role := &models.Role{
 		Name:           constants.ReserveAdminRoleName,
 		Description:    &constants.ReserveAdminRoleDescription,
-		OrganizationId: organizationId,
+		OrganizationID: organizationID,
 	}
 	err := r.Create(role)
 	if err != nil {
 		return "", err
 	}
-	return role.Id, nil
+	return role.ID, nil
 }
 
-
-// func CheckRolePathPermission(roleId string, path string) (bool, error) {
+// func CheckRolePathPermission(roleID string, path string) (bool, error) {
 // 	models.Menu
 // }

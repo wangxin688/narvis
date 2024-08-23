@@ -7,8 +7,8 @@ type UserCreate struct {
 	Email    string  `json:"email" binding:"required;email"`
 	Password string  `json:"password" `
 	Avatar   *string `json:"avatar"`
-	GroupId  string  `json:"group_id" binding:"required,uuid"`
-	RoleId   string  `json:"role_id" binding:"required,uuid"`
+	GroupID  string  `json:"group_id" binding:"required,uuid"`
+	RoleID   string  `json:"role_id" binding:"required,uuid"`
 	AuthType uint8   `json:"auth_type" binding:"required,gte=0,lte=4"`
 }
 
@@ -17,8 +17,8 @@ type UserUpdate struct {
 	Email    *string `json:"email" binding:"omitempty,email"`
 	Password *string `json:"password" binding:"omitempty"`
 	Avatar   *string `json:"avatar" binding:"omitempty"`
-	GroupId  *string `json:"group_id" binding:"omitempty,uuid"`
-	RoleId   *string `json:"role_id" binding:"omitempty,uuid"`
+	GroupID  *string `json:"group_id" binding:"omitempty,uuid"`
+	RoleID   *string `json:"role_id" binding:"omitempty,uuid"`
 }
 
 type User struct {

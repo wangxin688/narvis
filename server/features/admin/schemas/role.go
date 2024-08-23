@@ -16,7 +16,7 @@ type RoleUpdate struct {
 
 type RoleQuery struct {
 	schemas.PageInfo
-	Id   *[]string `json:"id" binding:"omitempty,list_uuid"`
+	ID   *[]string `json:"id" binding:"omitempty,list_uuid"`
 	Name *[]string `json:"name" binding:"omitempty"`
 }
 
@@ -36,7 +36,7 @@ type Role struct {
 type RoleList []Role
 
 type RoleShort struct {
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 

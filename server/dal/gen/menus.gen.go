@@ -26,13 +26,13 @@ func newMenu(db *gorm.DB, opts ...gen.DOOption) menu {
 
 	tableName := _menu.menuDo.TableName()
 	_menu.ALL = field.NewAsterisk(tableName)
-	_menu.Id = field.NewString(tableName, "id")
+	_menu.ID = field.NewString(tableName, "id")
 	_menu.CreatedAt = field.NewTime(tableName, "created_at")
 	_menu.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_menu.Path = field.NewString(tableName, "path")
 	_menu.Name = field.NewString(tableName, "name")
 	_menu.Redirect = field.NewString(tableName, "redirect")
-	_menu.ParentId = field.NewString(tableName, "parent_id")
+	_menu.ParentID = field.NewString(tableName, "parent_id")
 	_menu.Meta = field.NewField(tableName, "meta")
 	_menu.Parent = menuBelongsToParent{
 		db: db.Session(&gorm.Session{}),
@@ -73,13 +73,13 @@ type menu struct {
 	menuDo
 
 	ALL       field.Asterisk
-	Id        field.String
+	ID        field.String
 	CreatedAt field.Time
 	UpdatedAt field.Time
 	Path      field.String
 	Name      field.String
 	Redirect  field.String
-	ParentId  field.String
+	ParentID  field.String
 	Meta      field.Field
 	Parent    menuBelongsToParent
 
@@ -100,13 +100,13 @@ func (m menu) As(alias string) *menu {
 
 func (m *menu) updateTableName(table string) *menu {
 	m.ALL = field.NewAsterisk(table)
-	m.Id = field.NewString(table, "id")
+	m.ID = field.NewString(table, "id")
 	m.CreatedAt = field.NewTime(table, "created_at")
 	m.UpdatedAt = field.NewTime(table, "updated_at")
 	m.Path = field.NewString(table, "path")
 	m.Name = field.NewString(table, "name")
 	m.Redirect = field.NewString(table, "redirect")
-	m.ParentId = field.NewString(table, "parent_id")
+	m.ParentID = field.NewString(table, "parent_id")
 	m.Meta = field.NewField(table, "meta")
 
 	m.fillFieldMap()
@@ -125,13 +125,13 @@ func (m *menu) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (m *menu) fillFieldMap() {
 	m.fieldMap = make(map[string]field.Expr, 10)
-	m.fieldMap["id"] = m.Id
+	m.fieldMap["id"] = m.ID
 	m.fieldMap["created_at"] = m.CreatedAt
 	m.fieldMap["updated_at"] = m.UpdatedAt
 	m.fieldMap["path"] = m.Path
 	m.fieldMap["name"] = m.Name
 	m.fieldMap["redirect"] = m.Redirect
-	m.fieldMap["parent_id"] = m.ParentId
+	m.fieldMap["parent_id"] = m.ParentID
 	m.fieldMap["meta"] = m.Meta
 
 }

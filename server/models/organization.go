@@ -11,7 +11,7 @@ var OrganizationSearchFields = []string{"name", "enterprise_code", "domain_name"
 var ProxySearchFields = []string{"name", "ip_address"}
 
 type AuthConfig struct {
-	ClientId     string `json:"client_id"`
+	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 }
 
@@ -32,8 +32,8 @@ type Proxy struct {
 	Active         bool         `gorm:"default:true"`
 	SecretKey      string       `gorm:"column:secret_key;not null"`
 	IpAddress      string       `gorm:"uniqueIndex:idx_ip_address_organization_id;not null"`
-	ProxyId        *string      `gorm:"column:proxy_id;"`
+	ProxyID        *string      `gorm:"column:proxy_id;"`
 	LastSeen       *time.Time   `gorm:"default:null"`
-	OrganizationId string       `gorm:"uniqueIndex:idx_ip_address_organization_id;uniqueIndex:idx_name_organization_id;not null"`
+	OrganizationID string       `gorm:"uniqueIndex:idx_ip_address_organization_id;uniqueIndex:idx_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }

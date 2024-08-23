@@ -3,6 +3,8 @@ package infra
 import (
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/migrations"
+	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/audit"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -34,7 +36,7 @@ func InitDB() error {
 		core.Logger.Fatal("Failed to connect database", zap.Error(err))
 		return err
 	}
-	sqlDB.SetMaxIdleConns(core.Settings.Postgres.MaxIdleConns)
+	sqlDB.SetMaxIdleConns(core.Settings.Postgres.MaxIDleConns)
 	sqlDB.SetMaxOpenConns(core.Settings.Postgres.MaxOpenConns)
 	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
 	if err != nil {
@@ -48,6 +50,27 @@ func InitDB() error {
 		return err
 	}
 
+	registerAuditLogMixin()
 	DB = db
 	return nil
+}
+
+func registerAuditLogMixin() {
+
+	newAuditLogMixin := audit.NewAuditLogMixin()
+	registeredTables := []string{
+		models.SiteTableName,
+		models.LocationTableName,
+		models.RackTableName,
+		models.DeviceTableName,
+		models.APTableName,
+		models.DeviceCliCredentialTableName,
+		models.DeviceSnmpV2CredentialTableName,
+		models.DeviceRestconfCredentialTableName,
+		models.CircuitTableName,
+		models.BlockTableName,
+		models.PrefixTableName,
+	}
+	newAuditLogMixin.AuditTableRegister(registeredTables)
+
 }

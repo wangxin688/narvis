@@ -4,8 +4,8 @@ import (
 	"github.com/timandy/routine"
 )
 
-var OrganizationId = routine.NewThreadLocal[string]()
+var OrganizationID = routine.NewThreadLocal[string]()
 
-var XRequestId = routine.NewThreadLocal[string]()
+var XRequestID = routine.NewThreadLocal[string]()
 
-var UserId = routine.NewThreadLocal[string]()
+var UserID = routine.NewThreadLocal[string]()

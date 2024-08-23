@@ -3,7 +3,7 @@ package schemas
 import "github.com/wangxin688/narvis/server/schemas"
 
 type AuthConfig struct {
-	ClientId     *string `json:"client_id" binding:"omitempty"`
+	ClientID     *string `json:"client_id" binding:"omitempty"`
 	ClientSecret *string `json:"client_secret" binding:"omitempty"`
 	Password     *string `json:"password" binding:"omitempty"`
 }
@@ -36,7 +36,7 @@ type Organization struct {
 type OrganizationList []Organization
 
 type OrganizationShort struct {
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -44,7 +44,7 @@ type OrganizationShortList []OrganizationShort
 
 type OrganizationQuery struct {
 	schemas.PageInfo
-	Id             *[]string `json:"id" binding:"omitempty,list_uuid"`
+	ID             *[]string `json:"id" binding:"omitempty,list_uuid"`
 	Name           *[]string `json:"name" binding:"omitempty"`
 	EnterpriseCode *[]string `json:"enterprise_code" binding:"omitempty"`
 	DomainName     *[]string `json:"domain_name" binding:"omitempty"`

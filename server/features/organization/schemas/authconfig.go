@@ -6,16 +6,16 @@ type LocalAuthConfig struct {
 }
 
 type SlackAuthConfig struct {
-	ClientId     string `json:"client_id"`
+	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 }
 
 type GoogleAuthConfig struct {
-	ClientId     string `json:"client_id"`
+	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 }
 
 type TeamsAuthConfig struct {
-	ClientId     string `json:"client_id"`
+	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 }

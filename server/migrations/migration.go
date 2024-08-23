@@ -34,7 +34,7 @@ func Migrate(db *gorm.DB) error {
 		&models.Vlan{},
 		&models.AlertGroup{},
 		&models.Alert{},
-		&models.ActionLog{},
+		&models.AlertActionLog{},
 		&models.Subscription{},
 		&models.Maintenance{},
 		&models.RootCause{},

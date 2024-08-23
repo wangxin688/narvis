@@ -11,7 +11,7 @@ import (
 	"github.com/imroc/req/v3"
 )
 
-var requestId uint64
+var requestID uint64
 
 var once sync.Once
 var zbxInstance *Zbx
@@ -54,7 +54,7 @@ func NewZbxClient(url, token string) *Zbx {
 					}
 					return nil
 				}),
-			id: requestId,
+			id: requestID,
 		}
 	})
 	return zbxInstance
@@ -67,7 +67,7 @@ func (zbx *Zbx) Rpc(request *ZbxRequest) (rsp *ZbxResponse, err error) {
 	if zbx.token == "" {
 		return nil, fmt.Errorf("token is nil")
 	}
-	request.Id = atomic.AddUint64(&requestId, 1)
+	request.ID = atomic.AddUint64(&requestID, 1)
 	request.JsonRpc = "2.0"
 
 	_, err = zbx.R().SetSuccessResult(&rsp).SetBody(request).Post("/api_jsonrpc.php")
@@ -85,7 +85,7 @@ type HostGroupImpl struct {
 	z *Zbx
 }
 
-func (hg *HostGroupImpl) Create(params HostGroupCreate) (groupId string, err error) {
+func (hg *HostGroupImpl) Create(params HostGroupCreate) (groupID string, err error) {
 	req := &ZbxRequest{
 		Params: params,
 		Method: "hostgroup.create",
@@ -97,10 +97,10 @@ func (hg *HostGroupImpl) Create(params HostGroupCreate) (groupId string, err err
 	}
 	hgr := HostGroupCreateResult{}
 	rsp.GetResult(&hgr)
-	return hgr.GroupIds[0], nil
+	return hgr.GroupIDs[0], nil
 }
 
-func (hg *HostGroupImpl) Update(params HostGroupUpdate) (groupId string, err error) {
+func (hg *HostGroupImpl) Update(params HostGroupUpdate) (groupID string, err error) {
 	req := &ZbxRequest{
 		Params: params,
 		Method: "hostgroup.update",
@@ -112,12 +112,12 @@ func (hg *HostGroupImpl) Update(params HostGroupUpdate) (groupId string, err err
 	}
 	hgr := HostGroupUpdateResult{}
 	rsp.GetResult(&hgr)
-	return hgr.GroupIds[0], nil
+	return hgr.GroupIDs[0], nil
 }
 
-func (hg *HostGroupImpl) Delete(hostGroupIds []string) (groupId []string, err error) {
+func (hg *HostGroupImpl) Delete(hostGroupIDs []string) (groupID []string, err error) {
 	req := &ZbxRequest{
-		Params: hostGroupIds,
+		Params: hostGroupIDs,
 		Method: "hostgroup.delete",
 	}
 
@@ -127,7 +127,7 @@ func (hg *HostGroupImpl) Delete(hostGroupIds []string) (groupId []string, err er
 	}
 	hgr := HostGroupDeleteResult{}
 	rsp.GetResult(&hgr)
-	return hgr.GroupIds, nil
+	return hgr.GroupIDs, nil
 }
 
 func (hg *HostGroupImpl) Get(params HostGroupGet) (res []HostGroup, err error) {
@@ -161,7 +161,7 @@ func (h *HostImpl) Create(params HostGet) (res string, err error) {
 	}
 	host := HostCreateResult{}
 	rsp.GetResult(&host)
-	return host.HostIds[0], nil
+	return host.HostIDs[0], nil
 }
 
 func (h *HostImpl) Update(params HostUpdate) (res string, err error) {
@@ -176,7 +176,7 @@ func (h *HostImpl) Update(params HostUpdate) (res string, err error) {
 	}
 	host := HostUpdateResult{}
 	rsp.GetResult(&host)
-	return host.HostIds[0], nil
+	return host.HostIDs[0], nil
 }
 
 func (h *HostImpl) MassUpdate(params HostMassUpdate) (res string, err error) {
@@ -191,12 +191,12 @@ func (h *HostImpl) MassUpdate(params HostMassUpdate) (res string, err error) {
 	}
 	host := HostUpdateResult{}
 	rsp.GetResult(&host)
-	return host.HostIds[0], nil
+	return host.HostIDs[0], nil
 }
 
-func (h *HostImpl) Delete(hostIds []string) (res []string, err error) {
+func (h *HostImpl) Delete(hostIDs []string) (res []string, err error) {
 	req := &ZbxRequest{
-		Params: hostIds,
+		Params: hostIDs,
 		Method: "host.delete",
 	}
 
@@ -206,7 +206,7 @@ func (h *HostImpl) Delete(hostIds []string) (res []string, err error) {
 	}
 	host := HostDeleteResult{}
 	rsp.GetResult(&host)
-	return host.HostIds, nil
+	return host.HostIDs, nil
 }
 
 func (h *HostImpl) Get(params HostGet) (res []Host, err error) {
@@ -240,7 +240,7 @@ func (t *TemplateImpl) Create(params TemplateCreate) (res string, err error) {
 	}
 	host := TemplateCreateResult{}
 	rsp.GetResult(&host)
-	return host.TemplateIds[0], nil
+	return host.TemplateIDs[0], nil
 }
 
 func (t *TemplateImpl) Update(params TemplateUpdate) (res string, err error) {
@@ -255,12 +255,12 @@ func (t *TemplateImpl) Update(params TemplateUpdate) (res string, err error) {
 	}
 	host := TemplateUpdateResult{}
 	rsp.GetResult(&host)
-	return host.TemplateIds[0], nil
+	return host.TemplateIDs[0], nil
 }
 
-func (t *TemplateImpl) Delete(templateIds []string) (res []string, err error) {
+func (t *TemplateImpl) Delete(templateIDs []string) (res []string, err error) {
 	req := &ZbxRequest{
-		Params: templateIds,
+		Params: templateIDs,
 		Method: "template.delete",
 	}
 
@@ -270,7 +270,7 @@ func (t *TemplateImpl) Delete(templateIds []string) (res []string, err error) {
 	}
 	host := TemplateDeleteResult{}
 	rsp.GetResult(&host)
-	return host.TemplateIds, nil
+	return host.TemplateIDs, nil
 }
 
 type ConfigurationImpl struct {
@@ -323,9 +323,9 @@ func (t *EventImpl) Get(params EventGet) (res []Event, err error) {
 	return
 }
 
-func (t *EventImpl) Acknowledge(eventIds []string) (res []string, err error) {
+func (t *EventImpl) Acknowledge(eventIDs []string) (res []string, err error) {
 	req := &ZbxRequest{
-		Params: eventIds,
+		Params: eventIDs,
 		Method: "event.acknowledge",
 	}
 
