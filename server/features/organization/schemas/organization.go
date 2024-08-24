@@ -1,11 +1,14 @@
 package schemas
 
-import "github.com/wangxin688/narvis/server/schemas"
+import (
+	"time"
+
+	"github.com/wangxin688/narvis/server/tools/schemas"
+)
 
 type AuthConfig struct {
-	ClientID     *string `json:"client_id" binding:"omitempty"`
-	ClientSecret *string `json:"client_secret" binding:"omitempty"`
-	Password     *string `json:"password" binding:"omitempty"`
+	ClientID     string `json:"client_id" binding:"omitempty"`
+	ClientSecret string `json:"client_secret" binding:"omitempty"`
 }
 
 type OrganizationCreate struct {
@@ -15,12 +18,12 @@ type OrganizationCreate struct {
 	Active         bool        `json:"active" binding:"required,bool"`
 	LicenseCount   uint32      `json:"license_count" binding:"required,gte=0,lte=10000"`
 	AuthType       uint8       `json:"auth_type" binding:"required,gte=0,lte=4"` // 0: local 1: slack 2: google 3: teams 4: github
+	AdminPassword  string      `json:"admin_password" binding:"required"`
 	AuthConfig     *AuthConfig `json:"auth_config" binding:"omitempty"`
 }
 
 type OrganizationUpdate struct {
 	Name           *string     `json:"name" binding:"omitempty"`
-	EnterpriseCode *string     `json:"enterprise_code" binding:"omitempty"`
 	DomainName     *string     `json:"domain_name" binding:"omitempty"`
 	Active         *bool       `json:"active" binding:"omitempty"`
 	LicenseCount   *uint32     `json:"license_count" binding:"omitempty,gte=0,lte=10000"`
@@ -29,8 +32,16 @@ type OrganizationUpdate struct {
 }
 
 type Organization struct {
-	schemas.BaseResponse
-	OrganizationCreate
+	ID             string      `json:"id" binding:"required,uuid"`
+	CreatedAt      time.Time   `json:"created_at"`
+	UpdatedAt      time.Time   `json:"updated_at"`
+	Name           string      `json:"name" binding:"required"`
+	EnterpriseCode string      `json:"enterprise_code" binding:"required"`
+	DomainName     string      `json:"domain_name" binding:"required"`
+	Active         bool        `json:"active" binding:"required,bool"`
+	LicenseCount   uint32      `json:"license_count" binding:"required,gte=0,lte=10000"`
+	AuthType       uint8       `json:"auth_type" binding:"required,gte=0,lte=4"` // 0: local 1: slack 2: google 3: teams 4: github
+	AuthConfig     *AuthConfig `json:"auth_config" binding:"omitempty"`
 }
 
 type OrganizationList []Organization

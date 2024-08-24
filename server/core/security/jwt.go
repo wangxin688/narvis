@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/wangxin688/narvis/common/constants"
 	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/server/tools/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -68,29 +68,29 @@ func GenerateTokenResponse(userID string, username string) AccessToken {
 }
 
 // verify token and return true if token is valid access token
-func VerifyAccessToken(tokenString string) (constants.ErrorCode, *Claims) {
+func VerifyAccessToken(tokenString string) (errors.ErrorCode, *Claims) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(core.Settings.Jwt.SecretKey), nil
 	})
 	if err != nil {
 		if err == jwt.ErrSignatureInvalid {
-			return constants.ErrorAccessTokenInvalid, nil
+			return errors.CodeAccessTokenInvalid, nil
 		}
 	}
 	claims, ok := token.Claims.(*Claims)
 	if !ok || !token.Valid {
-		return constants.ErrorAccessTokenInvalid, nil
+		return errors.CodeAccessTokenInvalid, nil
 	}
 	if claims.ExpiresAt > time.Now().Unix() {
-		return constants.ErrorAccessTokenExpired, nil
+		return errors.CodeAccessTokenExpired, nil
 	}
 	if claims.IssuedAt < time.Now().Unix() {
-		return constants.ErrorAccessTokenInvalid, nil
+		return errors.CodeAccessTokenInvalid, nil
 	}
 	if claims.Refreshed {
-		return constants.ErrorAccessTokenInvalidForRefresh, nil
+		return errors.CodeAccessTokenInvalidForRefresh, nil
 	}
-	return constants.ErrorOk, claims
+	return errors.ErrorOk, claims
 }
 
 // Verify token and return true if token is valid refresh token

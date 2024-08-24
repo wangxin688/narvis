@@ -1,6 +1,10 @@
 package schemas
 
-import "github.com/wangxin688/narvis/server/schemas"
+import (
+	"time"
+
+	"github.com/wangxin688/narvis/server/tools/schemas"
+)
 
 type ProxyCreate struct {
 	Name           string `json:"name" binding:"required"`
@@ -24,9 +28,13 @@ type ProxyQuery struct {
 }
 
 type Proxy struct {
-	schemas.BaseResponse
-	ProxyCreate
-	Organization OrganizationShort `json:"organization"`
+	ID             string            `json:"id" binding:"required,uuid"`
+	CreatedAt      time.Time         `json:"created_at"`
+	UpdatedAt      time.Time         `json:"updated_at"`
+	Name           string            `json:"name" binding:"required"`
+	Active         bool              `json:"active" binding:"required"`
+	SecretKey      string            `json:"secret_key" binding:"required;len=32"`
+	Organization   OrganizationShort `json:"organization"`
 }
 
 type ProxyList []Proxy

@@ -2,7 +2,6 @@ package devicerole
 
 import (
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/common/schemas"
 )
 
 type DeviceRoleEnum string

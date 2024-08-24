@@ -24,6 +24,7 @@ func InitDB() error {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 			// LogMode sets the logger for gorm. Default value is silent.
 			Logger: logger.Default.LogMode(logLevel),
+			TranslateError: true,
 		})
 	} else {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})

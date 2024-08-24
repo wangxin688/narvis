@@ -10,9 +10,9 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/imroc/req/v3 v3.43.7
+	github.com/jackc/pgx/v5 v5.5.5
 	github.com/spf13/viper v1.19.0
 	github.com/timandy/routine v1.1.4
-	github.com/wangxin688/narvis/common v0.0.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.26.0
 	gorm.io/datatypes v1.2.1
@@ -21,8 +21,6 @@ require (
 	gorm.io/gorm v1.25.11
 	gorm.io/plugin/dbresolver v1.5.0
 )
-
-replace github.com/wangxin688/narvis/common => ../common
 
 replace github.com/wangxin688/narvis/intend => ../intend
 
@@ -48,7 +46,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
-	github.com/jackc/pgx/v5 v5.5.5 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/wangxin688/narvis/server/global"
 	"gorm.io/datatypes"
 )
 
@@ -25,7 +24,7 @@ var DeviceSnmpV2CredentialTableName = "dcim_device_snmp_v2_credential"
 var DeviceRestconfCredentialTableName = "dcim_device_restconf_credential"
 
 type Site struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name           string       `gorm:"uniqueIndex:idx_name_organization_id;not null"`
 	SiteCode       string       `gorm:"uniqueIndex:idx_site_code_organization_id;not null"`
 	Status         string       `gorm:"not null;default:Active"` // Active, Inactive
@@ -44,7 +43,7 @@ func (Site) TableName() string {
 }
 
 type Location struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name           string       `gorm:"uniqueIndex:idx_name_site_id;not null"`
 	Description    *string      `gorm:"default:null"`
 	ParentID       *string      `gorm:"type:uuid;default:null"`
@@ -60,7 +59,7 @@ func (Location) TableName() string {
 }
 
 type Rack struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name           string       `gorm:"not null"`
 	AssetTag       *string      `gorm:"column:asset_tag;uniqueIndex:idx_asset_tag_organization_id"`
 	SerialNumber   *string      `gorm:"column:serial_number"`
@@ -83,7 +82,7 @@ func (Rack) TableName() string {
 }
 
 type Device struct {
-	global.BaseDbModel
+	BaseDbModel
 
 	Name           string       `gorm:"uniqueIndex:idx_name_organization_id;not null"`
 	ManagementIp   string       `gorm:"uniqueIndex:idx_management_ip_organization_id;not null;index"`
@@ -114,7 +113,7 @@ func (Device) TableName() string {
 }
 
 type DeviceInterface struct {
-	global.BaseDbModel
+	BaseDbModel
 	IfName      string `gorm:"uniqueIndex:idx_if_name_device_id;not null"`
 	IfIndex     uint64 `gorm:"uniqueIndex:idx_if_index_device_id;not null"`
 	IfDescr     string `gorm:"default:null"`
@@ -135,7 +134,7 @@ func (DeviceInterface) TableName() string {
 }
 
 type DeviceStack struct {
-	global.BaseDbModel
+	BaseDbModel
 	Priority     uint8   `gorm:"type:smallint;uniqueIndex:idx_priority_device_id;default:0"`
 	SerialNumber *string `gorm:"default:null"`
 	MacAddress   string  `gorm:"not null;uniqueIndex:idx_mac_address_device_id"`
@@ -148,7 +147,7 @@ func (DeviceStack) TableName() string {
 }
 
 type LLDPNeighbor struct {
-	global.BaseDbModel
+	BaseDbModel
 
 	SourceInterfaceID string          `gorm:"type:uuid;not null"`
 	SourceInterface   DeviceInterface `gorm:"constraint:Ondelete:CASCADE;foreignKey:SourceInterfaceID"`
@@ -170,7 +169,7 @@ func (LLDPNeighbor) TableName() string {
 }
 
 type ApLLDPNeighbor struct {
-	global.BaseDbModel
+	BaseDbModel
 
 	SourceInterfaceID string          `gorm:"type:uuid;not null"`
 	SourceInterface   DeviceInterface `gorm:"constraint:Ondelete:CASCADE;foreignKey:SourceInterfaceID"`
@@ -190,7 +189,7 @@ func (ApLLDPNeighbor) TableName() string {
 }
 
 type DeviceConfig struct {
-	global.BaseDbSingleModel
+	BaseDbSingleModel
 
 	Configuration string `gorm:"not null"`
 	TotalLines    uint32 `gorm:"not null;default:0"`
@@ -206,7 +205,7 @@ func (DeviceConfig) TableName() string {
 }
 
 type DeviceCliCredential struct {
-	global.BaseDbModel
+	BaseDbModel
 	Username       string       `gorm:"not null"`
 	Password       string       `gorm:"not null"`
 	DeviceID       *string      `gorm:"type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
@@ -220,7 +219,7 @@ func (DeviceCliCredential) TableName() string {
 }
 
 type DeviceSnmpV2Credential struct {
-	global.BaseDbModel
+	BaseDbModel
 	Community      string       `gorm:"not null"`
 	MaxRepetitions uint8        `gorm:"type:smallint;not null;default:50"`
 	Timeout        uint8        `gorm:"type:smallint;not null;default:10"`
@@ -235,7 +234,7 @@ func (DeviceSnmpV2Credential) TableName() string {
 }
 
 type DeviceRestconfCredential struct {
-	global.BaseDbModel
+	BaseDbModel
 	Url            string       `gorm:"not null"`
 	Username       string       `gorm:"not null"`
 	Password       string       `gorm:"not null"`
@@ -256,7 +255,7 @@ type ApCoordinate struct {
 }
 
 type AP struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name           string                            `gorm:"not null;uniqueIndex:idx_name_site_id"`
 	Status         string                            `gorm:"default:Active"`
 	MacAddress     *string                           `gorm:"macaddr;default:null"`

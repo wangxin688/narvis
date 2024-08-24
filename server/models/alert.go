@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/wangxin688/narvis/server/global"
 	"gorm.io/datatypes"
 )
 
@@ -90,7 +89,7 @@ func (AlertGroup) TableName() string {
 }
 
 type AlertActionLog struct {
-	global.BaseDbModel
+	BaseDbModel
 
 	Acknowledged *bool        `gorm:"default:null"`
 	Resolved     *bool        `gorm:"default:null"`
@@ -109,7 +108,7 @@ func (AlertActionLog) TableName() string {
 }
 
 type Maintenance struct {
-	global.BaseDbModel
+	BaseDbModel
 
 	Name            string `gorm:"not null"`
 	StartedAt       time.Time
@@ -127,7 +126,7 @@ func (Maintenance) TableName() string {
 }
 
 type RootCause struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name           string       `gorm:"not null;uniqueIndex:idx_name_organization_id"`
 	Description    *string      `gorm:"default:null"`
 	Category       *string      `gorm:"default:null"`
@@ -140,7 +139,7 @@ func (RootCause) TableName() string {
 }
 
 type Subscription struct {
-	global.BaseDbModel
+	BaseDbModel
 
 	Name           string                            `gorm:"not null"`
 	Enabled        bool                              `gorm:"not null;default:true"`
@@ -161,7 +160,7 @@ func (Subscription) TableName() string {
 }
 
 type SubscriptionRecord struct {
-	global.BaseDbSingleModel
+	BaseDbSingleModel
 	SubscriptionID string  `gorm:"type:uuid;not null;index"`
 	AlertID        *string `gorm:"type:uuid;default:null;index"`
 	AlertGroup     *string `gorm:"type:uuid;default:null;index"`

@@ -1,7 +1,5 @@
 package models
 
-import "github.com/wangxin688/narvis/server/global"
-
 var IpSearchFields = []string{"address"}
 var BlockSearchFields = []string{"prefix"}
 var PrefixSearchFields = []string{"prefix"}
@@ -13,7 +11,7 @@ var IpAddressTableName = "ipam_ip_address"
 var VlanTableName = "ipam_vlan"
 
 type Block struct {
-	global.BaseDbModel
+	BaseDbModel
 
 	Prefix         string       `gorm:"type:cidr;not null"`
 	Description    *string      `gorm:"default:null"`
@@ -50,7 +48,7 @@ func (Prefix) TableName() string {
 }
 
 type IpAddress struct {
-	global.BaseDbModel
+	BaseDbModel
 
 	Address        string       `gorm:"type:inet;not null;uniqueIndex:idx_address_organization_id;index"`
 	Status         string       `gorm:"default:Active"`
@@ -65,7 +63,7 @@ func (IpAddress) TableName() string {
 }
 
 type Vlan struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name           string       `gorm:"not null"`
 	Vid            uint32       `gorm:"not null;uniqueIndex:idx_vid_site_id"` // 1-4094 and vxlan range
 	Description    *string      `gorm:"default:null"`

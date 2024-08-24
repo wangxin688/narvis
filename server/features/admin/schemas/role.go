@@ -1,6 +1,10 @@
 package schemas
 
-import "github.com/wangxin688/narvis/server/schemas"
+import (
+	"time"
+
+	"github.com/wangxin688/narvis/server/tools/schemas"
+)
 
 type RoleCreate struct {
 	Name        string   `json:"name" binding:"required"`
@@ -21,16 +25,20 @@ type RoleQuery struct {
 }
 
 type RoleDetail struct {
-	schemas.BaseResponse
+	ID          string     `json:"id"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 	Name        string     `json:"name"`
 	Description *string    `json:"description"`
 	Menus       []MenuTree `json:"menus"`
 }
 
 type Role struct {
-	schemas.BaseResponse
-	Name        string  `json:"name"`
-	Description *string `json:"description"`
+	ID          string    `json:"id"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description"`
 }
 
 type RoleList []Role

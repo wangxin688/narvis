@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/common/schemas"
 )
 
 type MetricNameEnum string

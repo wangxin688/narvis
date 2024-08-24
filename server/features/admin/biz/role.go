@@ -1,8 +1,8 @@
-package services
+package biz
 
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
-	"github.com/wangxin688/narvis/server/features/admin/constants"
+	"github.com/wangxin688/narvis/server/global/constants"
 	"github.com/wangxin688/narvis/server/models"
 )
 

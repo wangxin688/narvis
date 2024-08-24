@@ -1,8 +1,7 @@
 package models
 
 import (
-	"github.com/wangxin688/narvis/server/global"
-	"github.com/wangxin688/narvis/server/schemas"
+	"github.com/wangxin688/narvis/server/tools/schemas"
 	"gorm.io/datatypes"
 )
 
@@ -41,7 +40,7 @@ type Meta struct {
 }
 
 type User struct {
-	global.BaseDbModel
+	BaseDbModel
 	Username       string       `gorm:"not null"`
 	Email          string       `gorm:"uniqueIndex:idx_user_email_organization_id;not null;index"`
 	Password       string       `gorm:"not null"`
@@ -60,7 +59,7 @@ func (User) TableName() string {
 }
 
 type Role struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name           string       `gorm:"uniqueIndex:idx_role_name_organization_id;not null"`
 	Description    *string      `gorm:"default:null"`
 	Menus          Menu         `gorm:"many2many:role_menus"`
@@ -73,7 +72,7 @@ func (Role) TableName() string {
 }
 
 type Group struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name           string       `gorm:"uniqueIndex:idx_group_name_organization_id;not null"`
 	Description    *string      `gorm:"default:null"`
 	RoleID         string       `gorm:"type:uuid;not null"`
@@ -87,7 +86,7 @@ func (Group) TableName() string {
 }
 
 type Permission struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name        string                            `gorm:"unique;not null"`
 	Path        string                            `gorm:"unique;not null"`
 	Method      string                            ``
@@ -101,7 +100,7 @@ func (Permission) TableName() string {
 }
 
 type Menu struct {
-	global.BaseDbModel
+	BaseDbModel
 	Path       string                   `gorm:"unique;not null"`
 	Name       string                   `gorm:"not null"`
 	Redirect   *string                  `gorm:"default:null"`

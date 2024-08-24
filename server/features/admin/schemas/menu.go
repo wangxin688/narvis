@@ -1,6 +1,6 @@
 package schemas
 
-import "github.com/wangxin688/narvis/server/schemas"
+import "time"
 
 type Transition struct {
 	Name            string `json:"name"`
@@ -43,11 +43,13 @@ type MenuUpdate struct {
 }
 
 type MenuTree struct {
-	schemas.BaseResponse
-	Path     string      `json:"path"`
-	Name     string      `json:"name"`
-	Redirect *string     `json:"redirect"`
-	ParentID *string     `json:"parent_id"`
-	Meta     *Meta       `json:"meta"`
-	Children []*MenuTree `json:"children"`
+	ID        string      `json:"id"`
+	CreatedAt time.Time   `json:"created_at"`
+	UpdatedAt time.Time   `json:"updated_at"`
+	Path      string      `json:"path"`
+	Name      string      `json:"name"`
+	Redirect  *string     `json:"redirect"`
+	ParentID  *string     `json:"parent_id"`
+	Meta      *Meta       `json:"meta"`
+	Children  []*MenuTree `json:"children"`
 }

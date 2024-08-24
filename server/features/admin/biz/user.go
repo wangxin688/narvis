@@ -1,9 +1,10 @@
-package services
+package biz
 
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/admin/schemas"
 	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/global/constants"
 	"github.com/wangxin688/narvis/server/models"
 )
 
@@ -26,16 +27,21 @@ func (u *UserService) CreateAdminUser(enterpriseCode string, orgID string, passw
 		Username: "Administrator",
 		Email:    "admin@" + enterpriseCode + ".com",
 		Password: password,
-		Group:    models.Group{OrganizationID: orgID, Name: "Administrator Group", RoleID: roleID},
-		RoleID:   roleID,
-		AuthType: 1,
+		Group: models.Group{
+			OrganizationID: orgID,
+			Name:           constants.ReserveAdminGroupName,
+			Description:    &constants.ReserveAdminGroupDescription,
+			RoleID:         roleID},
+		RoleID:         roleID,
+		AuthType:       uint8(constants.LocalTenantAuthType),
+		OrganizationID: orgID,
 	}
 
 	err = u.Create(newUser)
 	if err != nil {
 		return nil, err
 	}
-	return &schemas.User{
+	user := schemas.User{
 		Username: newUser.Username,
 		Email:    newUser.Email,
 		AuthType: newUser.AuthType,
@@ -47,7 +53,11 @@ func (u *UserService) CreateAdminUser(enterpriseCode string, orgID string, passw
 			ID:   newUser.Role.ID,
 			Name: newUser.Role.Name,
 		},
-	}, nil
+		ID:        newUser.ID,
+		CreatedAt: newUser.CreatedAt,
+		UpdatedAt: newUser.UpdatedAt,
+	}
+	return &user, nil
 }
 
 func (u *UserService) GetUserByID(id string) (*schemas.User, error) {

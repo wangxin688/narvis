@@ -1,7 +1,5 @@
 package models
 
-import "github.com/wangxin688/narvis/server/global"
-
 var CircuitSearchFields = []string{"name", "ip_address"}
 var ProviderSearchFields = []string{"name"}
 
@@ -9,7 +7,7 @@ var CircuitTableName = "circuit"
 var ProviderTableName = "provider"
 
 type Circuit struct {
-	global.BaseDbModel
+	BaseDbModel
 
 	Name           string          `gorm:"uniqueIndex:idx_name_organization_id;not null"`
 	CID            string          `gorm:"column:c_id;uniqueIndex:idx_circuit_id_organization_id;not null"`
@@ -41,7 +39,7 @@ func (Circuit) TableName() string {
 }
 
 type Provider struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name        string  `gorm:"unique;not null"`
 	Icon        *string `json:"icon"`
 	Description *string `json:"description"`

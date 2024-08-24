@@ -1,6 +1,6 @@
 package schemas
 
-import "github.com/wangxin688/narvis/server/schemas"
+import "time"
 
 type UserCreate struct {
 	Username string  `json:"username" binding:"required"`
@@ -22,11 +22,13 @@ type UserUpdate struct {
 }
 
 type User struct {
-	schemas.BaseResponse
-	Username string     `json:"username"`
-	Email    string     `json:"email"`
-	Avatar   *string    `json:"avatar"`
-	AuthType uint8      `json:"auth_type"`
-	Group    GroupShort `json:"group"`
-	Role     RoleShort  `json:"role"`
+	ID        string     `json:"id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	Username  string     `json:"username"`
+	Email     string     `json:"email"`
+	Avatar    *string    `json:"avatar"`
+	AuthType  uint8      `json:"auth_type"`
+	Group     GroupShort `json:"group"`
+	Role      RoleShort  `json:"role"`
 }

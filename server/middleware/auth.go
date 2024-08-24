@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	consts "github.com/wangxin688/narvis/common/constants"
 	"github.com/wangxin688/narvis/server/core/security"
 	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/tools/errors"
 )
 
 var AuthorizationString = "Authorization"
@@ -21,8 +21,8 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, gin.H{
 					"error": gin.H{
-						"code":    consts.ErrorTokenMissing,
-						"message": consts.ErrorTokenMissingMsg,
+						"code":    errors.CodeTokenMissing,
+						"message": errors.MsgTokenMissing,
 						"detail":  nil,
 					},
 				},
@@ -35,8 +35,8 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, gin.H{
 					"error": gin.H{
-						"code":    consts.ErrorAccessTokenInvalid,
-						"message": consts.ErrorAccessTokenInvalidMsg,
+						"code":    errors.CodeAccessTokenInvalid,
+						"message": errors.MsgAccessTokenInvalid,
 						"detail":  nil,
 					},
 				},
@@ -46,40 +46,40 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		tokenErrCode, tokenClaims := security.VerifyAccessToken(parts[1])
 		switch tokenErrCode {
-		case consts.ErrorAccessTokenInvalid:
+		case errors.CodeAccessTokenInvalid:
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, gin.H{
 					"error": gin.H{
-						"code":    consts.ErrorAccessTokenInvalid,
-						"message": consts.ErrorAccessTokenInvalidMsg,
+						"code":    errors.CodeAccessTokenInvalid,
+						"message": errors.MsgAccessTokenInvalid,
 						"detail":  nil,
 					},
 				},
 			)
 			return
-		case consts.ErrorAccessTokenInvalidForRefresh:
+		case errors.CodeAccessTokenExpired:
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, gin.H{
 					"error": gin.H{
-						"code":    consts.ErrorAccessTokenExpired,
-						"message": consts.ErrorAccessTokenExpiredMsg,
+						"code":    errors.CodeAccessTokenExpired,
+						"message": errors.MsgAccessTokenExpired,
 						"detail":  nil,
 					},
 				},
 			)
 			return
-		case consts.ErrorAccessTokenExpired:
+		case errors.CodeAccessTokenInvalidForRefresh:
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, gin.H{
 					"error": gin.H{
-						"code":    consts.ErrorAccessTokenExpired,
-						"message": consts.ErrorAccessTokenExpiredMsg,
+						"code":    errors.CodeAccessTokenInvalidForRefresh,
+						"message": errors.MsgAccessTokenInvalidForRefresh,
 						"detail":  nil,
 					},
 				},
 			)
 			return
-		case consts.ErrorOk:
+		case errors.ErrorOk:
 			global.UserID.Set(tokenClaims.UserID)
 			return
 		}

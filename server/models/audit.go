@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/wangxin688/narvis/server/global"
 	"gorm.io/datatypes"
 )
 
@@ -11,7 +10,7 @@ type PostChange struct {
 }
 
 type AuditLog struct {
-	global.BaseDbSingleModel
+	BaseDbSingleModel
 
 	ObjectID       string         `gorm:"type:uuid;not null"`
 	ObjectType     string         `gorm:"type:varchar(255);not null"`

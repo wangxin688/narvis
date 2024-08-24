@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/wangxin688/narvis/server/global"
 	"gorm.io/datatypes"
 )
 
@@ -16,8 +15,8 @@ type AuthConfig struct {
 }
 
 type Organization struct {
-	global.BaseDbModel
-	Name           string                          `gorm:"unique"`
+	BaseDbModel
+	Name           string                          `gorm:"not null"`
 	EnterpriseCode string                          `gorm:"unique"`
 	DomainName     string                          `gorm:"unique"`
 	Active         bool                            `gorm:"type:bool;default:true"`
@@ -27,7 +26,7 @@ type Organization struct {
 }
 
 type Proxy struct {
-	global.BaseDbModel
+	BaseDbModel
 	Name           string       `gorm:"uniqueIndex:idx_name_organization_id;not null"`
 	Active         bool         `gorm:"default:true"`
 	SecretKey      string       `gorm:"column:secret_key;not null"`

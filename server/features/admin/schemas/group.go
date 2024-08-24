@@ -1,6 +1,6 @@
 package schemas
 
-import "github.com/wangxin688/narvis/server/schemas"
+import "github.com/wangxin688/narvis/server/tools/schemas"
 
 type GroupCreate struct {
 	Name        string  `json:"name" binding:"required"`

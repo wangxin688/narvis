@@ -6,8 +6,8 @@ var ReserveUserRoleName = "User"
 var ReserveAdminRoleDescription = "Admin Role for Narvis"
 var ReserveUserRoleDescription = "User Role for Narvis"
 
-var ReserveGroupName = "Admin Group"
-var ReserveRoleName = "User Group"
+var ReserveAdminGroupName = "Admin Group"
+var ReserveUserGroupName = "User Group"
 
-var ReserveGroupDescription = "Admin Group for Narvis"
-var ReserveRoleDescription = "User Group for Narvis"
+var ReserveAdminGroupDescription = "Admin Group for Narvis"
+var ReserveUserGroupDescription = "User Group for Narvis"
