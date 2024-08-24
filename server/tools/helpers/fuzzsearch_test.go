@@ -144,3 +144,24 @@ func TestMatchAnyRegexInvalidRegex(t *testing.T) {
 	}()
 	MatchAnyRegex("hello", regex)
 }
+
+func TestDeviceSearch(t *testing.T) {
+	data := map[string]any{
+		"device_role": "WanRouter",
+		"description": map[string]string{
+			"en": "WanRouter",
+			"zh": "出口路由器",
+		},
+		"weight":         10,
+		"abbreviation":   "WRT",
+		"product_family": "Routing",
+	}
+
+	searchValue := "WRT"
+	expected := true
+	actual := FuzzySearch(data, searchValue, true, []string{})
+	if actual != expected {
+		t.Errorf("Expected %v, but got %v", expected, actual)
+	}
+
+}

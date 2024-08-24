@@ -1,6 +1,6 @@
 package common
 
 type I18n struct {
-	En string
-	Zh string
+	En string `json:"en"`
+	Zh string `json:"zh"`
 }

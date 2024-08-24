@@ -28,6 +28,14 @@ type CircuitType struct {
 	ConnectionType ConnectionTypeEum
 }
 
+func (circuitType *CircuitType) ToMap() map[string]any {
+	return map[string]any{
+		"circuit_type":    string(circuitType.CircuitType),
+		"description":     map[string]string{"en": circuitType.Description.En, "zh": circuitType.Description.Zh},
+		"connection_type": string(circuitType.ConnectionType),
+	}
+}
+
 func getCircuitTypeMeta() map[CircuitTypeEnum]CircuitType {
 	circuitTypeMeta := map[CircuitTypeEnum]CircuitType{
 		P2P:       {CircuitType: P2P, Description: common.I18n{En: "Point-to-point", Zh: "点对点专线"}, ConnectionType: WAN},

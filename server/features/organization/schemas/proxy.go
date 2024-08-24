@@ -21,10 +21,10 @@ type ProxyUpdate struct {
 
 type ProxyQuery struct {
 	schemas.PageInfo
-	ID             *[]string `json:"id" binding:"omitempty,list_uuid"`
-	Name           *[]string `json:"name" binding:"omitempty"`
-	Active         *bool     `json:"active" binding:"omitempty,bool"`
-	OrganizationID *string   `json:"organization_id" binding:"omitempty,uuid"`
+	ID             *[]string `form:"id" binding:"omitempty,list_uuid"`
+	Name           *[]string `form:"name" binding:"omitempty"`
+	Active         *bool     `form:"active" binding:"omitempty,bool"`
+	OrganizationID *string   `form:"organization_id" binding:"omitempty,uuid"`
 }
 
 type Proxy struct {

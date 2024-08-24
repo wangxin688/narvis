@@ -15,11 +15,11 @@ const (
 )
 
 type PageInfo struct {
-	Page     *int    `json:"page" binding:"omitempty,gte=1"`
-	PageSize *int    `json:"page_size" binding:"omitempty,gte=1,lte=1000"`
-	Keyword  *string `json:"keyword" binding:"omitempty" `
-	Order    *string `json:"order" binding:"omitempty,oneof=asc desc"`
-	OrderBy  *string `json:"order_by" binding:"omitempty"`
+	Page     *int    `form:"page" binding:"omitempty,gte=1"`
+	PageSize *int    `form:"page_size" binding:"omitempty,gte=1,lte=1000"`
+	Keyword  *string `form:"keyword" binding:"omitempty" `
+	Order    *string `form:"order" binding:"omitempty,oneof=asc desc"`
+	OrderBy  *string `form:"order_by" binding:"omitempty"`
 }
 
 func (r *PageInfo) LimitOffset() func(db *gorm.DB) *gorm.DB {

@@ -1,22 +1,35 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/wangxin688/narvis/server/features/organization/biz"
 	"github.com/wangxin688/narvis/server/features/organization/schemas"
+	"github.com/wangxin688/narvis/server/tools/errors"
 )
 
 // @Tags Organization
-// @Security ApiKeyAuth
+// @Security BearerAuth
 // @Summary Create organization
 // @Param body body schemas.Organization true "Create organization"
 // @Success 200 {object} schemas.Organization
-// @Router /api/organizations [post]
-func OrgCreate(c *gin.Context) {
+// @Router /org/organizations [post]
+func orgCreate(c *gin.Context) {
 	var org schemas.OrganizationCreate
-
-	def func() {
+	var err error
+	defer func() {
 		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	if err = c.ShouldBindJSON(&org); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			},
+		)
 	}
-
-	if err := c.ShouldBindJSON(&org); err != nil {
+	newOrg, err := biz.NewOrganizationService().CreateOrganization(&org)
+	c.JSON(http.StatusOK, newOrg)
 }

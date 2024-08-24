@@ -23,12 +23,12 @@ type OrganizationCreate struct {
 }
 
 type OrganizationUpdate struct {
-	Name           *string     `json:"name" binding:"omitempty"`
-	DomainName     *string     `json:"domain_name" binding:"omitempty"`
-	Active         *bool       `json:"active" binding:"omitempty"`
-	LicenseCount   *uint32     `json:"license_count" binding:"omitempty,gte=0,lte=10000"`
-	AuthType       *uint8      `json:"auth_type" binding:"gte=0,lte=4,omitempty"` // 0: local 1: slack 2: google 3: teams 4: github
-	AuthConfig     *AuthConfig `json:"auth_config" binding:"omitempty"`
+	Name         *string     `json:"name" binding:"omitempty"`
+	DomainName   *string     `json:"domain_name" binding:"omitempty"`
+	Active       *bool       `json:"active" binding:"omitempty"`
+	LicenseCount *uint32     `json:"license_count" binding:"omitempty,gte=0,lte=10000"`
+	AuthType     *uint8      `json:"auth_type" binding:"gte=0,lte=4,omitempty"` // 0: local 1: slack 2: google 3: teams 4: github
+	AuthConfig   *AuthConfig `json:"auth_config" binding:"omitempty"`
 }
 
 type Organization struct {
@@ -55,10 +55,10 @@ type OrganizationShortList []OrganizationShort
 
 type OrganizationQuery struct {
 	schemas.PageInfo
-	ID             *[]string `json:"id" binding:"omitempty,list_uuid"`
-	Name           *[]string `json:"name" binding:"omitempty"`
-	EnterpriseCode *[]string `json:"enterprise_code" binding:"omitempty"`
-	DomainName     *[]string `json:"domain_name" binding:"omitempty"`
-	Active         *bool     `json:"active" binding:"omitempty"`
-	AuthType       *uint8    `json:"auth_type" binding:"gte=0,lte=4,omitempty"`
+	ID             *[]string `form:"id" binding:"omitempty,list_uuid"`
+	Name           *[]string `form:"name" binding:"omitempty"`
+	EnterpriseCode *[]string `form:"enterprise_code" binding:"omitempty"`
+	DomainName     *[]string `form:"domain_name" binding:"omitempty"`
+	Active         *bool     `form:"active" binding:"omitempty"`
+	AuthType       *uint8    `form:"auth_type" binding:"gte=0,lte=4,omitempty"`
 }

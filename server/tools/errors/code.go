@@ -31,7 +31,7 @@ const (
 	MsgRefreshTokenExpired          ErrorMsg = "refresh token expired"
 	MsgAccessTokenInvalid           ErrorMsg = "access token invalid"
 	MsgAccessTokenInvalidForRefresh ErrorMsg = "access token invalid for refresh"
-	MsgTokenMissing                 ErrorMsg = "access token no provided"
+	MsgTokenMissing                 ErrorMsg = "access token not provide"
 	MsgUnprocessableEntity          ErrorMsg = "validation error, unprocessable entity"
 	MsgForbidden                    ErrorMsg = "forbidden, permission denied"
 	MsgUnauthorized                 ErrorMsg = "unauthorized access, no privilege to access the resource"
@@ -51,6 +51,11 @@ const (
 )
 
 // Admin error codes (200000 - 300000)
+
+const (
+	CodeInvalidGroupNameForReserve ErrorCode = 200000
+	MsgInvalidGroupNameForReserve  ErrorMsg  = "invalid group name for system admin reserve"
+)
 
 // organization error codes (300000 - 400000)
 

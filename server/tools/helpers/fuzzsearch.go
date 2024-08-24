@@ -37,7 +37,6 @@ func FuzzySearch(data map[string]any, searchValue string, ignoreCase bool, keys 
 // searchInValue 递归搜索单个值
 func searchInValue(value any, searchValue string, ignoreCase bool, currentKey string) []string {
 	matchingKeys := []string{}
-
 	switch v := value.(type) {
 	case string:
 		// 将字符串值转换为小写以进行大小写不敏感的搜索
@@ -48,7 +47,7 @@ func searchInValue(value any, searchValue string, ignoreCase bool, currentKey st
 		if strings.Contains(v, searchValue) {
 			matchingKeys = append(matchingKeys, currentKey)
 		}
-	case map[string]any:
+	case map[string]string:
 		// 递归搜索嵌套的 map
 		for k, nestedValue := range v {
 			matchingKeys = append(matchingKeys, searchInValue(nestedValue, searchValue, ignoreCase, currentKey+"."+k)...)

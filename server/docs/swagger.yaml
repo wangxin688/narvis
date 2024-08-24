@@ -1,0 +1,174 @@
+definitions:
+  schemas.AuthConfig:
+    properties:
+      client_id:
+        type: string
+      client_secret:
+        type: string
+    type: object
+  schemas.CircuitType:
+    properties:
+      circuit_type:
+        type: string
+      connection_type:
+        type: string
+      description:
+        $ref: '#/definitions/schemas.I18n'
+    type: object
+  schemas.DeviceRole:
+    properties:
+      abbreviation:
+        type: string
+      description:
+        $ref: '#/definitions/schemas.I18n'
+      device_role:
+        type: string
+      product_family:
+        type: string
+      weight:
+        type: integer
+    type: object
+  schemas.I18n:
+    properties:
+      en:
+        type: string
+      zh:
+        type: string
+    type: object
+  schemas.ListResponse:
+    properties:
+      results: {}
+      total:
+        type: integer
+    type: object
+  schemas.Organization:
+    properties:
+      active:
+        type: boolean
+      auth_config:
+        $ref: '#/definitions/schemas.AuthConfig'
+      auth_type:
+        description: '0: local 1: slack 2: google 3: teams 4: github'
+        maximum: 4
+        minimum: 0
+        type: integer
+      created_at:
+        type: string
+      domain_name:
+        type: string
+      enterprise_code:
+        type: string
+      id:
+        type: string
+      license_count:
+        maximum: 10000
+        minimum: 0
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - active
+    - auth_type
+    - domain_name
+    - enterprise_code
+    - id
+    - license_count
+    - name
+    type: object
+info:
+  contact:
+    name: Jeffry
+  description: Narvis OpenAPI for developers.
+  termsOfService: http://swagger.io/terms/
+  title: Narvis API
+  version: "1.0"
+paths:
+  /intend/circuit-types:
+    get:
+      parameters:
+      - in: query
+        name: circuit_type
+        type: string
+      - enum:
+        - WAN
+        - LAN
+        in: query
+        name: connection_type
+        type: string
+      - in: query
+        name: description
+        type: string
+      - in: query
+        name: search
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.CircuitType'
+                  type: array
+              type: object
+      summary: Get list of CircuitTypes
+      tags:
+      - Intend
+  /intend/device-roles:
+    get:
+      parameters:
+      - in: query
+        name: abbreviation
+        type: string
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: search
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.DeviceRole'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get list of device roles
+      tags:
+      - Intend
+  /org/organizations:
+    post:
+      parameters:
+      - description: Create organization
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.Organization'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Organization'
+      security:
+      - BearerAuth: []
+      summary: Create organization
+      tags:
+      - Organization
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

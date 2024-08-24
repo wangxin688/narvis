@@ -62,9 +62,7 @@ func (u *UserService) CreateAdminUser(enterpriseCode string, orgID string, passw
 
 func (u *UserService) GetUserByID(id string) (*schemas.User, error) {
 	orgID := global.OrganizationID.Get()
-	user, err := u.Where(gen.User.ID.Eq(id), gen.User.OrganizationID.Eq(orgID)).First()
-	// Preload(gen.User.Group).
-	// Preload(gen.User.Role).First()
+	user, err := u.Where(gen.User.ID.Eq(id), gen.User.OrganizationID.Eq(orgID)).Preload(gen.User.Role).Preload(gen.User.Group).First()
 	if err != nil {
 		return nil, err
 	}
@@ -73,13 +71,20 @@ func (u *UserService) GetUserByID(id string) (*schemas.User, error) {
 		Username: user.Username,
 		Email:    user.Email,
 		AuthType: user.AuthType,
-		Group: schemas.GroupShort{
-			ID:   user.Group.ID,
-			Name: user.Group.Name,
-		},
 		Role: schemas.RoleShort{
 			ID:   user.Role.ID,
 			Name: user.Role.Name,
 		},
+		Group: schemas.GroupShort{
+			ID:   user.Group.ID,
+			Name: user.Group.Name,
+		},
+		ID:        user.ID,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}, nil
+}
+
+func (u *UserService) CreateUser(user *schemas.UserCreate) (*schemas.User, error) {
+	return nil, nil
 }
