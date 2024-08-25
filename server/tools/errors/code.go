@@ -44,10 +44,10 @@ const (
 // Organization error codes (100000 - 200000)
 
 const (
-	CodeInvalidAuthConfig  ErrorCode = 100000
-	MsgInvalidAuthConfig   ErrorMsg  = "invalid auth config"
-	CodeCreateTenantFail   ErrorCode = 100001
-	MsgCreateTenantFailMsg ErrorMsg  = "create tenant fail %s"
+	CodeInvalidAuthConfig ErrorCode = 100000
+	MsgInvalidAuthConfig  ErrorMsg  = "invalid auth config"
+	CodeCreateTenantFail  ErrorCode = 100001
+	MsgCreateTenantFail   ErrorMsg  = "create tenant fail %s"
 )
 
 // Admin error codes (200000 - 300000)
@@ -55,9 +55,16 @@ const (
 const (
 	CodeInvalidGroupNameForReserve ErrorCode = 200000
 	MsgInvalidGroupNameForReserve  ErrorMsg  = "invalid group name for system admin reserve"
+	CodePasswordIncorrect          ErrorCode = 200001
+	MsgPasswordIncorrect           ErrorMsg  = "password incorrect"
 )
 
 // organization error codes (300000 - 400000)
+
+const (
+	CodeOrganizationAlreadyExist ErrorCode = 300000
+	MsgOrganizationAlreadyExist  ErrorMsg  = "organization already exist"
+)
 
 // intend error codes (400000 - 500000)
 

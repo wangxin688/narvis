@@ -128,6 +128,33 @@ const docTemplate = `{
                 }
             }
         },
+        "/login/password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Username Password Login",
+                "parameters": [
+                    {
+                        "description": "Username Password Login",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Oauth2PasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/security.AccessToken"
+                        }
+                    }
+                }
+            }
+        },
         "/org/organizations": {
             "post": {
                 "security": [
@@ -227,6 +254,27 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.Oauth2PasswordRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "domain_name": {
+                    "type": "string"
+                },
+                "enterprise_code": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.Organization": {
             "type": "object",
             "required": [
@@ -272,6 +320,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "security.AccessToken": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "expires_at": {
+                    "type": "integer"
+                },
+                "issued_at": {
+                    "type": "integer"
+                },
+                "refresh_token": {
+                    "type": "string"
+                },
+                "refresh_token_expires_at": {
+                    "type": "integer"
+                },
+                "refresh_token_issued_at": {
+                    "type": "integer"
+                },
+                "token_type": {
                     "type": "string"
                 }
             }

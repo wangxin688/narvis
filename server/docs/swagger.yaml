@@ -41,6 +41,20 @@ definitions:
       total:
         type: integer
     type: object
+  schemas.Oauth2PasswordRequest:
+    properties:
+      domain_name:
+        type: string
+      enterprise_code:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
   schemas.Organization:
     properties:
       active:
@@ -76,6 +90,23 @@ definitions:
     - id
     - license_count
     - name
+    type: object
+  security.AccessToken:
+    properties:
+      access_token:
+        type: string
+      expires_at:
+        type: integer
+      issued_at:
+        type: integer
+      refresh_token:
+        type: string
+      refresh_token_expires_at:
+        type: integer
+      refresh_token_issued_at:
+        type: integer
+      token_type:
+        type: string
     type: object
 info:
   contact:
@@ -147,6 +178,23 @@ paths:
       summary: Get list of device roles
       tags:
       - Intend
+  /login/password:
+    post:
+      parameters:
+      - description: Username Password Login
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.Oauth2PasswordRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/security.AccessToken'
+      summary: Username Password Login
+      tags:
+      - Auth
   /org/organizations:
     post:
       parameters:

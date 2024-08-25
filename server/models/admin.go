@@ -44,6 +44,7 @@ type User struct {
 	Username       string       `gorm:"not null"`
 	Email          string       `gorm:"uniqueIndex:idx_user_email_organization_id;not null;index"`
 	Password       string       `gorm:"not null"`
+	Status         string       `gorm:"not null;default:Active"` // Active, Inactive
 	Avatar         *string      `gorm:"default:null"`
 	GroupID        string       `gorm:"type:uuid;not null"`
 	Group          Group        `gorm:"constraint:Ondelete:RESTRICT"`
@@ -62,7 +63,7 @@ type Role struct {
 	BaseDbModel
 	Name           string       `gorm:"uniqueIndex:idx_role_name_organization_id;not null"`
 	Description    *string      `gorm:"default:null"`
-	Menus          Menu         `gorm:"many2many:role_menus"`
+	Menus          []Menu       `gorm:"many2many:role_menus"`
 	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_role_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
@@ -79,6 +80,7 @@ type Group struct {
 	Role           Role         `gorm:"constraint:Ondelete:RESTRICT"`
 	OrganizationID string       `gorm:"tye:uuid;uniqueIndex:idx_group_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+	User           []User 
 }
 
 func (Group) TableName() string {
@@ -107,7 +109,7 @@ type Menu struct {
 	ParentID   *string                  `gorm:"default:null;type:uuid"`
 	Parent     *Menu                    `gorm:"constraint:Ondelete:RESTRICT;references:ID"`
 	Meta       datatypes.JSONType[Meta] `gorm:"type:json"`
-	Permission []*Permission            `gorm:"many2many:menu_permissions"`
+	Permission []Permission             `gorm:"many2many:menu_permissions"`
 }
 
 // TODO: confirm the menu design

@@ -11,7 +11,7 @@ type GroupCreate struct {
 type GroupUpdate struct {
 	Name        *string `json:"name" binding:"omitempty"`
 	Description *string `json:"description" binding:"omitempty"`
-	RoleID      string  `json:"role_id" binding:"omitempty,uuid"`
+	RoleID      *string  `json:"role_id" binding:"omitempty,uuid"`
 }
 
 type GroupQuery struct {

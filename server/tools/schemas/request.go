@@ -36,6 +36,10 @@ func (r *PageInfo) OrderByField() func(db *gorm.DB) *gorm.DB {
 		if r.OrderBy == nil {
 			return db
 		}
+		if r.OrderBy != nil && r.Order == nil {
+			order := ASC
+			r.Order = &order
+		}
 		if r.Order != nil {
 			return db.Order(clause.OrderByColumn{Column: clause.Column{Name: *r.OrderBy}, Desc: *r.Order == DESC})
 		}

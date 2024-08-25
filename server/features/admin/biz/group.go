@@ -10,7 +10,6 @@ import (
 )
 
 type GroupService struct {
-	gen.IGroupDo
 }
 
 func NewGroupService() *GroupService {
@@ -25,7 +24,7 @@ func (g *GroupService) CreateAdminGroup(organizationID string, roleID string) (s
 		Description:    &constants.ReserveAdminGroupDescription,
 		RoleID:         roleID,
 	}
-	err := g.Create(group)
+	err := gen.Group.Create(group)
 	if err != nil {
 		return "", err
 	}
@@ -44,9 +43,27 @@ func (g *GroupService) CreateGroup(group *schemas.GroupCreate) (string, error) {
 		RoleID:         group.RoleID,
 	}
 
-	err := g.IGroupDo.Create(gp)
+	err := gen.Group.Create(gp)
 	if err != nil {
 		return "", err
 	}
 	return gp.ID, nil
+}
+
+func (g *GroupService) UpdateGroup(groupID string, group *schemas.GroupUpdate) error {
+	var updateFields = make(map[string]string)
+	if group.Name != nil {
+		updateFields["name"] = *group.Name
+	}
+	if group.Description != nil {
+		updateFields["description"] = *group.Description
+	}
+	if group.RoleID != nil {
+		updateFields["role_id"] = *group.RoleID
+	}
+	_, err := gen.Group.Where(gen.Group.ID.Eq(groupID), gen.Group.OrganizationID.Eq(global.OrganizationID.Get())).Updates(updateFields)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -7,9 +7,7 @@ import (
 	"github.com/wangxin688/narvis/server/models"
 )
 
-type RoleService struct {
-	gen.IRoleDo
-}
+type RoleService struct{}
 
 func NewRoleService() *RoleService {
 	return &RoleService{}
@@ -21,7 +19,7 @@ func (r *RoleService) CreateAdminRole(organizationID string) (string, error) {
 		Description:    &constants.ReserveAdminRoleDescription,
 		OrganizationID: organizationID,
 	}
-	err := r.Create(role)
+	err := gen.Role.Create(role)
 	if err != nil {
 		return "", err
 	}
@@ -31,7 +29,7 @@ func (r *RoleService) CreateAdminRole(organizationID string) (string, error) {
 // use raw sql for performance
 // add redis cache if needed in the future
 func CheckRolePathPermission(roleID string, path string) bool {
-	dbRole, err := gen.Q.Role.Where(gen.Role.ID.Eq(roleID)).First()
+	dbRole, err := gen.Role.Where(gen.Role.ID.Eq(roleID)).First()
 	if err != nil {
 		return false
 	}

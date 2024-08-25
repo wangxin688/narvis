@@ -49,14 +49,14 @@ func CreateAccessToken(userID string, username string, refresh bool, expire time
 	return token, expiresAt, issuedAt
 }
 
-func GenerateTokenResponse(userID string, username string) AccessToken {
+func GenerateTokenResponse(userID string, username string) *AccessToken {
 	accessToken, expiresAt, issuedAt := CreateAccessToken(
 		userID, username, false, time.Duration(core.Settings.Jwt.AccessTokenExpiredMinute))
 
 	// Create a refresh token
 	refreshToken, refreshExpiresAt, refreshIssuedAt := CreateAccessToken(
 		userID, username, true, time.Duration(core.Settings.Jwt.RefreshTokenExpiredMinute))
-	return AccessToken{
+	return &AccessToken{
 		TokenType:             AuthorizationBearer,
 		AccessToken:           accessToken,
 		ExpiresAt:             expiresAt,
@@ -114,9 +114,9 @@ func verifyRefreshToken(tokenString string) bool {
 }
 
 // Generate token from refresh token
-func GenerateRefreshTokenResponse(tokenString string) AccessToken {
+func GenerateRefreshTokenResponse(tokenString string) *AccessToken {
 	if !verifyRefreshToken(tokenString) {
-		return AccessToken{}
+		return &AccessToken{}
 	}
 	claims := &Claims{}
 	_, _ = jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {

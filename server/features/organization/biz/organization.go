@@ -5,12 +5,14 @@ import (
 
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/dal/gen"
+	"github.com/wangxin688/narvis/server/features/admin/biz"
 	"github.com/wangxin688/narvis/server/features/organization/schemas"
 	"github.com/wangxin688/narvis/server/global/constants"
 	"github.com/wangxin688/narvis/server/models"
 	e "github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 )
 
 type OrganizationService struct {
@@ -46,12 +48,27 @@ func (o *OrganizationService) CreateOrganization(organization *schemas.Organizat
 		)
 		organizationModel.AuthConfig = &authConfig
 	}
-
-	err := o.IOrganizationDo.Create(organizationModel)
-	if err != nil {
-		core.Logger.Error(fmt.Sprintf("failed to create organization %v", organization), zap.Error(err))
-		return nil, err
+	if o.validateExist(organization) {
+		core.Logger.Error(fmt.Sprintf("failed to create organization %v, enterprise_code or domain_name already exist", organization))
+		return nil, &e.GenericError{Code: e.CodeOrganizationAlreadyExist, Message: e.MsgOrganizationAlreadyExist}
 	}
+
+	gen.Organization.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
+		err := gen.Organization.Create(organizationModel)
+		if err != nil {
+			core.Logger.Error(fmt.Sprintf("failed to create organization %v", organization), zap.Error(err))
+			return err
+		}
+		core.Logger.Info(fmt.Sprintf("create organization %s %s", organization.Name, organizationModel.ID))
+		userService := biz.NewUserService()
+		user, err := userService.CreateAdminUser(organization.EnterpriseCode, organizationModel.ID, organization.AdminPassword)
+		if err != nil {
+			core.Logger.Error(fmt.Sprintf("failed to create admin user %v", organization), zap.Error(err))
+			return err
+		}
+		core.Logger.Info(fmt.Sprintf("create admin user %s", user.ID))
+		return nil
+	})
 	return &schemas.Organization{
 		ID:             organizationModel.ID,
 		CreatedAt:      organizationModel.CreatedAt,
@@ -67,7 +84,7 @@ func (o *OrganizationService) CreateOrganization(organization *schemas.Organizat
 
 func (o *OrganizationService) GetByName(enterpriseCode string) (*models.Organization, error) {
 
-	organization, err := o.IOrganizationDo.Where(gen.Organization.EnterpriseCode.Eq(enterpriseCode)).First()
+	organization, err := gen.Organization.Where(gen.Organization.EnterpriseCode.Eq(enterpriseCode)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +93,7 @@ func (o *OrganizationService) GetByName(enterpriseCode string) (*models.Organiza
 
 func (o *OrganizationService) GetByID(orgId string) (*models.Organization, error) {
 
-	organization, err := o.IOrganizationDo.Where(gen.Organization.ID.Eq(orgId)).First()
+	organization, err := gen.Organization.Where(gen.Organization.ID.Eq(orgId)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +102,7 @@ func (o *OrganizationService) GetByID(orgId string) (*models.Organization, error
 
 func (o *OrganizationService) GetByDomainName(domainName string) (*models.Organization, error) {
 
-	organization, err := o.IOrganizationDo.Where(gen.Organization.DomainName.Eq(domainName)).First()
+	organization, err := gen.Organization.Where(gen.Organization.DomainName.Eq(domainName)).First()
 	if err != nil {
 		return nil, err
 	}
