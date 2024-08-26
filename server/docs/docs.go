@@ -154,6 +154,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/schemas.IDResponse"
                         }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -994,6 +1000,18 @@ const docTemplate = `{
                 },
                 "weight": {
                     "type": "integer"
+                }
+            }
+        },
+        "schemas.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "message": {
+                    "type": "string"
                 }
             }
         },

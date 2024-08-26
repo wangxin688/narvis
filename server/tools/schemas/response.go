@@ -8,3 +8,9 @@ type ListResponse struct {
 type IDResponse struct {
 	ID string `json:"id"`
 }
+
+type ErrorResponse struct {
+	Code    uint64 `json:"code"`
+	Data    any    `json:"data"`
+	Message string `json:"message"`
+}

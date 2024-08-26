@@ -31,6 +31,9 @@ func createUser(c *gin.Context) {
 		return
 	}
 	newUser, err := biz.NewUserService().CreateUser(&user)
+	if err != nil {
+		return
+	}
 	c.JSON(http.StatusOK, ts.IDResponse{ID: newUser.ID})
 }
 

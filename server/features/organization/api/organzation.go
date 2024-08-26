@@ -31,5 +31,8 @@ func orgCreate(c *gin.Context) {
 		)
 	}
 	newOrg, err := biz.NewOrganizationService().CreateOrganization(&org)
+	if err != nil {
+		return
+	}
 	c.JSON(http.StatusOK, newOrg)
 }

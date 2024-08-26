@@ -51,25 +51,49 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 	var pgError *pgconn.PgError
 	switch {
 	case errors.As(e, &generalError):
+		if generalError == nil {
+			core.Logger.Error("unknown error", zap.Error(e))
+			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+			return
+		}
 		if generalError.Code <= 500 {
 			g.AbortWithStatusJSON(int(generalError.Code), generalError)
+			return
 		}
 		g.AbortWithStatusJSON(http.StatusBadRequest, generalError)
+		return
 	case errors.As(e, &pgError):
+		if pgError == nil {
+			core.Logger.Error("unknown error", zap.Error(e))
+			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+			return
+		}
 		if pgError.Code == "23505" {
 			var fields, values string
 			matches := pgConflictRegexp.FindStringSubmatch(pgError.Detail)
 			if len(matches) >= 3 {
 				fields = matches[1]
 				values = matches[2]
+				fields, values = removeOrgInError(fields, values)
 			}
+
 			g.AbortWithStatusJSON(http.StatusConflict, NewError(CodeExist, MsgExist, pgError.TableName, fields, values))
+			return
 		}
 		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+		return
 	case errors.As(e, &validationError):
+		if validationError == nil {
+			core.Logger.Error("unknown error", zap.Error(e))
+			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+			return
+		}
 		g.AbortWithStatusJSON(http.StatusUnprocessableEntity, NewErrorWithData(CodeUnprocessableEntity, MsgUnprocessableEntity, e.Error()))
+		return
 	default:
 		core.Logger.Error("unknown error", zap.Error(e))
 		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+		return
 	}
+
 }

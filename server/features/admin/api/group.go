@@ -18,6 +18,7 @@ import (
 // @Produce json
 // @Param group body schemas.GroupCreate true "group"
 // @Success 200 {object} ts.IDResponse
+// @Failure 409 {object} ts.ErrorResponse
 // @Router /admin/groups [post]
 func createGroup(c *gin.Context) {
 	var group schemas.GroupCreate
@@ -31,6 +32,9 @@ func createGroup(c *gin.Context) {
 		return
 	}
 	newGroup, err := biz.NewGroupService().CreateGroup(&group)
+	if err != nil {
+		return
+	}
 	c.JSON(http.StatusOK, ts.IDResponse{ID: newGroup})
 }
 

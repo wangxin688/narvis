@@ -28,6 +28,14 @@ definitions:
       weight:
         type: integer
     type: object
+  schemas.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
   schemas.Group:
     properties:
       created_at:
@@ -449,6 +457,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemas.IDResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
       security:
       - BearerAuth: []
       summary: Create Group
