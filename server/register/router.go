@@ -12,4 +12,5 @@ func RegisterRouter(e *gin.Engine) {
 	organization_api.RegisterOrgRoutes(e)
 	intend_api.RegisterIntendRoutes(e)
 	admin_api.RegisterAdminRoutes(e)
+	admin_api.RegisterLoginRoutes(e)
 }

@@ -1,8 +1,8 @@
 jwt:
   secret_key: 'secret'
   algorithm: 'HS256'
-  access_token_expire_minutes: 1440
-  refresh_token_expire_minutes: 10080
+  access_token_expired_minutes: 1440
+  refresh_token_expired_minutes: 10080
 
 zap:
   level: info

@@ -1,6 +1,10 @@
 package schemas
 
-import "github.com/wangxin688/narvis/server/tools/schemas"
+import (
+	"time"
+
+	"github.com/wangxin688/narvis/server/tools/schemas"
+)
 
 type GroupCreate struct {
 	Name        string  `json:"name" binding:"required"`
@@ -11,13 +15,14 @@ type GroupCreate struct {
 type GroupUpdate struct {
 	Name        *string `json:"name" binding:"omitempty"`
 	Description *string `json:"description" binding:"omitempty"`
-	RoleID      *string  `json:"role_id" binding:"omitempty,uuid"`
+	RoleID      *string `json:"role_id" binding:"omitempty,uuid"`
 }
 
 type GroupQuery struct {
 	schemas.PageInfo
-	ID   *[]string `json:"id" binding:"omitempty,list_uuid"`
-	Name *[]string `json:"name" binding:"omitempty"`
+	ID     *[]string `form:"id" binding:"omitempty,list_uuid"`
+	Name   *[]string `form:"name" binding:"omitempty"`
+	RoleID *[]string `form:"role_id" binding:"omitempty,list_uuid"`
 }
 
 type GroupShort struct {
@@ -27,5 +32,10 @@ type GroupShort struct {
 
 type Group struct {
 	GroupShort
-	Role Role `json:"role"`
+	Description *string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Role        RoleShort `json:"role"`
 }
+
+type GroupList []*Group

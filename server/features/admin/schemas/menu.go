@@ -1,6 +1,10 @@
 package schemas
 
-import "time"
+import (
+	"time"
+
+	"github.com/wangxin688/narvis/server/tools/helpers"
+)
 
 type Transition struct {
 	Name            string `json:"name"`
@@ -42,14 +46,37 @@ type MenuUpdate struct {
 	ParentID *string `json:"parent_id" binding:"omitempty,uuid"`
 }
 
-type MenuTree struct {
-	ID        string      `json:"id"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt time.Time   `json:"updated_at"`
-	Path      string      `json:"path"`
-	Name      string      `json:"name"`
-	Redirect  *string     `json:"redirect"`
-	ParentID  *string     `json:"parent_id"`
-	Meta      *Meta       `json:"meta"`
-	Children  []*MenuTree `json:"children"`
+type Menu struct {
+	ID        string    `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Path      string    `json:"path"`
+	Name      string    `json:"name"`
+	Redirect  *string   `json:"redirect"`
+	ParentID  *string   `json:"parent_id"`
+	Meta      *Meta     `json:"meta"`
+	Children  []*Menu   `json:"children"`
+}
+
+func (m *Menu) GetID() string {
+	return m.ID
+}
+
+func (m *Menu) GetParentID() *string {
+	return m.ParentID
+}
+
+func (m *Menu) SetChildren(children []helpers.TreeNodeInterface[string]) {
+	m.Children = []*Menu{}
+	for _, child := range children {
+		m.Children = append(m.Children, child.(*Menu))
+	}
+}
+
+func (m *Menu) GetChildren() []helpers.TreeNodeInterface[string] {
+	children := []helpers.TreeNodeInterface[string]{}
+	for _, child := range m.Children {
+		children = append(children, child)
+	}
+	return children
 }

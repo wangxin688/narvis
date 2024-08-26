@@ -25,12 +25,12 @@ type RoleQuery struct {
 }
 
 type RoleDetail struct {
-	ID          string     `json:"id"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
-	Name        string     `json:"name"`
-	Description *string    `json:"description"`
-	Menus       []MenuTree `json:"menus"`
+	ID          string      `json:"id"`
+	CreatedAt   time.Time   `json:"created_at"`
+	UpdatedAt   time.Time   `json:"updated_at"`
+	Name        string      `json:"name"`
+	Description *string     `json:"description"`
+	Menus       *[]Menu `json:"menus"`
 }
 
 type Role struct {

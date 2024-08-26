@@ -29,7 +29,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		parts := strings.Split(tokenString, "")
+		parts := strings.Split(tokenString, " ")
 		if len(parts) != 2 || parts[0] != AuthorizationBearer {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, errors.GenericError{
@@ -72,29 +72,28 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		case errors.ErrorOk:
 			global.UserID.Set(tokenClaims.UserID)
+			if !checkUserPermission(tokenClaims.UserID, c.FullPath()) {
+				c.AbortWithStatusJSON(
+					http.StatusForbidden, errors.GenericError{
+						Code:    http.StatusForbidden,
+						Message: "permission denied",
+						Data:    nil,
+					},
+				)
+				return
+			}
 			return
 		}
-		permissionCheck(tokenClaims.UserID, c.FullPath())
 		c.Next()
 	}
 }
 
-func permissionCheck(userID string, path string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if !checkUserPermission(userID, path) {
-			c.AbortWithStatusJSON(
-				http.StatusForbidden, errors.GenericError{
-					Code:    http.StatusForbidden,
-					Message: "permission denied",
-					Data:    nil,
-				},
-			)
-			return
-		}
-		c.Next()
-	}
-}
 
 func checkUserPermission(userID string, path string) bool {
-	return biz.CheckRolePathPermission(userID, path)
+	user := biz.VerifyUser(userID)
+	if user == nil {
+		return false
+	}
+	global.OrganizationID.Set(user.OrganizationID)
+	return biz.CheckRolePathPermission(user, path)
 }

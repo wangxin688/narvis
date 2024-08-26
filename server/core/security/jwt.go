@@ -50,12 +50,14 @@ func CreateAccessToken(userID string, username string, refresh bool, expire time
 }
 
 func GenerateTokenResponse(userID string, username string) *AccessToken {
+	expireAccess := time.Duration(core.Settings.Jwt.AccessTokenExpiredMinute) * time.Minute
 	accessToken, expiresAt, issuedAt := CreateAccessToken(
-		userID, username, false, time.Duration(core.Settings.Jwt.AccessTokenExpiredMinute))
+		userID, username, false, expireAccess)
 
 	// Create a refresh token
+	expireRefresh := time.Duration(core.Settings.Jwt.RefreshTokenExpiredMinute) * time.Minute
 	refreshToken, refreshExpiresAt, refreshIssuedAt := CreateAccessToken(
-		userID, username, true, time.Duration(core.Settings.Jwt.RefreshTokenExpiredMinute))
+		userID, username, true, expireRefresh)
 	return &AccessToken{
 		TokenType:             AuthorizationBearer,
 		AccessToken:           accessToken,
@@ -81,10 +83,10 @@ func VerifyAccessToken(tokenString string) (errors.ErrorCode, *Claims) {
 	if !ok || !token.Valid {
 		return errors.CodeAccessTokenInvalid, nil
 	}
-	if claims.ExpiresAt > time.Now().Unix() {
+	if claims.ExpiresAt < time.Now().Unix() {
 		return errors.CodeAccessTokenExpired, nil
 	}
-	if claims.IssuedAt < time.Now().Unix() {
+	if claims.IssuedAt > time.Now().Unix() {
 		return errors.CodeAccessTokenInvalid, nil
 	}
 	if claims.Refreshed {

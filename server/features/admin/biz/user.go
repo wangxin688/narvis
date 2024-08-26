@@ -111,7 +111,7 @@ func (u *UserService) CreateUser(user *schemas.UserCreate) (*schemas.User, error
 	return u.GetUserByID(newUser.ID)
 }
 
-func (u *UserService) UpdateUser(ctx context.Context, userId string, user *schemas.UserUpdate) error {
+func (u *UserService) UpdateUser(userID string, user *schemas.UserUpdate) error {
 	var updateFields = make(map[string]any)
 	if user.Username != nil {
 		updateFields["username"] = *user.Username
@@ -134,24 +134,24 @@ func (u *UserService) UpdateUser(ctx context.Context, userId string, user *schem
 	if user.Status != nil {
 		updateFields["status"] = *user.Status
 	}
-	_, err := gen.User.WithContext(ctx).Select(gen.User.ID.Eq(userId), gen.User.OrganizationID.Eq(global.OrganizationID.Get())).Updates(updateFields)
+	_, err := gen.User.Select(gen.User.ID.Eq(userID), gen.User.OrganizationID.Eq(global.OrganizationID.Get())).Updates(updateFields)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (u *UserService) DeleteUser(ctx context.Context, userId string) error {
-	_, err := gen.User.WithContext(ctx).Select(gen.User.ID.Eq(userId), gen.User.OrganizationID.Eq(global.OrganizationID.Get())).Delete()
+func (u *UserService) DeleteUser(ctx context.Context, userID string) error {
+	_, err := gen.User.WithContext(ctx).Select(gen.User.ID.Eq(userID), gen.User.OrganizationID.Eq(global.OrganizationID.Get())).Delete()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (u *UserService) ListUsers(ctx context.Context, params schemas.UserQuery) (int64, *schemas.UserList, error) {
+func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.UserList, error) {
 	orgID := global.OrganizationID.Get()
-	stmt := gen.User.WithContext(ctx).Where(gen.User.OrganizationID.Eq(orgID))
+	stmt := gen.User.Where(gen.User.OrganizationID.Eq(orgID))
 	if params.ID != nil {
 		stmt = stmt.Where(gen.User.ID.In(*params.ID...))
 	}
@@ -214,4 +214,17 @@ func (u *UserService) ListUsers(ctx context.Context, params schemas.UserQuery) (
 	}
 	return count, &userList, nil
 
+}
+
+func VerifyUser(userID string) *models.User {
+
+	user, err := gen.User.Where(gen.User.ID.Eq(userID)).Preload(gen.User.Role).Preload(gen.User.Organization).First()
+	if err != nil || user == nil {
+		return nil
+	}
+	if user.Status != "Active" || !user.Organization.Active {
+		return nil
+	}
+
+	return user
 }

@@ -80,7 +80,7 @@ type Group struct {
 	Role           Role         `gorm:"constraint:Ondelete:RESTRICT"`
 	OrganizationID string       `gorm:"tye:uuid;uniqueIndex:idx_group_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
-	User           []User 
+	User           []User
 }
 
 func (Group) TableName() string {
@@ -94,7 +94,7 @@ type Permission struct {
 	Method      string                            ``
 	Tag         *string                           `` // need update from api
 	Description *datatypes.JSONType[schemas.I18n] `` // need update from api
-	Menu        []*Menu                           `gorm:"many2many:menu_permissions"`
+	Menu        []Menu                            `gorm:"many2many:menu_permissions"`
 }
 
 func (Permission) TableName() string {

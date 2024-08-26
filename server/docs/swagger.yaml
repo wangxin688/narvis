@@ -28,6 +28,49 @@ definitions:
       weight:
         type: integer
     type: object
+  schemas.Group:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        $ref: '#/definitions/schemas.RoleShort'
+      updated_at:
+        type: string
+    type: object
+  schemas.GroupCreate:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      role_id:
+        type: string
+    required:
+    - name
+    - role_id
+    type: object
+  schemas.GroupShort:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  schemas.GroupUpdate:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      role_id:
+        type: string
+    type: object
   schemas.I18n:
     properties:
       en:
@@ -35,11 +78,76 @@ definitions:
       zh:
         type: string
     type: object
+  schemas.IDResponse:
+    properties:
+      id:
+        type: string
+    type: object
   schemas.ListResponse:
     properties:
       results: {}
       total:
         type: integer
+    type: object
+  schemas.Menu:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/schemas.Menu'
+        type: array
+      created_at:
+        type: string
+      id:
+        type: string
+      meta:
+        $ref: '#/definitions/schemas.Meta'
+      name:
+        type: string
+      parent_id:
+        type: string
+      path:
+        type: string
+      redirect:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  schemas.Meta:
+    properties:
+      activePath:
+        type: string
+      auths:
+        items:
+          type: string
+        type: array
+      dynamicLevel:
+        type: integer
+      extraIcon:
+        type: string
+      frameLoading:
+        type: boolean
+      frameSrc:
+        type: string
+      hiddenTag:
+        type: boolean
+      icon:
+        type: string
+      keepAlive:
+        type: boolean
+      rank:
+        type: integer
+      roles:
+        items:
+          type: string
+        type: array
+      showLink:
+        type: boolean
+      showParent:
+        type: boolean
+      title:
+        type: string
+      transition:
+        $ref: '#/definitions/schemas.Transition'
     type: object
   schemas.Oauth2PasswordRequest:
     properties:
@@ -91,6 +199,150 @@ definitions:
     - license_count
     - name
     type: object
+  schemas.Role:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  schemas.RoleCreate:
+    properties:
+      description:
+        type: string
+      menus:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+    required:
+    - menus
+    - name
+    type: object
+  schemas.RoleDetail:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      menus:
+        items:
+          $ref: '#/definitions/schemas.Menu'
+        type: array
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  schemas.RoleShort:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  schemas.RoleUpdate:
+    properties:
+      description:
+        type: string
+      menus:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+    type: object
+  schemas.Transition:
+    properties:
+      enterTransition:
+        type: string
+      leaveTransition:
+        type: string
+      name:
+        type: string
+    type: object
+  schemas.User:
+    properties:
+      auth_type:
+        type: integer
+      avatar:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      group:
+        $ref: '#/definitions/schemas.GroupShort'
+      id:
+        type: string
+      role:
+        $ref: '#/definitions/schemas.RoleShort'
+      status:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  schemas.UserCreate:
+    properties:
+      auth_type:
+        maximum: 4
+        minimum: 0
+        type: integer
+      avatar:
+        type: string
+      email:
+        type: string
+      group_id:
+        type: string
+      password:
+        type: string
+      role_id:
+        type: string
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
+      username:
+        type: string
+    required:
+    - auth_type
+    - group_id
+    - role_id
+    - status
+    - username
+    type: object
+  schemas.UserUpdate:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      group_id:
+        type: string
+      password:
+        type: string
+      role_id:
+        type: string
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
+      username:
+        type: string
+    type: object
   security.AccessToken:
     properties:
       access_token:
@@ -116,6 +368,485 @@ info:
   title: Narvis API
   version: "1.0"
 paths:
+  /admin/groups:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: id
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: name
+        type: array
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: order_by
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: page_size
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: role_id
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.Group'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List Groups
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create User Group
+      parameters:
+      - description: group
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.GroupCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IDResponse'
+      security:
+      - BearerAuth: []
+      summary: Create Group
+      tags:
+      - Admin
+  /admin/groups/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: group id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IDResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete Group
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: group id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Group'
+      security:
+      - BearerAuth: []
+      summary: Get Group
+      tags:
+      - Admin
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: group id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: group
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.GroupUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IDResponse'
+      security:
+      - BearerAuth: []
+      summary: Update Group
+      tags:
+      - Admin
+  /admin/roles:
+    get:
+      consumes:
+      - application/json
+      description: list roles
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: id
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: name
+        type: array
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: order_by
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.Role'
+                  type: array
+              type: object
+      summary: List roles
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: create role
+      parameters:
+      - description: role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.RoleCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Role'
+      summary: Create role
+      tags:
+      - Admin
+  /admin/roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete role
+      parameters:
+      - description: role id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Role'
+      summary: Delete role
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: get role
+      parameters:
+      - description: role id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.RoleDetail'
+      summary: Get role
+      tags:
+      - Admin
+    patch:
+      consumes:
+      - application/json
+      description: update role
+      parameters:
+      - description: role id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: role
+        in: body
+        name: role
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.RoleUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Role'
+      summary: Update role
+      tags:
+      - Admin
+  /admin/users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        maximum: 4
+        minimum: 0
+        name: auth_type
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: email
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: group_id
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: id
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: order_by
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: page_size
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: role_id
+        type: array
+      - enum:
+        - Active
+        - Inactive
+        in: query
+        name: status
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: username
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.User'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List users
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create new user
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IDResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new user
+      tags:
+      - Admin
+  /admin/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IDResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete user
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.User'
+      security:
+      - BearerAuth: []
+      summary: Get user
+      tags:
+      - Admin
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IDResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user
+      tags:
+      - Admin
   /intend/circuit-types:
     get:
       parameters:
