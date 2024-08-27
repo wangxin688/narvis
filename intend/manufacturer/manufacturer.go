@@ -82,8 +82,9 @@ func GetManufacturerByEnterpriseId(etpId string) Manufacturer {
 	return mf
 }
 
-func GetManufacturerPlatform(mf Manufacturer) []platform.Platform {
-	meta := map[Manufacturer][]platform.Platform{
+func GetAllManufacturerPlatform() map[Manufacturer][]platform.Platform {
+	return map[Manufacturer][]platform.Platform{
+		Cisco:      {platform.CiscoIos, platform.CiscoIosXE, platform.CiscoIosXR, platform.CiscoNexusOS},
 		Huawei:     {platform.Huawei, platform.HuaweiVrp, platform.HuaweiVrpV8},
 		Aruba:      {platform.Aruba, platform.ArubaOSSwitch},
 		Arista:     {platform.Arista},
@@ -103,6 +104,46 @@ func GetManufacturerPlatform(mf Manufacturer) []platform.Platform {
 		MikroTik:   {platform.MikroTik},
 		Unknown:    {platform.Unknown},
 	}
+}
 
+func GetManufacturerPlatform(mf Manufacturer) []platform.Platform {
+	meta := GetAllManufacturerPlatform()
 	return meta[mf]
+}
+
+
+func GetAllPlatformManufacturer(plt platform.Platform) map[platform.Platform]Manufacturer {
+	return map[platform.Platform]Manufacturer{
+		platform.CiscoIos:      Cisco,
+		platform.CiscoIosXE:    Cisco,
+		platform.CiscoIosXR:    Cisco,
+		platform.CiscoNexusOS:  Cisco,
+		platform.Huawei:        Huawei,
+		platform.HuaweiVrp:     Huawei,
+		platform.HuaweiVrpV8:   Huawei,
+		platform.Aruba:         Aruba,
+		platform.ArubaOSSwitch: Aruba,
+		platform.Arista:        Arista,
+		platform.RuiJie:        RuiJie,
+		platform.H3C:           H3C,
+		platform.PaloAlto:      PaloAlto,
+		platform.FortiNet:      FortiNet,
+		platform.Netgear:       Netgear,
+		platform.TPLink:        TPLink,
+		platform.Ruckus:        Ruckus,
+		platform.Juniper:       Juniper,
+		platform.CheckPoint:    CheckPoint,
+		platform.Sangfor:       Sangfor,
+		platform.A10:           A10,
+		platform.F5:            F5,
+		platform.Extreme:       Extreme,
+		platform.MikroTik:      MikroTik,
+		platform.Unknown:       Unknown,
+	}
+
+}
+
+func GetPlatformManufacturer(plt platform.Platform) Manufacturer {
+	meta := GetAllPlatformManufacturer(plt)
+	return meta[plt]
 }

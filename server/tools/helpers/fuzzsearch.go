@@ -78,3 +78,17 @@ func checkRegexValid(pattern string) bool {
 	_, err := regexp.Compile(pattern)
 	return err == nil
 }
+
+func FuzzySearchList(data []string, searchValue string, ignoreCase bool) []string {
+	result := []string{}
+	// 如果忽略大小写，将搜索值转换为小写
+	if ignoreCase {
+		searchValue = strings.ToLower(searchValue)
+	}
+	for _, value := range data {
+		if strings.Contains(value, searchValue) {
+			result = append(result, value)
+		}
+	}
+	return result
+}

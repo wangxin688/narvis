@@ -65,6 +65,9 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 				Organization struct {
 					field.RelationField
 				}
+				User struct {
+					field.RelationField
+				}
 			}
 			Role struct {
 				field.RelationField
@@ -95,6 +98,9 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 					}
 				}
 				Organization struct {
+					field.RelationField
+				}
+				User struct {
 					field.RelationField
 				}
 			}{
@@ -160,6 +166,11 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 					field.RelationField
 				}{
 					RelationField: field.NewRelation("Alert.User.Group.Organization", "models.Organization"),
+				},
+				User: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("Alert.User.Group.User", "models.User"),
 				},
 			},
 			Role: struct {
@@ -581,6 +592,9 @@ type maintenanceHasManyAlert struct {
 				}
 			}
 			Organization struct {
+				field.RelationField
+			}
+			User struct {
 				field.RelationField
 			}
 		}

@@ -67,7 +67,6 @@ type Rack struct {
 	Height         float32      `gorm:"type:float;default:2"`
 	Width          float32      `gorm:"type:float;default:0.6"`
 	Depth          float32      `gorm:"type:float;default:0.8"`
-	StartingUnit   uint8        `gorm:"type:float;default:1"`
 	DescUnit       bool         `gorm:"default:true"`
 	LocationID     *string      `gorm:"type:uuid;default:null"`
 	Location       Location     `gorm:"constraint:Ondelete:SET NULL"`
@@ -89,16 +88,19 @@ type Device struct {
 	Status         string       `gorm:"default:Active"`
 	Platform       string       `gorm:"default:Unknown"`
 	ProductFamily  string       `gorm:"default:Unknown"`
-	DeviceType     string       `gorm:"default:Unknown"`
+	DeviceModel    string       `gorm:"default:Unknown"`
 	Manufacturer   string       `gorm:"default:Unknown"`
 	DeviceRole     string       `gorm:"default:Unknown"`
 	ChassisID      *string      `gorm:"uniqueIndex:idx_chassis_id_organization_id;default:null;index"`
 	SerialNumber   *string      `gorm:"column:serial_number;uniqueIndex:idx_serial_number_organization_id"`
 	AssetTag       *string      `gorm:"column:asset_tag"`
 	Description    *string      `gorm:"column:description"`
+	OsVersion      *string      `gorm:"column:os_version"`
+	OsPatch        *string      `gorm:"column:os_patch"`
 	RackID         *string      `gorm:"type:uuid;default:null"`
 	Rack           Rack         `gorm:"constraint:Ondelete:SET NULL"`
 	RackPosition   *uint8       `gorm:"type:smallint;default:null"`
+	RackDirection  string       `gorm:"default:Front"` // Front, Rear
 	UHeight        *uint8       `gorm:"type:smallint;default:null"`
 	LocationID     *string      `gorm:"type:uuid;default:null"`
 	Location       Location     `gorm:"constraint:Ondelete:SET NULL"`
@@ -208,6 +210,7 @@ type DeviceCliCredential struct {
 	BaseDbModel
 	Username       string       `gorm:"not null"`
 	Password       string       `gorm:"not null"`
+	Port           uint16       `gorm:"not null;default:22"`
 	DeviceID       *string      `gorm:"type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
 	Device         Device       `gorm:"constraint:Ondelete:CASCADE"`
 	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
@@ -223,6 +226,7 @@ type DeviceSnmpV2Credential struct {
 	Community      string       `gorm:"not null"`
 	MaxRepetitions uint8        `gorm:"type:smallint;not null;default:50"`
 	Timeout        uint8        `gorm:"type:smallint;not null;default:10"`
+	Port           uint16       `gorm:"not null;default:161"`
 	DeviceID       *string      `gorm:"type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
 	Device         Device       `gorm:"constraint:Ondelete:CASCADE"`
 	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
@@ -261,7 +265,7 @@ type AP struct {
 	MacAddress     *string                           `gorm:"macaddr;default:null"`
 	SerialNumber   *string                           `gorm:"column:serial_number;default:null"`
 	ManagementIP   *string                           `gorm:"column:management_ip;default:null"`
-	DeviceType     string                            `gorm:"default:Unknown"`
+	DeviceModel    string                            `gorm:"default:Unknown"`
 	Manufacturer   string                            `gorm:"default:Unknown"`
 	DeviceRole     string                            `gorm:"default:WlanAP"`
 	Version        *string                           `gorm:"default:null"`
@@ -279,4 +283,11 @@ type AP struct {
 
 func (AP) TableName() string {
 	return APTableName
+}
+
+type MacAddress struct {
+	ID        string `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	MacOUI    string `gorm:"column:mac_oui;not null"`
+	ShortName string `gorm:"column:short_name;not null"`
+	LongName  string `gorm:"column:long_name;not null"`
 }

@@ -30,9 +30,9 @@ func GetCircuitTypes(query *schemas.CircuitTypeQuery) (int64, []circuittype.Circ
 			return helpers.FuzzySearch(item.ToMap(), *query.Description, true, nil)
 		})
 	}
-	if query.Search != nil {
+	if query.Keyword != nil {
 		list = lo.Filter(list, func(item circuittype.CircuitType, index int) bool {
-			return helpers.FuzzySearch(item.ToMap(), *query.Search, true, nil)
+			return helpers.FuzzySearch(item.ToMap(), *query.Keyword, true, nil)
 		})
 	}
 

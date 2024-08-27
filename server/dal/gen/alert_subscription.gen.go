@@ -66,6 +66,9 @@ func newSubscription(db *gorm.DB, opts ...gen.DOOption) subscription {
 			Organization struct {
 				field.RelationField
 			}
+			User struct {
+				field.RelationField
+			}
 		}{
 			RelationField: field.NewRelation("CreatedBy.Group", "models.Group"),
 			Role: struct {
@@ -129,6 +132,11 @@ func newSubscription(db *gorm.DB, opts ...gen.DOOption) subscription {
 				field.RelationField
 			}{
 				RelationField: field.NewRelation("CreatedBy.Group.Organization", "models.Organization"),
+			},
+			User: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("CreatedBy.Group.User", "models.User"),
 			},
 		},
 		Role: struct {
@@ -272,6 +280,9 @@ type subscriptionBelongsToCreatedBy struct {
 			}
 		}
 		Organization struct {
+			field.RelationField
+		}
+		User struct {
 			field.RelationField
 		}
 	}

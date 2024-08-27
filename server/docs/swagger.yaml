@@ -875,7 +875,7 @@ paths:
         name: description
         type: string
       - in: query
-        name: search
+        name: keyword
         type: string
       responses:
         "200":
@@ -899,10 +899,10 @@ paths:
         name: abbreviation
         type: string
       - in: query
-        name: name
+        name: keyword
         type: string
       - in: query
-        name: search
+        name: name
         type: string
       responses:
         "200":
@@ -919,6 +919,58 @@ paths:
       security:
       - BearerAuth: []
       summary: Get list of device roles
+      tags:
+      - Intend
+  /intend/manufacturers:
+    get:
+      parameters:
+      - in: query
+        name: keyword
+        type: string
+      - in: query
+        name: name
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    type: string
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get list of Manufacturers
+      tags:
+      - Intend
+  /intend/platforms:
+    get:
+      parameters:
+      - in: query
+        name: keyword
+        type: string
+      - in: query
+        name: platform
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    type: string
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get list of Platforms
       tags:
       - Intend
   /login/password:

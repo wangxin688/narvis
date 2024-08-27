@@ -104,6 +104,35 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 		}{
 			RelationField: field.NewRelation("Group.Organization", "models.Organization"),
 		},
+		User: struct {
+			field.RelationField
+			Group struct {
+				field.RelationField
+			}
+			Role struct {
+				field.RelationField
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}{
+			RelationField: field.NewRelation("Group.User", "models.User"),
+			Group: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Group.User.Group", "models.Group"),
+			},
+			Role: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Group.User.Role", "models.Role"),
+			},
+			Organization: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Group.User.Organization", "models.Organization"),
+			},
+		},
 	}
 
 	_user.Role = userBelongsToRole{
@@ -239,6 +268,18 @@ type userBelongsToGroup struct {
 	}
 	Organization struct {
 		field.RelationField
+	}
+	User struct {
+		field.RelationField
+		Group struct {
+			field.RelationField
+		}
+		Role struct {
+			field.RelationField
+		}
+		Organization struct {
+			field.RelationField
+		}
 	}
 }
 

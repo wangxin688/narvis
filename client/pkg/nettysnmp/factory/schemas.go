@@ -2,7 +2,7 @@ package factory
 
 import (
 	"github.com/gosnmp/gosnmp"
-	"github.com/wangxin688/narvis/client/pkg/nettysnmp/devicetype"
+	"github.com/wangxin688/narvis/client/pkg/nettysnmp/devicemodel"
 )
 
 type SnmpV3Params struct {
@@ -85,5 +85,5 @@ type DispatchResponse struct {
 	IcmpReachable bool
 	SshReachable  bool
 	SysObjectId   string
-	DeviceType    *devicetype.DeviceType
+	DeviceModel   *devicemodel.DeviceModel
 }

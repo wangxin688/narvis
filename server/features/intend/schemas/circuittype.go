@@ -12,5 +12,5 @@ type CircuitTypeQuery struct {
 	CircuitType    *string `form:"circuit_type" binding:"omitempty"`
 	Description    *string `form:"description" binding:"omitempty"`
 	ConnectionType *string `form:"connection_type" binding:"omitempty,oneof=WAN LAN"`
-	Search         *string `form:"search" binding:"omitempty"`
+	Keyword        *string `form:"keyword" binding:"omitempty"`
 }

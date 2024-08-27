@@ -34,15 +34,18 @@ func newDevice(db *gorm.DB, opts ...gen.DOOption) device {
 	_device.Status = field.NewString(tableName, "status")
 	_device.Platform = field.NewString(tableName, "platform")
 	_device.ProductFamily = field.NewString(tableName, "product_family")
-	_device.DeviceType = field.NewString(tableName, "device_type")
+	_device.DeviceModel = field.NewString(tableName, "device_model")
 	_device.Manufacturer = field.NewString(tableName, "manufacturer")
 	_device.DeviceRole = field.NewString(tableName, "device_role")
 	_device.ChassisID = field.NewString(tableName, "chassis_id")
 	_device.SerialNumber = field.NewString(tableName, "serial_number")
 	_device.AssetTag = field.NewString(tableName, "asset_tag")
 	_device.Description = field.NewString(tableName, "description")
+	_device.OsVersion = field.NewString(tableName, "os_version")
+	_device.OsPatch = field.NewString(tableName, "os_patch")
 	_device.RackID = field.NewString(tableName, "rack_id")
 	_device.RackPosition = field.NewUint8(tableName, "rack_position")
+	_device.RackDirection = field.NewString(tableName, "rack_direction")
 	_device.UHeight = field.NewUint8(tableName, "u_height")
 	_device.LocationID = field.NewString(tableName, "location_id")
 	_device.SiteID = field.NewString(tableName, "site_id")
@@ -138,15 +141,18 @@ type device struct {
 	Status         field.String
 	Platform       field.String
 	ProductFamily  field.String
-	DeviceType     field.String
+	DeviceModel    field.String
 	Manufacturer   field.String
 	DeviceRole     field.String
 	ChassisID      field.String
 	SerialNumber   field.String
 	AssetTag       field.String
 	Description    field.String
+	OsVersion      field.String
+	OsPatch        field.String
 	RackID         field.String
 	RackPosition   field.Uint8
+	RackDirection  field.String
 	UHeight        field.Uint8
 	LocationID     field.String
 	SiteID         field.String
@@ -182,15 +188,18 @@ func (d *device) updateTableName(table string) *device {
 	d.Status = field.NewString(table, "status")
 	d.Platform = field.NewString(table, "platform")
 	d.ProductFamily = field.NewString(table, "product_family")
-	d.DeviceType = field.NewString(table, "device_type")
+	d.DeviceModel = field.NewString(table, "device_model")
 	d.Manufacturer = field.NewString(table, "manufacturer")
 	d.DeviceRole = field.NewString(table, "device_role")
 	d.ChassisID = field.NewString(table, "chassis_id")
 	d.SerialNumber = field.NewString(table, "serial_number")
 	d.AssetTag = field.NewString(table, "asset_tag")
 	d.Description = field.NewString(table, "description")
+	d.OsVersion = field.NewString(table, "os_version")
+	d.OsPatch = field.NewString(table, "os_patch")
 	d.RackID = field.NewString(table, "rack_id")
 	d.RackPosition = field.NewUint8(table, "rack_position")
+	d.RackDirection = field.NewString(table, "rack_direction")
 	d.UHeight = field.NewUint8(table, "u_height")
 	d.LocationID = field.NewString(table, "location_id")
 	d.SiteID = field.NewString(table, "site_id")
@@ -211,7 +220,7 @@ func (d *device) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (d *device) fillFieldMap() {
-	d.fieldMap = make(map[string]field.Expr, 25)
+	d.fieldMap = make(map[string]field.Expr, 28)
 	d.fieldMap["id"] = d.ID
 	d.fieldMap["created_at"] = d.CreatedAt
 	d.fieldMap["updated_at"] = d.UpdatedAt
@@ -220,15 +229,18 @@ func (d *device) fillFieldMap() {
 	d.fieldMap["status"] = d.Status
 	d.fieldMap["platform"] = d.Platform
 	d.fieldMap["product_family"] = d.ProductFamily
-	d.fieldMap["device_type"] = d.DeviceType
+	d.fieldMap["device_model"] = d.DeviceModel
 	d.fieldMap["manufacturer"] = d.Manufacturer
 	d.fieldMap["device_role"] = d.DeviceRole
 	d.fieldMap["chassis_id"] = d.ChassisID
 	d.fieldMap["serial_number"] = d.SerialNumber
 	d.fieldMap["asset_tag"] = d.AssetTag
 	d.fieldMap["description"] = d.Description
+	d.fieldMap["os_version"] = d.OsVersion
+	d.fieldMap["os_patch"] = d.OsPatch
 	d.fieldMap["rack_id"] = d.RackID
 	d.fieldMap["rack_position"] = d.RackPosition
+	d.fieldMap["rack_direction"] = d.RackDirection
 	d.fieldMap["u_height"] = d.UHeight
 	d.fieldMap["location_id"] = d.LocationID
 	d.fieldMap["site_id"] = d.SiteID

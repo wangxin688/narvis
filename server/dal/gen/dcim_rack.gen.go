@@ -36,7 +36,6 @@ func newRack(db *gorm.DB, opts ...gen.DOOption) rack {
 	_rack.Height = field.NewFloat32(tableName, "height")
 	_rack.Width = field.NewFloat32(tableName, "width")
 	_rack.Depth = field.NewFloat32(tableName, "depth")
-	_rack.StartingUnit = field.NewUint8(tableName, "starting_unit")
 	_rack.DescUnit = field.NewBool(tableName, "desc_unit")
 	_rack.LocationID = field.NewString(tableName, "location_id")
 	_rack.SiteID = field.NewString(tableName, "site_id")
@@ -101,7 +100,6 @@ type rack struct {
 	Height         field.Float32
 	Width          field.Float32
 	Depth          field.Float32
-	StartingUnit   field.Uint8
 	DescUnit       field.Bool
 	LocationID     field.String
 	SiteID         field.String
@@ -137,7 +135,6 @@ func (r *rack) updateTableName(table string) *rack {
 	r.Height = field.NewFloat32(table, "height")
 	r.Width = field.NewFloat32(table, "width")
 	r.Depth = field.NewFloat32(table, "depth")
-	r.StartingUnit = field.NewUint8(table, "starting_unit")
 	r.DescUnit = field.NewBool(table, "desc_unit")
 	r.LocationID = field.NewString(table, "location_id")
 	r.SiteID = field.NewString(table, "site_id")
@@ -158,7 +155,7 @@ func (r *rack) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *rack) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 18)
+	r.fieldMap = make(map[string]field.Expr, 17)
 	r.fieldMap["id"] = r.ID
 	r.fieldMap["created_at"] = r.CreatedAt
 	r.fieldMap["updated_at"] = r.UpdatedAt
@@ -169,7 +166,6 @@ func (r *rack) fillFieldMap() {
 	r.fieldMap["height"] = r.Height
 	r.fieldMap["width"] = r.Width
 	r.fieldMap["depth"] = r.Depth
-	r.fieldMap["starting_unit"] = r.StartingUnit
 	r.fieldMap["desc_unit"] = r.DescUnit
 	r.fieldMap["location_id"] = r.LocationID
 	r.fieldMap["site_id"] = r.SiteID

@@ -33,47 +33,122 @@ func newGroup(db *gorm.DB, opts ...gen.DOOption) group {
 	_group.Description = field.NewString(tableName, "description")
 	_group.RoleID = field.NewString(tableName, "role_id")
 	_group.OrganizationID = field.NewString(tableName, "organization_id")
+	_group.User = groupHasManyUser{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("User", "models.User"),
+		Group: struct {
+			field.RelationField
+			Role struct {
+				field.RelationField
+				Organization struct {
+					field.RelationField
+				}
+				Menus struct {
+					field.RelationField
+					Parent struct {
+						field.RelationField
+					}
+					Permission struct {
+						field.RelationField
+						Menu struct {
+							field.RelationField
+						}
+					}
+				}
+			}
+			Organization struct {
+				field.RelationField
+			}
+			User struct {
+				field.RelationField
+			}
+		}{
+			RelationField: field.NewRelation("User.Group", "models.Group"),
+			Role: struct {
+				field.RelationField
+				Organization struct {
+					field.RelationField
+				}
+				Menus struct {
+					field.RelationField
+					Parent struct {
+						field.RelationField
+					}
+					Permission struct {
+						field.RelationField
+						Menu struct {
+							field.RelationField
+						}
+					}
+				}
+			}{
+				RelationField: field.NewRelation("User.Group.Role", "models.Role"),
+				Organization: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("User.Group.Role.Organization", "models.Organization"),
+				},
+				Menus: struct {
+					field.RelationField
+					Parent struct {
+						field.RelationField
+					}
+					Permission struct {
+						field.RelationField
+						Menu struct {
+							field.RelationField
+						}
+					}
+				}{
+					RelationField: field.NewRelation("User.Group.Role.Menus", "models.Menu"),
+					Parent: struct {
+						field.RelationField
+					}{
+						RelationField: field.NewRelation("User.Group.Role.Menus.Parent", "models.Menu"),
+					},
+					Permission: struct {
+						field.RelationField
+						Menu struct {
+							field.RelationField
+						}
+					}{
+						RelationField: field.NewRelation("User.Group.Role.Menus.Permission", "models.Permission"),
+						Menu: struct {
+							field.RelationField
+						}{
+							RelationField: field.NewRelation("User.Group.Role.Menus.Permission.Menu", "models.Menu"),
+						},
+					},
+				},
+			},
+			Organization: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("User.Group.Organization", "models.Organization"),
+			},
+			User: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("User.Group.User", "models.User"),
+			},
+		},
+		Role: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("User.Role", "models.Role"),
+		},
+		Organization: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("User.Organization", "models.Organization"),
+		},
+	}
+
 	_group.Role = groupBelongsToRole{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Role", "models.Role"),
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Role.Organization", "models.Organization"),
-		},
-		Menus: struct {
-			field.RelationField
-			Parent struct {
-				field.RelationField
-			}
-			Permission struct {
-				field.RelationField
-				Menu struct {
-					field.RelationField
-				}
-			}
-		}{
-			RelationField: field.NewRelation("Role.Menus", "models.Menu"),
-			Parent: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Role.Menus.Parent", "models.Menu"),
-			},
-			Permission: struct {
-				field.RelationField
-				Menu struct {
-					field.RelationField
-				}
-			}{
-				RelationField: field.NewRelation("Role.Menus.Permission", "models.Permission"),
-				Menu: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("Role.Menus.Permission.Menu", "models.Menu"),
-				},
-			},
-		},
 	}
 
 	_group.Organization = groupBelongsToOrganization{
@@ -98,7 +173,9 @@ type group struct {
 	Description    field.String
 	RoleID         field.String
 	OrganizationID field.String
-	Role           groupBelongsToRole
+	User           groupHasManyUser
+
+	Role groupBelongsToRole
 
 	Organization groupBelongsToOrganization
 
@@ -140,7 +217,7 @@ func (g *group) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (g *group) fillFieldMap() {
-	g.fieldMap = make(map[string]field.Expr, 9)
+	g.fieldMap = make(map[string]field.Expr, 10)
 	g.fieldMap["id"] = g.ID
 	g.fieldMap["created_at"] = g.CreatedAt
 	g.fieldMap["updated_at"] = g.UpdatedAt
@@ -161,26 +238,115 @@ func (g group) replaceDB(db *gorm.DB) group {
 	return g
 }
 
-type groupBelongsToRole struct {
+type groupHasManyUser struct {
 	db *gorm.DB
 
 	field.RelationField
 
+	Group struct {
+		field.RelationField
+		Role struct {
+			field.RelationField
+			Organization struct {
+				field.RelationField
+			}
+			Menus struct {
+				field.RelationField
+				Parent struct {
+					field.RelationField
+				}
+				Permission struct {
+					field.RelationField
+					Menu struct {
+						field.RelationField
+					}
+				}
+			}
+		}
+		Organization struct {
+			field.RelationField
+		}
+		User struct {
+			field.RelationField
+		}
+	}
+	Role struct {
+		field.RelationField
+	}
 	Organization struct {
 		field.RelationField
 	}
-	Menus struct {
-		field.RelationField
-		Parent struct {
-			field.RelationField
-		}
-		Permission struct {
-			field.RelationField
-			Menu struct {
-				field.RelationField
-			}
-		}
+}
+
+func (a groupHasManyUser) Where(conds ...field.Expr) *groupHasManyUser {
+	if len(conds) == 0 {
+		return &a
 	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a groupHasManyUser) WithContext(ctx context.Context) *groupHasManyUser {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a groupHasManyUser) Session(session *gorm.Session) *groupHasManyUser {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a groupHasManyUser) Model(m *models.Group) *groupHasManyUserTx {
+	return &groupHasManyUserTx{a.db.Model(m).Association(a.Name())}
+}
+
+type groupHasManyUserTx struct{ tx *gorm.Association }
+
+func (a groupHasManyUserTx) Find() (result []*models.User, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a groupHasManyUserTx) Append(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a groupHasManyUserTx) Replace(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a groupHasManyUserTx) Delete(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a groupHasManyUserTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a groupHasManyUserTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type groupBelongsToRole struct {
+	db *gorm.DB
+
+	field.RelationField
 }
 
 func (a groupBelongsToRole) Where(conds ...field.Expr) *groupBelongsToRole {

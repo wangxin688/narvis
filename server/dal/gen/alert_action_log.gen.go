@@ -62,6 +62,9 @@ func newAlertActionLog(db *gorm.DB, opts ...gen.DOOption) alertActionLog {
 			Organization struct {
 				field.RelationField
 			}
+			User struct {
+				field.RelationField
+			}
 		}{
 			RelationField: field.NewRelation("AssignUser.Group", "models.Group"),
 			Role: struct {
@@ -125,6 +128,11 @@ func newAlertActionLog(db *gorm.DB, opts ...gen.DOOption) alertActionLog {
 				field.RelationField
 			}{
 				RelationField: field.NewRelation("AssignUser.Group.Organization", "models.Organization"),
+			},
+			User: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("AssignUser.Group.User", "models.User"),
 			},
 		},
 		Role: struct {
@@ -571,6 +579,9 @@ type alertActionLogBelongsToAssignUser struct {
 			}
 		}
 		Organization struct {
+			field.RelationField
+		}
+		User struct {
 			field.RelationField
 		}
 	}

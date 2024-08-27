@@ -17,9 +17,12 @@ import (
 
 var (
 	Q                        = new(Query)
+	AP                       *aP
 	Alert                    *alert
 	AlertActionLog           *alertActionLog
 	AlertGroup               *alertGroup
+	ApLLDPNeighbor           *apLLDPNeighbor
+	AuditLog                 *auditLog
 	Block                    *block
 	Circuit                  *circuit
 	Device                   *device
@@ -28,10 +31,12 @@ var (
 	DeviceInterface          *deviceInterface
 	DeviceRestconfCredential *deviceRestconfCredential
 	DeviceSnmpV2Credential   *deviceSnmpV2Credential
+	DeviceStack              *deviceStack
 	Group                    *group
 	IpAddress                *ipAddress
 	LLDPNeighbor             *lLDPNeighbor
 	Location                 *location
+	MacAddress               *macAddress
 	Maintenance              *maintenance
 	Menu                     *menu
 	Organization             *organization
@@ -52,9 +57,12 @@ var (
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	AP = &Q.AP
 	Alert = &Q.Alert
 	AlertActionLog = &Q.AlertActionLog
 	AlertGroup = &Q.AlertGroup
+	ApLLDPNeighbor = &Q.ApLLDPNeighbor
+	AuditLog = &Q.AuditLog
 	Block = &Q.Block
 	Circuit = &Q.Circuit
 	Device = &Q.Device
@@ -63,10 +71,12 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	DeviceInterface = &Q.DeviceInterface
 	DeviceRestconfCredential = &Q.DeviceRestconfCredential
 	DeviceSnmpV2Credential = &Q.DeviceSnmpV2Credential
+	DeviceStack = &Q.DeviceStack
 	Group = &Q.Group
 	IpAddress = &Q.IpAddress
 	LLDPNeighbor = &Q.LLDPNeighbor
 	Location = &Q.Location
+	MacAddress = &Q.MacAddress
 	Maintenance = &Q.Maintenance
 	Menu = &Q.Menu
 	Organization = &Q.Organization
@@ -88,9 +98,12 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:                       db,
+		AP:                       newAP(db, opts...),
 		Alert:                    newAlert(db, opts...),
 		AlertActionLog:           newAlertActionLog(db, opts...),
 		AlertGroup:               newAlertGroup(db, opts...),
+		ApLLDPNeighbor:           newApLLDPNeighbor(db, opts...),
+		AuditLog:                 newAuditLog(db, opts...),
 		Block:                    newBlock(db, opts...),
 		Circuit:                  newCircuit(db, opts...),
 		Device:                   newDevice(db, opts...),
@@ -99,10 +112,12 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		DeviceInterface:          newDeviceInterface(db, opts...),
 		DeviceRestconfCredential: newDeviceRestconfCredential(db, opts...),
 		DeviceSnmpV2Credential:   newDeviceSnmpV2Credential(db, opts...),
+		DeviceStack:              newDeviceStack(db, opts...),
 		Group:                    newGroup(db, opts...),
 		IpAddress:                newIpAddress(db, opts...),
 		LLDPNeighbor:             newLLDPNeighbor(db, opts...),
 		Location:                 newLocation(db, opts...),
+		MacAddress:               newMacAddress(db, opts...),
 		Maintenance:              newMaintenance(db, opts...),
 		Menu:                     newMenu(db, opts...),
 		Organization:             newOrganization(db, opts...),
@@ -125,9 +140,12 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 type Query struct {
 	db *gorm.DB
 
+	AP                       aP
 	Alert                    alert
 	AlertActionLog           alertActionLog
 	AlertGroup               alertGroup
+	ApLLDPNeighbor           apLLDPNeighbor
+	AuditLog                 auditLog
 	Block                    block
 	Circuit                  circuit
 	Device                   device
@@ -136,10 +154,12 @@ type Query struct {
 	DeviceInterface          deviceInterface
 	DeviceRestconfCredential deviceRestconfCredential
 	DeviceSnmpV2Credential   deviceSnmpV2Credential
+	DeviceStack              deviceStack
 	Group                    group
 	IpAddress                ipAddress
 	LLDPNeighbor             lLDPNeighbor
 	Location                 location
+	MacAddress               macAddress
 	Maintenance              maintenance
 	Menu                     menu
 	Organization             organization
@@ -163,9 +183,12 @@ func (q *Query) Available() bool { return q.db != nil }
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:                       db,
+		AP:                       q.AP.clone(db),
 		Alert:                    q.Alert.clone(db),
 		AlertActionLog:           q.AlertActionLog.clone(db),
 		AlertGroup:               q.AlertGroup.clone(db),
+		ApLLDPNeighbor:           q.ApLLDPNeighbor.clone(db),
+		AuditLog:                 q.AuditLog.clone(db),
 		Block:                    q.Block.clone(db),
 		Circuit:                  q.Circuit.clone(db),
 		Device:                   q.Device.clone(db),
@@ -174,10 +197,12 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		DeviceInterface:          q.DeviceInterface.clone(db),
 		DeviceRestconfCredential: q.DeviceRestconfCredential.clone(db),
 		DeviceSnmpV2Credential:   q.DeviceSnmpV2Credential.clone(db),
+		DeviceStack:              q.DeviceStack.clone(db),
 		Group:                    q.Group.clone(db),
 		IpAddress:                q.IpAddress.clone(db),
 		LLDPNeighbor:             q.LLDPNeighbor.clone(db),
 		Location:                 q.Location.clone(db),
+		MacAddress:               q.MacAddress.clone(db),
 		Maintenance:              q.Maintenance.clone(db),
 		Menu:                     q.Menu.clone(db),
 		Organization:             q.Organization.clone(db),
@@ -208,9 +233,12 @@ func (q *Query) WriteDB() *Query {
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:                       db,
+		AP:                       q.AP.replaceDB(db),
 		Alert:                    q.Alert.replaceDB(db),
 		AlertActionLog:           q.AlertActionLog.replaceDB(db),
 		AlertGroup:               q.AlertGroup.replaceDB(db),
+		ApLLDPNeighbor:           q.ApLLDPNeighbor.replaceDB(db),
+		AuditLog:                 q.AuditLog.replaceDB(db),
 		Block:                    q.Block.replaceDB(db),
 		Circuit:                  q.Circuit.replaceDB(db),
 		Device:                   q.Device.replaceDB(db),
@@ -219,10 +247,12 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		DeviceInterface:          q.DeviceInterface.replaceDB(db),
 		DeviceRestconfCredential: q.DeviceRestconfCredential.replaceDB(db),
 		DeviceSnmpV2Credential:   q.DeviceSnmpV2Credential.replaceDB(db),
+		DeviceStack:              q.DeviceStack.replaceDB(db),
 		Group:                    q.Group.replaceDB(db),
 		IpAddress:                q.IpAddress.replaceDB(db),
 		LLDPNeighbor:             q.LLDPNeighbor.replaceDB(db),
 		Location:                 q.Location.replaceDB(db),
+		MacAddress:               q.MacAddress.replaceDB(db),
 		Maintenance:              q.Maintenance.replaceDB(db),
 		Menu:                     q.Menu.replaceDB(db),
 		Organization:             q.Organization.replaceDB(db),
@@ -243,9 +273,12 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 }
 
 type queryCtx struct {
+	AP                       IAPDo
 	Alert                    IAlertDo
 	AlertActionLog           IAlertActionLogDo
 	AlertGroup               IAlertGroupDo
+	ApLLDPNeighbor           IApLLDPNeighborDo
+	AuditLog                 IAuditLogDo
 	Block                    IBlockDo
 	Circuit                  ICircuitDo
 	Device                   IDeviceDo
@@ -254,10 +287,12 @@ type queryCtx struct {
 	DeviceInterface          IDeviceInterfaceDo
 	DeviceRestconfCredential IDeviceRestconfCredentialDo
 	DeviceSnmpV2Credential   IDeviceSnmpV2CredentialDo
+	DeviceStack              IDeviceStackDo
 	Group                    IGroupDo
 	IpAddress                IIpAddressDo
 	LLDPNeighbor             ILLDPNeighborDo
 	Location                 ILocationDo
+	MacAddress               IMacAddressDo
 	Maintenance              IMaintenanceDo
 	Menu                     IMenuDo
 	Organization             IOrganizationDo
@@ -278,9 +313,12 @@ type queryCtx struct {
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
+		AP:                       q.AP.WithContext(ctx),
 		Alert:                    q.Alert.WithContext(ctx),
 		AlertActionLog:           q.AlertActionLog.WithContext(ctx),
 		AlertGroup:               q.AlertGroup.WithContext(ctx),
+		ApLLDPNeighbor:           q.ApLLDPNeighbor.WithContext(ctx),
+		AuditLog:                 q.AuditLog.WithContext(ctx),
 		Block:                    q.Block.WithContext(ctx),
 		Circuit:                  q.Circuit.WithContext(ctx),
 		Device:                   q.Device.WithContext(ctx),
@@ -289,10 +327,12 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		DeviceInterface:          q.DeviceInterface.WithContext(ctx),
 		DeviceRestconfCredential: q.DeviceRestconfCredential.WithContext(ctx),
 		DeviceSnmpV2Credential:   q.DeviceSnmpV2Credential.WithContext(ctx),
+		DeviceStack:              q.DeviceStack.WithContext(ctx),
 		Group:                    q.Group.WithContext(ctx),
 		IpAddress:                q.IpAddress.WithContext(ctx),
 		LLDPNeighbor:             q.LLDPNeighbor.WithContext(ctx),
 		Location:                 q.Location.WithContext(ctx),
+		MacAddress:               q.MacAddress.WithContext(ctx),
 		Maintenance:              q.Maintenance.WithContext(ctx),
 		Menu:                     q.Menu.WithContext(ctx),
 		Organization:             q.Organization.WithContext(ctx),

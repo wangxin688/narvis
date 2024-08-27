@@ -73,6 +73,9 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 			Organization struct {
 				field.RelationField
 			}
+			User struct {
+				field.RelationField
+			}
 		}{
 			RelationField: field.NewRelation("User.Group", "models.Group"),
 			Role: struct {
@@ -136,6 +139,11 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 				field.RelationField
 			}{
 				RelationField: field.NewRelation("User.Group.Organization", "models.Organization"),
+			},
+			User: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("User.Group.User", "models.User"),
 			},
 		},
 		Role: struct {
@@ -580,6 +588,9 @@ type alertBelongsToUser struct {
 			}
 		}
 		Organization struct {
+			field.RelationField
+		}
+		User struct {
 			field.RelationField
 		}
 	}

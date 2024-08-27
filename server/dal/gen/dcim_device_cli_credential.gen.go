@@ -31,6 +31,7 @@ func newDeviceCliCredential(db *gorm.DB, opts ...gen.DOOption) deviceCliCredenti
 	_deviceCliCredential.UpdatedAt = field.NewTime(tableName, "updated_at")
 	_deviceCliCredential.Username = field.NewString(tableName, "username")
 	_deviceCliCredential.Password = field.NewString(tableName, "password")
+	_deviceCliCredential.Port = field.NewUint16(tableName, "port")
 	_deviceCliCredential.DeviceID = field.NewString(tableName, "device_id")
 	_deviceCliCredential.OrganizationID = field.NewString(tableName, "organization_id")
 	_deviceCliCredential.Device = deviceCliCredentialBelongsToDevice{
@@ -150,6 +151,7 @@ type deviceCliCredential struct {
 	UpdatedAt      field.Time
 	Username       field.String
 	Password       field.String
+	Port           field.Uint16
 	DeviceID       field.String
 	OrganizationID field.String
 	Device         deviceCliCredentialBelongsToDevice
@@ -176,6 +178,7 @@ func (d *deviceCliCredential) updateTableName(table string) *deviceCliCredential
 	d.UpdatedAt = field.NewTime(table, "updated_at")
 	d.Username = field.NewString(table, "username")
 	d.Password = field.NewString(table, "password")
+	d.Port = field.NewUint16(table, "port")
 	d.DeviceID = field.NewString(table, "device_id")
 	d.OrganizationID = field.NewString(table, "organization_id")
 
@@ -194,12 +197,13 @@ func (d *deviceCliCredential) GetFieldByName(fieldName string) (field.OrderExpr,
 }
 
 func (d *deviceCliCredential) fillFieldMap() {
-	d.fieldMap = make(map[string]field.Expr, 9)
+	d.fieldMap = make(map[string]field.Expr, 10)
 	d.fieldMap["id"] = d.ID
 	d.fieldMap["created_at"] = d.CreatedAt
 	d.fieldMap["updated_at"] = d.UpdatedAt
 	d.fieldMap["username"] = d.Username
 	d.fieldMap["password"] = d.Password
+	d.fieldMap["port"] = d.Port
 	d.fieldMap["device_id"] = d.DeviceID
 	d.fieldMap["organization_id"] = d.OrganizationID
 

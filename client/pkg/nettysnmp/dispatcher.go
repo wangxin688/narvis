@@ -9,8 +9,8 @@ import (
 
 	"github.com/go-ping/ping"
 	"github.com/gosnmp/gosnmp"
-	dt "github.com/wangxin688/narvis/client/pkg/nettysnmp/devicetype"
-	s "github.com/wangxin688/narvis/client/pkg/nettysnmp/devicetype/sysobjectid"
+	dt "github.com/wangxin688/narvis/client/pkg/nettysnmp/devicemodel"
+	s "github.com/wangxin688/narvis/client/pkg/nettysnmp/devicemodel/sysobjectid"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/driver"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
 	"github.com/wangxin688/narvis/intend/manufacturer"
@@ -22,63 +22,63 @@ type Dispatcher struct {
 	Config  factory.BaseSnmpConfig
 }
 
-func GetDeviceType(sysObjId string) *dt.DeviceType {
+func GetDeviceModel(sysObjId string) *dt.DeviceModel {
 	privateEnterPriseId := strings.Split(strings.Split(sysObjId, ".1.3.6.1.4.1.")[1], ".")[0]
 	enterprise := manufacturer.GetManufacturerByEnterpriseId(privateEnterPriseId)
 	if enterprise == manufacturer.Unknown {
-		return &dt.DeviceType{
+		return &dt.DeviceModel{
 			Platform:     platform.Unknown,
 			Manufacturer: manufacturer.Unknown,
-			DeviceType:   dt.UnknownDeviceType,
+			DeviceModel:  dt.UnknownDeviceModel,
 		}
 	}
-	return GetDeviceTypeFromManufacturer(enterprise, sysObjId)
+	return GetDeviceModelFromManufacturer(enterprise, sysObjId)
 }
 
-func GetDeviceTypeFromManufacturer(mf manufacturer.Manufacturer, sysObjId string) *dt.DeviceType {
+func GetDeviceModelFromManufacturer(mf manufacturer.Manufacturer, sysObjId string) *dt.DeviceModel {
 	switch mf {
 	case manufacturer.Cisco:
-		return s.CiscoDeviceType(sysObjId)
+		return s.CiscoDeviceModel(sysObjId)
 	case manufacturer.Huawei:
-		return s.HuaweiDeviceType(sysObjId)
+		return s.HuaweiDeviceModel(sysObjId)
 	case manufacturer.Aruba:
-		return s.ArubaDeviceType(sysObjId)
+		return s.ArubaDeviceModel(sysObjId)
 	case manufacturer.Arista:
-		return s.AristaDeviceType(sysObjId)
+		return s.AristaDeviceModel(sysObjId)
 	case manufacturer.H3C:
-		return s.H3CDeviceType(sysObjId)
+		return s.H3CDeviceModel(sysObjId)
 	case manufacturer.RuiJie:
-		return s.RuiJieDeviceType(sysObjId)
+		return s.RuiJieDeviceModel(sysObjId)
 	case manufacturer.PaloAlto:
-		return s.PaloAltoDeviceType(sysObjId)
+		return s.PaloAltoDeviceModel(sysObjId)
 	case manufacturer.FortiNet:
-		return s.FortiNetDeviceType(sysObjId)
+		return s.FortiNetDeviceModel(sysObjId)
 	case manufacturer.Netgear:
-		return s.NetgearDeviceType(sysObjId)
+		return s.NetgearDeviceModel(sysObjId)
 	case manufacturer.TPLink:
-		return s.TPLinkDeviceType(sysObjId)
+		return s.TPLinkDeviceModel(sysObjId)
 	case manufacturer.Ruckus:
-		return s.RuckusDeviceType(sysObjId)
+		return s.RuckusDeviceModel(sysObjId)
 	case manufacturer.Juniper:
-		return s.JuniperDeviceType(sysObjId)
+		return s.JuniperDeviceModel(sysObjId)
 	case manufacturer.CheckPoint:
-		return s.CheckPointDeviceType(sysObjId)
+		return s.CheckPointDeviceModel(sysObjId)
 	case manufacturer.Sangfor:
-		return s.SangforDeviceType(sysObjId)
+		return s.SangforDeviceModel(sysObjId)
 	case manufacturer.A10:
-		return s.A10DeviceType(sysObjId)
+		return s.A10DeviceModel(sysObjId)
 	case manufacturer.F5:
-		return s.F5DeviceType(sysObjId)
+		return s.F5DeviceModel(sysObjId)
 	case manufacturer.Extreme:
-		return s.ExtremeDeviceType(sysObjId)
+		return s.ExtremeDeviceModel(sysObjId)
 	case manufacturer.MikroTik:
-		return s.MikroTikDeviceType(sysObjId)
+		return s.MikroTikDeviceModel(sysObjId)
 	}
 
-	return &dt.DeviceType{
+	return &dt.DeviceModel{
 		Platform:     platform.Unknown,
 		Manufacturer: mf,
-		DeviceType:   dt.UnknownDeviceType,
+		DeviceModel:  dt.UnknownDeviceModel,
 	}
 }
 
@@ -223,13 +223,13 @@ func (d *Dispatcher) dispatch(config factory.SnmpConfig) *factory.DispatchRespon
 		return response
 	}
 	response.SysObjectId = sysObjectId
-	deviceType := GetDeviceType(sysObjectId)
+	deviceType := GetDeviceModel(sysObjectId)
 	driver, err := d.getFactory(deviceType.Platform, config)
 	if err != nil {
 		return response
 	}
 	discoveryResponse := driver.Discovery()
-	response.DeviceType = deviceType
+	response.DeviceModel = deviceType
 	response.Data = discoveryResponse
 	return response
 }

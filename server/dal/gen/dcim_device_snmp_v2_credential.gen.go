@@ -32,6 +32,7 @@ func newDeviceSnmpV2Credential(db *gorm.DB, opts ...gen.DOOption) deviceSnmpV2Cr
 	_deviceSnmpV2Credential.Community = field.NewString(tableName, "community")
 	_deviceSnmpV2Credential.MaxRepetitions = field.NewUint8(tableName, "max_repetitions")
 	_deviceSnmpV2Credential.Timeout = field.NewUint8(tableName, "timeout")
+	_deviceSnmpV2Credential.Port = field.NewUint16(tableName, "port")
 	_deviceSnmpV2Credential.DeviceID = field.NewString(tableName, "device_id")
 	_deviceSnmpV2Credential.OrganizationID = field.NewString(tableName, "organization_id")
 	_deviceSnmpV2Credential.Device = deviceSnmpV2CredentialBelongsToDevice{
@@ -152,6 +153,7 @@ type deviceSnmpV2Credential struct {
 	Community      field.String
 	MaxRepetitions field.Uint8
 	Timeout        field.Uint8
+	Port           field.Uint16
 	DeviceID       field.String
 	OrganizationID field.String
 	Device         deviceSnmpV2CredentialBelongsToDevice
@@ -179,6 +181,7 @@ func (d *deviceSnmpV2Credential) updateTableName(table string) *deviceSnmpV2Cred
 	d.Community = field.NewString(table, "community")
 	d.MaxRepetitions = field.NewUint8(table, "max_repetitions")
 	d.Timeout = field.NewUint8(table, "timeout")
+	d.Port = field.NewUint16(table, "port")
 	d.DeviceID = field.NewString(table, "device_id")
 	d.OrganizationID = field.NewString(table, "organization_id")
 
@@ -197,13 +200,14 @@ func (d *deviceSnmpV2Credential) GetFieldByName(fieldName string) (field.OrderEx
 }
 
 func (d *deviceSnmpV2Credential) fillFieldMap() {
-	d.fieldMap = make(map[string]field.Expr, 10)
+	d.fieldMap = make(map[string]field.Expr, 11)
 	d.fieldMap["id"] = d.ID
 	d.fieldMap["created_at"] = d.CreatedAt
 	d.fieldMap["updated_at"] = d.UpdatedAt
 	d.fieldMap["community"] = d.Community
 	d.fieldMap["max_repetitions"] = d.MaxRepetitions
 	d.fieldMap["timeout"] = d.Timeout
+	d.fieldMap["port"] = d.Port
 	d.fieldMap["device_id"] = d.DeviceID
 	d.fieldMap["organization_id"] = d.OrganizationID
 
