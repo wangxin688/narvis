@@ -286,8 +286,8 @@ func (AP) TableName() string {
 }
 
 type MacAddress struct {
-	ID        string `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	MacOUI    string `gorm:"column:mac_oui;not null"`
-	ShortName string `gorm:"column:short_name;not null"`
-	LongName  string `gorm:"column:long_name;not null"`
+	ID        string `gorm:"primary_key;type:uuid;default:uuid_generate_v4()" json:"id"`
+	MacOUI    string `gorm:"column:mac_oui;not null" json:"mac_oui"`
+	ShortName string `gorm:"column:short_name;not null" json:"short_name"`
+	LongName  string `gorm:"column:long_name;not null" json:"long_name"`
 }

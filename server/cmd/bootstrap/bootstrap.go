@@ -16,6 +16,11 @@ import (
 	"gorm.io/gorm"
 )
 
+func main() {
+	InitOrganization()
+	InitMacAddress()
+}
+
 func connectDb() *gorm.DB {
 	core.SetUpConfig()
 	dsn := core.Settings.Postgres.BuildPgDsn()
@@ -30,6 +35,18 @@ func InitOrganization() string {
 	gen.SetDefault(connectDb())
 	core.SetUpLogger()
 	service := biz.NewOrganizationService()
+
+	org, err := gen.Organization.Where(gen.Organization.Name.Eq("NarvisDemo")).Find()
+	if err != nil {
+		core.Logger.Error("Failed to get organization", zap.Error(err))
+		panic(err)
+	}
+
+	if org != nil && len(org) > 0 {
+		global.OrganizationID.Set(org[0].ID)
+		core.Logger.Info("Organization already exists", zap.String("id", org[0].ID))
+		return org[0].ID
+	}
 
 	newOrg, err := service.CreateOrganization(&schemas.OrganizationCreate{
 		Name:           "NarvisDemo",
@@ -54,6 +71,15 @@ func InitMacAddress() {
 	gen.SetDefault(connectDb())
 	core.SetUpLogger()
 	core.SetUpConfig()
+	mac, err := gen.MacAddress.Count()
+	if err != nil {
+		core.Logger.Error("Failed to get mac address", zap.Error(err))
+		panic(err)
+	}
+	if mac >= 1 {
+		core.Logger.Info("Mac address already exists")
+		return
+	}
 	macAddressFilePath := core.ProjectPath + "/cmd/bootstrap/appdata/mac_address.json"
 	file, err := os.Open(macAddressFilePath)
 	if err != nil {
@@ -61,16 +87,15 @@ func InitMacAddress() {
 		panic(err)
 	}
 	defer file.Close()
-	var macAddresses []models.MacAddress
+	var macAddresses []*models.MacAddress
 	if err := json.NewDecoder(file).Decode(&macAddresses); err != nil {
 		core.Logger.Error("Failed to decode mac address file", zap.Error(err))
 		panic(err)
 	}
-	for _, macAddress := range macAddresses {
-		models.CreateMacAddress(macAddress)
+	err = gen.MacAddress.CreateInBatches(macAddresses, 100)
+	if err != nil {
+		core.Logger.Error("Failed to create mac address", zap.Error(err))
+		panic(err)
 	}
-}
-
-func main() {
-	InitOrganization()
+	core.Logger.Info("Mac address created")
 }
