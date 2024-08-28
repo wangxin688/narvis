@@ -136,16 +136,17 @@ func (ws *WebSSH) server() error {
 	// 连 linux 通常没有问题，但是很多交换机其实默认只提供 aes128-cbc 3des-cbc aes192-cbc aes256-cbc 这些。
 	// 因此我们还是加全一点比较好。
 	sshConfig := ssh.Config{
-		Ciphers: []string{"aes128-ctr",
-			"aes192-ctr",
+		Ciphers: []string{
 			"aes256-ctr",
-			"aes128-gcm@openssh.com",
-			"arcfour256",
-			"arcfour128",
+			"aes128-ctr",
 			"aes128-cbc",
 			"3des-cbc",
+			"aes192-ctr",
 			"aes192-cbc",
-			"aes256-cbc"},
+			"aes256-cbc",
+			"aes128-gcm@openssh.com",
+			"arcfour256",
+			"arcfour128"},
 	}
 
 	config := ssh.ClientConfig{

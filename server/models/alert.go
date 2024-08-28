@@ -14,7 +14,7 @@ var RootCauseTableName = "alert_root_cause"
 var SubscriptionTableName = "alert_subscription"
 var SubscriptionRecordTableName = "alert_subscription_record"
 
-type Tag struct {
+type Label struct {
 	Tag   string `json:"tag"`
 	Value string `json:"value"`
 }
@@ -31,35 +31,35 @@ type ChannelConfig struct {
 }
 
 type Alert struct {
-	ID                string                   `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Status            uint8                    `gorm:"default:0"` // 0: firing 1: resolved
-	StartedAt         time.Time                `gorm:"autoCreateTime;not null"`
-	ResolvedAt        *time.Time               `gorm:"default:null"`
-	Acknowledged      bool                     `gorm:"default:false"`
-	Suppressed        bool                     `gorm:"default:false"`
-	Inhibited         bool                     `gorm:"default:true"`
-	Severity          uint8                    `gorm:"default:0"` // 0: info 1: warning 2: critical 3: disaster
-	Duration          *string                  `gorm:"-"`
-	AlertName         string                   `gorm:"not null;index"`
-	Tag               datatypes.JSONSlice[Tag] `gorm:"type:json;default:null"`
-	EventID           string                   `gorm:"type:string;index"`
-	TriggerID         string                   `gorm:"type:string"`
-	UserID            *string                  `gorm:"type:uuid;default:null"`
-	User              User                     `gorm:"constraint:Ondelete:SET NULL"`
-	SiteID            string                   `gorm:"type:uuid;not null;index"`
-	Site              Site                     `gorm:"constraint:Ondelete:CASCADE"`
-	DeviceID          *string                  `gorm:"type:uuid;index"`
-	Device            Device                   `gorm:"constraint:Ondelete:CASCADE"`
-	ApID              *string                  `gorm:"type:uuid;index"`
-	Ap                AP                       `gorm:"constraint:Ondelete:CASCADE"`
-	CircuitID         *string                  `gorm:"type:uuid;index"`
-	Circuit           Circuit                  `gorm:"constraint:Ondelete:CASCADE"`
-	DeviceInterfaceID *string                  `gorm:"type:uuid;index"`
-	DeviceInterface   DeviceInterface          `gorm:"constraint:Ondelete:SET NULL"`
-	MaintenanceID     *string                  `gorm:"type:uuid;default:null"`
-	Maintenance       Maintenance              `gorm:"constraint:Ondelete:SET NULL"`
-	OrganizationID    string                   `gorm:"type:uuid;not null;index"`
-	Organization      Organization             `gorm:"constraint:Ondelete:CASCADE"`
+	ID                string                     `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Status            uint8                      `gorm:"type:smallint;default:0"` // 0: firing 1: resolved
+	StartedAt         time.Time                  `gorm:"autoCreateTime;not null"`
+	ResolvedAt        *time.Time                 `gorm:"default:null"`
+	Acknowledged      bool                       `gorm:"default:false"`
+	Suppressed        bool                       `gorm:"default:false"`
+	Inhibited         bool                       `gorm:"default:true"`
+	Severity          uint8                      `gorm:"default:0"` // P1 P2 P3 P4
+	Duration          *string                    `gorm:"-"`
+	AlertName         string                     `gorm:"not null;index"`
+	Labels            datatypes.JSONSlice[Label] `gorm:"type:json;default:null"`
+	EventID           string                     `gorm:"type:string;index"`
+	TriggerID         string                     `gorm:"type:string"`
+	UserID            *string                    `gorm:"type:uuid;default:null"`
+	User              User                       `gorm:"constraint:Ondelete:SET NULL"`
+	SiteID            string                     `gorm:"type:uuid;not null;index"`
+	Site              Site                       `gorm:"constraint:Ondelete:CASCADE"`
+	DeviceID          *string                    `gorm:"type:uuid;index"`
+	Device            Device                     `gorm:"constraint:Ondelete:CASCADE"`
+	ApID              *string                    `gorm:"type:uuid;index"`
+	Ap                AP                         `gorm:"constraint:Ondelete:CASCADE"`
+	CircuitID         *string                    `gorm:"type:uuid;index"`
+	Circuit           Circuit                    `gorm:"constraint:Ondelete:CASCADE"`
+	DeviceInterfaceID *string                    `gorm:"type:uuid;index"`
+	DeviceInterface   DeviceInterface            `gorm:"constraint:Ondelete:SET NULL"`
+	MaintenanceID     *string                    `gorm:"type:uuid;default:null"`
+	Maintenance       Maintenance                `gorm:"constraint:Ondelete:SET NULL"`
+	OrganizationID    string                     `gorm:"type:uuid;not null;index"`
+	Organization      Organization               `gorm:"constraint:Ondelete:CASCADE"`
 }
 
 func (Alert) TableName() string {
@@ -68,7 +68,7 @@ func (Alert) TableName() string {
 
 type AlertGroup struct {
 	ID             string       `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Status         uint8        `gorm:"default:0"` // 0: firing 1: resolved
+	Status         uint8        `gorm:"type:smallint;default:0"` // 0: firing 1: resolved
 	StartedAt      time.Time    `gorm:"autoCreateTime;not null"`
 	ResolvedAt     *time.Time   `gorm:"default:null"`
 	Acknowledged   bool         `gorm:"default:false"`

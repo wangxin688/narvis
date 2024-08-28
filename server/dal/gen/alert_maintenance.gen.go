@@ -220,6 +220,9 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 					field.RelationField
 				}
 			}
+			Template struct {
+				field.RelationField
+			}
 			Location struct {
 				field.RelationField
 			}
@@ -292,6 +295,11 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 				}{
 					RelationField: field.NewRelation("Alert.Device.Rack.Organization", "models.Organization"),
 				},
+			},
+			Template: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.Device.Template", "models.Template"),
 			},
 			Location: struct {
 				field.RelationField
@@ -633,6 +641,9 @@ type maintenanceHasManyAlert struct {
 			Organization struct {
 				field.RelationField
 			}
+		}
+		Template struct {
+			field.RelationField
 		}
 		Location struct {
 			field.RelationField

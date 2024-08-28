@@ -14,8 +14,10 @@ require (
 require (
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
-	golang.org/x/net v0.15.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sync v0.8.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 )

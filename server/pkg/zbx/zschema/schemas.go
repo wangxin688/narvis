@@ -1,4 +1,4 @@
-package zbx
+package zschema
 
 import (
 	"encoding/json"

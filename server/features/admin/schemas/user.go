@@ -52,3 +52,24 @@ type User struct {
 }
 
 type UserList []*User
+
+type UserMe struct {
+	ID        string     `json:"id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	Username  string     `json:"username"`
+	Email     string     `json:"email"`
+	Status    string     `json:"status"`
+	Avatar    *string    `json:"avatar"`
+	AuthType  uint8      `json:"auth_type"`
+	Group     GroupShort `json:"group"`
+	Role      RoleShort  `json:"role"`
+	// Menus     MenuList   `json:"menus"`
+}
+
+type UserUpdateMe struct {
+	Username *string `json:"username" binding:"omitempty"`
+	Email    *string `json:"email" binding:"omitempty,email"`
+	Password *string `json:"password" binding:"omitempty"`
+	Avatar   *string `json:"avatar" binding:"omitempty"`
+}

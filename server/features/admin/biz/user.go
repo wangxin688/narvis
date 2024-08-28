@@ -228,3 +228,12 @@ func VerifyUser(userID string) *models.User {
 
 	return user
 }
+
+
+func (u *UserService) GetUserMe(userID string) (*schemas.User, error) {
+	user, err := u.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

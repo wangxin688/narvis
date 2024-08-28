@@ -9,6 +9,9 @@ import (
 	"time"
 
 	"github.com/imroc/req/v3"
+	"github.com/wangxin688/narvis/server/core"
+
+	zs "github.com/wangxin688/narvis/server/pkg/zbx/zschema"
 )
 
 var requestID uint64
@@ -20,11 +23,6 @@ type Zbx struct {
 	*req.Client
 	id    uint64
 	token string
-	// HostGroup *HostGroupImpl
-	// Host      *HostImpl
-	// Template  *TemplateImpl
-	// Interface *InterfaceImpl
-
 }
 
 type ErrorMessage struct {
@@ -35,7 +33,9 @@ func (e *ErrorMessage) Error() string {
 	return fmt.Sprintf("request metrics system error: %s", e.Message)
 }
 
-func NewZbxClient(url, token string) *Zbx {
+func NewZbxClient() *Zbx {
+	url := core.Settings.Zbx.Url
+	token := core.Settings.Zbx.Token
 	url = strings.TrimSuffix(url, "/")
 	once.Do(func() {
 		zbxInstance = &Zbx{
@@ -60,7 +60,7 @@ func NewZbxClient(url, token string) *Zbx {
 	return zbxInstance
 }
 
-func (zbx *Zbx) Rpc(request *ZbxRequest) (rsp *ZbxResponse, err error) {
+func (zbx *Zbx) Rpc(request *zs.ZbxRequest) (rsp *zs.ZbxResponse, err error) {
 	if zbx == nil {
 		return nil, fmt.Errorf("zbx client is nil")
 	}
@@ -81,62 +81,58 @@ func (zbx *Zbx) Rpc(request *ZbxRequest) (rsp *ZbxResponse, err error) {
 	return rsp, nil
 }
 
-type HostGroupImpl struct {
-	z *Zbx
-}
-
-func (hg *HostGroupImpl) Create(params HostGroupCreate) (groupID string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) HostGroupCreate(params *zs.HostGroupCreate) (groupID string, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "hostgroup.create",
 	}
 
-	rsp, err := hg.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return "", err
 	}
-	hgr := HostGroupCreateResult{}
+	hgr := zs.HostGroupCreateResult{}
 	rsp.GetResult(&hgr)
 	return hgr.GroupIDs[0], nil
 }
 
-func (hg *HostGroupImpl) Update(params HostGroupUpdate) (groupID string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) HostGroupUpdate(params *zs.HostGroupUpdate) (groupID string, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "hostgroup.update",
 	}
 
-	rsp, err := hg.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return "", err
 	}
-	hgr := HostGroupUpdateResult{}
+	hgr := zs.HostGroupUpdateResult{}
 	rsp.GetResult(&hgr)
 	return hgr.GroupIDs[0], nil
 }
 
-func (hg *HostGroupImpl) Delete(hostGroupIDs []string) (groupID []string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) HostGroupDelete(hostGroupIDs []string) (groupID []string, err error) {
+	req := &zs.ZbxRequest{
 		Params: hostGroupIDs,
 		Method: "hostgroup.delete",
 	}
 
-	rsp, err := hg.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return []string{}, err
 	}
-	hgr := HostGroupDeleteResult{}
+	hgr := zs.HostGroupDeleteResult{}
 	rsp.GetResult(&hgr)
 	return hgr.GroupIDs, nil
 }
 
-func (hg *HostGroupImpl) Get(params HostGroupGet) (res []HostGroup, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) HostGroupGet(params *zs.HostGroupGet) (res []zs.HostGroup, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "hostgroup.get",
 	}
 
-	rsp, err := hg.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return nil, err
 	}
@@ -144,78 +140,73 @@ func (hg *HostGroupImpl) Get(params HostGroupGet) (res []HostGroup, err error) {
 	json.Unmarshal([]byte(rsp.Result), &res)
 	return
 }
-
-type HostImpl struct {
-	z *Zbx
-}
-
-func (h *HostImpl) Create(params HostGet) (res string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) HostCreate(params *zs.HostGet) (res string, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "host.create",
 	}
 
-	rsp, err := h.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return "", err
 	}
-	host := HostCreateResult{}
+	host := zs.HostCreateResult{}
 	rsp.GetResult(&host)
 	return host.HostIDs[0], nil
 }
 
-func (h *HostImpl) Update(params HostUpdate) (res string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) HostUpdate(params *zs.HostUpdate) (res string, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "host.update",
 	}
 
-	rsp, err := h.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return "", err
 	}
-	host := HostUpdateResult{}
+	host := zs.HostUpdateResult{}
 	rsp.GetResult(&host)
 	return host.HostIDs[0], nil
 }
 
-func (h *HostImpl) MassUpdate(params HostMassUpdate) (res string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) HostMassUpdate(params *zs.HostMassUpdate) (res string, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "host.massupdate",
 	}
 
-	rsp, err := h.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return "", err
 	}
-	host := HostUpdateResult{}
+	host := zs.HostUpdateResult{}
 	rsp.GetResult(&host)
 	return host.HostIDs[0], nil
 }
 
-func (h *HostImpl) Delete(hostIDs []string) (res []string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) HostDelete(hostIDs []string) (res []string, err error) {
+	req := &zs.ZbxRequest{
 		Params: hostIDs,
 		Method: "host.delete",
 	}
 
-	rsp, err := h.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return []string{}, err
 	}
-	host := HostDeleteResult{}
+	host := zs.HostDeleteResult{}
 	rsp.GetResult(&host)
 	return host.HostIDs, nil
 }
 
-func (h *HostImpl) Get(params HostGet) (res []Host, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) HostGet(params *zs.HostGet) (res []zs.Host, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "host.get",
 	}
 
-	rsp, err := h.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return nil, err
 	}
@@ -224,60 +215,52 @@ func (h *HostImpl) Get(params HostGet) (res []Host, err error) {
 	return
 }
 
-type TemplateImpl struct {
-	z *Zbx
-}
-
-func (t *TemplateImpl) Create(params TemplateCreate) (res string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) TemplateCreate(params *zs.TemplateCreate) (res string, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "template.create",
 	}
 
-	rsp, err := t.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return "", err
 	}
-	host := TemplateCreateResult{}
+	host := zs.TemplateCreateResult{}
 	rsp.GetResult(&host)
 	return host.TemplateIDs[0], nil
 }
 
-func (t *TemplateImpl) Update(params TemplateUpdate) (res string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) TemplateUpdate(params *zs.TemplateUpdate) (res string, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "template.update",
 	}
 
-	rsp, err := t.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return "", err
 	}
-	host := TemplateUpdateResult{}
+	host := zs.TemplateUpdateResult{}
 	rsp.GetResult(&host)
 	return host.TemplateIDs[0], nil
 }
 
-func (t *TemplateImpl) Delete(templateIDs []string) (res []string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) TemplateDelete(templateIDs []string) (res []string, err error) {
+	req := &zs.ZbxRequest{
 		Params: templateIDs,
 		Method: "template.delete",
 	}
 
-	rsp, err := t.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return []string{}, err
 	}
-	host := TemplateDeleteResult{}
+	host := zs.TemplateDeleteResult{}
 	rsp.GetResult(&host)
 	return host.TemplateIDs, nil
 }
 
-type ConfigurationImpl struct {
-	z *Zbx
-}
-
-func (t *ConfigurationImpl) Import(config string) (res bool, err error) {
+func (z *Zbx) ConfigurationImport(config string) (res bool, err error) {
 	params := make(map[string]any)
 	params["format"] = "yaml"
 	params["source"] = config
@@ -291,12 +274,12 @@ func (t *ConfigurationImpl) Import(config string) (res bool, err error) {
 		"template_groups": {"createMissing": true, "updateExisting": true},
 	}
 
-	req := &ZbxRequest{
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "configuration.import",
 	}
 
-	rsp, err := t.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return false, err
 	}
@@ -304,17 +287,13 @@ func (t *ConfigurationImpl) Import(config string) (res bool, err error) {
 	return res, nil
 }
 
-type EventImpl struct {
-	z *Zbx
-}
-
-func (t *EventImpl) Get(params EventGet) (res []Event, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) EventGet(params *zs.EventGet) (res []zs.Event, err error) {
+	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "event.get",
 	}
 
-	rsp, err := t.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return nil, err
 	}
@@ -323,13 +302,13 @@ func (t *EventImpl) Get(params EventGet) (res []Event, err error) {
 	return
 }
 
-func (t *EventImpl) Acknowledge(eventIDs []string) (res []string, err error) {
-	req := &ZbxRequest{
+func (z *Zbx) EventAcknowledge(eventIDs []string) (res []string, err error) {
+	req := &zs.ZbxRequest{
 		Params: eventIDs,
 		Method: "event.acknowledge",
 	}
 
-	rsp, err := t.z.Rpc(req)
+	rsp, err := z.Rpc(req)
 	if err != nil {
 		return []string{}, err
 	}

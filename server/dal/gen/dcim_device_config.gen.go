@@ -114,6 +114,11 @@ func newDeviceConfig(db *gorm.DB, opts ...gen.DOOption) deviceConfig {
 				RelationField: field.NewRelation("Device.Rack.Organization", "models.Organization"),
 			},
 		},
+		Template: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Device.Template", "models.Template"),
+		},
 		Location: struct {
 			field.RelationField
 		}{
@@ -239,6 +244,9 @@ type deviceConfigBelongsToDevice struct {
 		Organization struct {
 			field.RelationField
 		}
+	}
+	Template struct {
+		field.RelationField
 	}
 	Location struct {
 		field.RelationField

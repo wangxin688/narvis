@@ -1,0 +1,29 @@
+package arista
+
+import (
+	"errors"
+
+	"github.com/wangxin688/narvis/client/pkg/nettyssh/connections"
+	"github.com/wangxin688/narvis/client/pkg/nettyssh/driver"
+	"github.com/wangxin688/narvis/client/pkg/nettyssh/manufacturer/cisco"
+	"github.com/wangxin688/narvis/client/pkg/nettyssh/types"
+)
+
+func NewDevice(connection connections.Connection, platform string) (types.CiscoDevice, error) {
+	devDriver := driver.NewDriver(connection, "\n")
+
+	base := cisco.CSCODevice{
+		Driver:   devDriver,
+		Platform: "cisco_ios",
+	}
+	if platform != "arista_eos" {
+		return nil, errors.New("unsupported Arista device type: " + platform)
+
+	}
+
+	return &EOSDevice{
+		Driver: devDriver,
+		base:   &base,
+	}, nil
+
+}

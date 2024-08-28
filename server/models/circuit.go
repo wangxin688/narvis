@@ -30,6 +30,7 @@ type Circuit struct {
 	ZDevice        Device          `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ZDeviceID"`
 	ZInterfaceID   string          `gorm:"type:uuid;not null"`
 	ZInterface     DeviceInterface `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ZInterfaceID"`
+	MonitorID      *string         `gorm:"default:null"`
 	OrganizationID string          `gorm:"type:uuid;not null"`
 	Organization   Organization    `gorm:"constraint:Ondelete:CASCADE"`
 }

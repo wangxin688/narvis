@@ -58,3 +58,19 @@ sentry:
   release: "v0.0.1"
 
 env: dev
+
+zbx:
+  url: "http://127.0.0.1:8010"
+  username: narvis
+  password: narvis-admin
+  token: token
+
+vtm:
+  url: "http://127.0.0.1:8010"
+  username: narvis
+  password: narvis-admin
+
+atm:
+  url: "http://127.0.0.1:9093"
+  username: narvis
+  password: narvis-admin

@@ -47,6 +47,8 @@ func newDevice(db *gorm.DB, opts ...gen.DOOption) device {
 	_device.RackPosition = field.NewUint8(tableName, "rack_position")
 	_device.RackDirection = field.NewString(tableName, "rack_direction")
 	_device.UHeight = field.NewUint8(tableName, "u_height")
+	_device.MonitorID = field.NewString(tableName, "monitor_id")
+	_device.TemplateID = field.NewString(tableName, "template_id")
 	_device.LocationID = field.NewString(tableName, "location_id")
 	_device.SiteID = field.NewString(tableName, "site_id")
 	_device.OrganizationID = field.NewString(tableName, "organization_id")
@@ -106,6 +108,12 @@ func newDevice(db *gorm.DB, opts ...gen.DOOption) device {
 		},
 	}
 
+	_device.Template = deviceBelongsToTemplate{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Template", "models.Template"),
+	}
+
 	_device.Location = deviceBelongsToLocation{
 		db: db.Session(&gorm.Session{}),
 
@@ -154,10 +162,14 @@ type device struct {
 	RackPosition   field.Uint8
 	RackDirection  field.String
 	UHeight        field.Uint8
+	MonitorID      field.String
+	TemplateID     field.String
 	LocationID     field.String
 	SiteID         field.String
 	OrganizationID field.String
 	Rack           deviceBelongsToRack
+
+	Template deviceBelongsToTemplate
 
 	Location deviceBelongsToLocation
 
@@ -201,6 +213,8 @@ func (d *device) updateTableName(table string) *device {
 	d.RackPosition = field.NewUint8(table, "rack_position")
 	d.RackDirection = field.NewString(table, "rack_direction")
 	d.UHeight = field.NewUint8(table, "u_height")
+	d.MonitorID = field.NewString(table, "monitor_id")
+	d.TemplateID = field.NewString(table, "template_id")
 	d.LocationID = field.NewString(table, "location_id")
 	d.SiteID = field.NewString(table, "site_id")
 	d.OrganizationID = field.NewString(table, "organization_id")
@@ -220,7 +234,7 @@ func (d *device) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (d *device) fillFieldMap() {
-	d.fieldMap = make(map[string]field.Expr, 28)
+	d.fieldMap = make(map[string]field.Expr, 31)
 	d.fieldMap["id"] = d.ID
 	d.fieldMap["created_at"] = d.CreatedAt
 	d.fieldMap["updated_at"] = d.UpdatedAt
@@ -242,6 +256,8 @@ func (d *device) fillFieldMap() {
 	d.fieldMap["rack_position"] = d.RackPosition
 	d.fieldMap["rack_direction"] = d.RackDirection
 	d.fieldMap["u_height"] = d.UHeight
+	d.fieldMap["monitor_id"] = d.MonitorID
+	d.fieldMap["template_id"] = d.TemplateID
 	d.fieldMap["location_id"] = d.LocationID
 	d.fieldMap["site_id"] = d.SiteID
 	d.fieldMap["organization_id"] = d.OrganizationID
@@ -348,6 +364,77 @@ func (a deviceBelongsToRackTx) Clear() error {
 }
 
 func (a deviceBelongsToRackTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type deviceBelongsToTemplate struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a deviceBelongsToTemplate) Where(conds ...field.Expr) *deviceBelongsToTemplate {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a deviceBelongsToTemplate) WithContext(ctx context.Context) *deviceBelongsToTemplate {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a deviceBelongsToTemplate) Session(session *gorm.Session) *deviceBelongsToTemplate {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a deviceBelongsToTemplate) Model(m *models.Device) *deviceBelongsToTemplateTx {
+	return &deviceBelongsToTemplateTx{a.db.Model(m).Association(a.Name())}
+}
+
+type deviceBelongsToTemplateTx struct{ tx *gorm.Association }
+
+func (a deviceBelongsToTemplateTx) Find() (result *models.Template, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a deviceBelongsToTemplateTx) Append(values ...*models.Template) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a deviceBelongsToTemplateTx) Replace(values ...*models.Template) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a deviceBelongsToTemplateTx) Delete(values ...*models.Template) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a deviceBelongsToTemplateTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a deviceBelongsToTemplateTx) Count() int64 {
 	return a.tx.Count()
 }
 

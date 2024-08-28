@@ -235,6 +235,11 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 				RelationField: field.NewRelation("Device.Rack.Organization", "models.Organization"),
 			},
 		},
+		Template: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Device.Template", "models.Template"),
+		},
 		Location: struct {
 			field.RelationField
 		}{
@@ -767,6 +772,9 @@ type alertBelongsToDevice struct {
 		Organization struct {
 			field.RelationField
 		}
+	}
+	Template struct {
+		field.RelationField
 	}
 	Location struct {
 		field.RelationField

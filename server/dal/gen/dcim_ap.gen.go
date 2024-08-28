@@ -124,6 +124,11 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 				RelationField: field.NewRelation("ActiveWac.Rack.Organization", "models.Organization"),
 			},
 		},
+		Template: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("ActiveWac.Template", "models.Template"),
+		},
 		Location: struct {
 			field.RelationField
 		}{
@@ -303,6 +308,9 @@ type aPBelongsToActiveWac struct {
 		Organization struct {
 			field.RelationField
 		}
+	}
+	Template struct {
+		field.RelationField
 	}
 	Location struct {
 		field.RelationField

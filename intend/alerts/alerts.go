@@ -3,6 +3,7 @@ package alerts
 import (
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/common"
+	"github.com/wangxin688/narvis/intend/metrics"
 )
 
 type AlertNameEnum string

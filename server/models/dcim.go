@@ -34,6 +34,7 @@ type Site struct {
 	Longitude      string       `gorm:"not null"`
 	Address        string       `gorm:"not null"`
 	Description    *string      `gorm:"default:null"`
+	MonitorId      *string      `gorm:"default:null;unique"`
 	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_name_organization_id;uniqueIndex:idx_site_code_organization_id;index;"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
@@ -102,6 +103,9 @@ type Device struct {
 	RackPosition   *uint8       `gorm:"type:smallint;default:null"`
 	RackDirection  string       `gorm:"default:Front"` // Front, Rear
 	UHeight        *uint8       `gorm:"type:smallint;default:null"`
+	MonitorID      *string      `gorm:"default:null;unique"`
+	TemplateID     *string      `gorm:"type:uuid;default:null"`
+	Template       Template     `gorm:"constraint:Ondelete:SET NULL"`
 	LocationID     *string      `gorm:"type:uuid;default:null"`
 	Location       Location     `gorm:"constraint:Ondelete:SET NULL"`
 	SiteID         string       `gorm:"type:uuid;index;not null"`

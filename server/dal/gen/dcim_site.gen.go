@@ -38,6 +38,7 @@ func newSite(db *gorm.DB, opts ...gen.DOOption) site {
 	_site.Longitude = field.NewString(tableName, "longitude")
 	_site.Address = field.NewString(tableName, "address")
 	_site.Description = field.NewString(tableName, "description")
+	_site.MonitorId = field.NewString(tableName, "monitor_id")
 	_site.OrganizationID = field.NewString(tableName, "organization_id")
 	_site.Organization = siteBelongsToOrganization{
 		db: db.Session(&gorm.Session{}),
@@ -66,6 +67,7 @@ type site struct {
 	Longitude      field.String
 	Address        field.String
 	Description    field.String
+	MonitorId      field.String
 	OrganizationID field.String
 	Organization   siteBelongsToOrganization
 
@@ -96,6 +98,7 @@ func (s *site) updateTableName(table string) *site {
 	s.Longitude = field.NewString(table, "longitude")
 	s.Address = field.NewString(table, "address")
 	s.Description = field.NewString(table, "description")
+	s.MonitorId = field.NewString(table, "monitor_id")
 	s.OrganizationID = field.NewString(table, "organization_id")
 
 	s.fillFieldMap()
@@ -113,7 +116,7 @@ func (s *site) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (s *site) fillFieldMap() {
-	s.fieldMap = make(map[string]field.Expr, 14)
+	s.fieldMap = make(map[string]field.Expr, 15)
 	s.fieldMap["id"] = s.ID
 	s.fieldMap["created_at"] = s.CreatedAt
 	s.fieldMap["updated_at"] = s.UpdatedAt
@@ -126,6 +129,7 @@ func (s *site) fillFieldMap() {
 	s.fieldMap["longitude"] = s.Longitude
 	s.fieldMap["address"] = s.Address
 	s.fieldMap["description"] = s.Description
+	s.fieldMap["monitor_id"] = s.MonitorId
 	s.fieldMap["organization_id"] = s.OrganizationID
 
 }

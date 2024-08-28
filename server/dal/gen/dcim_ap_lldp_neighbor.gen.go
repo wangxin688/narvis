@@ -65,6 +65,9 @@ func newApLLDPNeighbor(db *gorm.DB, opts ...gen.DOOption) apLLDPNeighbor {
 					field.RelationField
 				}
 			}
+			Template struct {
+				field.RelationField
+			}
 			Location struct {
 				field.RelationField
 			}
@@ -151,6 +154,11 @@ func newApLLDPNeighbor(db *gorm.DB, opts ...gen.DOOption) apLLDPNeighbor {
 				}{
 					RelationField: field.NewRelation("SourceInterface.Device.Rack.Organization", "models.Organization"),
 				},
+			},
+			Template: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("SourceInterface.Device.Template", "models.Template"),
 			},
 			Location: struct {
 				field.RelationField
@@ -340,6 +348,9 @@ type apLLDPNeighborBelongsToSourceInterface struct {
 			Organization struct {
 				field.RelationField
 			}
+		}
+		Template struct {
+			field.RelationField
 		}
 		Location struct {
 			field.RelationField

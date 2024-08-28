@@ -43,6 +43,7 @@ func newCircuit(db *gorm.DB, opts ...gen.DOOption) circuit {
 	_circuit.ZSiteID = field.NewString(tableName, "z_site_id")
 	_circuit.ZDeviceID = field.NewString(tableName, "z_device_id")
 	_circuit.ZInterfaceID = field.NewString(tableName, "z_interface_id")
+	_circuit.MonitorID = field.NewString(tableName, "monitor_id")
 	_circuit.OrganizationID = field.NewString(tableName, "organization_id")
 	_circuit.Provider = circuitBelongsToProvider{
 		db: db.Session(&gorm.Session{}),
@@ -127,6 +128,11 @@ func newCircuit(db *gorm.DB, opts ...gen.DOOption) circuit {
 				RelationField: field.NewRelation("ADevice.Rack.Organization", "models.Organization"),
 			},
 		},
+		Template: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("ADevice.Template", "models.Template"),
+		},
 		Location: struct {
 			field.RelationField
 		}{
@@ -210,6 +216,7 @@ type circuit struct {
 	ZSiteID        field.String
 	ZDeviceID      field.String
 	ZInterfaceID   field.String
+	MonitorID      field.String
 	OrganizationID field.String
 	Provider       circuitBelongsToProvider
 
@@ -259,6 +266,7 @@ func (c *circuit) updateTableName(table string) *circuit {
 	c.ZSiteID = field.NewString(table, "z_site_id")
 	c.ZDeviceID = field.NewString(table, "z_device_id")
 	c.ZInterfaceID = field.NewString(table, "z_interface_id")
+	c.MonitorID = field.NewString(table, "monitor_id")
 	c.OrganizationID = field.NewString(table, "organization_id")
 
 	c.fillFieldMap()
@@ -276,7 +284,7 @@ func (c *circuit) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *circuit) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 26)
+	c.fieldMap = make(map[string]field.Expr, 27)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
@@ -294,6 +302,7 @@ func (c *circuit) fillFieldMap() {
 	c.fieldMap["z_site_id"] = c.ZSiteID
 	c.fieldMap["z_device_id"] = c.ZDeviceID
 	c.fieldMap["z_interface_id"] = c.ZInterfaceID
+	c.fieldMap["monitor_id"] = c.MonitorID
 	c.fieldMap["organization_id"] = c.OrganizationID
 
 }
@@ -479,6 +488,9 @@ type circuitBelongsToADevice struct {
 		Organization struct {
 			field.RelationField
 		}
+	}
+	Template struct {
+		field.RelationField
 	}
 	Location struct {
 		field.RelationField

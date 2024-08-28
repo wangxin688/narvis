@@ -115,6 +115,11 @@ func newDeviceSnmpV2Credential(db *gorm.DB, opts ...gen.DOOption) deviceSnmpV2Cr
 				RelationField: field.NewRelation("Device.Rack.Organization", "models.Organization"),
 			},
 		},
+		Template: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Device.Template", "models.Template"),
+		},
 		Location: struct {
 			field.RelationField
 		}{
@@ -251,6 +256,9 @@ type deviceSnmpV2CredentialBelongsToDevice struct {
 		Organization struct {
 			field.RelationField
 		}
+	}
+	Template struct {
+		field.RelationField
 	}
 	Location struct {
 		field.RelationField

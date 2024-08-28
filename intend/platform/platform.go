@@ -7,6 +7,7 @@ const (
 	CiscoIosXE    Platform = "cisco_xe"
 	CiscoIosXR    Platform = "cisco_xr"
 	CiscoNexusOS  Platform = "cisco_nxos"
+	CiscoASA      Platform = "cisco_asa"
 	Huawei        Platform = "huawei"
 	HuaweiVrp     Platform = "huawei_vrp"
 	HuaweiVrpV8   Platform = "huawei_vrpv8"

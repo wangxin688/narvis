@@ -9,4 +9,7 @@ type Settings struct {
 	System   SystemConfig   `mapstructure:"sys" json:"sys" yaml:"sys"`
 	Sentry   SentryConfig   `mapstructure:"sentry" json:"sentry" yaml:"sentry"`
 	Env      Env            `mapstructure:"env" json:"env" yaml:"env"`
+	Zbx      ZbxConfig      `mapstructure:"zbx" json:"zbx" yaml:"zbx"`
+	Vtm      VtmConfig      `mapstructure:"vtm" json:"vtm" yaml:"vtm"`
+	Atm      AtmConfig      `mapstructure:"atm" json:"atm" yaml:"atm"`
 }
