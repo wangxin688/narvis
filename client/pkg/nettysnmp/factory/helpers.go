@@ -2,6 +2,8 @@ package factory
 
 import (
 	"fmt"
+	"net"
+	"strconv"
 	"strings"
 
 	"github.com/gosnmp/gosnmp"
@@ -21,6 +23,16 @@ func extractIntegerWithShift(oid string, location int, values []gosnmp.SnmpPDU) 
 	for _, v := range values {
 		snmpIndex := shiftSnmpIndex(getSnmpIndex(oid, &v), location)
 		result[snmpIndex] = gosnmp.ToBigInt(v.Value).Uint64()
+	}
+	return result
+}
+
+func extractIfIndex(oid string, values []gosnmp.SnmpPDU) map[string]string {
+	result := make(map[string]string, len(values))
+	for _, v := range values {
+		snmpIndex := getSnmpIndex(oid, &v)
+		value := "." + strconv.Itoa(int(gosnmp.ToBigInt(v.Value).Uint64()))
+		result[value] = snmpIndex
 	}
 	return result
 }
@@ -68,7 +80,11 @@ func getSnmpIndex(oid string, values *gosnmp.SnmpPDU) string {
 // shift snmp index is used for special case for lldp neighbor
 // lldpRemChassisID: snmp_index value the last of 2 is local portID's index(last of 1)
 func shiftSnmpIndex(index string, location int) string {
-	return strings.Split(index, ".")[location]
+	splitValues := strings.Split(index, ".")
+	if location < 0 {
+		return splitValues[len(splitValues)+location]
+	}
+	return splitValues[location]
 }
 
 func hex2mac(hex []byte) string {
@@ -88,4 +104,15 @@ func buildOidWithIndex(oid string, index []string) []string {
 		results[i] = fmt.Sprintf("%s.%s", oid, v)
 	}
 	return results
+}
+
+func netmaskToLength(netmask string) int {
+	if strings.Contains(netmask, ".") {
+		stringMask := net.IPMask(net.ParseIP(netmask).To4())
+		length, _ := stringMask.Size()
+		return length
+	}
+	stringMask := net.IPMask(net.ParseIP(netmask).To16())
+	length, _ := stringMask.Size()
+	return length
 }

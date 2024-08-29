@@ -158,6 +158,7 @@ func (d *Dispatcher) SnmpReachable(session *gosnmp.GoSNMP) bool {
 	return len(result.Variables) > 0
 }
 
+// linux need privilege for udp 
 func (d *Dispatcher) IcmpReachable(address string) bool {
 	pinger, err := ping.NewPinger(address)
 	if err != nil {
@@ -174,7 +175,7 @@ func (d *Dispatcher) IcmpReachable(address string) bool {
 
 func (d *Dispatcher) SshReachable(address string) bool {
 	timeout := time.Second
-	conn, err := net.DialTimeout("tcp", address, timeout)
+	conn, err := net.DialTimeout("tcp", address+":22", timeout)
 	if err != nil {
 		return false
 	}

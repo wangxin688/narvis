@@ -393,6 +393,7 @@ func FortiNetDeviceModel(sysObjId string) *devicemodel.DeviceModel {
 		".1.3.6.1.4.1.12356.800":          {"platform": stringPlatform, "model": "FORTIGATE 800"},
 		".1.3.6.1.4.1.12356.8001":         {"platform": stringPlatform, "model": "FORTIGATE 800F"},
 		".1.3.6.1.4.1.12356.801":          {"platform": stringPlatform, "model": "FORTIGATE 800A"},
+		".1.3.6.1.4.1.12356.101.1.441":    {"platform": stringPlatform, "model": "FORTIGATE 40F"},
 	}
 
 	data, ok := oidMap[sysObjId]

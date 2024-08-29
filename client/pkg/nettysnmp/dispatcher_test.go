@@ -1,6 +1,7 @@
 package nettygo
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -19,5 +20,9 @@ func TestDispatcher(t *testing.T) {
 	},
 	)
 	response := dispatcher.Dispatch()
-	fmt.Printf("%v\n", response)
+	result, err := json.Marshal(response)
+	if err != nil {
+		t.Fatalf("failed to marshal response: %s", err)
+	}
+	fmt.Printf("%s\n", result)
 }

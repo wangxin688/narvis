@@ -13,7 +13,7 @@ type AuditLog struct {
 	BaseDbSingleModel
 
 	ObjectID       string         `gorm:"type:uuid;not null"`
-	ObjectType     string         `gorm:"type:varchar(255);not null"`
+	ObjectType     string         `gorm:"not null"`
 	RequestID      *string        `gorm:"type:uuid;default:null"`
 	UserID         *string        `gorm:"type:uuid;default:null"`
 	Action         string         `gorm:"not null"`

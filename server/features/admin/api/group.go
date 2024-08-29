@@ -98,7 +98,7 @@ func listGroups(c *gin.Context) {
 // @Param id path string true "group id"
 // @Param group body schemas.GroupUpdate true "group"
 // @Success 200 {object} ts.IDResponse
-// @Router /admin/groups/{id} [patch]
+// @Router /admin/groups/{id} [put]
 func updateGroup(c *gin.Context) {
 	var err error
 	defer func() {

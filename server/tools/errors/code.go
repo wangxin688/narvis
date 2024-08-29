@@ -74,6 +74,19 @@ const (
 
 // circuit error codes (700000 - 800000)
 
+const (
+	CodeCircuitZInterfaceMissing ErrorCode = 700000
+	MsgCircuitZInterfaceMissing  ErrorMsg  = "z side interface ID missing when create circuit type is Intranet"
+	CodeCircuitSameInterface     ErrorCode = 700001
+	MsgCircuitSameInterface      ErrorMsg  = "same interface ID in a side and z side is not allowed"
+	CodeCircuitAInterfaceMissing ErrorCode = 700002
+	MsgCircuitAInterfaceMissing  ErrorMsg  = "a side interface ID missing when create circuit type is Intranet"
+	CodeCircuitSameDevice        ErrorCode = 700003
+	MsgCircuitSameDevice         ErrorMsg  = "same device ID in a side and z side is not allowed"
+	CodeCircuitZInterfaceNotAllow ErrorCode = 700004
+	MsgCircuitZInterfaceNotAllow ErrorMsg  = "z side interface ID not allowed for internet circuit type"
+)
+
 // monitor error codes (800000 - 900000)
 
 // alert error codes (900000 - 1000000)

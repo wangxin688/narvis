@@ -6,15 +6,6 @@ definitions:
       client_secret:
         type: string
     type: object
-  schemas.CircuitType:
-    properties:
-      circuit_type:
-        type: string
-      connection_type:
-        type: string
-      description:
-        $ref: '#/definitions/schemas.I18n'
-    type: object
   schemas.DeviceRole:
     properties:
       abbreviation:
@@ -509,7 +500,7 @@ paths:
       summary: Get Group
       tags:
       - Admin
-    patch:
+    put:
       consumes:
       - application/json
       parameters:
@@ -859,39 +850,6 @@ paths:
       summary: Update user
       tags:
       - Admin
-  /intend/circuit-types:
-    get:
-      parameters:
-      - in: query
-        name: circuit_type
-        type: string
-      - enum:
-        - WAN
-        - LAN
-        in: query
-        name: connection_type
-        type: string
-      - in: query
-        name: description
-        type: string
-      - in: query
-        name: keyword
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/schemas.ListResponse'
-            - properties:
-                results:
-                  items:
-                    $ref: '#/definitions/schemas.CircuitType'
-                  type: array
-              type: object
-      summary: Get list of CircuitTypes
-      tags:
-      - Intend
   /intend/device-roles:
     get:
       parameters:

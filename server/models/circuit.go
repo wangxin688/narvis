@@ -11,10 +11,10 @@ type Circuit struct {
 
 	Name           string          `gorm:"uniqueIndex:idx_name_organization_id;not null"`
 	CID            string          `gorm:"column:c_id;uniqueIndex:idx_circuit_id_organization_id;not null"`
-	Status         string          `gorm:"not null;default:Active"`   // Active/Inactive
-	CircuitType    string          `gorm:"not null;default:Internet"` // Internet/Intranet
-	BandWidth      uint32          `gorm:"not null"`                  //Mbps
-	IpAddress      string          `gorm:"not null"`
+	Status         string          `gorm:"not null;default:Active"`    // Active/Inactive
+	CircuitType    string          `gorm:"not null;default:Internet"`  // Internet/Intranet
+	BandWidth      uint32          `gorm:"column:band_width,not null"` //Mbps
+	IpAddress      *string         `gorm:"column:ip_address;default:null"`
 	Description    *string         `gorm:"column:description;default:null"`
 	ProviderID     string          `gorm:"type:uuid;not null"`
 	Provider       Provider        `gorm:"constraint:Ondelete:RESTRICT"`

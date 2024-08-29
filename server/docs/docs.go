@@ -199,41 +199,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Delete Group",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "group id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.IDResponse"
-                        }
-                    }
-                }
-            },
-            "patch": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -265,6 +231,40 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/schemas.GroupUpdate"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IDResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Delete Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "group id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -787,63 +787,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/intend/circuit-types": {
-            "get": {
-                "tags": [
-                    "Intend"
-                ],
-                "summary": "Get list of CircuitTypes",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "circuit_type",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "WAN",
-                            "LAN"
-                        ],
-                        "type": "string",
-                        "name": "connection_type",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "description",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "keyword",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/schemas.ListResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "results": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/schemas.CircuitType"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/intend/device-roles": {
             "get": {
                 "security": [
@@ -1062,20 +1005,6 @@ const docTemplate = `{
                 },
                 "client_secret": {
                     "type": "string"
-                }
-            }
-        },
-        "schemas.CircuitType": {
-            "type": "object",
-            "properties": {
-                "circuit_type": {
-                    "type": "string"
-                },
-                "connection_type": {
-                    "type": "string"
-                },
-                "description": {
-                    "$ref": "#/definitions/schemas.I18n"
                 }
             }
         },

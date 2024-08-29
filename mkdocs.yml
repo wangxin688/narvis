@@ -1,0 +1,5 @@
+site_name: Narvis Docs
+site_url: https://github.com/wangxin688/narvis
+theme:
+  name: material
+

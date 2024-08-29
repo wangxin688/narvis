@@ -233,14 +233,16 @@ func (sd *SnmpDiscovery) Interfaces() (interfaces []*DeviceInterface, errors []s
 	indexIfAdminStatus := extractInteger(IfAdminStatus, ifAdminStatus)
 	indexIfOperStatus := extractInteger(IfOperStatus, ifOperStatus)
 	indexIfLastChange := extractInteger(IfLastChange, ifLastChange)
-	indexIfAddrIndex := extractString(IfAdEntIfIndex, ifAddrIndex)
+	indexIfAddrIndex := extractIfIndex(IfAdEntIfIndex, ifAddrIndex)
 	indexIfAddrNetMask := extractString(IfAdEntNetMask, ifAddrNetMask)
 	for i, v := range indexIfIndex {
 		var _ifAddrIndex string
+		itemIfAddrIndex := indexIfAddrIndex[i]
+		itemIfAddrNetMask := indexIfAddrNetMask[itemIfAddrIndex]
 		if indexIfAddrIndex[i] == "" || indexIfAddrNetMask[i] == "" {
 			_ifAddrIndex = ""
 		} else {
-			_ifAddrIndex = indexIfAddrIndex[i] + "/" + indexIfAddrNetMask[i]
+			_ifAddrIndex = strings.TrimPrefix(indexIfAddrIndex[i], ".") + "/" + strconv.Itoa(netmaskToLength(itemIfAddrNetMask))
 		}
 		iface := DeviceInterface{
 			IfIndex:       v,
@@ -389,7 +391,7 @@ func (sd *SnmpDiscovery) MacAddressTable() (macTable *map[uint64][]string, error
 
 	for portIndex, macAddress := range indexDot1dTpFdbAddress {
 		if _, ok := indexDot1dTpFdbPort[portIndex]; ok {
-			result[IndexDot1dBasePortIfIndex[indexDot1dTpFdbPort[portIndex]]] = append(result[portIndex], macAddress)
+			result[IndexDot1dBasePortIfIndex["."+indexDot1dTpFdbPort[portIndex]]] = append(result[portIndex], macAddress)
 		}
 	}
 
