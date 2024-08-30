@@ -21,8 +21,8 @@ func (d *ArubaOSDevice) SendCommand(cmd string) (string, error) {
 
 }
 
-func (d *ArubaOSDevice) SendConfigSet(cmds []string) (string, error) {
-	return d.base.SendConfigSet(cmds)
+func (d *ArubaOSDevice) SendConfigSet(commands []string) (string, error) {
+	return d.base.SendConfigSet(commands)
 
 }
 

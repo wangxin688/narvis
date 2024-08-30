@@ -21,8 +21,8 @@ func (d *EOSDevice) SendCommand(cmd string) (string, error) {
 
 }
 
-func (d *EOSDevice) SendConfigSet(cmds []string) (string, error) {
-	return d.base.SendConfigSet(cmds)
+func (d *EOSDevice) SendConfigSet(commands []string) (string, error) {
+	return d.base.SendConfigSet(commands)
 
 }
 

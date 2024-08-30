@@ -27,8 +27,8 @@ func (d *XEDevice) SendCommand(cmd string) (string, error) {
 
 }
 
-func (d *XEDevice) SendConfigSet(cmds []string) (string, error) {
-	return d.base.SendConfigSet(cmds)
+func (d *XEDevice) SendConfigSet(commands []string) (string, error) {
+	return d.base.SendConfigSet(commands)
 
 }
 func (d *XEDevice) SetSecret(secret string) {

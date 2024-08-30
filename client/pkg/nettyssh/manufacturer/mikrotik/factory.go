@@ -1,4 +1,4 @@
-package huawei
+package mikrotik
 
 import (
 	"errors"
@@ -10,15 +10,18 @@ import (
 )
 
 func NewDevice(connection connections.Connection, platform string) (types.Device, error) {
-	devDriver := driver.NewDriver(connection, "\n")
+	devDriver := driver.NewDriver(connection, "\r")
+
 	switch platform {
-	case string(plt.Huawei):
-		return &HuaweiVrp{
+	case string(plt.MikroTik):
+		return &MikroTikRouterOS{
 			Driver:   devDriver,
 			Platform: platform,
 			Prompt:   "",
 		}, nil
 	default:
 		return nil, errors.New("unsupported platform: " + platform)
+
 	}
+
 }

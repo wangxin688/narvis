@@ -104,9 +104,9 @@ func TestDriver_SendCommand(t *testing.T) {
 func TestDriver_SendCommandsSet(t *testing.T) {
 	testDriver := Driver{MockConn{}, "\n"}
 
-	cmds := []string{"cmd1", "cmd2"}
+	commands := []string{"cmd1", "cmd2"}
 
-	result, _ := testDriver.SendCommandsSet(cmds, "switch1")
+	result, _ := testDriver.SendCommandsSet(commands, "switch1")
 	if strings.Count(result, "Loged in as Admin!") != 2 {
 		t.Error("SendCommandSet did not return expected data")
 	}

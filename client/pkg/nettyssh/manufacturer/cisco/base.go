@@ -48,13 +48,13 @@ func (d *CSCODevice) SendCommand(cmd string) (string, error) {
 
 }
 
-func (d *CSCODevice) SendConfigSet(cmds []string) (string, error) {
+func (d *CSCODevice) SendConfigSet(commands []string) (string, error) {
 
 	results, _ := d.Driver.SendCommand("config term", d.Prompt)
 
-	cmds = append(cmds, "end")
+	commands = append(commands, "end")
 
-	out, err := d.Driver.SendCommandsSet(cmds, d.Prompt)
+	out, err := d.Driver.SendCommandsSet(commands, d.Prompt)
 	results += out
 
 	return results, err

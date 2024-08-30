@@ -23,7 +23,7 @@ func (b mockBase) SendCommand(cmd string) (string, error) {
 	return "", nil
 
 }
-func (b mockBase) SendConfigSet(cmds []string) (string, error) {
+func (b mockBase) SendConfigSet(commands []string) (string, error) {
 	*b.Calls = "SendConfigSet"
 	return "", nil
 
@@ -93,8 +93,8 @@ func TestASADevice_SendConfigSet(t *testing.T) {
 
 	var calls string
 	mockb.Calls = &calls
-	cmds := []string{"cmd1", "cmd2"}
-	_, err := asaDevice.SendConfigSet(cmds)
+	commands := []string{"cmd1", "cmd2"}
+	_, err := asaDevice.SendConfigSet(commands)
 	if err != nil {
 		panic(err)
 	}

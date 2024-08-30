@@ -1,4 +1,4 @@
-package juniper
+package mikrotik
 
 import (
 	"strings"
@@ -15,7 +15,6 @@ type mockDriver struct {
 
 func (c mockDriver) Connect() error {
 	return nil
-
 }
 func (c mockDriver) Disconnect() {
 	*c.GenericCalls = "disconnect"
@@ -27,10 +26,12 @@ func (c mockDriver) SendCommand(cmd string, expectPattern string) (string, error
 	} else {
 		c.CmdCalls = &cmd
 	}
+
 	return c.ReadUntil(expectPattern)
+
 }
-func (c mockDriver) SendCommandsSet(commands []string, expectPattern string) (string, error) {
-	for _, cmd := range commands {
+func (c mockDriver) SendCommandsSet(cmds []string, expectPattern string) (string, error) {
+	for _, cmd := range cmds {
 		_, err := c.SendCommand(cmd, expectPattern)
 		if err != nil {
 			panic(err)
@@ -48,6 +49,7 @@ func (c mockDriver) FindDevicePrompt(regex string, pattern string) (string, erro
 
 func (c mockDriver) ReadUntil(pattern string) (string, error) {
 	*c.PatternCalls += pattern + ", "
+
 	return c.ReadSideEffect(), nil
 
 }
@@ -55,7 +57,7 @@ func (c mockDriver) ReadUntil(pattern string) (string, error) {
 func (c mockDriver) SetTimeout(timeout uint8) {
 }
 
-func TestJunOSDevice_Connect(t *testing.T) {
+func TestMikroTikROS_Connect(t *testing.T) {
 
 	// [1] test happy scenario with login -> userMode -> enableMode
 	mockD := mockDriver{}
@@ -69,83 +71,83 @@ func TestJunOSDevice_Connect(t *testing.T) {
 		callsCount += 1
 		switch callsCount {
 		case 1:
-			return "@jun189"
+			return "@MikroTik] >"
 		case 2:
-			return "lorem ipsum 123\nswitch>lorem"
+			return "lorem ipsum 123\n@MikroTik] >lorem"
 		case 3:
-			return "lorem ipsum 123\nswitch>lorem"
+			return "lorem ipsum 123\n@MikroTik] >lorem"
 		default:
 			return ""
 
 		}
 
 	}
-	base := JunOSDevice{mockD, "", ""}
+	base := MikroTikRouterOS{mockD, "mikrotik_routeros", ""}
 	if err := base.Connect(); err != nil {
 		t.Fatal(err)
 	}
 
-	if base.Prompt != "@jun189" {
+	if base.Prompt != "@MikroTik] >" {
 		t.Error("Driver.FindDevicePrompt was not called")
 	}
-	expected := "%, @jun189, @jun189, "
+	expected := "] >, @MikroTik] >, "
 
 	if patternCalls != expected {
-		t.Errorf("wrong Juniper Pattern calls, Expected: (%s) Got: (%s)", expected, patternCalls)
+		t.Errorf("wrong Mikrotik Pattern calls, Expected: (%s) Got: (%s)", expected, patternCalls)
 	}
 
-	expected = "cli, set cli screen-length 0, "
+	expected = ", " // MikroTik does not need any sessionPreparation
 
 	if cmdCalls != expected {
-		t.Errorf("wrong juniper commands calls, Expected: (%s) Got: (%s)", expected, cmdCalls)
+		t.Errorf("wrong Mikrotik commands calls, Expected: (%s) Got: (%s)", expected, cmdCalls)
 	}
 
-	expected = "(@.*)[#>%]"
+	expected = "\\[.*(@.*\\] >)"
 
 	if promptRegexCall != expected {
-		t.Errorf("wrong Juniper prompt regex calls, Expected: (%s) Got: (%s)", expected, promptRegexCall)
+		t.Errorf("wrong Mikrotik prompt regex calls, Expected: (%s) Got: (%s)", expected, promptRegexCall)
 	}
 
 }
 
-func TestJunOSDevice_Disconnect(t *testing.T) {
+func TestMikroTikROS_Disconnect(t *testing.T) {
 	mockD := mockDriver{}
 	var genericCalls string
 	mockD.GenericCalls = &genericCalls
 
-	base := JunOSDevice{mockD, "", ""}
+	base := MikroTikRouterOS{mockD, "mikrotik_routeros", ""}
 
 	base.Disconnect()
 
 	if genericCalls != "disconnect" {
-		t.Error("Driver.Disconnect() was not called")
+		t.Error("Driver.Disconnect was not called")
 	}
 
 }
 
-func TestJunOSDevice_SendCommand(t *testing.T) {
+func TestMikroTikROS_SendCommand(t *testing.T) {
 	mockD := mockDriver{}
 	var cmdCalls, patternCalls, promptRegexCall string
 	mockD.CmdCalls = &cmdCalls
 	mockD.PatternCalls = &patternCalls
 	mockD.PromptRegex = &promptRegexCall
 	mockD.ReadSideEffect = func() string {
-		return "show interfaces brief\n" +
-			"Physical interface: cbp0, Enabled,\n" +
-			"Physical interface: demux0, Enabled,\n" +
-			"switch1# "
+		return "ip route print\n" +
+			"0 ADS  0.0.0.0/0\n" +
+			"1 ADC  192.168.122.0/24\n" +
+			"@MikroTik] > "
 
 	}
 
-	base := JunOSDevice{mockD, "juniper", "@jun189"}
-	result, _ := base.SendCommand("show interfaces brief")
+	base := MikroTikRouterOS{mockD, "mikrotik_routeros", ""}
+	result, _ := base.SendCommand("ip route print")
 
-	if !strings.Contains(result, "Physical interface: cbp0, Enabled,") &&
-		!strings.Contains(result, "Physical interface: demux0, Enabled,") {
+	if !strings.Contains(result, "0 ADS  0.0.0.0/0") &&
+		!strings.Contains(result, "1 ADC  192.168.122.0/24") {
 		t.Error("wrong result returned")
 	}
 
-	expected := "show interfaces brief, "
+	expected := "ip route print, "
 
 	if cmdCalls != expected {
 		t.Errorf("wrong commands calls, expected: (%s) got: (%s)", expected, cmdCalls)
@@ -153,28 +155,28 @@ func TestJunOSDevice_SendCommand(t *testing.T) {
 
 }
 
-func TestJunOSDevice_SendConfigSet(t *testing.T) {
+func TestMikroTikROS_SendConfigSet(t *testing.T) {
 	mockD := mockDriver{}
 	var cmdCalls, patternCalls, promptRegexCall string
 	mockD.CmdCalls = &cmdCalls
 	mockD.PatternCalls = &patternCalls
 	mockD.PromptRegex = &promptRegexCall
 	mockD.ReadSideEffect = func() string {
-		return "show interfaces brief\n" +
-			"Physical interface: cbp0, Enabled,\n" +
-			"Physical interface: demux0, Enabled,\n" +
-			"switch1# "
+		return "ip route print\n" +
+			"0 ADS  0.0.0.0/0\n" +
+			"1 ADC  192.168.122.0/24\n" +
+			"@MikroTik] > "
 
 	}
 
-	base := JunOSDevice{mockD, "juniper", "@jun189"}
-	commands := []string{"set routing-options static route 192.168.47.0/24 next-hop 172.16.1.2"}
-	_, err := base.SendConfigSet(commands)
+	base := MikroTikRouterOS{mockD, "mikrotik_routeros", ""}
+	cmds := []string{"mikrotik command1", "mikrotik command2"}
+	_, err := base.SendConfigSet(cmds)
 	if err != nil {
 		panic(err)
 	}
 
-	expected := "configure, set routing-options static route 192.168.47.0/24 next-hop 172.16.1.2, commit, exit, "
+	expected := "mikrotik command1, mikrotik command2, "
 
 	if cmdCalls != expected {
 		t.Errorf("wrong commands calls, expected: (%s) got: (%s)", expected, cmdCalls)

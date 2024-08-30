@@ -6,6 +6,7 @@ import (
 	"github.com/wangxin688/narvis/client/pkg/nettyssh/connections"
 	"github.com/wangxin688/narvis/client/pkg/nettyssh/driver"
 	"github.com/wangxin688/narvis/client/pkg/nettyssh/types"
+	plt "github.com/wangxin688/narvis/intend/platform"
 )
 
 func NewDevice(conn connections.Connection, platform string) (types.CiscoDevice, error) {
@@ -16,15 +17,15 @@ func NewDevice(conn connections.Connection, platform string) (types.CiscoDevice,
 		Platform: platform,
 	}
 	switch platform {
-	case "cisco_asa":
+	case string(plt.CiscoASA):
 		return &ASADevice{Driver: deviceDriver, Prompt: "", base: &base}, nil
-	case "cisco_xe":
+	case string(plt.CiscoIosXE):
 		return &XEDevice{Driver: deviceDriver, Prompt: "", base: &base}, nil
-	case "cisco_xr":
+	case string(plt.CiscoIosXR):
 		return &IOSXRDevice{Driver: deviceDriver, Prompt: "", base: &base}, nil
-	case "cisco_nxos":
+	case string(plt.CiscoNexusOS):
 		return &NXOSDevice{Driver: deviceDriver, Prompt: "", base: &base}, nil
-	case "cisco_ios":
+	case string(plt.CiscoIos):
 		return &IOSDevice{Driver: deviceDriver, Prompt: "", base: &base}, nil
 	default:
 		return nil, errors.New("unsupported platform: " + platform)

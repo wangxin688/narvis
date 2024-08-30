@@ -23,7 +23,7 @@ func (b mockBase) SendCommand(cmd string) (string, error) {
 	return "", nil
 
 }
-func (b mockBase) SendConfigSet(cmds []string) (string, error) {
+func (b mockBase) SendConfigSet(commands []string) (string, error) {
 	*b.Calls = "SendConfigSet"
 	return "", nil
 
@@ -62,8 +62,8 @@ func (c mockDriver) SendCommand(cmd string, expectPattern string) (string, error
 	return c.ReadUntil(expectPattern)
 
 }
-func (c mockDriver) SendCommandsSet(cmds []string, expectPattern string) (string, error) {
-	for _, cmd := range cmds {
+func (c mockDriver) SendCommandsSet(commands []string, expectPattern string) (string, error) {
+	for _, cmd := range commands {
 		_, err := c.SendCommand(cmd, expectPattern)
 		if err != nil {
 			panic(err)
@@ -146,8 +146,8 @@ func TestEOSDevice_SendConfigSet(t *testing.T) {
 
 	var calls string
 	mockb.Calls = &calls
-	cmds := []string{"cmd1", "cmd2"}
-	_, err := eosDevice.SendConfigSet(cmds)
+	commands := []string{"cmd1", "cmd2"}
+	_, err := eosDevice.SendConfigSet(commands)
 	if err != nil {
 		panic(err)
 	}

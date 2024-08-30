@@ -39,13 +39,13 @@ func (d *Driver) SendCommand(cmd string, expectPattern string) (string, error) {
 
 }
 
-func (d *Driver) SendCommandsSet(cmds []string, expectPattern string) (string, error) {
+func (d *Driver) SendCommandsSet(commands []string, expectPattern string) (string, error) {
 	if d.Connection == nil {
 		return "", errors.New("not connected to device, make sure to call .Connect() first")
 	}
 	var results string
 
-	for _, cmd := range cmds {
+	for _, cmd := range commands {
 		out, _ := d.SendCommand(cmd, expectPattern)
 		results += out
 	}

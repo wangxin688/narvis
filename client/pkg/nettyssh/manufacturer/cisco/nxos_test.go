@@ -60,8 +60,8 @@ func TestNXOSDevice_SendConfigSet(t *testing.T) {
 
 	var calls string
 	mockb.Calls = &calls
-	cmds := []string{"cmd1", "cmd2"}
-	_, err := nxosDevice.SendConfigSet(cmds)
+	commands := []string{"cmd1", "cmd2"}
+	_, err := nxosDevice.SendConfigSet(commands)
 	if err != nil {
 		panic(err)
 	}

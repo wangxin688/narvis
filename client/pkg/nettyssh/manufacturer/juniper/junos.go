@@ -41,13 +41,13 @@ func (d *JunOSDevice) SendCommand(cmd string) (string, error) {
 
 }
 
-func (d *JunOSDevice) SendConfigSet(cmds []string) (string, error) {
+func (d *JunOSDevice) SendConfigSet(commands []string) (string, error) {
 
 	results, _ := d.Driver.SendCommand("configure", d.Prompt)
 
-	cmds = append(cmds, "commit", "exit")
+	commands = append(commands, "commit", "exit")
 
-	out, err := d.Driver.SendCommandsSet(cmds, d.Prompt)
+	out, err := d.Driver.SendCommandsSet(commands, d.Prompt)
 	results += out
 	return results, err
 

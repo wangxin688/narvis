@@ -7,6 +7,7 @@ import (
 	"github.com/wangxin688/narvis/client/pkg/nettyssh/driver"
 	"github.com/wangxin688/narvis/client/pkg/nettyssh/manufacturer/cisco"
 	"github.com/wangxin688/narvis/client/pkg/nettyssh/types"
+	plt "github.com/wangxin688/narvis/intend/platform"
 )
 
 func NewDevice(connection connections.Connection, platform string) (types.CiscoDevice, error) {
@@ -14,11 +15,11 @@ func NewDevice(connection connections.Connection, platform string) (types.CiscoD
 
 	base := cisco.CSCODevice{
 		Driver:   devDriver,
-		Platform: "cisco_ios",
+		Platform: string(plt.CiscoIos),
 	}
-	if platform != "aruba_os" {
-		return nil, errors.New("unsupported Aruba device type: " + platform)
-
+	if platform != string(plt.Aruba) {
+		return nil, errors.New("unsupported Aruba platform: " + platform)
+	
 	}
 
 	return &ArubaOSDevice{

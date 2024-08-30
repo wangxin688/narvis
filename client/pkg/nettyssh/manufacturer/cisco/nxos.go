@@ -26,8 +26,8 @@ func (d *NXOSDevice) SendCommand(cmd string) (string, error) {
 
 }
 
-func (d *NXOSDevice) SendConfigSet(cmds []string) (string, error) {
-	return d.base.SendConfigSet(cmds)
+func (d *NXOSDevice) SendConfigSet(commands []string) (string, error) {
+	return d.base.SendConfigSet(commands)
 
 }
 func (d *NXOSDevice) SetSecret(secret string) {

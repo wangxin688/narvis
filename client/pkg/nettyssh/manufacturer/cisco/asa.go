@@ -26,8 +26,8 @@ func (d *ASADevice) SendCommand(cmd string) (string, error) {
 
 }
 
-func (d *ASADevice) SendConfigSet(cmds []string) (string, error) {
-	return d.base.SendConfigSet(cmds)
+func (d *ASADevice) SendConfigSet(commands []string) (string, error) {
+	return d.base.SendConfigSet(commands)
 }
 
 func (d *ASADevice) SetSecret(secret string) {

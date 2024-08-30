@@ -31,8 +31,8 @@ func (c mockDriver) SendCommand(cmd string, expectPattern string) (string, error
 	return c.ReadUntil(expectPattern)
 
 }
-func (c mockDriver) SendCommandsSet(cmds []string, expectPattern string) (string, error) {
-	for _, cmd := range cmds {
+func (c mockDriver) SendCommandsSet(commands []string, expectPattern string) (string, error) {
+	for _, cmd := range commands {
 		_, err := c.SendCommand(cmd, expectPattern)
 		if err != nil {
 			panic(err)
@@ -227,8 +227,8 @@ func TestCSCODevice_SendConfigSet(t *testing.T) {
 	}
 
 	base := CSCODevice{mockD, "cisco_ios", "switch1", ""}
-	cmds := []string{"show interface", "show ip route"}
-	_, err := base.SendConfigSet(cmds)
+	commands := []string{"show interface", "show ip route"}
+	_, err := base.SendConfigSet(commands)
 	if err != nil {
 		panic(err)
 	}
