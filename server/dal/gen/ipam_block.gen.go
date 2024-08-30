@@ -26,12 +26,12 @@ func newBlock(db *gorm.DB, opts ...gen.DOOption) block {
 
 	tableName := _block.blockDo.TableName()
 	_block.ALL = field.NewAsterisk(tableName)
-	_block.ID = field.NewString(tableName, "id")
-	_block.CreatedAt = field.NewTime(tableName, "created_at")
-	_block.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_block.Id = field.NewString(tableName, "id")
+	_block.CreatedAt = field.NewTime(tableName, "createdAt")
+	_block.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_block.Prefix = field.NewString(tableName, "prefix")
 	_block.Description = field.NewString(tableName, "description")
-	_block.OrganizationID = field.NewString(tableName, "organization_id")
+	_block.OrganizationId = field.NewString(tableName, "organizationId")
 	_block.Organization = blockBelongsToOrganization{
 		db: db.Session(&gorm.Session{}),
 
@@ -47,12 +47,12 @@ type block struct {
 	blockDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Prefix         field.String
 	Description    field.String
-	OrganizationID field.String
+	OrganizationId field.String
 	Organization   blockBelongsToOrganization
 
 	fieldMap map[string]field.Expr
@@ -70,12 +70,12 @@ func (b block) As(alias string) *block {
 
 func (b *block) updateTableName(table string) *block {
 	b.ALL = field.NewAsterisk(table)
-	b.ID = field.NewString(table, "id")
-	b.CreatedAt = field.NewTime(table, "created_at")
-	b.UpdatedAt = field.NewTime(table, "updated_at")
+	b.Id = field.NewString(table, "id")
+	b.CreatedAt = field.NewTime(table, "createdAt")
+	b.UpdatedAt = field.NewTime(table, "updatedAt")
 	b.Prefix = field.NewString(table, "prefix")
 	b.Description = field.NewString(table, "description")
-	b.OrganizationID = field.NewString(table, "organization_id")
+	b.OrganizationId = field.NewString(table, "organizationId")
 
 	b.fillFieldMap()
 
@@ -93,12 +93,12 @@ func (b *block) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (b *block) fillFieldMap() {
 	b.fieldMap = make(map[string]field.Expr, 7)
-	b.fieldMap["id"] = b.ID
-	b.fieldMap["created_at"] = b.CreatedAt
-	b.fieldMap["updated_at"] = b.UpdatedAt
+	b.fieldMap["id"] = b.Id
+	b.fieldMap["createdAt"] = b.CreatedAt
+	b.fieldMap["updatedAt"] = b.UpdatedAt
 	b.fieldMap["prefix"] = b.Prefix
 	b.fieldMap["description"] = b.Description
-	b.fieldMap["organization_id"] = b.OrganizationID
+	b.fieldMap["organizationId"] = b.OrganizationId
 
 }
 

@@ -9,29 +9,29 @@ var ProviderTableName = "provider"
 type Circuit struct {
 	BaseDbModel
 
-	Name           string          `gorm:"uniqueIndex:idx_name_organization_id;not null"`
-	CID            string          `gorm:"column:c_id;uniqueIndex:idx_circuit_id_organization_id;not null"`
-	Status         string          `gorm:"not null;default:Active"`    // Active/Inactive
-	CircuitType    string          `gorm:"not null;default:Internet"`  // Internet/Intranet
-	BandWidth      uint32          `gorm:"column:band_width,not null"` //Mbps
-	IpAddress      *string         `gorm:"column:ip_address;default:null"`
+	Name           string          `gorm:"column:name;uniqueIndex:idx_name_organization_id;not null"`
+	CId            string          `gorm:"column:cId;uniqueIndex:idx_circuit_id_organization_id;not null"`
+	Status         string          `gorm:"column:status;not null;default:Active"`        // Active/Inactive
+	CircuitType    string          `gorm:"column:circuitType;not null;default:Internet"` // Internet/Intranet
+	BandWidth      uint32          `gorm:"column:bandWidth;not null"`                    //Mbps
+	IpAddress      *string         `gorm:"column:ipAddress;default:null"`
 	Description    *string         `gorm:"column:description;default:null"`
-	ProviderID     string          `gorm:"type:uuid;not null"`
+	ProviderId     string          `gorm:"column:providerId;type:uuid;not null"`
 	Provider       Provider        `gorm:"constraint:Ondelete:RESTRICT"`
-	ASiteID        string          `gorm:"type:uuid;not null"`
-	ASite          Site            `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ASiteID"`
-	ADeviceID      string          `gorm:"type:uuid;not null"`
-	ADevice        Device          `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ADeviceID"`
-	AInterfaceID   string          `gorm:"type:uuid;not null"`
-	AInterface     DeviceInterface `gorm:"constraint:Ondelete:RESTRICT;foreignKey:AInterfaceID"`
-	ZSiteID        string          `gorm:"type:uuid;not null"`
-	ZSite          Site            `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ZSiteID"`
-	ZDeviceID      string          `gorm:"type:uuid;not null"`
-	ZDevice        Device          `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ZDeviceID"`
-	ZInterfaceID   string          `gorm:"type:uuid;not null"`
-	ZInterface     DeviceInterface `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ZInterfaceID"`
-	MonitorID      *string         `gorm:"default:null"`
-	OrganizationID string          `gorm:"type:uuid;not null"`
+	ASiteId        string          `gorm:"column:aSiteId;type:uuid;not null"`
+	ASite          Site            `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ASiteId"`
+	ADeviceId      string          `gorm:"column:aDeviceId;type:uuid;not null"`
+	ADevice        Device          `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ADeviceId"`
+	AInterfaceId   string          `gorm:"column:aInterfaceId;type:uuid;not null"`
+	AInterface     DeviceInterface `gorm:"constraint:Ondelete:RESTRICT;foreignKey:AInterfaceId"`
+	ZSiteId        string          `gorm:"column:zSiteId;type:uuid;not null"`
+	ZSite          Site            `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ZSiteId"`
+	ZDeviceId      string          `gorm:"column:zDeviceId;type:uuid;not null"`
+	ZDevice        Device          `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ZDeviceId"`
+	ZInterfaceId   string          `gorm:"column:zInterfaceId;type:uuid;not null"`
+	ZInterface     DeviceInterface `gorm:"constraint:Ondelete:RESTRICT;foreignKey:ZInterfaceId"`
+	MonitorId      *string         `gorm:"column:monitorId;default:null"`
+	OrganizationId string          `gorm:"column:organizationId;type:uuid;not null"`
 	Organization   Organization    `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -41,9 +41,9 @@ func (Circuit) TableName() string {
 
 type Provider struct {
 	BaseDbModel
-	Name        string  `gorm:"unique;not null"`
-	Icon        *string `json:"icon"`
-	Description *string `json:"description"`
+	Name        string  `gorm:"column:name;unique;not null"`
+	Icon        *string `gorm:"column:icon;default:null"`
+	Description *string `gorm:"column:description;default:null"`
 }
 
 func (Provider) TableName() string {

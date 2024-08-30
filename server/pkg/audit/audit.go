@@ -70,16 +70,16 @@ func (a *AuditLogMixin) beforeDelete(tx *gorm.DB) {
 }
 
 func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target map[string]any, action string) {
-	requestID := global.XRequestID.Get()
-	userID := global.UserID.Get()
+	requestId := global.XRequestId.Get()
+	userId := global.UserId.Get()
 	auditLog := &models.AuditLog{
 		ObjectType:     tx.Statement.Schema.Table,
-		ObjectID:       getKeyFromMap("ID", target),
-		RequestID:      &requestID,
-		UserID:         &userID,
+		ObjectId:       getKeyFromMap("Id", target),
+		RequestId:      &requestId,
+		UserId:         &userId,
 		Action:         action,
 		Data:           prepareData(target),
-		OrganizationID: global.OrganizationID.Get(),
+		OrganizationId: global.OrganizationId.Get(),
 	}
 	if err := tx.Session(&gorm.Session{SkipHooks: true, NewDB: true}).Create(auditLog).Error; err != nil {
 		core.Logger.Error("AuditLog.createAuditLog commit create audit log error", zap.Error(err))

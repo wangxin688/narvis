@@ -26,18 +26,18 @@ func newAlertGroup(db *gorm.DB, opts ...gen.DOOption) alertGroup {
 
 	tableName := _alertGroup.alertGroupDo.TableName()
 	_alertGroup.ALL = field.NewAsterisk(tableName)
-	_alertGroup.ID = field.NewString(tableName, "id")
+	_alertGroup.Id = field.NewString(tableName, "Id")
 	_alertGroup.Status = field.NewUint8(tableName, "status")
-	_alertGroup.StartedAt = field.NewTime(tableName, "started_at")
-	_alertGroup.ResolvedAt = field.NewTime(tableName, "resolved_at")
+	_alertGroup.StartedAt = field.NewTime(tableName, "startedAt")
+	_alertGroup.ResolvedAt = field.NewTime(tableName, "resolvedAt")
 	_alertGroup.Acknowledged = field.NewBool(tableName, "acknowledged")
 	_alertGroup.Suppressed = field.NewBool(tableName, "suppressed")
 	_alertGroup.Severity = field.NewUint8(tableName, "severity")
-	_alertGroup.AlertName = field.NewString(tableName, "alert_name")
-	_alertGroup.GroupKey = field.NewString(tableName, "group_key")
-	_alertGroup.HashKey = field.NewString(tableName, "hash_key")
-	_alertGroup.SiteID = field.NewString(tableName, "site_id")
-	_alertGroup.OrganizationID = field.NewString(tableName, "organization_id")
+	_alertGroup.AlertName = field.NewString(tableName, "alertName")
+	_alertGroup.GroupKey = field.NewString(tableName, "groupKey")
+	_alertGroup.HashKey = field.NewString(tableName, "hashKey")
+	_alertGroup.SiteId = field.NewString(tableName, "siteId")
+	_alertGroup.OrganizationId = field.NewString(tableName, "organizationId")
 	_alertGroup.Site = alertGroupBelongsToSite{
 		db: db.Session(&gorm.Session{}),
 
@@ -64,7 +64,7 @@ type alertGroup struct {
 	alertGroupDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	Status         field.Uint8
 	StartedAt      field.Time
 	ResolvedAt     field.Time
@@ -74,8 +74,8 @@ type alertGroup struct {
 	AlertName      field.String
 	GroupKey       field.String
 	HashKey        field.String
-	SiteID         field.String
-	OrganizationID field.String
+	SiteId         field.String
+	OrganizationId field.String
 	Site           alertGroupBelongsToSite
 
 	Organization alertGroupBelongsToOrganization
@@ -95,18 +95,18 @@ func (a alertGroup) As(alias string) *alertGroup {
 
 func (a *alertGroup) updateTableName(table string) *alertGroup {
 	a.ALL = field.NewAsterisk(table)
-	a.ID = field.NewString(table, "id")
+	a.Id = field.NewString(table, "Id")
 	a.Status = field.NewUint8(table, "status")
-	a.StartedAt = field.NewTime(table, "started_at")
-	a.ResolvedAt = field.NewTime(table, "resolved_at")
+	a.StartedAt = field.NewTime(table, "startedAt")
+	a.ResolvedAt = field.NewTime(table, "resolvedAt")
 	a.Acknowledged = field.NewBool(table, "acknowledged")
 	a.Suppressed = field.NewBool(table, "suppressed")
 	a.Severity = field.NewUint8(table, "severity")
-	a.AlertName = field.NewString(table, "alert_name")
-	a.GroupKey = field.NewString(table, "group_key")
-	a.HashKey = field.NewString(table, "hash_key")
-	a.SiteID = field.NewString(table, "site_id")
-	a.OrganizationID = field.NewString(table, "organization_id")
+	a.AlertName = field.NewString(table, "alertName")
+	a.GroupKey = field.NewString(table, "groupKey")
+	a.HashKey = field.NewString(table, "hashKey")
+	a.SiteId = field.NewString(table, "siteId")
+	a.OrganizationId = field.NewString(table, "organizationId")
 
 	a.fillFieldMap()
 
@@ -124,18 +124,18 @@ func (a *alertGroup) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (a *alertGroup) fillFieldMap() {
 	a.fieldMap = make(map[string]field.Expr, 14)
-	a.fieldMap["id"] = a.ID
+	a.fieldMap["Id"] = a.Id
 	a.fieldMap["status"] = a.Status
-	a.fieldMap["started_at"] = a.StartedAt
-	a.fieldMap["resolved_at"] = a.ResolvedAt
+	a.fieldMap["startedAt"] = a.StartedAt
+	a.fieldMap["resolvedAt"] = a.ResolvedAt
 	a.fieldMap["acknowledged"] = a.Acknowledged
 	a.fieldMap["suppressed"] = a.Suppressed
 	a.fieldMap["severity"] = a.Severity
-	a.fieldMap["alert_name"] = a.AlertName
-	a.fieldMap["group_key"] = a.GroupKey
-	a.fieldMap["hash_key"] = a.HashKey
-	a.fieldMap["site_id"] = a.SiteID
-	a.fieldMap["organization_id"] = a.OrganizationID
+	a.fieldMap["alertName"] = a.AlertName
+	a.fieldMap["groupKey"] = a.GroupKey
+	a.fieldMap["hashKey"] = a.HashKey
+	a.fieldMap["siteId"] = a.SiteId
+	a.fieldMap["organizationId"] = a.OrganizationId
 
 }
 

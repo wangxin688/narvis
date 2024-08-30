@@ -8,57 +8,57 @@ import (
 
 type CircuitCreate struct {
 	Name         string  `json:"name" binding:"required"`
-	CID          string  `json:"cid" binding:"required"`
+	CId          string  `json:"cid" binding:"required"`
 	Status       string  `json:"status" binding:"required,oneof: Active Inactive"`
-	CircuitType  string  `json:"circuit_type" binding:"required,oneof: Internet, Intranet"`
-	BandWidth    uint32  `json:"band_width" binding:"required,gt=1, lt=800000"`
-	IpAddress    *string `json:"ip_address" binding:"ip_addr"`
+	CircuitType  string  `json:"circuitType" binding:"required,oneof: Internet, Intranet"`
+	BandWidth    uint32  `json:"bandWidth" binding:"required,gt=1, lt=800000"`
+	IpAddress    *string `json:"ipAddress" binding:"ip_addr"`
 	Description  *string `json:"description" binding:"omitempty"`
-	ProviderID   string  `json:"provider_id" binding:"required,uuid"`
-	AInterfaceID string  `json:"a_interface_id" binding:"required,uuid"`
-	ZInterfaceID *string `json:"z_interface_id" binding:"required,uuid"`
+	ProviderId   string  `json:"providerId" binding:"required,uuid"`
+	AInterfaceId string  `json:"aInterfaceId" binding:"required,uuid"`
+	ZInterfaceId *string `json:"zInterfaceId" binding:"required,uuid"`
 }
 
 type CircuitUpdate struct {
 	Name         *string `json:"name" binding:"omitempty"`
-	CID          *string `json:"cid" binding:"omitempty"`
+	CId          *string `json:"cid" binding:"omitempty"`
 	Status       *string `json:"status" binding:"omitempty,oneof: Active Inactive"`
-	CircuitType  *string `json:"circuit_type" binding:"omitempty,oneof: Internet, Intranet"`
-	BandWidth    *uint32 `json:"band_width" binding:"omitempty,gt=1, lt=800000"`
-	IpAddress    *string `json:"ip_address" binding:"omitempty,ip_addr"`
+	CircuitType  *string `json:"circuitType" binding:"omitempty,oneof: Internet, Intranet"`
+	BandWidth    *uint32 `json:"bandWidth" binding:"omitempty,gt=1, lt=800000"`
+	IpAddress    *string `json:"ipAddress" binding:"omitempty,ip_addr"`
 	Description  *string `json:"description" binding:"omitempty"`
-	ProviderID   *string `json:"provider_id" binding:"omitempty,uuid"`
-	AInterfaceID *string `json:"a_interface_id" binding:"omitempty,uuid"`
-	ZInterfaceID *string `json:"z_interface_id" binding:"omitempty,uuid"`
+	ProviderId   *string `json:"providerId" binding:"omitempty,uuid"`
+	AInterfaceId *string `json:"aInterfaceId" binding:"omitempty,uuid"`
+	ZInterfaceId *string `json:"zInterfaceId" binding:"omitempty,uuid"`
 }
 
 type CircuitQuery struct {
 	schemas.PageInfo
 	Name        *[]string `form:"name" binding:"omitempty"`
-	CID         *[]string `form:"cid" binding:"omitempty"`
+	CId         *[]string `form:"cid" binding:"omitempty"`
 	Status      *string   `form:"status" binding:"omitempty,oneof: Active Inactive"`
-	BandWidth   *uint32   `json:"band_width" binding:"omitempty"`
-	IpAddress   *string   `json:"ip_address" binding:"omitempty,ip_addr"`
-	CircuitType *string   `form:"circuit_type" binding:"omitempty,oneof: Internet, Intranet"`
-	ProviderID  *[]string `form:"provider_id" binding:"omitempty,list_uuid"`
-	SiteID      *[]string `form:"site_id" binding:"omitempty,list_uuid"`
-	DeviceID    *[]string `form:"device_id" binding:"omitempty,list_uuid"`
-	InterfaceID *[]string `form:"interface_id" binding:"omitempty,list_uuid"`
-	MonitorID   *[]string `form:"monitor_id" binding:"omitempty"`
+	BandWidth   *uint32   `form:"bandWidth" binding:"omitempty"`
+	IpAddress   *string   `form:"ipAddress" binding:"omitempty,ip_addr"`
+	CircuitType *string   `form:"circuitType" binding:"omitempty,oneof: Internet, Intranet"`
+	ProviderId  *[]string `form:"providerId" binding:"omitempty,list_uuid"`
+	SiteId      *[]string `form:"siteId" binding:"omitempty,list_uuid"`
+	DeviceId    *[]string `form:"deviceId" binding:"omitempty,list_uuid"`
+	InterfaceId *[]string `form:"interfaceId" binding:"omitempty,list_uuid"`
+	MonitorId   *[]string `form:"monitorId" binding:"omitempty"`
 }
 
 type Circuit struct {
-	ID          string        `json:"id"`
-	CreatedAt   time.Time     `json:"created_at"`
-	UpdatedAt   time.Time     `json:"updated_at"`
+	Id          string        `json:"id"`
+	CreatedAt   time.Time     `json:"createdAt"`
+	UpdatedAt   time.Time     `json:"updatedAt"`
 	Name        string        `json:"name"`
-	CID         string        `json:"cid"`
+	CId         string        `json:"cid"`
 	Status      string        `json:"status"`
-	CircuitType string        `json:"circuit_type"`
-	BandWidth   uint32        `json:"band_width"`
-	IpAddress   *string       `json:"ip_address"`
+	CircuitType string        `json:"circuitType"`
+	BandWidth   uint32        `json:"bandWidth"`
+	IpAddress   *string       `json:"ipAddress"`
 	Description *string       `json:"description"`
-	MonitorID   *string       `json:"monitor_id"`
+	MonitorId   *string       `json:"monitorId"`
 	Provider    ProviderShort `json:"provider"`
 	// ASite ds.SiteShort `json:"a_site"`
 	// ADevice ds.DeviceShort `json:"a_device"`
@@ -71,9 +71,9 @@ type Circuit struct {
 type CircuitList []Circuit
 
 type CircuitShort struct {
-	ID        string `json:"id"`
+	Id        string `json:"id"`
 	Name      string `json:"name"`
-	BandWidth uint32 `json:"band_width"`
+	BandWidth uint32 `json:"bandWidth"`
 }
 
 type CircuitShortList []CircuitShort

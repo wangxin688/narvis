@@ -20,9 +20,9 @@ func NewUserService() *UserService {
 }
 
 // when new organization created, create a new admin user
-func (u *UserService) CreateAdminUser(enterpriseCode string, orgID string, password string) (*schemas.User, error) {
+func (u *UserService) CreateAdminUser(enterpriseCode string, orgId string, password string) (*schemas.User, error) {
 	roleService := NewRoleService()
-	roleID, err := roleService.CreateAdminRole(orgID)
+	roleId, err := roleService.CreateAdminRole(orgId)
 	if err != nil {
 		return nil, err
 	}
@@ -30,16 +30,16 @@ func (u *UserService) CreateAdminUser(enterpriseCode string, orgID string, passw
 		Username:       "Administrator",
 		Email:          "admin@" + enterpriseCode + ".com",
 		Password:       security.GetPasswordHash(password),
-		RoleID:         roleID,
+		RoleId:         roleId,
 		AuthType:       uint8(constants.LocalTenantAuthType),
-		OrganizationID: orgID,
+		OrganizationId: orgId,
 	}
 
 	newGroup := &models.Group{
-		OrganizationID: orgID,
+		OrganizationId: orgId,
 		Name:           constants.ReserveAdminGroupName,
 		Description:    &constants.ReserveAdminGroupDescription,
-		RoleID:         roleID,
+		RoleId:         roleId,
 		User:           []models.User{*newUser},
 	}
 
@@ -52,23 +52,23 @@ func (u *UserService) CreateAdminUser(enterpriseCode string, orgID string, passw
 		Email:    newUser.Email,
 		AuthType: newUser.AuthType,
 		Group: schemas.GroupShort{
-			ID:   newUser.Group.ID,
+			Id:   newUser.Group.Id,
 			Name: newUser.Group.Name,
 		},
 		Role: schemas.RoleShort{
-			ID:   newUser.Role.ID,
+			Id:   newUser.Role.Id,
 			Name: newUser.Role.Name,
 		},
-		ID:        newUser.ID,
+		Id:        newUser.Id,
 		CreatedAt: newUser.CreatedAt,
 		UpdatedAt: newUser.UpdatedAt,
 	}
 	return &user, nil
 }
 
-func (u *UserService) GetUserByID(id string) (*schemas.User, error) {
-	orgID := global.OrganizationID.Get()
-	user, err := u.Where(gen.User.ID.Eq(id), gen.User.OrganizationID.Eq(orgID)).Preload(gen.User.Role).Preload(gen.User.Group).First()
+func (u *UserService) GetUserById(id string) (*schemas.User, error) {
+	orgId := global.OrganizationId.Get()
+	user, err := u.Where(gen.User.Id.Eq(id), gen.User.OrganizationId.Eq(orgId)).Preload(gen.User.Role).Preload(gen.User.Group).First()
 	if err != nil {
 		return nil, err
 	}
@@ -78,14 +78,14 @@ func (u *UserService) GetUserByID(id string) (*schemas.User, error) {
 		Email:    user.Email,
 		AuthType: user.AuthType,
 		Role: schemas.RoleShort{
-			ID:   user.Role.ID,
+			Id:   user.Role.Id,
 			Name: user.Role.Name,
 		},
 		Group: schemas.GroupShort{
-			ID:   user.Group.ID,
+			Id:   user.Group.Id,
 			Name: user.Group.Name,
 		},
-		ID:        user.ID,
+		Id:        user.Id,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}, nil
@@ -96,11 +96,11 @@ func (u *UserService) CreateUser(user *schemas.UserCreate) (*schemas.User, error
 		Username:       user.Username,
 		Email:          user.Email,
 		Password:       security.GetPasswordHash(user.Password),
-		GroupID:        user.GroupID,
-		RoleID:         user.RoleID,
+		GroupId:        user.GroupId,
+		RoleId:         user.RoleId,
 		AuthType:       user.AuthType,
 		Avatar:         user.Avatar,
-		OrganizationID: global.OrganizationID.Get(),
+		OrganizationId: global.OrganizationId.Get(),
 	}
 
 	err := gen.User.Create(newUser)
@@ -108,10 +108,10 @@ func (u *UserService) CreateUser(user *schemas.UserCreate) (*schemas.User, error
 		return nil, err
 	}
 
-	return u.GetUserByID(newUser.ID)
+	return u.GetUserById(newUser.Id)
 }
 
-func (u *UserService) UpdateUser(userID string, user *schemas.UserUpdate) error {
+func (u *UserService) UpdateUser(userId string, user *schemas.UserUpdate) error {
 	var updateFields = make(map[string]any)
 	if user.Username != nil {
 		updateFields["username"] = *user.Username
@@ -125,24 +125,24 @@ func (u *UserService) UpdateUser(userID string, user *schemas.UserUpdate) error 
 	if user.Avatar != nil {
 		updateFields["avatar"] = *user.Avatar
 	}
-	if user.GroupID != nil {
-		updateFields["group_id"] = *user.GroupID
+	if user.GroupId != nil {
+		updateFields["group_id"] = *user.GroupId
 	}
-	if user.RoleID != nil {
-		updateFields["role_id"] = *user.RoleID
+	if user.RoleId != nil {
+		updateFields["role_id"] = *user.RoleId
 	}
 	if user.Status != nil {
 		updateFields["status"] = *user.Status
 	}
-	_, err := gen.User.Select(gen.User.ID.Eq(userID), gen.User.OrganizationID.Eq(global.OrganizationID.Get())).Updates(updateFields)
+	_, err := gen.User.Select(gen.User.Id.Eq(userId), gen.User.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (u *UserService) DeleteUser(ctx context.Context, userID string) error {
-	_, err := gen.User.WithContext(ctx).Select(gen.User.ID.Eq(userID), gen.User.OrganizationID.Eq(global.OrganizationID.Get())).Delete()
+func (u *UserService) DeleteUser(ctx context.Context, userId string) error {
+	_, err := gen.User.WithContext(ctx).Select(gen.User.Id.Eq(userId), gen.User.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
 	if err != nil {
 		return err
 	}
@@ -150,10 +150,10 @@ func (u *UserService) DeleteUser(ctx context.Context, userID string) error {
 }
 
 func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.UserList, error) {
-	orgID := global.OrganizationID.Get()
-	stmt := gen.User.Where(gen.User.OrganizationID.Eq(orgID))
-	if params.ID != nil {
-		stmt = stmt.Where(gen.User.ID.In(*params.ID...))
+	orgId := global.OrganizationId.Get()
+	stmt := gen.User.Where(gen.User.OrganizationId.Eq(orgId))
+	if params.Id != nil {
+		stmt = stmt.Where(gen.User.Id.In(*params.Id...))
 	}
 	if params.Username != nil {
 		stmt = stmt.Where(gen.User.Username.In(*params.Username...))
@@ -164,11 +164,11 @@ func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.User
 	if params.Status != nil {
 		stmt = stmt.Where(gen.User.Status.Eq(*params.Status))
 	}
-	if params.GroupID != nil {
-		stmt = stmt.Where(gen.User.GroupID.In(*params.GroupID...))
+	if params.GroupId != nil {
+		stmt = stmt.Where(gen.User.GroupId.In(*params.GroupId...))
 	}
-	if params.RoleID != nil {
-		stmt = stmt.Where(gen.User.RoleID.In(*params.RoleID...))
+	if params.RoleId != nil {
+		stmt = stmt.Where(gen.User.RoleId.In(*params.RoleId...))
 	}
 	if params.AuthType != nil {
 		stmt = stmt.Where(gen.User.AuthType.Eq(*params.AuthType))
@@ -200,14 +200,14 @@ func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.User
 			Email:    user.Email,
 			AuthType: user.AuthType,
 			Role: schemas.RoleShort{
-				ID:   user.Role.ID,
+				Id:   user.Role.Id,
 				Name: user.Role.Name,
 			},
 			Group: schemas.GroupShort{
-				ID:   user.Group.ID,
+				Id:   user.Group.Id,
 				Name: user.Group.Name,
 			},
-			ID:        user.ID,
+			Id:        user.Id,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 		})
@@ -216,9 +216,9 @@ func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.User
 
 }
 
-func VerifyUser(userID string) *models.User {
+func VerifyUser(userId string) *models.User {
 
-	user, err := gen.User.Where(gen.User.ID.Eq(userID)).Preload(gen.User.Role).Preload(gen.User.Organization).First()
+	user, err := gen.User.Where(gen.User.Id.Eq(userId)).Preload(gen.User.Role).Preload(gen.User.Organization).First()
 	if err != nil || user == nil {
 		return nil
 	}
@@ -229,9 +229,8 @@ func VerifyUser(userID string) *models.User {
 	return user
 }
 
-
-func (u *UserService) GetUserMe(userID string) (*schemas.User, error) {
-	user, err := u.GetUserByID(userID)
+func (u *UserService) GetUserMe(userId string) (*schemas.User, error) {
+	user, err := u.GetUserById(userId)
 	if err != nil {
 		return nil, err
 	}

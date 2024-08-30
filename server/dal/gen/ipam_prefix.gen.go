@@ -30,11 +30,11 @@ func newPrefix(db *gorm.DB, opts ...gen.DOOption) prefix {
 	_prefix.Version = field.NewString(tableName, "version")
 	_prefix.Description = field.NewString(tableName, "description")
 	_prefix.Status = field.NewString(tableName, "status")
-	_prefix.IsPool = field.NewBool(tableName, "is_pool")
-	_prefix.MarkAsFull = field.NewBool(tableName, "mark_as_full")
-	_prefix.VlanID = field.NewString(tableName, "vlan_id")
-	_prefix.SiteID = field.NewString(tableName, "site_id")
-	_prefix.OrganizationID = field.NewString(tableName, "organization_id")
+	_prefix.IsPool = field.NewBool(tableName, "isPool")
+	_prefix.MarkAsFull = field.NewBool(tableName, "markAsFull")
+	_prefix.VlanId = field.NewString(tableName, "VlanId")
+	_prefix.SiteId = field.NewString(tableName, "siteId")
+	_prefix.OrganizationId = field.NewString(tableName, "organizationId")
 	_prefix.Vlan = prefixBelongsToVlan{
 		db: db.Session(&gorm.Session{}),
 
@@ -86,9 +86,9 @@ type prefix struct {
 	Status         field.String
 	IsPool         field.Bool
 	MarkAsFull     field.Bool
-	VlanID         field.String
-	SiteID         field.String
-	OrganizationID field.String
+	VlanId         field.String
+	SiteId         field.String
+	OrganizationId field.String
 	Vlan           prefixBelongsToVlan
 
 	Site prefixBelongsToSite
@@ -114,11 +114,11 @@ func (p *prefix) updateTableName(table string) *prefix {
 	p.Version = field.NewString(table, "version")
 	p.Description = field.NewString(table, "description")
 	p.Status = field.NewString(table, "status")
-	p.IsPool = field.NewBool(table, "is_pool")
-	p.MarkAsFull = field.NewBool(table, "mark_as_full")
-	p.VlanID = field.NewString(table, "vlan_id")
-	p.SiteID = field.NewString(table, "site_id")
-	p.OrganizationID = field.NewString(table, "organization_id")
+	p.IsPool = field.NewBool(table, "isPool")
+	p.MarkAsFull = field.NewBool(table, "markAsFull")
+	p.VlanId = field.NewString(table, "VlanId")
+	p.SiteId = field.NewString(table, "siteId")
+	p.OrganizationId = field.NewString(table, "organizationId")
 
 	p.fillFieldMap()
 
@@ -140,11 +140,11 @@ func (p *prefix) fillFieldMap() {
 	p.fieldMap["version"] = p.Version
 	p.fieldMap["description"] = p.Description
 	p.fieldMap["status"] = p.Status
-	p.fieldMap["is_pool"] = p.IsPool
-	p.fieldMap["mark_as_full"] = p.MarkAsFull
-	p.fieldMap["vlan_id"] = p.VlanID
-	p.fieldMap["site_id"] = p.SiteID
-	p.fieldMap["organization_id"] = p.OrganizationID
+	p.fieldMap["isPool"] = p.IsPool
+	p.fieldMap["markAsFull"] = p.MarkAsFull
+	p.fieldMap["VlanId"] = p.VlanId
+	p.fieldMap["siteId"] = p.SiteId
+	p.fieldMap["organizationId"] = p.OrganizationId
 
 }
 

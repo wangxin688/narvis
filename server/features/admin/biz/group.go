@@ -16,19 +16,19 @@ func NewGroupService() *GroupService {
 	return &GroupService{}
 }
 
-func (g *GroupService) CreateAdminGroup(organizationID string, roleID string) (string, error) {
+func (g *GroupService) CreateAdminGroup(organizationId string, roleId string) (string, error) {
 
 	group := &models.Group{
-		OrganizationID: organizationID,
+		OrganizationId: organizationId,
 		Name:           constants.ReserveAdminGroupName,
 		Description:    &constants.ReserveAdminGroupDescription,
-		RoleID:         roleID,
+		RoleId:         roleId,
 	}
 	err := gen.Group.Create(group)
 	if err != nil {
 		return "", err
 	}
-	return group.ID, nil
+	return group.Id, nil
 }
 
 func (g *GroupService) CreateGroup(group *schemas.GroupCreate) (string, error) {
@@ -39,18 +39,18 @@ func (g *GroupService) CreateGroup(group *schemas.GroupCreate) (string, error) {
 	gp := &models.Group{
 		Name:           group.Name,
 		Description:    group.Description,
-		OrganizationID: global.OrganizationID.Get(),
-		RoleID:         group.RoleID,
+		OrganizationId: global.OrganizationId.Get(),
+		RoleId:         group.RoleId,
 	}
 
 	err := gen.Group.Create(gp)
 	if err != nil {
 		return "", err
 	}
-	return gp.ID, nil
+	return gp.Id, nil
 }
 
-func (g *GroupService) UpdateGroup(groupID string, group *schemas.GroupUpdate) error {
+func (g *GroupService) UpdateGroup(groupId string, group *schemas.GroupUpdate) error {
 	var updateFields = make(map[string]string)
 	if group.Name != nil {
 		updateFields["name"] = *group.Name
@@ -58,47 +58,47 @@ func (g *GroupService) UpdateGroup(groupID string, group *schemas.GroupUpdate) e
 	if group.Description != nil {
 		updateFields["description"] = *group.Description
 	}
-	if group.RoleID != nil {
-		updateFields["role_id"] = *group.RoleID
+	if group.RoleId != nil {
+		updateFields["role_id"] = *group.RoleId
 	}
-	_, err := gen.Group.Where(gen.Group.ID.Eq(groupID), gen.Group.OrganizationID.Eq(global.OrganizationID.Get())).Updates(updateFields)
+	_, err := gen.Group.Where(gen.Group.Id.Eq(groupId), gen.Group.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (g *GroupService) GetGroupByID(id string) (*schemas.Group, error) {
-	group, err := gen.Group.Where(gen.Group.ID.Eq(id), gen.Group.OrganizationID.Eq(global.OrganizationID.Get())).
+func (g *GroupService) GetGroupById(id string) (*schemas.Group, error) {
+	group, err := gen.Group.Where(gen.Group.Id.Eq(id), gen.Group.OrganizationId.Eq(global.OrganizationId.Get())).
 		Preload(gen.Group.Role).First()
 	if err != nil {
 		return nil, err
 	}
 	return &schemas.Group{
 		GroupShort: schemas.GroupShort{
-			ID:   group.ID,
+			Id:   group.Id,
 			Name: group.Name,
 		},
 		Description: group.Description,
 		CreatedAt:   group.CreatedAt,
 		UpdatedAt:   group.UpdatedAt,
 		Role: schemas.RoleShort{
-			ID:   group.Role.ID,
+			Id:   group.Role.Id,
 			Name: group.Role.Name,
 		},
 	}, nil
 }
 
 func (g *GroupService) ListGroups(params *schemas.GroupQuery) (int64, *schemas.GroupList, error) {
-	stmt := gen.Group.Where(gen.Group.OrganizationID.Eq(global.OrganizationID.Get()))
-	if params.ID != nil {
-		stmt = stmt.Where(gen.Group.ID.In(*params.ID...))
+	stmt := gen.Group.Where(gen.Group.OrganizationId.Eq(global.OrganizationId.Get()))
+	if params.Id != nil {
+		stmt = stmt.Where(gen.Group.Id.In(*params.Id...))
 	}
 	if params.Name != nil {
 		stmt = stmt.Where(gen.Group.Name.In(*params.Name...))
 	}
-	if params.RoleID != nil {
-		stmt = stmt.Where(gen.Group.RoleID.In(*params.RoleID...))
+	if params.RoleId != nil {
+		stmt = stmt.Where(gen.Group.RoleId.In(*params.RoleId...))
 	}
 	if params.Keyword != nil {
 		stmt.UnderlyingDB().Scopes(params.Search(models.GroupSearchFields))
@@ -122,14 +122,14 @@ func (g *GroupService) ListGroups(params *schemas.GroupQuery) (int64, *schemas.G
 	for _, group := range groups {
 		res = append(res, &schemas.Group{
 			GroupShort: schemas.GroupShort{
-				ID:   group.ID,
+				Id:   group.Id,
 				Name: group.Name,
 			},
 			Description: group.Description,
 			CreatedAt:   group.CreatedAt,
 			UpdatedAt:   group.UpdatedAt,
 			Role: schemas.RoleShort{
-				ID:   group.Role.ID,
+				Id:   group.Role.Id,
 				Name: group.Role.Name,
 			},
 		})
@@ -138,7 +138,7 @@ func (g *GroupService) ListGroups(params *schemas.GroupQuery) (int64, *schemas.G
 }
 
 func (g *GroupService) DeleteGroup(id string) error {
-	_, err := gen.Group.Where(gen.Group.ID.Eq(id), gen.Group.OrganizationID.Eq(global.OrganizationID.Get())).Delete()
+	_, err := gen.Group.Where(gen.Group.Id.Eq(id), gen.Group.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
 	if err != nil {
 		return err
 	}

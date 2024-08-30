@@ -28,7 +28,7 @@ func (o *OrganizationService) CreateOrganization(organization *schemas.Organizat
 	if organization.AuthType == uint8(constants.SlackTenantAuthType) ||
 		organization.AuthType == uint8(constants.TeamsTenantAuthType) ||
 		organization.AuthType == uint8(constants.GooglTenantAuthType) {
-		if organization.AuthConfig.ClientID == "" || organization.AuthConfig.ClientSecret == "" {
+		if organization.AuthConfig.ClientId == "" || organization.AuthConfig.ClientSecret == "" {
 			return nil, &e.GenericError{Code: e.CodeInvalidAuthConfig, Message: e.MsgInvalidAuthConfig}
 		}
 	}
@@ -41,10 +41,10 @@ func (o *OrganizationService) CreateOrganization(organization *schemas.Organizat
 		AuthType:       organization.AuthType,
 	}
 	if organization.AuthType != uint8(constants.LocalTenantAuthType) {
-		clientID := organization.AuthConfig.ClientID
+		clientId := organization.AuthConfig.ClientId
 		clientSecret := organization.AuthConfig.ClientSecret
 		authConfig := datatypes.NewJSONType(
-			models.AuthConfig{ClientID: clientID, ClientSecret: clientSecret},
+			models.AuthConfig{ClientId: clientId, ClientSecret: clientSecret},
 		)
 		organizationModel.AuthConfig = &authConfig
 	}
@@ -59,18 +59,18 @@ func (o *OrganizationService) CreateOrganization(organization *schemas.Organizat
 			core.Logger.Error(fmt.Sprintf("failed to create organization %v", organization), zap.Error(err))
 			return err
 		}
-		core.Logger.Info(fmt.Sprintf("create organization %s %s", organization.Name, organizationModel.ID))
+		core.Logger.Info(fmt.Sprintf("create organization %s %s", organization.Name, organizationModel.Id))
 		userService := biz.NewUserService()
-		user, err := userService.CreateAdminUser(organization.EnterpriseCode, organizationModel.ID, organization.AdminPassword)
+		user, err := userService.CreateAdminUser(organization.EnterpriseCode, organizationModel.Id, organization.AdminPassword)
 		if err != nil {
 			core.Logger.Error(fmt.Sprintf("failed to create admin user %v", organization), zap.Error(err))
 			return err
 		}
-		core.Logger.Info(fmt.Sprintf("create admin user %s", user.ID))
+		core.Logger.Info(fmt.Sprintf("create admin user %s", user.Id))
 		return nil
 	})
 	return &schemas.Organization{
-		ID:             organizationModel.ID,
+		Id:             organizationModel.Id,
 		CreatedAt:      organizationModel.CreatedAt,
 		UpdatedAt:      organizationModel.UpdatedAt,
 		Name:           organization.Name,
@@ -91,9 +91,9 @@ func (o *OrganizationService) GetByName(enterpriseCode string) (*models.Organiza
 	return organization, nil
 }
 
-func (o *OrganizationService) GetByID(orgId string) (*models.Organization, error) {
+func (o *OrganizationService) GetById(orgId string) (*models.Organization, error) {
 
-	organization, err := gen.Organization.Where(gen.Organization.ID.Eq(orgId)).First()
+	organization, err := gen.Organization.Where(gen.Organization.Id.Eq(orgId)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (o *OrganizationService) GetByDomainName(domainName string) (*models.Organi
 // }
 
 func (o *OrganizationService) DeleteOrganization(orgId string) error {
-	_, err := o.IOrganizationDo.Where(gen.Organization.ID.Eq(orgId)).Delete()
+	_, err := o.IOrganizationDo.Where(gen.Organization.Id.Eq(orgId)).Delete()
 	if err != nil {
 		return err
 	}

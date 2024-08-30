@@ -26,26 +26,26 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 
 	tableName := _alert.alertDo.TableName()
 	_alert.ALL = field.NewAsterisk(tableName)
-	_alert.ID = field.NewString(tableName, "id")
+	_alert.Id = field.NewString(tableName, "Id")
 	_alert.Status = field.NewUint8(tableName, "status")
-	_alert.StartedAt = field.NewTime(tableName, "started_at")
-	_alert.ResolvedAt = field.NewTime(tableName, "resolved_at")
+	_alert.StartedAt = field.NewTime(tableName, "startedAt")
+	_alert.ResolvedAt = field.NewTime(tableName, "resolvedAt")
 	_alert.Acknowledged = field.NewBool(tableName, "acknowledged")
 	_alert.Suppressed = field.NewBool(tableName, "suppressed")
 	_alert.Inhibited = field.NewBool(tableName, "inhibited")
 	_alert.Severity = field.NewUint8(tableName, "severity")
-	_alert.AlertName = field.NewString(tableName, "alert_name")
-	_alert.Tag = field.NewField(tableName, "tag")
-	_alert.EventID = field.NewString(tableName, "event_id")
-	_alert.TriggerID = field.NewString(tableName, "trigger_id")
-	_alert.UserID = field.NewString(tableName, "user_id")
-	_alert.SiteID = field.NewString(tableName, "site_id")
-	_alert.DeviceID = field.NewString(tableName, "device_id")
-	_alert.ApID = field.NewString(tableName, "ap_id")
-	_alert.CircuitID = field.NewString(tableName, "circuit_id")
-	_alert.DeviceInterfaceID = field.NewString(tableName, "device_interface_id")
-	_alert.MaintenanceID = field.NewString(tableName, "maintenance_id")
-	_alert.OrganizationID = field.NewString(tableName, "organization_id")
+	_alert.AlertName = field.NewString(tableName, "alertName")
+	_alert.Labels = field.NewField(tableName, "labels")
+	_alert.EventId = field.NewString(tableName, "eventId")
+	_alert.TriggerId = field.NewString(tableName, "triggerId")
+	_alert.UserId = field.NewString(tableName, "userId")
+	_alert.SiteId = field.NewString(tableName, "siteId")
+	_alert.DeviceId = field.NewString(tableName, "deviceId")
+	_alert.ApId = field.NewString(tableName, "apId")
+	_alert.CircuitId = field.NewString(tableName, "circuitId")
+	_alert.DeviceInterfaceId = field.NewString(tableName, "deviceInterfaceId")
+	_alert.MaintenanceId = field.NewString(tableName, "maintenanceId")
+	_alert.OrganizationId = field.NewString(tableName, "organizationId")
 	_alert.User = alertBelongsToUser{
 		db: db.Session(&gorm.Session{}),
 
@@ -446,7 +446,7 @@ type alert struct {
 	alertDo
 
 	ALL               field.Asterisk
-	ID                field.String
+	Id                field.String
 	Status            field.Uint8
 	StartedAt         field.Time
 	ResolvedAt        field.Time
@@ -455,17 +455,17 @@ type alert struct {
 	Inhibited         field.Bool
 	Severity          field.Uint8
 	AlertName         field.String
-	Tag               field.Field
-	EventID           field.String
-	TriggerID         field.String
-	UserID            field.String
-	SiteID            field.String
-	DeviceID          field.String
-	ApID              field.String
-	CircuitID         field.String
-	DeviceInterfaceID field.String
-	MaintenanceID     field.String
-	OrganizationID    field.String
+	Labels            field.Field
+	EventId           field.String
+	TriggerId         field.String
+	UserId            field.String
+	SiteId            field.String
+	DeviceId          field.String
+	ApId              field.String
+	CircuitId         field.String
+	DeviceInterfaceId field.String
+	MaintenanceId     field.String
+	OrganizationId    field.String
 	User              alertBelongsToUser
 
 	Site alertBelongsToSite
@@ -497,26 +497,26 @@ func (a alert) As(alias string) *alert {
 
 func (a *alert) updateTableName(table string) *alert {
 	a.ALL = field.NewAsterisk(table)
-	a.ID = field.NewString(table, "id")
+	a.Id = field.NewString(table, "Id")
 	a.Status = field.NewUint8(table, "status")
-	a.StartedAt = field.NewTime(table, "started_at")
-	a.ResolvedAt = field.NewTime(table, "resolved_at")
+	a.StartedAt = field.NewTime(table, "startedAt")
+	a.ResolvedAt = field.NewTime(table, "resolvedAt")
 	a.Acknowledged = field.NewBool(table, "acknowledged")
 	a.Suppressed = field.NewBool(table, "suppressed")
 	a.Inhibited = field.NewBool(table, "inhibited")
 	a.Severity = field.NewUint8(table, "severity")
-	a.AlertName = field.NewString(table, "alert_name")
-	a.Tag = field.NewField(table, "tag")
-	a.EventID = field.NewString(table, "event_id")
-	a.TriggerID = field.NewString(table, "trigger_id")
-	a.UserID = field.NewString(table, "user_id")
-	a.SiteID = field.NewString(table, "site_id")
-	a.DeviceID = field.NewString(table, "device_id")
-	a.ApID = field.NewString(table, "ap_id")
-	a.CircuitID = field.NewString(table, "circuit_id")
-	a.DeviceInterfaceID = field.NewString(table, "device_interface_id")
-	a.MaintenanceID = field.NewString(table, "maintenance_id")
-	a.OrganizationID = field.NewString(table, "organization_id")
+	a.AlertName = field.NewString(table, "alertName")
+	a.Labels = field.NewField(table, "labels")
+	a.EventId = field.NewString(table, "eventId")
+	a.TriggerId = field.NewString(table, "triggerId")
+	a.UserId = field.NewString(table, "userId")
+	a.SiteId = field.NewString(table, "siteId")
+	a.DeviceId = field.NewString(table, "deviceId")
+	a.ApId = field.NewString(table, "apId")
+	a.CircuitId = field.NewString(table, "circuitId")
+	a.DeviceInterfaceId = field.NewString(table, "deviceInterfaceId")
+	a.MaintenanceId = field.NewString(table, "maintenanceId")
+	a.OrganizationId = field.NewString(table, "organizationId")
 
 	a.fillFieldMap()
 
@@ -534,26 +534,26 @@ func (a *alert) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (a *alert) fillFieldMap() {
 	a.fieldMap = make(map[string]field.Expr, 28)
-	a.fieldMap["id"] = a.ID
+	a.fieldMap["Id"] = a.Id
 	a.fieldMap["status"] = a.Status
-	a.fieldMap["started_at"] = a.StartedAt
-	a.fieldMap["resolved_at"] = a.ResolvedAt
+	a.fieldMap["startedAt"] = a.StartedAt
+	a.fieldMap["resolvedAt"] = a.ResolvedAt
 	a.fieldMap["acknowledged"] = a.Acknowledged
 	a.fieldMap["suppressed"] = a.Suppressed
 	a.fieldMap["inhibited"] = a.Inhibited
 	a.fieldMap["severity"] = a.Severity
-	a.fieldMap["alert_name"] = a.AlertName
-	a.fieldMap["tag"] = a.Tag
-	a.fieldMap["event_id"] = a.EventID
-	a.fieldMap["trigger_id"] = a.TriggerID
-	a.fieldMap["user_id"] = a.UserID
-	a.fieldMap["site_id"] = a.SiteID
-	a.fieldMap["device_id"] = a.DeviceID
-	a.fieldMap["ap_id"] = a.ApID
-	a.fieldMap["circuit_id"] = a.CircuitID
-	a.fieldMap["device_interface_id"] = a.DeviceInterfaceID
-	a.fieldMap["maintenance_id"] = a.MaintenanceID
-	a.fieldMap["organization_id"] = a.OrganizationID
+	a.fieldMap["alertName"] = a.AlertName
+	a.fieldMap["labels"] = a.Labels
+	a.fieldMap["eventId"] = a.EventId
+	a.fieldMap["triggerId"] = a.TriggerId
+	a.fieldMap["userId"] = a.UserId
+	a.fieldMap["siteId"] = a.SiteId
+	a.fieldMap["deviceId"] = a.DeviceId
+	a.fieldMap["apId"] = a.ApId
+	a.fieldMap["circuitId"] = a.CircuitId
+	a.fieldMap["deviceInterfaceId"] = a.DeviceInterfaceId
+	a.fieldMap["maintenanceId"] = a.MaintenanceId
+	a.fieldMap["organizationId"] = a.OrganizationId
 
 }
 

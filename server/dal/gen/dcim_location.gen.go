@@ -26,14 +26,14 @@ func newLocation(db *gorm.DB, opts ...gen.DOOption) location {
 
 	tableName := _location.locationDo.TableName()
 	_location.ALL = field.NewAsterisk(tableName)
-	_location.ID = field.NewString(tableName, "id")
-	_location.CreatedAt = field.NewTime(tableName, "created_at")
-	_location.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_location.Id = field.NewString(tableName, "id")
+	_location.CreatedAt = field.NewTime(tableName, "createdAt")
+	_location.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_location.Name = field.NewString(tableName, "name")
 	_location.Description = field.NewString(tableName, "description")
-	_location.ParentID = field.NewString(tableName, "parent_id")
-	_location.SiteID = field.NewString(tableName, "site_id")
-	_location.OrganizationID = field.NewString(tableName, "organization_id")
+	_location.ParentId = field.NewString(tableName, "parentId")
+	_location.SiteId = field.NewString(tableName, "siteId")
+	_location.OrganizationId = field.NewString(tableName, "organizationId")
 	_location.Parent = locationBelongsToParent{
 		db: db.Session(&gorm.Session{}),
 
@@ -84,14 +84,14 @@ type location struct {
 	locationDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
 	Description    field.String
-	ParentID       field.String
-	SiteID         field.String
-	OrganizationID field.String
+	ParentId       field.String
+	SiteId         field.String
+	OrganizationId field.String
 	Parent         locationBelongsToParent
 
 	Site locationBelongsToSite
@@ -113,14 +113,14 @@ func (l location) As(alias string) *location {
 
 func (l *location) updateTableName(table string) *location {
 	l.ALL = field.NewAsterisk(table)
-	l.ID = field.NewString(table, "id")
-	l.CreatedAt = field.NewTime(table, "created_at")
-	l.UpdatedAt = field.NewTime(table, "updated_at")
+	l.Id = field.NewString(table, "id")
+	l.CreatedAt = field.NewTime(table, "createdAt")
+	l.UpdatedAt = field.NewTime(table, "updatedAt")
 	l.Name = field.NewString(table, "name")
 	l.Description = field.NewString(table, "description")
-	l.ParentID = field.NewString(table, "parent_id")
-	l.SiteID = field.NewString(table, "site_id")
-	l.OrganizationID = field.NewString(table, "organization_id")
+	l.ParentId = field.NewString(table, "parentId")
+	l.SiteId = field.NewString(table, "siteId")
+	l.OrganizationId = field.NewString(table, "organizationId")
 
 	l.fillFieldMap()
 
@@ -138,14 +138,14 @@ func (l *location) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (l *location) fillFieldMap() {
 	l.fieldMap = make(map[string]field.Expr, 11)
-	l.fieldMap["id"] = l.ID
-	l.fieldMap["created_at"] = l.CreatedAt
-	l.fieldMap["updated_at"] = l.UpdatedAt
+	l.fieldMap["id"] = l.Id
+	l.fieldMap["createdAt"] = l.CreatedAt
+	l.fieldMap["updatedAt"] = l.UpdatedAt
 	l.fieldMap["name"] = l.Name
 	l.fieldMap["description"] = l.Description
-	l.fieldMap["parent_id"] = l.ParentID
-	l.fieldMap["site_id"] = l.SiteID
-	l.fieldMap["organization_id"] = l.OrganizationID
+	l.fieldMap["parentId"] = l.ParentId
+	l.fieldMap["siteId"] = l.SiteId
+	l.fieldMap["organizationId"] = l.OrganizationId
 
 }
 

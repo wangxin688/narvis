@@ -3,17 +3,19 @@ package schemas
 import "time"
 
 type DeviceInterface struct {
-	ID          string    `json:"id"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	IfName      string    `json:"if_name"`
-	IfDescr     string    `json:"if_descr"`
-	Speed       uint64    `json:"speed"`
-	Mode        uint64    `json:"mode"`
-	Mtu         uint64    `json:"mtu"`
-	AdminStatus uint64    `json:"admin_status"`
-	OperStatus  uint64    `json:"oper_status"`
-	LastChange  time.Time `json:"last_change"`
+	Id            string    `json:"id"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
+	IfIndex       uint64    `json:"ifIndex"`
+	IfName        string    `json:"ifName"`
+	IfDescr       string    `json:"ifDescr"`
+	IfType        uint64    `json:"ifType"`
+	IfMtu         uint64    `json:"ifMtu"`
+	IfSpeed       uint64    `json:"ifSpeed"`
+	IfPhysAddr    string    `json:"ifPhysAddr"`
+	IfAdminStatus uint64    `json:"ifAdminStatus"`
+	IfOperStatus  uint64    `json:"ifOperStatus"`
+	IfLastChange  uint64    `json:"ifLastChange"`
+	IfHighSpeed   uint64    `json:"ifHighSpeed"`
+	IfIpAddress   string    `json:"ifIpAddress"`
 }
-
-

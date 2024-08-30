@@ -53,7 +53,7 @@ func getRole(c *gin.Context) {
 		}
 	}()
 	roleId := c.Param("id")
-	role, err := biz.NewRoleService().GetRoleByID(roleId)
+	role, err := biz.NewRoleService().GetRoleById(roleId)
 	if err != nil {
 		return
 	}
@@ -114,7 +114,7 @@ func updateRole(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, ts.IDResponse{ID: roleId})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: roleId})
 }
 
 // @Summary Delete role
@@ -137,6 +137,6 @@ func deleteRole(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, ts.IDResponse{ID: roleId})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: roleId})
 
 }

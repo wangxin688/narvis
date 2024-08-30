@@ -26,24 +26,24 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 
 	tableName := _aP.aPDo.TableName()
 	_aP.ALL = field.NewAsterisk(tableName)
-	_aP.ID = field.NewString(tableName, "id")
-	_aP.CreatedAt = field.NewTime(tableName, "created_at")
-	_aP.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_aP.Id = field.NewString(tableName, "id")
+	_aP.CreatedAt = field.NewTime(tableName, "createdAt")
+	_aP.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_aP.Name = field.NewString(tableName, "name")
 	_aP.Status = field.NewString(tableName, "status")
-	_aP.MacAddress = field.NewString(tableName, "mac_address")
-	_aP.SerialNumber = field.NewString(tableName, "serial_number")
-	_aP.ManagementIP = field.NewString(tableName, "management_ip")
-	_aP.DeviceModel = field.NewString(tableName, "device_model")
+	_aP.MacAddress = field.NewString(tableName, "macAddress")
+	_aP.SerialNumber = field.NewString(tableName, "serialNumber")
+	_aP.ManagementIP = field.NewString(tableName, "managementIp")
+	_aP.DeviceModel = field.NewString(tableName, "deviceModel")
 	_aP.Manufacturer = field.NewString(tableName, "manufacturer")
-	_aP.DeviceRole = field.NewString(tableName, "device_role")
-	_aP.Version = field.NewString(tableName, "version")
-	_aP.GroupName = field.NewString(tableName, "group_name")
+	_aP.DeviceRole = field.NewString(tableName, "deviceRole")
+	_aP.OsVersion = field.NewString(tableName, "osVersion")
+	_aP.GroupName = field.NewString(tableName, "groupName")
 	_aP.Coordinate = field.NewField(tableName, "coordinate")
-	_aP.ActiveWacID = field.NewString(tableName, "active_wac_id")
-	_aP.LocationID = field.NewString(tableName, "location_id")
-	_aP.SiteID = field.NewString(tableName, "site_id")
-	_aP.OrganizationID = field.NewString(tableName, "organization_id")
+	_aP.ActiveWacId = field.NewString(tableName, "activeWacId")
+	_aP.LocationId = field.NewString(tableName, "locationId")
+	_aP.SiteId = field.NewString(tableName, "siteId")
+	_aP.OrganizationId = field.NewString(tableName, "organizationId")
 	_aP.ActiveWac = aPBelongsToActiveWac{
 		db: db.Session(&gorm.Session{}),
 
@@ -173,7 +173,7 @@ type aP struct {
 	aPDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
@@ -184,13 +184,13 @@ type aP struct {
 	DeviceModel    field.String
 	Manufacturer   field.String
 	DeviceRole     field.String
-	Version        field.String
+	OsVersion      field.String
 	GroupName      field.String
 	Coordinate     field.Field
-	ActiveWacID    field.String
-	LocationID     field.String
-	SiteID         field.String
-	OrganizationID field.String
+	ActiveWacId    field.String
+	LocationId     field.String
+	SiteId         field.String
+	OrganizationId field.String
 	ActiveWac      aPBelongsToActiveWac
 
 	Location aPBelongsToLocation
@@ -214,24 +214,24 @@ func (a aP) As(alias string) *aP {
 
 func (a *aP) updateTableName(table string) *aP {
 	a.ALL = field.NewAsterisk(table)
-	a.ID = field.NewString(table, "id")
-	a.CreatedAt = field.NewTime(table, "created_at")
-	a.UpdatedAt = field.NewTime(table, "updated_at")
+	a.Id = field.NewString(table, "id")
+	a.CreatedAt = field.NewTime(table, "createdAt")
+	a.UpdatedAt = field.NewTime(table, "updatedAt")
 	a.Name = field.NewString(table, "name")
 	a.Status = field.NewString(table, "status")
-	a.MacAddress = field.NewString(table, "mac_address")
-	a.SerialNumber = field.NewString(table, "serial_number")
-	a.ManagementIP = field.NewString(table, "management_ip")
-	a.DeviceModel = field.NewString(table, "device_model")
+	a.MacAddress = field.NewString(table, "macAddress")
+	a.SerialNumber = field.NewString(table, "serialNumber")
+	a.ManagementIP = field.NewString(table, "managementIp")
+	a.DeviceModel = field.NewString(table, "deviceModel")
 	a.Manufacturer = field.NewString(table, "manufacturer")
-	a.DeviceRole = field.NewString(table, "device_role")
-	a.Version = field.NewString(table, "version")
-	a.GroupName = field.NewString(table, "group_name")
+	a.DeviceRole = field.NewString(table, "deviceRole")
+	a.OsVersion = field.NewString(table, "osVersion")
+	a.GroupName = field.NewString(table, "groupName")
 	a.Coordinate = field.NewField(table, "coordinate")
-	a.ActiveWacID = field.NewString(table, "active_wac_id")
-	a.LocationID = field.NewString(table, "location_id")
-	a.SiteID = field.NewString(table, "site_id")
-	a.OrganizationID = field.NewString(table, "organization_id")
+	a.ActiveWacId = field.NewString(table, "activeWacId")
+	a.LocationId = field.NewString(table, "locationId")
+	a.SiteId = field.NewString(table, "siteId")
+	a.OrganizationId = field.NewString(table, "organizationId")
 
 	a.fillFieldMap()
 
@@ -249,24 +249,24 @@ func (a *aP) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (a *aP) fillFieldMap() {
 	a.fieldMap = make(map[string]field.Expr, 22)
-	a.fieldMap["id"] = a.ID
-	a.fieldMap["created_at"] = a.CreatedAt
-	a.fieldMap["updated_at"] = a.UpdatedAt
+	a.fieldMap["id"] = a.Id
+	a.fieldMap["createdAt"] = a.CreatedAt
+	a.fieldMap["updatedAt"] = a.UpdatedAt
 	a.fieldMap["name"] = a.Name
 	a.fieldMap["status"] = a.Status
-	a.fieldMap["mac_address"] = a.MacAddress
-	a.fieldMap["serial_number"] = a.SerialNumber
-	a.fieldMap["management_ip"] = a.ManagementIP
-	a.fieldMap["device_model"] = a.DeviceModel
+	a.fieldMap["macAddress"] = a.MacAddress
+	a.fieldMap["serialNumber"] = a.SerialNumber
+	a.fieldMap["managementIp"] = a.ManagementIP
+	a.fieldMap["deviceModel"] = a.DeviceModel
 	a.fieldMap["manufacturer"] = a.Manufacturer
-	a.fieldMap["device_role"] = a.DeviceRole
-	a.fieldMap["version"] = a.Version
-	a.fieldMap["group_name"] = a.GroupName
+	a.fieldMap["deviceRole"] = a.DeviceRole
+	a.fieldMap["osVersion"] = a.OsVersion
+	a.fieldMap["groupName"] = a.GroupName
 	a.fieldMap["coordinate"] = a.Coordinate
-	a.fieldMap["active_wac_id"] = a.ActiveWacID
-	a.fieldMap["location_id"] = a.LocationID
-	a.fieldMap["site_id"] = a.SiteID
-	a.fieldMap["organization_id"] = a.OrganizationID
+	a.fieldMap["activeWacId"] = a.ActiveWacId
+	a.fieldMap["locationId"] = a.LocationId
+	a.fieldMap["siteId"] = a.SiteId
+	a.fieldMap["organizationId"] = a.OrganizationId
 
 }
 

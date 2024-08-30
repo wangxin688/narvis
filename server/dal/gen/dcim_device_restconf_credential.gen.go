@@ -26,14 +26,14 @@ func newDeviceRestconfCredential(db *gorm.DB, opts ...gen.DOOption) deviceRestco
 
 	tableName := _deviceRestconfCredential.deviceRestconfCredentialDo.TableName()
 	_deviceRestconfCredential.ALL = field.NewAsterisk(tableName)
-	_deviceRestconfCredential.ID = field.NewString(tableName, "id")
-	_deviceRestconfCredential.CreatedAt = field.NewTime(tableName, "created_at")
-	_deviceRestconfCredential.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_deviceRestconfCredential.Id = field.NewString(tableName, "id")
+	_deviceRestconfCredential.CreatedAt = field.NewTime(tableName, "createdAt")
+	_deviceRestconfCredential.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_deviceRestconfCredential.Url = field.NewString(tableName, "url")
 	_deviceRestconfCredential.Username = field.NewString(tableName, "username")
 	_deviceRestconfCredential.Password = field.NewString(tableName, "password")
-	_deviceRestconfCredential.DeviceID = field.NewString(tableName, "device_id")
-	_deviceRestconfCredential.OrganizationID = field.NewString(tableName, "organization_id")
+	_deviceRestconfCredential.DeviceId = field.NewString(tableName, "deviceId")
+	_deviceRestconfCredential.OrganizationId = field.NewString(tableName, "organizationId")
 	_deviceRestconfCredential.Device = deviceRestconfCredentialBelongsToDevice{
 		db: db.Session(&gorm.Session{}),
 
@@ -151,14 +151,14 @@ type deviceRestconfCredential struct {
 	deviceRestconfCredentialDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Url            field.String
 	Username       field.String
 	Password       field.String
-	DeviceID       field.String
-	OrganizationID field.String
+	DeviceId       field.String
+	OrganizationId field.String
 	Device         deviceRestconfCredentialBelongsToDevice
 
 	Organization deviceRestconfCredentialBelongsToOrganization
@@ -178,14 +178,14 @@ func (d deviceRestconfCredential) As(alias string) *deviceRestconfCredential {
 
 func (d *deviceRestconfCredential) updateTableName(table string) *deviceRestconfCredential {
 	d.ALL = field.NewAsterisk(table)
-	d.ID = field.NewString(table, "id")
-	d.CreatedAt = field.NewTime(table, "created_at")
-	d.UpdatedAt = field.NewTime(table, "updated_at")
+	d.Id = field.NewString(table, "id")
+	d.CreatedAt = field.NewTime(table, "createdAt")
+	d.UpdatedAt = field.NewTime(table, "updatedAt")
 	d.Url = field.NewString(table, "url")
 	d.Username = field.NewString(table, "username")
 	d.Password = field.NewString(table, "password")
-	d.DeviceID = field.NewString(table, "device_id")
-	d.OrganizationID = field.NewString(table, "organization_id")
+	d.DeviceId = field.NewString(table, "deviceId")
+	d.OrganizationId = field.NewString(table, "organizationId")
 
 	d.fillFieldMap()
 
@@ -203,14 +203,14 @@ func (d *deviceRestconfCredential) GetFieldByName(fieldName string) (field.Order
 
 func (d *deviceRestconfCredential) fillFieldMap() {
 	d.fieldMap = make(map[string]field.Expr, 10)
-	d.fieldMap["id"] = d.ID
-	d.fieldMap["created_at"] = d.CreatedAt
-	d.fieldMap["updated_at"] = d.UpdatedAt
+	d.fieldMap["id"] = d.Id
+	d.fieldMap["createdAt"] = d.CreatedAt
+	d.fieldMap["updatedAt"] = d.UpdatedAt
 	d.fieldMap["url"] = d.Url
 	d.fieldMap["username"] = d.Username
 	d.fieldMap["password"] = d.Password
-	d.fieldMap["device_id"] = d.DeviceID
-	d.fieldMap["organization_id"] = d.OrganizationID
+	d.fieldMap["deviceId"] = d.DeviceId
+	d.fieldMap["organizationId"] = d.OrganizationId
 
 }
 

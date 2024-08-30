@@ -13,9 +13,9 @@ var VlanTableName = "ipam_vlan"
 type Block struct {
 	BaseDbModel
 
-	Prefix         string       `gorm:"type:cidr;not null"`
-	Description    *string      `gorm:"default:null"`
-	OrganizationID string       `gorm:"type:uuid;index"`
+	Prefix         string       `gorm:"column:prefix;type:cidr;not null"`
+	Description    *string      `gorm:"column:description;default:null"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -26,17 +26,17 @@ func (Block) TableName() string {
 }
 
 type Prefix struct {
-	Prefix         string       `gorm:"type:cidr;index;not null;uniqueIndex:idx_prefix_organization_id;index"`
-	Version        string       `gorm:"not null"` // IPv4 or IPv6
-	Description    *string      `gorm:"default:null"`
-	Status         *string      `gorm:"default:Active"`
-	IsPool         *bool        `gorm:"default:false"`
-	MarkAsFull     *bool        `gorm:"default:false"`
-	VlanID         *string      `gorm:"type:uuid;default:null"`
+	Prefix         string       `gorm:"column:prefix;type:cidr;index;not null;uniqueIndex:idx_prefix_organization_id;index"`
+	Version        string       `gorm:"column:version;not null"` // IPv4 or IPv6
+	Description    *string      `gorm:"column:description;default:null"`
+	Status         *string      `gorm:"column:status;default:Active"`
+	IsPool         *bool        `gorm:"column:isPool;default:false"`
+	MarkAsFull     *bool        `gorm:"column:markAsFull;default:false"`
+	VlanId         *string      `gorm:"column:VlanId;type:uuid;default:null"`
 	Vlan           Vlan         `gorm:"constraint:Ondelete:SET NULL"`
-	SiteID         *string      `gorm:"type:uuid;index"`
+	SiteId         *string      `gorm:"column:siteId;type:uuid;index"`
 	Site           Site         `gorm:"constraint:Ondelete:SET NULL"`
-	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_prefix_organization_id;index"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_prefix_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 	// TODO: Add utilization
 	// TODO: Add child prefixes
@@ -50,11 +50,11 @@ func (Prefix) TableName() string {
 type IpAddress struct {
 	BaseDbModel
 
-	Address        string       `gorm:"type:inet;not null;uniqueIndex:idx_address_organization_id;index"`
-	Status         string       `gorm:"default:Active"`
-	DnsName        *string      `gorm:"default:null"`
-	AssignTo       *string      `gorm:"default:null"`
-	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_address_organization_id;index"`
+	Address        string       `gorm:"column:address;type:inet;not null;uniqueIndex:idx_address_organization_id;index"`
+	Status         string       `gorm:"column:status;default:Active"`
+	DnsName        *string      `gorm:"column:dnsName;default:null"`
+	AssignTo       *string      `gorm:"column:assignTo;default:null"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_address_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -64,13 +64,13 @@ func (IpAddress) TableName() string {
 
 type Vlan struct {
 	BaseDbModel
-	Name           string       `gorm:"not null"`
-	Vid            uint32       `gorm:"not null;uniqueIndex:idx_vid_site_id"` // 1-4094 and vxlan range
-	Description    *string      `gorm:"default:null"`
-	Status         string       `gorm:"default:Active"`
-	SiteID         string       `gorm:"type:uuid;uniqueIndex:idx_vid_site_id;index"`
+	Name           string       `gorm:"column:name;not null"`
+	Vid            uint32       `gorm:"column:vid;not null;uniqueIndex:idx_vid_site_id"` // 1-4094 and vxlan range
+	Description    *string      `gorm:"column:description;default:null"`
+	Status         string       `gorm:"column:status;default:Active"`
+	SiteId         string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_vid_site_id;index"`
 	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationID string       `gorm:"type:uuid;index"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 

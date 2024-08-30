@@ -26,13 +26,13 @@ func newGroup(db *gorm.DB, opts ...gen.DOOption) group {
 
 	tableName := _group.groupDo.TableName()
 	_group.ALL = field.NewAsterisk(tableName)
-	_group.ID = field.NewString(tableName, "id")
-	_group.CreatedAt = field.NewTime(tableName, "created_at")
-	_group.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_group.Id = field.NewString(tableName, "id")
+	_group.CreatedAt = field.NewTime(tableName, "createdAt")
+	_group.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_group.Name = field.NewString(tableName, "name")
 	_group.Description = field.NewString(tableName, "description")
-	_group.RoleID = field.NewString(tableName, "role_id")
-	_group.OrganizationID = field.NewString(tableName, "organization_id")
+	_group.RoleId = field.NewString(tableName, "role_id")
+	_group.OrganizationId = field.NewString(tableName, "organizationId")
 	_group.User = groupHasManyUser{
 		db: db.Session(&gorm.Session{}),
 
@@ -166,13 +166,13 @@ type group struct {
 	groupDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
 	Description    field.String
-	RoleID         field.String
-	OrganizationID field.String
+	RoleId         field.String
+	OrganizationId field.String
 	User           groupHasManyUser
 
 	Role groupBelongsToRole
@@ -194,13 +194,13 @@ func (g group) As(alias string) *group {
 
 func (g *group) updateTableName(table string) *group {
 	g.ALL = field.NewAsterisk(table)
-	g.ID = field.NewString(table, "id")
-	g.CreatedAt = field.NewTime(table, "created_at")
-	g.UpdatedAt = field.NewTime(table, "updated_at")
+	g.Id = field.NewString(table, "id")
+	g.CreatedAt = field.NewTime(table, "createdAt")
+	g.UpdatedAt = field.NewTime(table, "updatedAt")
 	g.Name = field.NewString(table, "name")
 	g.Description = field.NewString(table, "description")
-	g.RoleID = field.NewString(table, "role_id")
-	g.OrganizationID = field.NewString(table, "organization_id")
+	g.RoleId = field.NewString(table, "role_id")
+	g.OrganizationId = field.NewString(table, "organizationId")
 
 	g.fillFieldMap()
 
@@ -218,13 +218,13 @@ func (g *group) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (g *group) fillFieldMap() {
 	g.fieldMap = make(map[string]field.Expr, 10)
-	g.fieldMap["id"] = g.ID
-	g.fieldMap["created_at"] = g.CreatedAt
-	g.fieldMap["updated_at"] = g.UpdatedAt
+	g.fieldMap["id"] = g.Id
+	g.fieldMap["createdAt"] = g.CreatedAt
+	g.fieldMap["updatedAt"] = g.UpdatedAt
 	g.fieldMap["name"] = g.Name
 	g.fieldMap["description"] = g.Description
-	g.fieldMap["role_id"] = g.RoleID
-	g.fieldMap["organization_id"] = g.OrganizationID
+	g.fieldMap["role_id"] = g.RoleId
+	g.fieldMap["organizationId"] = g.OrganizationId
 
 }
 

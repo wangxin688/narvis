@@ -26,14 +26,14 @@ func newIpAddress(db *gorm.DB, opts ...gen.DOOption) ipAddress {
 
 	tableName := _ipAddress.ipAddressDo.TableName()
 	_ipAddress.ALL = field.NewAsterisk(tableName)
-	_ipAddress.ID = field.NewString(tableName, "id")
-	_ipAddress.CreatedAt = field.NewTime(tableName, "created_at")
-	_ipAddress.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_ipAddress.Id = field.NewString(tableName, "id")
+	_ipAddress.CreatedAt = field.NewTime(tableName, "createdAt")
+	_ipAddress.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_ipAddress.Address = field.NewString(tableName, "address")
 	_ipAddress.Status = field.NewString(tableName, "status")
-	_ipAddress.DnsName = field.NewString(tableName, "dns_name")
-	_ipAddress.AssignTo = field.NewString(tableName, "assign_to")
-	_ipAddress.OrganizationID = field.NewString(tableName, "organization_id")
+	_ipAddress.DnsName = field.NewString(tableName, "dnsName")
+	_ipAddress.AssignTo = field.NewString(tableName, "assignTo")
+	_ipAddress.OrganizationId = field.NewString(tableName, "organizationId")
 	_ipAddress.Organization = ipAddressBelongsToOrganization{
 		db: db.Session(&gorm.Session{}),
 
@@ -49,14 +49,14 @@ type ipAddress struct {
 	ipAddressDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Address        field.String
 	Status         field.String
 	DnsName        field.String
 	AssignTo       field.String
-	OrganizationID field.String
+	OrganizationId field.String
 	Organization   ipAddressBelongsToOrganization
 
 	fieldMap map[string]field.Expr
@@ -74,14 +74,14 @@ func (i ipAddress) As(alias string) *ipAddress {
 
 func (i *ipAddress) updateTableName(table string) *ipAddress {
 	i.ALL = field.NewAsterisk(table)
-	i.ID = field.NewString(table, "id")
-	i.CreatedAt = field.NewTime(table, "created_at")
-	i.UpdatedAt = field.NewTime(table, "updated_at")
+	i.Id = field.NewString(table, "id")
+	i.CreatedAt = field.NewTime(table, "createdAt")
+	i.UpdatedAt = field.NewTime(table, "updatedAt")
 	i.Address = field.NewString(table, "address")
 	i.Status = field.NewString(table, "status")
-	i.DnsName = field.NewString(table, "dns_name")
-	i.AssignTo = field.NewString(table, "assign_to")
-	i.OrganizationID = field.NewString(table, "organization_id")
+	i.DnsName = field.NewString(table, "dnsName")
+	i.AssignTo = field.NewString(table, "assignTo")
+	i.OrganizationId = field.NewString(table, "organizationId")
 
 	i.fillFieldMap()
 
@@ -99,14 +99,14 @@ func (i *ipAddress) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (i *ipAddress) fillFieldMap() {
 	i.fieldMap = make(map[string]field.Expr, 9)
-	i.fieldMap["id"] = i.ID
-	i.fieldMap["created_at"] = i.CreatedAt
-	i.fieldMap["updated_at"] = i.UpdatedAt
+	i.fieldMap["id"] = i.Id
+	i.fieldMap["createdAt"] = i.CreatedAt
+	i.fieldMap["updatedAt"] = i.UpdatedAt
 	i.fieldMap["address"] = i.Address
 	i.fieldMap["status"] = i.Status
-	i.fieldMap["dns_name"] = i.DnsName
-	i.fieldMap["assign_to"] = i.AssignTo
-	i.fieldMap["organization_id"] = i.OrganizationID
+	i.fieldMap["dnsName"] = i.DnsName
+	i.fieldMap["assignTo"] = i.AssignTo
+	i.fieldMap["organizationId"] = i.OrganizationId
 
 }
 

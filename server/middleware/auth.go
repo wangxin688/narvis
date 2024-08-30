@@ -71,8 +71,8 @@ func AuthMiddleware() gin.HandlerFunc {
 			)
 			return
 		case errors.ErrorOk:
-			global.UserID.Set(tokenClaims.UserID)
-			if !checkUserPermission(tokenClaims.UserID, c.FullPath()) {
+			global.UserId.Set(tokenClaims.UserId)
+			if !checkUserPermission(tokenClaims.UserId, c.FullPath()) {
 				c.AbortWithStatusJSON(
 					http.StatusForbidden, errors.GenericError{
 						Code:    http.StatusForbidden,
@@ -88,12 +88,11 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-
 func checkUserPermission(userID string, path string) bool {
 	user := biz.VerifyUser(userID)
 	if user == nil {
 		return false
 	}
-	global.OrganizationID.Set(user.OrganizationID)
+	global.OrganizationId.Set(user.OrganizationId)
 	return biz.CheckRolePathPermission(user, path)
 }

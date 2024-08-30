@@ -26,32 +26,32 @@ func newDevice(db *gorm.DB, opts ...gen.DOOption) device {
 
 	tableName := _device.deviceDo.TableName()
 	_device.ALL = field.NewAsterisk(tableName)
-	_device.ID = field.NewString(tableName, "id")
-	_device.CreatedAt = field.NewTime(tableName, "created_at")
-	_device.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_device.Id = field.NewString(tableName, "id")
+	_device.CreatedAt = field.NewTime(tableName, "createdAt")
+	_device.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_device.Name = field.NewString(tableName, "name")
-	_device.ManagementIp = field.NewString(tableName, "management_ip")
+	_device.ManagementIp = field.NewString(tableName, "managementIp")
 	_device.Status = field.NewString(tableName, "status")
 	_device.Platform = field.NewString(tableName, "platform")
-	_device.ProductFamily = field.NewString(tableName, "product_family")
-	_device.DeviceModel = field.NewString(tableName, "device_model")
+	_device.ProductFamily = field.NewString(tableName, "productFamily")
+	_device.DeviceModel = field.NewString(tableName, "deviceModel")
 	_device.Manufacturer = field.NewString(tableName, "manufacturer")
-	_device.DeviceRole = field.NewString(tableName, "device_role")
-	_device.ChassisID = field.NewString(tableName, "chassis_id")
-	_device.SerialNumber = field.NewString(tableName, "serial_number")
-	_device.AssetTag = field.NewString(tableName, "asset_tag")
+	_device.DeviceRole = field.NewString(tableName, "deviceRole")
+	_device.ChassisId = field.NewString(tableName, "chassisId")
+	_device.SerialNumber = field.NewString(tableName, "serialNumber")
+	_device.AssetTag = field.NewString(tableName, "assetTag")
 	_device.Description = field.NewString(tableName, "description")
-	_device.OsVersion = field.NewString(tableName, "os_version")
-	_device.OsPatch = field.NewString(tableName, "os_patch")
-	_device.RackID = field.NewString(tableName, "rack_id")
-	_device.RackPosition = field.NewUint8(tableName, "rack_position")
-	_device.RackDirection = field.NewString(tableName, "rack_direction")
-	_device.UHeight = field.NewUint8(tableName, "u_height")
-	_device.MonitorID = field.NewString(tableName, "monitor_id")
-	_device.TemplateID = field.NewString(tableName, "template_id")
-	_device.LocationID = field.NewString(tableName, "location_id")
-	_device.SiteID = field.NewString(tableName, "site_id")
-	_device.OrganizationID = field.NewString(tableName, "organization_id")
+	_device.OsVersion = field.NewString(tableName, "osVersion")
+	_device.OsPatch = field.NewString(tableName, "osPatch")
+	_device.RackId = field.NewString(tableName, "rackId")
+	_device.RackPosition = field.NewUint8(tableName, "rackPosition")
+	_device.RackDirection = field.NewString(tableName, "rackDirection")
+	_device.UHeight = field.NewUint8(tableName, "uHeight")
+	_device.MonitorId = field.NewString(tableName, "monitorId")
+	_device.TemplateId = field.NewString(tableName, "templateId")
+	_device.LocationId = field.NewString(tableName, "locationId")
+	_device.SiteId = field.NewString(tableName, "siteId")
+	_device.OrganizationId = field.NewString(tableName, "organizationId")
 	_device.Rack = deviceBelongsToRack{
 		db: db.Session(&gorm.Session{}),
 
@@ -141,7 +141,7 @@ type device struct {
 	deviceDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
@@ -152,21 +152,21 @@ type device struct {
 	DeviceModel    field.String
 	Manufacturer   field.String
 	DeviceRole     field.String
-	ChassisID      field.String
+	ChassisId      field.String
 	SerialNumber   field.String
 	AssetTag       field.String
 	Description    field.String
 	OsVersion      field.String
 	OsPatch        field.String
-	RackID         field.String
+	RackId         field.String
 	RackPosition   field.Uint8
 	RackDirection  field.String
 	UHeight        field.Uint8
-	MonitorID      field.String
-	TemplateID     field.String
-	LocationID     field.String
-	SiteID         field.String
-	OrganizationID field.String
+	MonitorId      field.String
+	TemplateId     field.String
+	LocationId     field.String
+	SiteId         field.String
+	OrganizationId field.String
 	Rack           deviceBelongsToRack
 
 	Template deviceBelongsToTemplate
@@ -192,32 +192,32 @@ func (d device) As(alias string) *device {
 
 func (d *device) updateTableName(table string) *device {
 	d.ALL = field.NewAsterisk(table)
-	d.ID = field.NewString(table, "id")
-	d.CreatedAt = field.NewTime(table, "created_at")
-	d.UpdatedAt = field.NewTime(table, "updated_at")
+	d.Id = field.NewString(table, "id")
+	d.CreatedAt = field.NewTime(table, "createdAt")
+	d.UpdatedAt = field.NewTime(table, "updatedAt")
 	d.Name = field.NewString(table, "name")
-	d.ManagementIp = field.NewString(table, "management_ip")
+	d.ManagementIp = field.NewString(table, "managementIp")
 	d.Status = field.NewString(table, "status")
 	d.Platform = field.NewString(table, "platform")
-	d.ProductFamily = field.NewString(table, "product_family")
-	d.DeviceModel = field.NewString(table, "device_model")
+	d.ProductFamily = field.NewString(table, "productFamily")
+	d.DeviceModel = field.NewString(table, "deviceModel")
 	d.Manufacturer = field.NewString(table, "manufacturer")
-	d.DeviceRole = field.NewString(table, "device_role")
-	d.ChassisID = field.NewString(table, "chassis_id")
-	d.SerialNumber = field.NewString(table, "serial_number")
-	d.AssetTag = field.NewString(table, "asset_tag")
+	d.DeviceRole = field.NewString(table, "deviceRole")
+	d.ChassisId = field.NewString(table, "chassisId")
+	d.SerialNumber = field.NewString(table, "serialNumber")
+	d.AssetTag = field.NewString(table, "assetTag")
 	d.Description = field.NewString(table, "description")
-	d.OsVersion = field.NewString(table, "os_version")
-	d.OsPatch = field.NewString(table, "os_patch")
-	d.RackID = field.NewString(table, "rack_id")
-	d.RackPosition = field.NewUint8(table, "rack_position")
-	d.RackDirection = field.NewString(table, "rack_direction")
-	d.UHeight = field.NewUint8(table, "u_height")
-	d.MonitorID = field.NewString(table, "monitor_id")
-	d.TemplateID = field.NewString(table, "template_id")
-	d.LocationID = field.NewString(table, "location_id")
-	d.SiteID = field.NewString(table, "site_id")
-	d.OrganizationID = field.NewString(table, "organization_id")
+	d.OsVersion = field.NewString(table, "osVersion")
+	d.OsPatch = field.NewString(table, "osPatch")
+	d.RackId = field.NewString(table, "rackId")
+	d.RackPosition = field.NewUint8(table, "rackPosition")
+	d.RackDirection = field.NewString(table, "rackDirection")
+	d.UHeight = field.NewUint8(table, "uHeight")
+	d.MonitorId = field.NewString(table, "monitorId")
+	d.TemplateId = field.NewString(table, "templateId")
+	d.LocationId = field.NewString(table, "locationId")
+	d.SiteId = field.NewString(table, "siteId")
+	d.OrganizationId = field.NewString(table, "organizationId")
 
 	d.fillFieldMap()
 
@@ -235,32 +235,32 @@ func (d *device) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (d *device) fillFieldMap() {
 	d.fieldMap = make(map[string]field.Expr, 31)
-	d.fieldMap["id"] = d.ID
-	d.fieldMap["created_at"] = d.CreatedAt
-	d.fieldMap["updated_at"] = d.UpdatedAt
+	d.fieldMap["id"] = d.Id
+	d.fieldMap["createdAt"] = d.CreatedAt
+	d.fieldMap["updatedAt"] = d.UpdatedAt
 	d.fieldMap["name"] = d.Name
-	d.fieldMap["management_ip"] = d.ManagementIp
+	d.fieldMap["managementIp"] = d.ManagementIp
 	d.fieldMap["status"] = d.Status
 	d.fieldMap["platform"] = d.Platform
-	d.fieldMap["product_family"] = d.ProductFamily
-	d.fieldMap["device_model"] = d.DeviceModel
+	d.fieldMap["productFamily"] = d.ProductFamily
+	d.fieldMap["deviceModel"] = d.DeviceModel
 	d.fieldMap["manufacturer"] = d.Manufacturer
-	d.fieldMap["device_role"] = d.DeviceRole
-	d.fieldMap["chassis_id"] = d.ChassisID
-	d.fieldMap["serial_number"] = d.SerialNumber
-	d.fieldMap["asset_tag"] = d.AssetTag
+	d.fieldMap["deviceRole"] = d.DeviceRole
+	d.fieldMap["chassisId"] = d.ChassisId
+	d.fieldMap["serialNumber"] = d.SerialNumber
+	d.fieldMap["assetTag"] = d.AssetTag
 	d.fieldMap["description"] = d.Description
-	d.fieldMap["os_version"] = d.OsVersion
-	d.fieldMap["os_patch"] = d.OsPatch
-	d.fieldMap["rack_id"] = d.RackID
-	d.fieldMap["rack_position"] = d.RackPosition
-	d.fieldMap["rack_direction"] = d.RackDirection
-	d.fieldMap["u_height"] = d.UHeight
-	d.fieldMap["monitor_id"] = d.MonitorID
-	d.fieldMap["template_id"] = d.TemplateID
-	d.fieldMap["location_id"] = d.LocationID
-	d.fieldMap["site_id"] = d.SiteID
-	d.fieldMap["organization_id"] = d.OrganizationID
+	d.fieldMap["osVersion"] = d.OsVersion
+	d.fieldMap["osPatch"] = d.OsPatch
+	d.fieldMap["rackId"] = d.RackId
+	d.fieldMap["rackPosition"] = d.RackPosition
+	d.fieldMap["rackDirection"] = d.RackDirection
+	d.fieldMap["uHeight"] = d.UHeight
+	d.fieldMap["monitorId"] = d.MonitorId
+	d.fieldMap["templateId"] = d.TemplateId
+	d.fieldMap["locationId"] = d.LocationId
+	d.fieldMap["siteId"] = d.SiteId
+	d.fieldMap["organizationId"] = d.OrganizationId
 
 }
 

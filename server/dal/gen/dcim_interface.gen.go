@@ -26,20 +26,23 @@ func newDeviceInterface(db *gorm.DB, opts ...gen.DOOption) deviceInterface {
 
 	tableName := _deviceInterface.deviceInterfaceDo.TableName()
 	_deviceInterface.ALL = field.NewAsterisk(tableName)
-	_deviceInterface.ID = field.NewString(tableName, "id")
-	_deviceInterface.CreatedAt = field.NewTime(tableName, "created_at")
-	_deviceInterface.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_deviceInterface.IfName = field.NewString(tableName, "if_name")
-	_deviceInterface.IfIndex = field.NewUint64(tableName, "if_index")
-	_deviceInterface.IfDescr = field.NewString(tableName, "if_descr")
-	_deviceInterface.Speed = field.NewUint64(tableName, "speed")
-	_deviceInterface.Mode = field.NewUint64(tableName, "mode")
-	_deviceInterface.Mtu = field.NewUint64(tableName, "mtu")
-	_deviceInterface.AdminStatus = field.NewUint64(tableName, "admin_status")
-	_deviceInterface.OperStatus = field.NewUint64(tableName, "oper_status")
-	_deviceInterface.LastChange = field.NewUint64(tableName, "last_change")
-	_deviceInterface.DeviceID = field.NewString(tableName, "device_id")
-	_deviceInterface.SiteID = field.NewString(tableName, "site_id")
+	_deviceInterface.Id = field.NewString(tableName, "id")
+	_deviceInterface.CreatedAt = field.NewTime(tableName, "createdAt")
+	_deviceInterface.UpdatedAt = field.NewTime(tableName, "updatedAt")
+	_deviceInterface.IfName = field.NewString(tableName, "ifName")
+	_deviceInterface.IfIndex = field.NewUint64(tableName, "ifIndex")
+	_deviceInterface.IfDescr = field.NewString(tableName, "ifDescr")
+	_deviceInterface.IfSpeed = field.NewUint64(tableName, "ifSpeed")
+	_deviceInterface.IfType = field.NewUint64(tableName, "ifType")
+	_deviceInterface.IfMtu = field.NewUint64(tableName, "mtu")
+	_deviceInterface.IfAdminStatus = field.NewUint64(tableName, "ifAdminStatus")
+	_deviceInterface.IfOperStatus = field.NewUint64(tableName, "ifOperStatus")
+	_deviceInterface.IfLastChange = field.NewUint64(tableName, "ifLastChange")
+	_deviceInterface.IfHighSpeed = field.NewUint64(tableName, "ifHighSpeed")
+	_deviceInterface.IfPhyAddr = field.NewString(tableName, "ifPhyAddr")
+	_deviceInterface.IfIpAddress = field.NewString(tableName, "ifIpAddress")
+	_deviceInterface.DeviceId = field.NewString(tableName, "deviceId")
+	_deviceInterface.SiteId = field.NewString(tableName, "siteId")
 	_deviceInterface.Device = deviceInterfaceBelongsToDevice{
 		db: db.Session(&gorm.Session{}),
 
@@ -156,22 +159,25 @@ func newDeviceInterface(db *gorm.DB, opts ...gen.DOOption) deviceInterface {
 type deviceInterface struct {
 	deviceInterfaceDo
 
-	ALL         field.Asterisk
-	ID          field.String
-	CreatedAt   field.Time
-	UpdatedAt   field.Time
-	IfName      field.String
-	IfIndex     field.Uint64
-	IfDescr     field.String
-	Speed       field.Uint64
-	Mode        field.Uint64
-	Mtu         field.Uint64
-	AdminStatus field.Uint64
-	OperStatus  field.Uint64
-	LastChange  field.Uint64
-	DeviceID    field.String
-	SiteID      field.String
-	Device      deviceInterfaceBelongsToDevice
+	ALL           field.Asterisk
+	Id            field.String
+	CreatedAt     field.Time
+	UpdatedAt     field.Time
+	IfName        field.String
+	IfIndex       field.Uint64
+	IfDescr       field.String
+	IfSpeed       field.Uint64
+	IfType        field.Uint64
+	IfMtu         field.Uint64
+	IfAdminStatus field.Uint64
+	IfOperStatus  field.Uint64
+	IfLastChange  field.Uint64
+	IfHighSpeed   field.Uint64
+	IfPhyAddr     field.String
+	IfIpAddress   field.String
+	DeviceId      field.String
+	SiteId        field.String
+	Device        deviceInterfaceBelongsToDevice
 
 	Site deviceInterfaceBelongsToSite
 
@@ -190,20 +196,23 @@ func (d deviceInterface) As(alias string) *deviceInterface {
 
 func (d *deviceInterface) updateTableName(table string) *deviceInterface {
 	d.ALL = field.NewAsterisk(table)
-	d.ID = field.NewString(table, "id")
-	d.CreatedAt = field.NewTime(table, "created_at")
-	d.UpdatedAt = field.NewTime(table, "updated_at")
-	d.IfName = field.NewString(table, "if_name")
-	d.IfIndex = field.NewUint64(table, "if_index")
-	d.IfDescr = field.NewString(table, "if_descr")
-	d.Speed = field.NewUint64(table, "speed")
-	d.Mode = field.NewUint64(table, "mode")
-	d.Mtu = field.NewUint64(table, "mtu")
-	d.AdminStatus = field.NewUint64(table, "admin_status")
-	d.OperStatus = field.NewUint64(table, "oper_status")
-	d.LastChange = field.NewUint64(table, "last_change")
-	d.DeviceID = field.NewString(table, "device_id")
-	d.SiteID = field.NewString(table, "site_id")
+	d.Id = field.NewString(table, "id")
+	d.CreatedAt = field.NewTime(table, "createdAt")
+	d.UpdatedAt = field.NewTime(table, "updatedAt")
+	d.IfName = field.NewString(table, "ifName")
+	d.IfIndex = field.NewUint64(table, "ifIndex")
+	d.IfDescr = field.NewString(table, "ifDescr")
+	d.IfSpeed = field.NewUint64(table, "ifSpeed")
+	d.IfType = field.NewUint64(table, "ifType")
+	d.IfMtu = field.NewUint64(table, "mtu")
+	d.IfAdminStatus = field.NewUint64(table, "ifAdminStatus")
+	d.IfOperStatus = field.NewUint64(table, "ifOperStatus")
+	d.IfLastChange = field.NewUint64(table, "ifLastChange")
+	d.IfHighSpeed = field.NewUint64(table, "ifHighSpeed")
+	d.IfPhyAddr = field.NewString(table, "ifPhyAddr")
+	d.IfIpAddress = field.NewString(table, "ifIpAddress")
+	d.DeviceId = field.NewString(table, "deviceId")
+	d.SiteId = field.NewString(table, "siteId")
 
 	d.fillFieldMap()
 
@@ -220,21 +229,24 @@ func (d *deviceInterface) GetFieldByName(fieldName string) (field.OrderExpr, boo
 }
 
 func (d *deviceInterface) fillFieldMap() {
-	d.fieldMap = make(map[string]field.Expr, 16)
-	d.fieldMap["id"] = d.ID
-	d.fieldMap["created_at"] = d.CreatedAt
-	d.fieldMap["updated_at"] = d.UpdatedAt
-	d.fieldMap["if_name"] = d.IfName
-	d.fieldMap["if_index"] = d.IfIndex
-	d.fieldMap["if_descr"] = d.IfDescr
-	d.fieldMap["speed"] = d.Speed
-	d.fieldMap["mode"] = d.Mode
-	d.fieldMap["mtu"] = d.Mtu
-	d.fieldMap["admin_status"] = d.AdminStatus
-	d.fieldMap["oper_status"] = d.OperStatus
-	d.fieldMap["last_change"] = d.LastChange
-	d.fieldMap["device_id"] = d.DeviceID
-	d.fieldMap["site_id"] = d.SiteID
+	d.fieldMap = make(map[string]field.Expr, 19)
+	d.fieldMap["id"] = d.Id
+	d.fieldMap["createdAt"] = d.CreatedAt
+	d.fieldMap["updatedAt"] = d.UpdatedAt
+	d.fieldMap["ifName"] = d.IfName
+	d.fieldMap["ifIndex"] = d.IfIndex
+	d.fieldMap["ifDescr"] = d.IfDescr
+	d.fieldMap["ifSpeed"] = d.IfSpeed
+	d.fieldMap["ifType"] = d.IfType
+	d.fieldMap["mtu"] = d.IfMtu
+	d.fieldMap["ifAdminStatus"] = d.IfAdminStatus
+	d.fieldMap["ifOperStatus"] = d.IfOperStatus
+	d.fieldMap["ifLastChange"] = d.IfLastChange
+	d.fieldMap["ifHighSpeed"] = d.IfHighSpeed
+	d.fieldMap["ifPhyAddr"] = d.IfPhyAddr
+	d.fieldMap["ifIpAddress"] = d.IfIpAddress
+	d.fieldMap["deviceId"] = d.DeviceId
+	d.fieldMap["siteId"] = d.SiteId
 
 }
 

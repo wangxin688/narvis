@@ -8,13 +8,13 @@ type Label struct {
 }
 
 type AlertCreate struct {
-	AlertName string     `json:"alert_name" binding:"required"`
-	HostID    string     `json:"host_id" binding:"required,uuid"`
+	AlertName string     `json:"alertName" binding:"required"`
+	HostID    string     `json:"hostId" binding:"required,uuid"`
 	Labels    []*Label   `json:"tags" binding:"omitempty"`
-	EventID   string     `json:"event_id" binding:"required"`
-	TriggerID string     `json:"trigger_id" binding:"required"`
+	EventID   string     `json:"eventId" binding:"required"`
+	TriggerID string     `json:"triggerId" binding:"required"`
 	Status    string     `json:"status" binding:"required,oneof: Problem OK"`
-	StartedAt *time.Time `json:"started_at" binding:"omitempty,datetime"`
+	StartedAt *time.Time `json:"startedAt" binding:"omitempty,datetime"`
 	Severity  string     `json:"severity" binding:"required,oneof: P1 P2 P3 P4"`
 }
 
@@ -35,12 +35,10 @@ func GetStatus(status string) uint8 {
 	return statusMap[status]
 }
 
-
 type AlertConcrete struct {
 	AlertCreate
-	SiteID string 
-	DeviceID *string 
-	ApID *string
+	SiteID      string
+	DeviceID    *string
+	ApID        *string
 	InterfaceID *string
-	
 }

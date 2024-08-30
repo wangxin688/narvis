@@ -26,15 +26,15 @@ func newVlan(db *gorm.DB, opts ...gen.DOOption) vlan {
 
 	tableName := _vlan.vlanDo.TableName()
 	_vlan.ALL = field.NewAsterisk(tableName)
-	_vlan.ID = field.NewString(tableName, "id")
-	_vlan.CreatedAt = field.NewTime(tableName, "created_at")
-	_vlan.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_vlan.Id = field.NewString(tableName, "id")
+	_vlan.CreatedAt = field.NewTime(tableName, "createdAt")
+	_vlan.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_vlan.Name = field.NewString(tableName, "name")
 	_vlan.Vid = field.NewUint32(tableName, "vid")
 	_vlan.Description = field.NewString(tableName, "description")
 	_vlan.Status = field.NewString(tableName, "status")
-	_vlan.SiteID = field.NewString(tableName, "site_id")
-	_vlan.OrganizationID = field.NewString(tableName, "organization_id")
+	_vlan.SiteId = field.NewString(tableName, "siteId")
+	_vlan.OrganizationId = field.NewString(tableName, "organizationId")
 	_vlan.Site = vlanBelongsToSite{
 		db: db.Session(&gorm.Session{}),
 
@@ -61,15 +61,15 @@ type vlan struct {
 	vlanDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
 	Vid            field.Uint32
 	Description    field.String
 	Status         field.String
-	SiteID         field.String
-	OrganizationID field.String
+	SiteId         field.String
+	OrganizationId field.String
 	Site           vlanBelongsToSite
 
 	Organization vlanBelongsToOrganization
@@ -89,15 +89,15 @@ func (v vlan) As(alias string) *vlan {
 
 func (v *vlan) updateTableName(table string) *vlan {
 	v.ALL = field.NewAsterisk(table)
-	v.ID = field.NewString(table, "id")
-	v.CreatedAt = field.NewTime(table, "created_at")
-	v.UpdatedAt = field.NewTime(table, "updated_at")
+	v.Id = field.NewString(table, "id")
+	v.CreatedAt = field.NewTime(table, "createdAt")
+	v.UpdatedAt = field.NewTime(table, "updatedAt")
 	v.Name = field.NewString(table, "name")
 	v.Vid = field.NewUint32(table, "vid")
 	v.Description = field.NewString(table, "description")
 	v.Status = field.NewString(table, "status")
-	v.SiteID = field.NewString(table, "site_id")
-	v.OrganizationID = field.NewString(table, "organization_id")
+	v.SiteId = field.NewString(table, "siteId")
+	v.OrganizationId = field.NewString(table, "organizationId")
 
 	v.fillFieldMap()
 
@@ -115,15 +115,15 @@ func (v *vlan) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (v *vlan) fillFieldMap() {
 	v.fieldMap = make(map[string]field.Expr, 11)
-	v.fieldMap["id"] = v.ID
-	v.fieldMap["created_at"] = v.CreatedAt
-	v.fieldMap["updated_at"] = v.UpdatedAt
+	v.fieldMap["id"] = v.Id
+	v.fieldMap["createdAt"] = v.CreatedAt
+	v.fieldMap["updatedAt"] = v.UpdatedAt
 	v.fieldMap["name"] = v.Name
 	v.fieldMap["vid"] = v.Vid
 	v.fieldMap["description"] = v.Description
 	v.fieldMap["status"] = v.Status
-	v.fieldMap["site_id"] = v.SiteID
-	v.fieldMap["organization_id"] = v.OrganizationID
+	v.fieldMap["siteId"] = v.SiteId
+	v.fieldMap["organizationId"] = v.OrganizationId
 
 }
 

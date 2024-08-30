@@ -17,7 +17,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param group body schemas.GroupCreate true "group"
-// @Success 200 {object} ts.IDResponse
+// @Success 200 {object} ts.IdResponse
 // @Failure 409 {object} ts.ErrorResponse
 // @Router /admin/groups [post]
 func createGroup(c *gin.Context) {
@@ -35,7 +35,7 @@ func createGroup(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, ts.IDResponse{ID: newGroup})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: newGroup})
 }
 
 // @Tags Admin
@@ -54,7 +54,7 @@ func getGroup(c *gin.Context) {
 		}
 	}()
 	groupId := c.Param("id")
-	group, err := biz.NewGroupService().GetGroupByID(groupId)
+	group, err := biz.NewGroupService().GetGroupById(groupId)
 	if err != nil {
 		return
 	}
@@ -97,7 +97,7 @@ func listGroups(c *gin.Context) {
 // @Produce json
 // @Param id path string true "group id"
 // @Param group body schemas.GroupUpdate true "group"
-// @Success 200 {object} ts.IDResponse
+// @Success 200 {object} ts.IdResponse
 // @Router /admin/groups/{id} [put]
 func updateGroup(c *gin.Context) {
 	var err error
@@ -115,7 +115,7 @@ func updateGroup(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, ts.IDResponse{ID: groupId})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: groupId})
 }
 
 // @Tags Admin
@@ -124,7 +124,7 @@ func updateGroup(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "group id"
-// @Success 200 {object} ts.IDResponse
+// @Success 200 {object} ts.IdResponse
 // @Router /admin/groups/{id} [delete]
 func deleteGroup(c *gin.Context) {
 	var err error
@@ -138,5 +138,5 @@ func deleteGroup(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, ts.IDResponse{ID: groupId})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: groupId})
 }

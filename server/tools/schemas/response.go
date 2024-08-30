@@ -5,8 +5,8 @@ type ListResponse struct {
 	Total   int64       `json:"total"`
 }
 
-type IDResponse struct {
-	ID string `json:"id"`
+type IdResponse struct {
+	Id string `json:"id"`
 }
 
 type ErrorResponse struct {

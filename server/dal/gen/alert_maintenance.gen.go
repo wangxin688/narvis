@@ -26,16 +26,16 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 
 	tableName := _maintenance.maintenanceDo.TableName()
 	_maintenance.ALL = field.NewAsterisk(tableName)
-	_maintenance.ID = field.NewString(tableName, "id")
-	_maintenance.CreatedAt = field.NewTime(tableName, "created_at")
-	_maintenance.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_maintenance.Name = field.NewString(tableName, "name")
-	_maintenance.StartedAt = field.NewTime(tableName, "started_at")
-	_maintenance.EndedAt = field.NewTime(tableName, "ended_at")
-	_maintenance.MaintenanceType = field.NewString(tableName, "maintenance_type")
+	_maintenance.Id = field.NewString(tableName, "id")
+	_maintenance.CreatedAt = field.NewTime(tableName, "createdAt")
+	_maintenance.UpdatedAt = field.NewTime(tableName, "updatedAt")
+	_maintenance.Name = field.NewString(tableName, "Name")
+	_maintenance.StartedAt = field.NewTime(tableName, "startedAt")
+	_maintenance.EndedAt = field.NewTime(tableName, "endedAt")
+	_maintenance.MaintenanceType = field.NewString(tableName, "maintenanceType")
 	_maintenance.Conditions = field.NewField(tableName, "conditions")
 	_maintenance.Description = field.NewString(tableName, "description")
-	_maintenance.OrganizationID = field.NewString(tableName, "organization_id")
+	_maintenance.OrganizationId = field.NewString(tableName, "organizationId")
 	_maintenance.Alert = maintenanceHasManyAlert{
 		db: db.Session(&gorm.Session{}),
 
@@ -493,7 +493,7 @@ type maintenance struct {
 	maintenanceDo
 
 	ALL             field.Asterisk
-	ID              field.String
+	Id              field.String
 	CreatedAt       field.Time
 	UpdatedAt       field.Time
 	Name            field.String
@@ -502,7 +502,7 @@ type maintenance struct {
 	MaintenanceType field.String
 	Conditions      field.Field
 	Description     field.String
-	OrganizationID  field.String
+	OrganizationId  field.String
 	Alert           maintenanceHasManyAlert
 
 	Organization maintenanceBelongsToOrganization
@@ -522,16 +522,16 @@ func (m maintenance) As(alias string) *maintenance {
 
 func (m *maintenance) updateTableName(table string) *maintenance {
 	m.ALL = field.NewAsterisk(table)
-	m.ID = field.NewString(table, "id")
-	m.CreatedAt = field.NewTime(table, "created_at")
-	m.UpdatedAt = field.NewTime(table, "updated_at")
-	m.Name = field.NewString(table, "name")
-	m.StartedAt = field.NewTime(table, "started_at")
-	m.EndedAt = field.NewTime(table, "ended_at")
-	m.MaintenanceType = field.NewString(table, "maintenance_type")
+	m.Id = field.NewString(table, "id")
+	m.CreatedAt = field.NewTime(table, "createdAt")
+	m.UpdatedAt = field.NewTime(table, "updatedAt")
+	m.Name = field.NewString(table, "Name")
+	m.StartedAt = field.NewTime(table, "startedAt")
+	m.EndedAt = field.NewTime(table, "endedAt")
+	m.MaintenanceType = field.NewString(table, "maintenanceType")
 	m.Conditions = field.NewField(table, "conditions")
 	m.Description = field.NewString(table, "description")
-	m.OrganizationID = field.NewString(table, "organization_id")
+	m.OrganizationId = field.NewString(table, "organizationId")
 
 	m.fillFieldMap()
 
@@ -549,16 +549,16 @@ func (m *maintenance) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (m *maintenance) fillFieldMap() {
 	m.fieldMap = make(map[string]field.Expr, 12)
-	m.fieldMap["id"] = m.ID
-	m.fieldMap["created_at"] = m.CreatedAt
-	m.fieldMap["updated_at"] = m.UpdatedAt
-	m.fieldMap["name"] = m.Name
-	m.fieldMap["started_at"] = m.StartedAt
-	m.fieldMap["ended_at"] = m.EndedAt
-	m.fieldMap["maintenance_type"] = m.MaintenanceType
+	m.fieldMap["id"] = m.Id
+	m.fieldMap["createdAt"] = m.CreatedAt
+	m.fieldMap["updatedAt"] = m.UpdatedAt
+	m.fieldMap["Name"] = m.Name
+	m.fieldMap["startedAt"] = m.StartedAt
+	m.fieldMap["endedAt"] = m.EndedAt
+	m.fieldMap["maintenanceType"] = m.MaintenanceType
 	m.fieldMap["conditions"] = m.Conditions
 	m.fieldMap["description"] = m.Description
-	m.fieldMap["organization_id"] = m.OrganizationID
+	m.fieldMap["organizationId"] = m.OrganizationId
 
 }
 

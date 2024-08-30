@@ -9,38 +9,38 @@ import (
 type ProxyCreate struct {
 	Name           string `json:"name" binding:"required"`
 	Active         bool   `json:"active" binding:"required"`
-	SecretKey      string `json:"secret_key" binding:"required;len=32"`
-	OrganizationID string `json:"organization_id" binding:"required;uuid"`
+	SecretKey      string `json:"secretKey" binding:"required;len=32"`
+	OrganizationId string `json:"organizationId" binding:"required;uuid"`
 }
 
 type ProxyUpdate struct {
 	Name           *string `json:"name" binding:"omitempty"`
 	Active         *bool   `json:"active" binding:"omitempty,bool"`
-	OrganizationID *string `json:"organization_id" binding:"omitempty,uuid"`
+	OrganizationId *string `json:"organizationId" binding:"omitempty,uuid"`
 }
 
 type ProxyQuery struct {
 	schemas.PageInfo
-	ID             *[]string `form:"id" binding:"omitempty,list_uuid"`
+	Id             *[]string `form:"id" binding:"omitempty,list_uuid"`
 	Name           *[]string `form:"name" binding:"omitempty"`
 	Active         *bool     `form:"active" binding:"omitempty,bool"`
-	OrganizationID *string   `form:"organization_id" binding:"omitempty,uuid"`
+	OrganizationId *string   `form:"organizationId" binding:"omitempty,uuid"`
 }
 
 type Proxy struct {
-	ID             string            `json:"id" binding:"required,uuid"`
-	CreatedAt      time.Time         `json:"created_at"`
-	UpdatedAt      time.Time         `json:"updated_at"`
-	Name           string            `json:"name" binding:"required"`
-	Active         bool              `json:"active" binding:"required"`
-	SecretKey      string            `json:"secret_key" binding:"required;len=32"`
-	Organization   OrganizationShort `json:"organization"`
+	Id           string            `json:"id" binding:"required,uuid"`
+	CreatedAt    time.Time         `json:"CreatedAt"`
+	UpdatedAt    time.Time         `json:"UpdatedAt"`
+	Name         string            `json:"name" binding:"required"`
+	Active       bool              `json:"active" binding:"required"`
+	SecretKey    string            `json:"secretKey" binding:"required;len=32"`
+	Organization OrganizationShort `json:"organization"`
 }
 
 type ProxyList []Proxy
 
 type ProxyShort struct {
-	ID   string `json:"id"`
+	Id   string `json:"id"`
 	Name string `json:"name"`
 }
 

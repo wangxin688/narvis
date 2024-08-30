@@ -43,9 +43,9 @@ func InitOrganization() string {
 	}
 
 	if org != nil && len(org) > 0 {
-		global.OrganizationID.Set(org[0].ID)
-		core.Logger.Info("Organization already exists", zap.String("id", org[0].ID))
-		return org[0].ID
+		global.OrganizationId.Set(org[0].Id)
+		core.Logger.Info("Organization already exists", zap.String("id", org[0].Id))
+		return org[0].Id
 	}
 
 	newOrg, err := service.CreateOrganization(&schemas.OrganizationCreate{
@@ -61,9 +61,9 @@ func InitOrganization() string {
 		core.Logger.Error("Failed to create organization", zap.Error(err))
 		panic(err)
 	}
-	global.OrganizationID.Set(newOrg.ID)
-	core.Logger.Info("Organization created", zap.String("id", newOrg.ID))
-	return newOrg.ID
+	global.OrganizationId.Set(newOrg.Id)
+	core.Logger.Info("Organization created", zap.String("id", newOrg.Id))
+	return newOrg.Id
 }
 
 func InitMacAddress() {

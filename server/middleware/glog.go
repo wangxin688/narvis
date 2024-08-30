@@ -15,18 +15,18 @@ import (
 	"go.uber.org/zap"
 )
 
-var XRequestIDHeaderName = "X-Request-ID"
+var XRequestIdHeaderName = "X-Request-ID"
 
 func ZapLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 开始时间
 		startTime := time.Now()
 		// 获取或生成request id
-		requestID := global.XRequestID.Get()
+		requestID := global.XRequestId.Get()
 		if requestID == "" {
 			_requestID := uuid.New().String()
-			global.XRequestID.Set(_requestID)
-			c.Writer.Header().Set(XRequestIDHeaderName, _requestID)
+			global.XRequestId.Set(_requestID)
+			c.Writer.Header().Set(XRequestIdHeaderName, _requestID)
 			requestID = _requestID
 		}
 		// 处理请求

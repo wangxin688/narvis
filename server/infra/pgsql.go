@@ -23,7 +23,7 @@ func InitDB() error {
 		db.Logger = db.Logger.LogMode(logLevel)
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 			// LogMode sets the logger for gorm. Default value is silent.
-			Logger: logger.Default.LogMode(logLevel),
+			Logger:         logger.Default.LogMode(logLevel),
 			TranslateError: true,
 		})
 	} else {
@@ -37,7 +37,7 @@ func InitDB() error {
 		core.Logger.Fatal("Failed to connect database", zap.Error(err))
 		return err
 	}
-	sqlDB.SetMaxIdleConns(core.Settings.Postgres.MaxIDleConns)
+	sqlDB.SetMaxIdleConns(core.Settings.Postgres.MaxIdleConns)
 	sqlDB.SetMaxOpenConns(core.Settings.Postgres.MaxOpenConns)
 	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
 	if err != nil {

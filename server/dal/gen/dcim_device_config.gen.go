@@ -26,14 +26,14 @@ func newDeviceConfig(db *gorm.DB, opts ...gen.DOOption) deviceConfig {
 
 	tableName := _deviceConfig.deviceConfigDo.TableName()
 	_deviceConfig.ALL = field.NewAsterisk(tableName)
-	_deviceConfig.ID = field.NewString(tableName, "id")
-	_deviceConfig.CreatedAt = field.NewTime(tableName, "created_at")
+	_deviceConfig.Id = field.NewString(tableName, "id")
+	_deviceConfig.CreatedAt = field.NewTime(tableName, "createdAt")
 	_deviceConfig.Configuration = field.NewString(tableName, "configuration")
-	_deviceConfig.TotalLines = field.NewUint32(tableName, "total_lines")
-	_deviceConfig.LinesAdded = field.NewUint32(tableName, "lines_added")
-	_deviceConfig.LinesDeleted = field.NewUint32(tableName, "lines_deleted")
-	_deviceConfig.Md5Checksum = field.NewString(tableName, "md5_checksum")
-	_deviceConfig.DeviceID = field.NewString(tableName, "device_id")
+	_deviceConfig.TotalLines = field.NewUint32(tableName, "totalLines")
+	_deviceConfig.LinesAdded = field.NewUint32(tableName, "linesAdded")
+	_deviceConfig.LinesDeleted = field.NewUint32(tableName, "linesDeleted")
+	_deviceConfig.Md5Checksum = field.NewString(tableName, "md5Checksum")
+	_deviceConfig.DeviceId = field.NewString(tableName, "deviceId")
 	_deviceConfig.Device = deviceConfigBelongsToDevice{
 		db: db.Session(&gorm.Session{}),
 
@@ -145,14 +145,14 @@ type deviceConfig struct {
 	deviceConfigDo
 
 	ALL           field.Asterisk
-	ID            field.String
+	Id            field.String
 	CreatedAt     field.Time
 	Configuration field.String
 	TotalLines    field.Uint32
 	LinesAdded    field.Uint32
 	LinesDeleted  field.Uint32
 	Md5Checksum   field.String
-	DeviceID      field.String
+	DeviceId      field.String
 	Device        deviceConfigBelongsToDevice
 
 	fieldMap map[string]field.Expr
@@ -170,14 +170,14 @@ func (d deviceConfig) As(alias string) *deviceConfig {
 
 func (d *deviceConfig) updateTableName(table string) *deviceConfig {
 	d.ALL = field.NewAsterisk(table)
-	d.ID = field.NewString(table, "id")
-	d.CreatedAt = field.NewTime(table, "created_at")
+	d.Id = field.NewString(table, "id")
+	d.CreatedAt = field.NewTime(table, "createdAt")
 	d.Configuration = field.NewString(table, "configuration")
-	d.TotalLines = field.NewUint32(table, "total_lines")
-	d.LinesAdded = field.NewUint32(table, "lines_added")
-	d.LinesDeleted = field.NewUint32(table, "lines_deleted")
-	d.Md5Checksum = field.NewString(table, "md5_checksum")
-	d.DeviceID = field.NewString(table, "device_id")
+	d.TotalLines = field.NewUint32(table, "totalLines")
+	d.LinesAdded = field.NewUint32(table, "linesAdded")
+	d.LinesDeleted = field.NewUint32(table, "linesDeleted")
+	d.Md5Checksum = field.NewString(table, "md5Checksum")
+	d.DeviceId = field.NewString(table, "deviceId")
 
 	d.fillFieldMap()
 
@@ -195,14 +195,14 @@ func (d *deviceConfig) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 
 func (d *deviceConfig) fillFieldMap() {
 	d.fieldMap = make(map[string]field.Expr, 9)
-	d.fieldMap["id"] = d.ID
-	d.fieldMap["created_at"] = d.CreatedAt
+	d.fieldMap["id"] = d.Id
+	d.fieldMap["createdAt"] = d.CreatedAt
 	d.fieldMap["configuration"] = d.Configuration
-	d.fieldMap["total_lines"] = d.TotalLines
-	d.fieldMap["lines_added"] = d.LinesAdded
-	d.fieldMap["lines_deleted"] = d.LinesDeleted
-	d.fieldMap["md5_checksum"] = d.Md5Checksum
-	d.fieldMap["device_id"] = d.DeviceID
+	d.fieldMap["totalLines"] = d.TotalLines
+	d.fieldMap["linesAdded"] = d.LinesAdded
+	d.fieldMap["linesDeleted"] = d.LinesDeleted
+	d.fieldMap["md5Checksum"] = d.Md5Checksum
+	d.fieldMap["deviceId"] = d.DeviceId
 
 }
 

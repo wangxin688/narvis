@@ -26,15 +26,15 @@ func newAlertActionLog(db *gorm.DB, opts ...gen.DOOption) alertActionLog {
 
 	tableName := _alertActionLog.alertActionLogDo.TableName()
 	_alertActionLog.ALL = field.NewAsterisk(tableName)
-	_alertActionLog.ID = field.NewString(tableName, "id")
-	_alertActionLog.CreatedAt = field.NewTime(tableName, "created_at")
-	_alertActionLog.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_alertActionLog.Id = field.NewString(tableName, "id")
+	_alertActionLog.CreatedAt = field.NewTime(tableName, "createdAt")
+	_alertActionLog.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_alertActionLog.Acknowledged = field.NewBool(tableName, "acknowledged")
 	_alertActionLog.Resolved = field.NewBool(tableName, "resolved")
 	_alertActionLog.Suppressed = field.NewBool(tableName, "suppressed")
 	_alertActionLog.Comment = field.NewString(tableName, "comment")
-	_alertActionLog.AssignUserID = field.NewString(tableName, "assign_user_id")
-	_alertActionLog.CreatedByID = field.NewString(tableName, "created_by_id")
+	_alertActionLog.AssignUserId = field.NewString(tableName, "assignUserId")
+	_alertActionLog.CreatedById = field.NewString(tableName, "createdById")
 	_alertActionLog.AssignUser = alertActionLogBelongsToAssignUser{
 		db: db.Session(&gorm.Session{}),
 
@@ -481,15 +481,15 @@ type alertActionLog struct {
 	alertActionLogDo
 
 	ALL          field.Asterisk
-	ID           field.String
+	Id           field.String
 	CreatedAt    field.Time
 	UpdatedAt    field.Time
 	Acknowledged field.Bool
 	Resolved     field.Bool
 	Suppressed   field.Bool
 	Comment      field.String
-	AssignUserID field.String
-	CreatedByID  field.String
+	AssignUserId field.String
+	CreatedById  field.String
 	AssignUser   alertActionLogBelongsToAssignUser
 
 	CreatedBy alertActionLogBelongsToCreatedBy
@@ -513,15 +513,15 @@ func (a alertActionLog) As(alias string) *alertActionLog {
 
 func (a *alertActionLog) updateTableName(table string) *alertActionLog {
 	a.ALL = field.NewAsterisk(table)
-	a.ID = field.NewString(table, "id")
-	a.CreatedAt = field.NewTime(table, "created_at")
-	a.UpdatedAt = field.NewTime(table, "updated_at")
+	a.Id = field.NewString(table, "id")
+	a.CreatedAt = field.NewTime(table, "createdAt")
+	a.UpdatedAt = field.NewTime(table, "updatedAt")
 	a.Acknowledged = field.NewBool(table, "acknowledged")
 	a.Resolved = field.NewBool(table, "resolved")
 	a.Suppressed = field.NewBool(table, "suppressed")
 	a.Comment = field.NewString(table, "comment")
-	a.AssignUserID = field.NewString(table, "assign_user_id")
-	a.CreatedByID = field.NewString(table, "created_by_id")
+	a.AssignUserId = field.NewString(table, "assignUserId")
+	a.CreatedById = field.NewString(table, "createdById")
 
 	a.fillFieldMap()
 
@@ -539,15 +539,15 @@ func (a *alertActionLog) GetFieldByName(fieldName string) (field.OrderExpr, bool
 
 func (a *alertActionLog) fillFieldMap() {
 	a.fieldMap = make(map[string]field.Expr, 13)
-	a.fieldMap["id"] = a.ID
-	a.fieldMap["created_at"] = a.CreatedAt
-	a.fieldMap["updated_at"] = a.UpdatedAt
+	a.fieldMap["id"] = a.Id
+	a.fieldMap["createdAt"] = a.CreatedAt
+	a.fieldMap["updatedAt"] = a.UpdatedAt
 	a.fieldMap["acknowledged"] = a.Acknowledged
 	a.fieldMap["resolved"] = a.Resolved
 	a.fieldMap["suppressed"] = a.Suppressed
 	a.fieldMap["comment"] = a.Comment
-	a.fieldMap["assign_user_id"] = a.AssignUserID
-	a.fieldMap["created_by_id"] = a.CreatedByID
+	a.fieldMap["assignUserId"] = a.AssignUserId
+	a.fieldMap["createdById"] = a.CreatedById
 
 }
 

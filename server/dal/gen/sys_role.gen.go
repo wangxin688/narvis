@@ -26,12 +26,12 @@ func newRole(db *gorm.DB, opts ...gen.DOOption) role {
 
 	tableName := _role.roleDo.TableName()
 	_role.ALL = field.NewAsterisk(tableName)
-	_role.ID = field.NewString(tableName, "id")
-	_role.CreatedAt = field.NewTime(tableName, "created_at")
-	_role.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_role.Id = field.NewString(tableName, "id")
+	_role.CreatedAt = field.NewTime(tableName, "createdAt")
+	_role.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_role.Name = field.NewString(tableName, "name")
 	_role.Description = field.NewString(tableName, "description")
-	_role.OrganizationID = field.NewString(tableName, "organization_id")
+	_role.OrganizationId = field.NewString(tableName, "organizationId")
 	_role.Organization = roleBelongsToOrganization{
 		db: db.Session(&gorm.Session{}),
 
@@ -71,12 +71,12 @@ type role struct {
 	roleDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
 	Description    field.String
-	OrganizationID field.String
+	OrganizationId field.String
 	Organization   roleBelongsToOrganization
 
 	Menus roleManyToManyMenus
@@ -96,12 +96,12 @@ func (r role) As(alias string) *role {
 
 func (r *role) updateTableName(table string) *role {
 	r.ALL = field.NewAsterisk(table)
-	r.ID = field.NewString(table, "id")
-	r.CreatedAt = field.NewTime(table, "created_at")
-	r.UpdatedAt = field.NewTime(table, "updated_at")
+	r.Id = field.NewString(table, "id")
+	r.CreatedAt = field.NewTime(table, "createdAt")
+	r.UpdatedAt = field.NewTime(table, "updatedAt")
 	r.Name = field.NewString(table, "name")
 	r.Description = field.NewString(table, "description")
-	r.OrganizationID = field.NewString(table, "organization_id")
+	r.OrganizationId = field.NewString(table, "organizationId")
 
 	r.fillFieldMap()
 
@@ -119,12 +119,12 @@ func (r *role) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (r *role) fillFieldMap() {
 	r.fieldMap = make(map[string]field.Expr, 8)
-	r.fieldMap["id"] = r.ID
-	r.fieldMap["created_at"] = r.CreatedAt
-	r.fieldMap["updated_at"] = r.UpdatedAt
+	r.fieldMap["id"] = r.Id
+	r.fieldMap["createdAt"] = r.CreatedAt
+	r.fieldMap["updatedAt"] = r.UpdatedAt
 	r.fieldMap["name"] = r.Name
 	r.fieldMap["description"] = r.Description
-	r.fieldMap["organization_id"] = r.OrganizationID
+	r.fieldMap["organizationId"] = r.OrganizationId
 
 }
 

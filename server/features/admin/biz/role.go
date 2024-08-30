@@ -16,17 +16,17 @@ func NewRoleService() *RoleService {
 	return &RoleService{}
 }
 
-func (r *RoleService) CreateAdminRole(organizationID string) (string, error) {
+func (r *RoleService) CreateAdminRole(organizationId string) (string, error) {
 	role := &models.Role{
 		Name:           constants.ReserveAdminRoleName,
 		Description:    &constants.ReserveAdminRoleDescription,
-		OrganizationID: organizationID,
+		OrganizationId: organizationId,
 	}
 	err := gen.Role.Create(role)
 	if err != nil {
 		return "", err
 	}
-	return role.ID, nil
+	return role.Id, nil
 }
 
 // use raw sql for performance
@@ -35,7 +35,7 @@ func CheckRolePathPermission(user *models.User, path string) bool {
 	if user.Role.Name == constants.ReserveAdminRoleName {
 		return true
 	}
-	roleID := user.Role.ID
+	roleId := user.Role.Id
 	var result string
 	stmt := `
 	SELECT rm.role_id  
@@ -46,14 +46,14 @@ func CheckRolePathPermission(user *models.User, path string) bool {
 	WHERE rm.role_id = ? AND p.path = ?  
 	LIMIT 1;
 	`
-	infra.DB.Raw(stmt, roleID, path).Scan(&result)
+	infra.DB.Raw(stmt, roleId, path).Scan(&result)
 	return result != ""
 }
 
 func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *schemas.RoleList, error) {
-	stmt := gen.Role.Where(gen.Role.OrganizationID.Eq(global.OrganizationID.Get()))
-	if params.ID != nil {
-		stmt = stmt.Where(gen.Role.ID.In(*params.ID...))
+	stmt := gen.Role.Where(gen.Role.OrganizationId.Eq(global.OrganizationId.Get()))
+	if params.Id != nil {
+		stmt = stmt.Where(gen.Role.Id.In(*params.Id...))
 	}
 	if params.Name != nil {
 		stmt = stmt.Where(gen.Role.Name.In(*params.Name...))
@@ -81,7 +81,7 @@ func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *schemas.Role
 	var res schemas.RoleList
 	for _, role := range roles {
 		res = append(res, schemas.Role{
-			ID:          role.ID,
+			Id:          role.Id,
 			Name:        role.Name,
 			Description: role.Description,
 			CreatedAt:   role.CreatedAt,
@@ -92,8 +92,8 @@ func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *schemas.Role
 
 }
 
-func (r *RoleService) GetRoleByID(id string) (*schemas.RoleDetail, error) {
-	role, err := gen.Role.Where(gen.Role.ID.Eq(id), gen.Role.OrganizationID.Eq(global.OrganizationID.Get())).Preload(gen.Role.Menus).First()
+func (r *RoleService) GetRoleById(id string) (*schemas.RoleDetail, error) {
+	role, err := gen.Role.Where(gen.Role.Id.Eq(id), gen.Role.OrganizationId.Eq(global.OrganizationId.Get())).Preload(gen.Role.Menus).First()
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (r *RoleService) GetRoleByID(id string) (*schemas.RoleDetail, error) {
 	// }
 
 	return &schemas.RoleDetail{
-		ID:          role.ID,
+		Id:          role.Id,
 		Name:        role.Name,
 		Description: role.Description,
 		CreatedAt:   role.CreatedAt,
@@ -116,24 +116,24 @@ func (r *RoleService) GetRoleByID(id string) (*schemas.RoleDetail, error) {
 }
 
 func (r *RoleService) CreateRole(role *schemas.RoleCreate) (string, error) {
-	menus, err := gen.Menu.Where(gen.Menu.ID.In(role.Menus...)).Find()
+	menus, err := gen.Menu.Where(gen.Menu.Id.In(role.Menus...)).Find()
 	if err != nil {
 		return "", err
 	}
 	roleModel := &models.Role{
 		Name:           role.Name,
 		Description:    role.Description,
-		OrganizationID: global.OrganizationID.Get(),
+		OrganizationId: global.OrganizationId.Get(),
 	}
 	err = gen.Role.Create(roleModel)
 	if err != nil {
 		return "", err
 	}
 	gen.Role.Menus.Model(roleModel).Replace(menus...)
-	return roleModel.ID, nil
+	return roleModel.Id, nil
 }
 
-func (r *RoleService) UpdateRole(RoleID string, role *schemas.RoleUpdate) error {
+func (r *RoleService) UpdateRole(RoleId string, role *schemas.RoleUpdate) error {
 	var updateFields = make(map[string]any)
 	if role.Name != nil {
 		updateFields["name"] = *role.Name
@@ -142,7 +142,7 @@ func (r *RoleService) UpdateRole(RoleID string, role *schemas.RoleUpdate) error 
 		updateFields["description"] = *role.Description
 	}
 	gen.Role.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
-		dbRole, err := gen.Role.Where(gen.Role.ID.Eq(RoleID), gen.Role.OrganizationID.Eq(global.OrganizationID.Get())).First()
+		dbRole, err := gen.Role.Where(gen.Role.Id.Eq(RoleId), gen.Role.OrganizationId.Eq(global.OrganizationId.Get())).First()
 		if err != nil {
 			return err
 		}
@@ -153,7 +153,7 @@ func (r *RoleService) UpdateRole(RoleID string, role *schemas.RoleUpdate) error 
 			if len(*role.Menus) == 0 {
 				gen.Role.Menus.Model(dbRole).Clear()
 			} else {
-				dbMenus, err := gen.Menu.Where(gen.Menu.ID.In(*role.Menus...)).Find()
+				dbMenus, err := gen.Menu.Where(gen.Menu.Id.In(*role.Menus...)).Find()
 				if err != nil {
 					return err
 				}
@@ -167,7 +167,7 @@ func (r *RoleService) UpdateRole(RoleID string, role *schemas.RoleUpdate) error 
 }
 
 func (r *RoleService) DeleteRole(id string) error {
-	_, err := gen.Role.Where(gen.Role.ID.Eq(id), gen.Role.OrganizationID.Eq(global.OrganizationID.Get())).Delete()
+	_, err := gen.Role.Where(gen.Role.Id.Eq(id), gen.Role.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
 	if err != nil {
 		return err
 	}

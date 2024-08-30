@@ -7,12 +7,18 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gen"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 func connectDb() *gorm.DB {
 	core.SetUpConfig()
 	dsn := core.Settings.Postgres.BuildPgDsn()
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			NoLowerCase:   true,
+			SingularTable: true,
+		},
+	})
 	if err != nil {
 		core.Logger.Fatal("Failed to connect database", zap.Error(err))
 	}

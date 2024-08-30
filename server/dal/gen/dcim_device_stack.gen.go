@@ -26,13 +26,13 @@ func newDeviceStack(db *gorm.DB, opts ...gen.DOOption) deviceStack {
 
 	tableName := _deviceStack.deviceStackDo.TableName()
 	_deviceStack.ALL = field.NewAsterisk(tableName)
-	_deviceStack.ID = field.NewString(tableName, "id")
-	_deviceStack.CreatedAt = field.NewTime(tableName, "created_at")
-	_deviceStack.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_deviceStack.Id = field.NewString(tableName, "id")
+	_deviceStack.CreatedAt = field.NewTime(tableName, "createdAt")
+	_deviceStack.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_deviceStack.Priority = field.NewUint8(tableName, "priority")
-	_deviceStack.SerialNumber = field.NewString(tableName, "serial_number")
-	_deviceStack.MacAddress = field.NewString(tableName, "mac_address")
-	_deviceStack.DeviceID = field.NewString(tableName, "device_id")
+	_deviceStack.SerialNumber = field.NewString(tableName, "serialNumber")
+	_deviceStack.MacAddress = field.NewString(tableName, "macAddress")
+	_deviceStack.DeviceId = field.NewString(tableName, "deviceId")
 	_deviceStack.Device = deviceStackBelongsToDevice{
 		db: db.Session(&gorm.Session{}),
 
@@ -144,13 +144,13 @@ type deviceStack struct {
 	deviceStackDo
 
 	ALL          field.Asterisk
-	ID           field.String
+	Id           field.String
 	CreatedAt    field.Time
 	UpdatedAt    field.Time
 	Priority     field.Uint8
 	SerialNumber field.String
 	MacAddress   field.String
-	DeviceID     field.String
+	DeviceId     field.String
 	Device       deviceStackBelongsToDevice
 
 	fieldMap map[string]field.Expr
@@ -168,13 +168,13 @@ func (d deviceStack) As(alias string) *deviceStack {
 
 func (d *deviceStack) updateTableName(table string) *deviceStack {
 	d.ALL = field.NewAsterisk(table)
-	d.ID = field.NewString(table, "id")
-	d.CreatedAt = field.NewTime(table, "created_at")
-	d.UpdatedAt = field.NewTime(table, "updated_at")
+	d.Id = field.NewString(table, "id")
+	d.CreatedAt = field.NewTime(table, "createdAt")
+	d.UpdatedAt = field.NewTime(table, "updatedAt")
 	d.Priority = field.NewUint8(table, "priority")
-	d.SerialNumber = field.NewString(table, "serial_number")
-	d.MacAddress = field.NewString(table, "mac_address")
-	d.DeviceID = field.NewString(table, "device_id")
+	d.SerialNumber = field.NewString(table, "serialNumber")
+	d.MacAddress = field.NewString(table, "macAddress")
+	d.DeviceId = field.NewString(table, "deviceId")
 
 	d.fillFieldMap()
 
@@ -192,13 +192,13 @@ func (d *deviceStack) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (d *deviceStack) fillFieldMap() {
 	d.fieldMap = make(map[string]field.Expr, 8)
-	d.fieldMap["id"] = d.ID
-	d.fieldMap["created_at"] = d.CreatedAt
-	d.fieldMap["updated_at"] = d.UpdatedAt
+	d.fieldMap["id"] = d.Id
+	d.fieldMap["createdAt"] = d.CreatedAt
+	d.fieldMap["updatedAt"] = d.UpdatedAt
 	d.fieldMap["priority"] = d.Priority
-	d.fieldMap["serial_number"] = d.SerialNumber
-	d.fieldMap["mac_address"] = d.MacAddress
-	d.fieldMap["device_id"] = d.DeviceID
+	d.fieldMap["serialNumber"] = d.SerialNumber
+	d.fieldMap["macAddress"] = d.MacAddress
+	d.fieldMap["deviceId"] = d.DeviceId
 
 }
 

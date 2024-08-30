@@ -26,20 +26,20 @@ func newRack(db *gorm.DB, opts ...gen.DOOption) rack {
 
 	tableName := _rack.rackDo.TableName()
 	_rack.ALL = field.NewAsterisk(tableName)
-	_rack.ID = field.NewString(tableName, "id")
-	_rack.CreatedAt = field.NewTime(tableName, "created_at")
-	_rack.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_rack.Id = field.NewString(tableName, "id")
+	_rack.CreatedAt = field.NewTime(tableName, "createdAt")
+	_rack.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_rack.Name = field.NewString(tableName, "name")
-	_rack.AssetTag = field.NewString(tableName, "asset_tag")
-	_rack.SerialNumber = field.NewString(tableName, "serial_number")
-	_rack.UHeight = field.NewUint8(tableName, "u_height")
+	_rack.AssetTag = field.NewString(tableName, "assetTag")
+	_rack.SerialNumber = field.NewString(tableName, "serialNumber")
+	_rack.UHeight = field.NewUint8(tableName, "uHeight")
 	_rack.Height = field.NewFloat32(tableName, "height")
 	_rack.Width = field.NewFloat32(tableName, "width")
 	_rack.Depth = field.NewFloat32(tableName, "depth")
-	_rack.DescUnit = field.NewBool(tableName, "desc_unit")
-	_rack.LocationID = field.NewString(tableName, "location_id")
-	_rack.SiteID = field.NewString(tableName, "site_id")
-	_rack.OrganizationID = field.NewString(tableName, "organization_id")
+	_rack.DescUnit = field.NewBool(tableName, "descUnit")
+	_rack.LocationId = field.NewString(tableName, "locationId")
+	_rack.SiteId = field.NewString(tableName, "siteId")
+	_rack.OrganizationId = field.NewString(tableName, "organizationId")
 	_rack.Location = rackBelongsToLocation{
 		db: db.Session(&gorm.Session{}),
 
@@ -90,7 +90,7 @@ type rack struct {
 	rackDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
@@ -101,9 +101,9 @@ type rack struct {
 	Width          field.Float32
 	Depth          field.Float32
 	DescUnit       field.Bool
-	LocationID     field.String
-	SiteID         field.String
-	OrganizationID field.String
+	LocationId     field.String
+	SiteId         field.String
+	OrganizationId field.String
 	Location       rackBelongsToLocation
 
 	Site rackBelongsToSite
@@ -125,20 +125,20 @@ func (r rack) As(alias string) *rack {
 
 func (r *rack) updateTableName(table string) *rack {
 	r.ALL = field.NewAsterisk(table)
-	r.ID = field.NewString(table, "id")
-	r.CreatedAt = field.NewTime(table, "created_at")
-	r.UpdatedAt = field.NewTime(table, "updated_at")
+	r.Id = field.NewString(table, "id")
+	r.CreatedAt = field.NewTime(table, "createdAt")
+	r.UpdatedAt = field.NewTime(table, "updatedAt")
 	r.Name = field.NewString(table, "name")
-	r.AssetTag = field.NewString(table, "asset_tag")
-	r.SerialNumber = field.NewString(table, "serial_number")
-	r.UHeight = field.NewUint8(table, "u_height")
+	r.AssetTag = field.NewString(table, "assetTag")
+	r.SerialNumber = field.NewString(table, "serialNumber")
+	r.UHeight = field.NewUint8(table, "uHeight")
 	r.Height = field.NewFloat32(table, "height")
 	r.Width = field.NewFloat32(table, "width")
 	r.Depth = field.NewFloat32(table, "depth")
-	r.DescUnit = field.NewBool(table, "desc_unit")
-	r.LocationID = field.NewString(table, "location_id")
-	r.SiteID = field.NewString(table, "site_id")
-	r.OrganizationID = field.NewString(table, "organization_id")
+	r.DescUnit = field.NewBool(table, "descUnit")
+	r.LocationId = field.NewString(table, "locationId")
+	r.SiteId = field.NewString(table, "siteId")
+	r.OrganizationId = field.NewString(table, "organizationId")
 
 	r.fillFieldMap()
 
@@ -156,20 +156,20 @@ func (r *rack) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (r *rack) fillFieldMap() {
 	r.fieldMap = make(map[string]field.Expr, 17)
-	r.fieldMap["id"] = r.ID
-	r.fieldMap["created_at"] = r.CreatedAt
-	r.fieldMap["updated_at"] = r.UpdatedAt
+	r.fieldMap["id"] = r.Id
+	r.fieldMap["createdAt"] = r.CreatedAt
+	r.fieldMap["updatedAt"] = r.UpdatedAt
 	r.fieldMap["name"] = r.Name
-	r.fieldMap["asset_tag"] = r.AssetTag
-	r.fieldMap["serial_number"] = r.SerialNumber
-	r.fieldMap["u_height"] = r.UHeight
+	r.fieldMap["assetTag"] = r.AssetTag
+	r.fieldMap["serialNumber"] = r.SerialNumber
+	r.fieldMap["uHeight"] = r.UHeight
 	r.fieldMap["height"] = r.Height
 	r.fieldMap["width"] = r.Width
 	r.fieldMap["depth"] = r.Depth
-	r.fieldMap["desc_unit"] = r.DescUnit
-	r.fieldMap["location_id"] = r.LocationID
-	r.fieldMap["site_id"] = r.SiteID
-	r.fieldMap["organization_id"] = r.OrganizationID
+	r.fieldMap["descUnit"] = r.DescUnit
+	r.fieldMap["locationId"] = r.LocationId
+	r.fieldMap["siteId"] = r.SiteId
+	r.fieldMap["organizationId"] = r.OrganizationId
 
 }
 

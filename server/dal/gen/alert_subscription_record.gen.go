@@ -26,11 +26,13 @@ func newSubscriptionRecord(db *gorm.DB, opts ...gen.DOOption) subscriptionRecord
 
 	tableName := _subscriptionRecord.subscriptionRecordDo.TableName()
 	_subscriptionRecord.ALL = field.NewAsterisk(tableName)
-	_subscriptionRecord.ID = field.NewString(tableName, "id")
-	_subscriptionRecord.CreatedAt = field.NewTime(tableName, "created_at")
-	_subscriptionRecord.SubscriptionID = field.NewString(tableName, "subscription_id")
-	_subscriptionRecord.AlertID = field.NewString(tableName, "alert_id")
-	_subscriptionRecord.AlertGroup = field.NewString(tableName, "alert_group")
+	_subscriptionRecord.Id = field.NewString(tableName, "id")
+	_subscriptionRecord.CreatedAt = field.NewTime(tableName, "createdAt")
+	_subscriptionRecord.SubscriptionId = field.NewString(tableName, "subscriptionId")
+	_subscriptionRecord.AlertId = field.NewString(tableName, "alertId")
+	_subscriptionRecord.AlertGroup = field.NewString(tableName, "alertGroup")
+	_subscriptionRecord.Status = field.NewUint8(tableName, "status")
+	_subscriptionRecord.FailedReason = field.NewString(tableName, "failedReason")
 
 	_subscriptionRecord.fillFieldMap()
 
@@ -41,11 +43,13 @@ type subscriptionRecord struct {
 	subscriptionRecordDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
-	SubscriptionID field.String
-	AlertID        field.String
+	SubscriptionId field.String
+	AlertId        field.String
 	AlertGroup     field.String
+	Status         field.Uint8
+	FailedReason   field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -62,11 +66,13 @@ func (s subscriptionRecord) As(alias string) *subscriptionRecord {
 
 func (s *subscriptionRecord) updateTableName(table string) *subscriptionRecord {
 	s.ALL = field.NewAsterisk(table)
-	s.ID = field.NewString(table, "id")
-	s.CreatedAt = field.NewTime(table, "created_at")
-	s.SubscriptionID = field.NewString(table, "subscription_id")
-	s.AlertID = field.NewString(table, "alert_id")
-	s.AlertGroup = field.NewString(table, "alert_group")
+	s.Id = field.NewString(table, "id")
+	s.CreatedAt = field.NewTime(table, "createdAt")
+	s.SubscriptionId = field.NewString(table, "subscriptionId")
+	s.AlertId = field.NewString(table, "alertId")
+	s.AlertGroup = field.NewString(table, "alertGroup")
+	s.Status = field.NewUint8(table, "status")
+	s.FailedReason = field.NewString(table, "failedReason")
 
 	s.fillFieldMap()
 
@@ -83,12 +89,14 @@ func (s *subscriptionRecord) GetFieldByName(fieldName string) (field.OrderExpr, 
 }
 
 func (s *subscriptionRecord) fillFieldMap() {
-	s.fieldMap = make(map[string]field.Expr, 5)
-	s.fieldMap["id"] = s.ID
-	s.fieldMap["created_at"] = s.CreatedAt
-	s.fieldMap["subscription_id"] = s.SubscriptionID
-	s.fieldMap["alert_id"] = s.AlertID
-	s.fieldMap["alert_group"] = s.AlertGroup
+	s.fieldMap = make(map[string]field.Expr, 7)
+	s.fieldMap["id"] = s.Id
+	s.fieldMap["createdAt"] = s.CreatedAt
+	s.fieldMap["subscriptionId"] = s.SubscriptionId
+	s.fieldMap["alertId"] = s.AlertId
+	s.fieldMap["alertGroup"] = s.AlertGroup
+	s.fieldMap["status"] = s.Status
+	s.fieldMap["failedReason"] = s.FailedReason
 }
 
 func (s subscriptionRecord) clone(db *gorm.DB) subscriptionRecord {

@@ -9,21 +9,21 @@ type ApCoordinate struct {
 }
 
 type AP struct {
-	ID           int           `json:"id"`
-	CreatedAt    time.Time     `json:"created_at"`
-	UpdatedAt    time.Time     `json:"updated_at"`
+	Id           int           `json:"id"`
+	CreatedAt    time.Time     `json:"createdAt"`
+	UpdatedAt    time.Time     `json:"updatedAt"`
 	Name         string        `json:"name"`
 	Status       string        `json:"status"`
-	MacAddress   *string       `json:"mac_address"`
-	SerialNumber *string       `json:"serial_number"`
-	ManagementIP string        `json:"management_ip"`
-	DeviceModel  string        `json:"device_type"`
+	MacAddress   *string       `json:"macAddress"`
+	SerialNumber *string       `json:"serialNumber"`
+	ManagementIP string        `json:"managementIp"`
+	DeviceModel  string        `json:"deviceType"`
 	Manufacturer string        `json:"manufacturer"`
-	DeviceRole   string        `json:"device_role"`
+	DeviceRole   string        `json:"deviceRole"`
 	Version      *string       `json:"version"`
-	GroupName    *string       `json:"group_name"`
+	GroupName    *string       `json:"groupName"`
 	Coordinate   *ApCoordinate `json:"coordinate"`
-	ActiveWac    DeviceShort   `json:"active_wac"`
+	ActiveWac    DeviceShort   `json:"activeWac"`
 	Location     LocationShort `json:"location"`
 	Site         SiteShort     `json:"site"`
 }
@@ -31,9 +31,9 @@ type AP struct {
 type APList []AP
 
 type APShort struct {
-	ID           int    `json:"id"`
+	Id           int    `json:"id"`
 	Name         string `json:"name"`
-	ManagementIP string `json:"management_ip"`
+	ManagementIP string `json:"managementIp"`
 }
 
 type APShortList []APShort

@@ -102,7 +102,7 @@ func (c *CircuitService) UpdateCircuit(circuitID string, circuit *schemas.Circui
 	if circuit.AInterfaceID != nil {
 		updateFields["a_interface_id"] = *circuit.AInterfaceID
 	}
-	_, err := gen.Circuit.Where(gen.Circuit.ID.Eq(circuitID), gen.Circuit.OrganizationID.Eq(global.OrganizationID.Get())).Updates(updateFields)
+	_, err := gen.Circuit.Where(gen.Circuit.ID.Eq(circuitID), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (c *CircuitService) UpdateCircuit(circuitID string, circuit *schemas.Circui
 
 func (c *CircuitService) GetCircuitByID(id string) (*schemas.Circuit, error) {
 	circuit, err := gen.Circuit.
-		Where(gen.Circuit.ID.Eq(id), gen.Circuit.OrganizationID.Eq(global.OrganizationID.Get())).
+		Where(gen.Circuit.ID.Eq(id), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).
 		Preload(gen.Circuit.Provider).
 		Preload(gen.Circuit.ASite).
 		Preload(gen.Circuit.ADevice).
@@ -139,7 +139,7 @@ func (c *CircuitService) GetCircuitByID(id string) (*schemas.Circuit, error) {
 }
 
 func (c *CircuitService) DeleteCircuit(id string) error {
-	_, err := gen.Circuit.Where(gen.Circuit.ID.Eq(id), gen.Circuit.OrganizationID.Eq(global.OrganizationID.Get())).Delete()
+	_, err := gen.Circuit.Where(gen.Circuit.ID.Eq(id), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
 	if err != nil {
 		return err
 	}

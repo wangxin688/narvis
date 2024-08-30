@@ -41,17 +41,17 @@ type Meta struct {
 
 type User struct {
 	BaseDbModel
-	Username       string       `gorm:"not null"`
-	Email          string       `gorm:"uniqueIndex:idx_user_email_organization_id;not null;index"`
-	Password       string       `gorm:"not null"`
-	Status         string       `gorm:"not null;default:Active"` // Active, Inactive
-	Avatar         *string      `gorm:"default:null"`
-	GroupID        string       `gorm:"type:uuid;not null"`
+	Username       string       `gorm:"column:username;not null"`
+	Email          string       `gorm:"column:email;uniqueIndex:idx_user_email_organization_id;not null;index"`
+	Password       string       `gorm:"column:password;not null"`
+	Status         string       `gorm:"column:status;not null;default:Active"` // Active, Inactive
+	Avatar         *string      `gorm:"column:avatar;default:null"`
+	GroupId        string       `gorm:"column:groupId;type:uuid;not null"`
 	Group          Group        `gorm:"constraint:Ondelete:RESTRICT"`
-	RoleID         string       `gorm:"type:uuid,not null"`
+	RoleId         string       `gorm:"column:roleId;type:uuid,not null"`
 	Role           Role         `gorm:"constraint:Ondelete:RESTRICT"`
-	AuthType       uint8        `gorm:"type:smallint;default:0"`
-	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_user_email_organization_id;not null"`
+	AuthType       uint8        `gorm:"column:authType;type:smallint;default:0"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_user_email_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -61,10 +61,10 @@ func (User) TableName() string {
 
 type Role struct {
 	BaseDbModel
-	Name           string       `gorm:"uniqueIndex:idx_role_name_organization_id;not null"`
-	Description    *string      `gorm:"default:null"`
+	Name           string       `gorm:"column:name;uniqueIndex:idx_role_name_organization_id;not null"`
+	Description    *string      `gorm:"column:description;default:null"`
 	Menus          []Menu       `gorm:"many2many:role_menus"`
-	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_role_name_organization_id;not null"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_role_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -74,11 +74,11 @@ func (Role) TableName() string {
 
 type Group struct {
 	BaseDbModel
-	Name           string       `gorm:"uniqueIndex:idx_group_name_organization_id;not null"`
-	Description    *string      `gorm:"default:null"`
-	RoleID         string       `gorm:"type:uuid;not null"`
+	Name           string       `gorm:"column:name;uniqueIndex:idx_group_name_organization_id;not null"`
+	Description    *string      `gorm:"column:description;default:null"`
+	RoleId         string       `gorm:"column:role_id;type:uuid;not null"`
 	Role           Role         `gorm:"constraint:Ondelete:RESTRICT"`
-	OrganizationID string       `gorm:"tye:uuid;uniqueIndex:idx_group_name_organization_id;not null"`
+	OrganizationId string       `gorm:"column:organizationId;tye:uuid;uniqueIndex:idx_group_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 	User           []User
 }
@@ -89,11 +89,11 @@ func (Group) TableName() string {
 
 type Permission struct {
 	BaseDbModel
-	Name        string                            `gorm:"unique;not null"`
-	Path        string                            `gorm:"unique;not null"`
-	Method      string                            ``
-	Tag         *string                           `` // need update from api
-	Description *datatypes.JSONType[schemas.I18n] `` // need update from api
+	Name        string                            `gorm:"column:name;unique;not null"`
+	Path        string                            `gorm:"column:path;unique;not null"`
+	Method      string                            `gorm:"column:method;not null"`
+	Tag         *string                           `gorm:"column:tag;default:null"`         // need update from api
+	Description *datatypes.JSONType[schemas.I18n] `gorm:"column:description;default:null"` // need update from api
 	Menu        []Menu                            `gorm:"many2many:menu_permissions"`
 }
 
@@ -103,12 +103,12 @@ func (Permission) TableName() string {
 
 type Menu struct {
 	BaseDbModel
-	Path       string                   `gorm:"unique;not null"`
-	Name       string                   `gorm:"not null"`
-	Redirect   *string                  `gorm:"default:null"`
-	ParentID   *string                  `gorm:"default:null;type:uuid"`
-	Parent     *Menu                    `gorm:"constraint:Ondelete:RESTRICT;references:ID"`
-	Meta       datatypes.JSONType[Meta] `gorm:"type:json"`
+	Path       string                   `gorm:"column:path;unique;not null"`
+	Name       string                   `gorm:"column:name;not null"`
+	Redirect   *string                  `gorm:"column:redirect;default:null"`
+	ParentId   *string                  `gorm:"column:parentId;default:null;type:uuid"`
+	Parent     *Menu                    `gorm:"constraint:Ondelete:RESTRICT;references:Id"`
+	Meta       datatypes.JSONType[Meta] `gorm:"column:meta;type:json"`
 	Permission []Permission             `gorm:"many2many:menu_permissions"`
 }
 

@@ -20,23 +20,23 @@ type RoleUpdate struct {
 
 type RoleQuery struct {
 	schemas.PageInfo
-	ID   *[]string `json:"id" binding:"omitempty,list_uuid"`
+	Id   *[]string `json:"id" binding:"omitempty,list_uuid"`
 	Name *[]string `json:"name" binding:"omitempty"`
 }
 
 type RoleDetail struct {
-	ID          string      `json:"id"`
-	CreatedAt   time.Time   `json:"created_at"`
-	UpdatedAt   time.Time   `json:"updated_at"`
-	Name        string      `json:"name"`
-	Description *string     `json:"description"`
-	Menus       *[]Menu `json:"menus"`
+	Id          string    `json:"id"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description"`
+	Menus       *[]Menu   `json:"menus"`
 }
 
 type Role struct {
-	ID          string    `json:"id"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Id          string    `json:"id"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 	Name        string    `json:"name"`
 	Description *string   `json:"description"`
 }
@@ -44,7 +44,7 @@ type Role struct {
 type RoleList []Role
 
 type RoleShort struct {
-	ID   string `json:"id"`
+	Id   string `json:"id"`
 	Name string `json:"name"`
 }
 

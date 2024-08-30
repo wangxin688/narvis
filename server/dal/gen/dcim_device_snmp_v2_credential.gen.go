@@ -26,15 +26,15 @@ func newDeviceSnmpV2Credential(db *gorm.DB, opts ...gen.DOOption) deviceSnmpV2Cr
 
 	tableName := _deviceSnmpV2Credential.deviceSnmpV2CredentialDo.TableName()
 	_deviceSnmpV2Credential.ALL = field.NewAsterisk(tableName)
-	_deviceSnmpV2Credential.ID = field.NewString(tableName, "id")
-	_deviceSnmpV2Credential.CreatedAt = field.NewTime(tableName, "created_at")
-	_deviceSnmpV2Credential.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_deviceSnmpV2Credential.Id = field.NewString(tableName, "id")
+	_deviceSnmpV2Credential.CreatedAt = field.NewTime(tableName, "createdAt")
+	_deviceSnmpV2Credential.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_deviceSnmpV2Credential.Community = field.NewString(tableName, "community")
-	_deviceSnmpV2Credential.MaxRepetitions = field.NewUint8(tableName, "max_repetitions")
+	_deviceSnmpV2Credential.MaxRepetitions = field.NewUint8(tableName, "maxRepetitions")
 	_deviceSnmpV2Credential.Timeout = field.NewUint8(tableName, "timeout")
 	_deviceSnmpV2Credential.Port = field.NewUint16(tableName, "port")
-	_deviceSnmpV2Credential.DeviceID = field.NewString(tableName, "device_id")
-	_deviceSnmpV2Credential.OrganizationID = field.NewString(tableName, "organization_id")
+	_deviceSnmpV2Credential.DeviceId = field.NewString(tableName, "deviceId")
+	_deviceSnmpV2Credential.OrganizationId = field.NewString(tableName, "organizationId")
 	_deviceSnmpV2Credential.Device = deviceSnmpV2CredentialBelongsToDevice{
 		db: db.Session(&gorm.Session{}),
 
@@ -152,15 +152,15 @@ type deviceSnmpV2Credential struct {
 	deviceSnmpV2CredentialDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Community      field.String
 	MaxRepetitions field.Uint8
 	Timeout        field.Uint8
 	Port           field.Uint16
-	DeviceID       field.String
-	OrganizationID field.String
+	DeviceId       field.String
+	OrganizationId field.String
 	Device         deviceSnmpV2CredentialBelongsToDevice
 
 	Organization deviceSnmpV2CredentialBelongsToOrganization
@@ -180,15 +180,15 @@ func (d deviceSnmpV2Credential) As(alias string) *deviceSnmpV2Credential {
 
 func (d *deviceSnmpV2Credential) updateTableName(table string) *deviceSnmpV2Credential {
 	d.ALL = field.NewAsterisk(table)
-	d.ID = field.NewString(table, "id")
-	d.CreatedAt = field.NewTime(table, "created_at")
-	d.UpdatedAt = field.NewTime(table, "updated_at")
+	d.Id = field.NewString(table, "id")
+	d.CreatedAt = field.NewTime(table, "createdAt")
+	d.UpdatedAt = field.NewTime(table, "updatedAt")
 	d.Community = field.NewString(table, "community")
-	d.MaxRepetitions = field.NewUint8(table, "max_repetitions")
+	d.MaxRepetitions = field.NewUint8(table, "maxRepetitions")
 	d.Timeout = field.NewUint8(table, "timeout")
 	d.Port = field.NewUint16(table, "port")
-	d.DeviceID = field.NewString(table, "device_id")
-	d.OrganizationID = field.NewString(table, "organization_id")
+	d.DeviceId = field.NewString(table, "deviceId")
+	d.OrganizationId = field.NewString(table, "organizationId")
 
 	d.fillFieldMap()
 
@@ -206,15 +206,15 @@ func (d *deviceSnmpV2Credential) GetFieldByName(fieldName string) (field.OrderEx
 
 func (d *deviceSnmpV2Credential) fillFieldMap() {
 	d.fieldMap = make(map[string]field.Expr, 11)
-	d.fieldMap["id"] = d.ID
-	d.fieldMap["created_at"] = d.CreatedAt
-	d.fieldMap["updated_at"] = d.UpdatedAt
+	d.fieldMap["id"] = d.Id
+	d.fieldMap["createdAt"] = d.CreatedAt
+	d.fieldMap["updatedAt"] = d.UpdatedAt
 	d.fieldMap["community"] = d.Community
-	d.fieldMap["max_repetitions"] = d.MaxRepetitions
+	d.fieldMap["maxRepetitions"] = d.MaxRepetitions
 	d.fieldMap["timeout"] = d.Timeout
 	d.fieldMap["port"] = d.Port
-	d.fieldMap["device_id"] = d.DeviceID
-	d.fieldMap["organization_id"] = d.OrganizationID
+	d.fieldMap["deviceId"] = d.DeviceId
+	d.fieldMap["organizationId"] = d.OrganizationId
 
 }
 

@@ -419,7 +419,6 @@ func (sd *SnmpDiscovery) ArpTable() (arp *map[string]string, error error) {
 
 func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
 	sysDescr, sysError := sd.SysDescr()
-	sysObjectId, sysObjectIdError := sd.SysObjectID()
 	sysUpTime, sysUpTimeError := sd.SysUpTime()
 	sysName, sysNameError := sd.SysName()
 	chassisId, chassisIdError := sd.ChassisId()
@@ -431,9 +430,8 @@ func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
 
 	response := &DiscoveryResponse{
 		SysDescr:        sysDescr,
-		SysObjectID:     sysObjectId,
 		Uptime:          sysUpTime,
-		HostName:        sysName,
+		Hostname:        sysName,
 		ChassisId:       chassisId,
 		Interfaces:      interfaces,
 		LldpNeighbors:   lldp,
@@ -443,9 +441,6 @@ func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
 	}
 	if sysError != nil {
 		response.Errors = append(response.Errors, sysError.Error())
-	}
-	if sysObjectIdError != nil {
-		response.Errors = append(response.Errors, sysObjectIdError.Error())
 	}
 	if sysUpTimeError != nil {
 		response.Errors = append(response.Errors, sysUpTimeError.Error())

@@ -42,7 +42,7 @@ type DeviceRole struct {
 
 func (d DeviceRole) ToMap() map[string]any {
 	result := make(map[string]any)
-	result["device_role"] = d.DeviceRole
+	result["deviceRole"] = d.DeviceRole
 	result["description"] = map[string]string{"en": d.Description.En, "zh": d.Description.Zh}
 	result["weight"] = d.Weight
 	result["abbreviation"] = d.Abbreviation

@@ -26,50 +26,36 @@ func newApLLDPNeighbor(db *gorm.DB, opts ...gen.DOOption) apLLDPNeighbor {
 
 	tableName := _apLLDPNeighbor.apLLDPNeighborDo.TableName()
 	_apLLDPNeighbor.ALL = field.NewAsterisk(tableName)
-	_apLLDPNeighbor.ID = field.NewString(tableName, "id")
-	_apLLDPNeighbor.CreatedAt = field.NewTime(tableName, "created_at")
-	_apLLDPNeighbor.UpdatedAt = field.NewTime(tableName, "updated_at")
-	_apLLDPNeighbor.SourceInterfaceID = field.NewString(tableName, "source_interface_id")
-	_apLLDPNeighbor.SourceDeviceID = field.NewString(tableName, "source_device_id")
-	_apLLDPNeighbor.TargetApID = field.NewString(tableName, "target_ap_id")
-	_apLLDPNeighbor.Active = field.NewBool(tableName, "active")
-	_apLLDPNeighbor.SiteID = field.NewString(tableName, "site_id")
-	_apLLDPNeighbor.OrganizationID = field.NewString(tableName, "organization_id")
-	_apLLDPNeighbor.SourceInterface = apLLDPNeighborBelongsToSourceInterface{
+	_apLLDPNeighbor.Id = field.NewString(tableName, "id")
+	_apLLDPNeighbor.CreatedAt = field.NewTime(tableName, "createdAt")
+	_apLLDPNeighbor.UpdatedAt = field.NewTime(tableName, "updatedAt")
+	_apLLDPNeighbor.LocalDeviceId = field.NewString(tableName, "localDeviceId")
+	_apLLDPNeighbor.LocalIfName = field.NewString(tableName, "localIfName")
+	_apLLDPNeighbor.LocalIfDescr = field.NewString(tableName, "localIfDescr")
+	_apLLDPNeighbor.RemoteApId = field.NewString(tableName, "remoteApId")
+	_apLLDPNeighbor.HashValue = field.NewString(tableName, "hashValue")
+	_apLLDPNeighbor.SiteId = field.NewString(tableName, "siteId")
+	_apLLDPNeighbor.OrganizationId = field.NewString(tableName, "organizationId")
+	_apLLDPNeighbor.LocalDevice = apLLDPNeighborBelongsToLocalDevice{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("SourceInterface", "models.DeviceInterface"),
-		Device: struct {
+		RelationField: field.NewRelation("LocalDevice", "models.Device"),
+		Rack: struct {
 			field.RelationField
-			Rack struct {
+			Location struct {
 				field.RelationField
-				Location struct {
+				Parent struct {
 					field.RelationField
-					Parent struct {
-						field.RelationField
-					}
-					Site struct {
-						field.RelationField
-						Organization struct {
-							field.RelationField
-						}
-					}
+				}
+				Site struct {
+					field.RelationField
 					Organization struct {
 						field.RelationField
 					}
 				}
-				Site struct {
-					field.RelationField
-				}
 				Organization struct {
 					field.RelationField
 				}
-			}
-			Template struct {
-				field.RelationField
-			}
-			Location struct {
-				field.RelationField
 			}
 			Site struct {
 				field.RelationField
@@ -78,140 +64,103 @@ func newApLLDPNeighbor(db *gorm.DB, opts ...gen.DOOption) apLLDPNeighbor {
 				field.RelationField
 			}
 		}{
-			RelationField: field.NewRelation("SourceInterface.Device", "models.Device"),
-			Rack: struct {
+			RelationField: field.NewRelation("LocalDevice.Rack", "models.Rack"),
+			Location: struct {
 				field.RelationField
-				Location struct {
+				Parent struct {
 					field.RelationField
-					Parent struct {
-						field.RelationField
-					}
-					Site struct {
-						field.RelationField
-						Organization struct {
-							field.RelationField
-						}
-					}
-					Organization struct {
-						field.RelationField
-					}
 				}
 				Site struct {
 					field.RelationField
+					Organization struct {
+						field.RelationField
+					}
 				}
 				Organization struct {
 					field.RelationField
 				}
 			}{
-				RelationField: field.NewRelation("SourceInterface.Device.Rack", "models.Rack"),
-				Location: struct {
+				RelationField: field.NewRelation("LocalDevice.Rack.Location", "models.Location"),
+				Parent: struct {
 					field.RelationField
-					Parent struct {
-						field.RelationField
-					}
-					Site struct {
-						field.RelationField
-						Organization struct {
-							field.RelationField
-						}
-					}
+				}{
+					RelationField: field.NewRelation("LocalDevice.Rack.Location.Parent", "models.Location"),
+				},
+				Site: struct {
+					field.RelationField
 					Organization struct {
 						field.RelationField
 					}
 				}{
-					RelationField: field.NewRelation("SourceInterface.Device.Rack.Location", "models.Location"),
-					Parent: struct {
-						field.RelationField
-					}{
-						RelationField: field.NewRelation("SourceInterface.Device.Rack.Location.Parent", "models.Location"),
-					},
-					Site: struct {
-						field.RelationField
-						Organization struct {
-							field.RelationField
-						}
-					}{
-						RelationField: field.NewRelation("SourceInterface.Device.Rack.Location.Site", "models.Site"),
-						Organization: struct {
-							field.RelationField
-						}{
-							RelationField: field.NewRelation("SourceInterface.Device.Rack.Location.Site.Organization", "models.Organization"),
-						},
-					},
+					RelationField: field.NewRelation("LocalDevice.Rack.Location.Site", "models.Site"),
 					Organization: struct {
 						field.RelationField
 					}{
-						RelationField: field.NewRelation("SourceInterface.Device.Rack.Location.Organization", "models.Organization"),
+						RelationField: field.NewRelation("LocalDevice.Rack.Location.Site.Organization", "models.Organization"),
 					},
-				},
-				Site: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("SourceInterface.Device.Rack.Site", "models.Site"),
 				},
 				Organization: struct {
 					field.RelationField
 				}{
-					RelationField: field.NewRelation("SourceInterface.Device.Rack.Organization", "models.Organization"),
+					RelationField: field.NewRelation("LocalDevice.Rack.Location.Organization", "models.Organization"),
 				},
-			},
-			Template: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("SourceInterface.Device.Template", "models.Template"),
-			},
-			Location: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("SourceInterface.Device.Location", "models.Location"),
 			},
 			Site: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("SourceInterface.Device.Site", "models.Site"),
+				RelationField: field.NewRelation("LocalDevice.Rack.Site", "models.Site"),
 			},
 			Organization: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("SourceInterface.Device.Organization", "models.Organization"),
+				RelationField: field.NewRelation("LocalDevice.Rack.Organization", "models.Organization"),
 			},
 		},
-		Site: struct {
+		Template: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("SourceInterface.Site", "models.Site"),
-		},
-	}
-
-	_apLLDPNeighbor.SourceDevice = apLLDPNeighborBelongsToSourceDevice{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("SourceDevice", "models.Device"),
-	}
-
-	_apLLDPNeighbor.TargetAp = apLLDPNeighborBelongsToTargetAp{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("TargetAp", "models.AP"),
-		ActiveWac: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("TargetAp.ActiveWac", "models.Device"),
+			RelationField: field.NewRelation("LocalDevice.Template", "models.Template"),
 		},
 		Location: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("TargetAp.Location", "models.Location"),
+			RelationField: field.NewRelation("LocalDevice.Location", "models.Location"),
 		},
 		Site: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("TargetAp.Site", "models.Site"),
+			RelationField: field.NewRelation("LocalDevice.Site", "models.Site"),
 		},
 		Organization: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("TargetAp.Organization", "models.Organization"),
+			RelationField: field.NewRelation("LocalDevice.Organization", "models.Organization"),
+		},
+	}
+
+	_apLLDPNeighbor.RemoteAp = apLLDPNeighborBelongsToRemoteAp{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("RemoteAp", "models.AP"),
+		ActiveWac: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("RemoteAp.ActiveWac", "models.Device"),
+		},
+		Location: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("RemoteAp.Location", "models.Location"),
+		},
+		Site: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("RemoteAp.Site", "models.Site"),
+		},
+		Organization: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("RemoteAp.Organization", "models.Organization"),
 		},
 	}
 
@@ -235,21 +184,20 @@ func newApLLDPNeighbor(db *gorm.DB, opts ...gen.DOOption) apLLDPNeighbor {
 type apLLDPNeighbor struct {
 	apLLDPNeighborDo
 
-	ALL               field.Asterisk
-	ID                field.String
-	CreatedAt         field.Time
-	UpdatedAt         field.Time
-	SourceInterfaceID field.String
-	SourceDeviceID    field.String
-	TargetApID        field.String
-	Active            field.Bool
-	SiteID            field.String
-	OrganizationID    field.String
-	SourceInterface   apLLDPNeighborBelongsToSourceInterface
+	ALL            field.Asterisk
+	Id             field.String
+	CreatedAt      field.Time
+	UpdatedAt      field.Time
+	LocalDeviceId  field.String
+	LocalIfName    field.String
+	LocalIfDescr   field.String
+	RemoteApId     field.String
+	HashValue      field.String
+	SiteId         field.String
+	OrganizationId field.String
+	LocalDevice    apLLDPNeighborBelongsToLocalDevice
 
-	SourceDevice apLLDPNeighborBelongsToSourceDevice
-
-	TargetAp apLLDPNeighborBelongsToTargetAp
+	RemoteAp apLLDPNeighborBelongsToRemoteAp
 
 	Site apLLDPNeighborBelongsToSite
 
@@ -270,15 +218,16 @@ func (a apLLDPNeighbor) As(alias string) *apLLDPNeighbor {
 
 func (a *apLLDPNeighbor) updateTableName(table string) *apLLDPNeighbor {
 	a.ALL = field.NewAsterisk(table)
-	a.ID = field.NewString(table, "id")
-	a.CreatedAt = field.NewTime(table, "created_at")
-	a.UpdatedAt = field.NewTime(table, "updated_at")
-	a.SourceInterfaceID = field.NewString(table, "source_interface_id")
-	a.SourceDeviceID = field.NewString(table, "source_device_id")
-	a.TargetApID = field.NewString(table, "target_ap_id")
-	a.Active = field.NewBool(table, "active")
-	a.SiteID = field.NewString(table, "site_id")
-	a.OrganizationID = field.NewString(table, "organization_id")
+	a.Id = field.NewString(table, "id")
+	a.CreatedAt = field.NewTime(table, "createdAt")
+	a.UpdatedAt = field.NewTime(table, "updatedAt")
+	a.LocalDeviceId = field.NewString(table, "localDeviceId")
+	a.LocalIfName = field.NewString(table, "localIfName")
+	a.LocalIfDescr = field.NewString(table, "localIfDescr")
+	a.RemoteApId = field.NewString(table, "remoteApId")
+	a.HashValue = field.NewString(table, "hashValue")
+	a.SiteId = field.NewString(table, "siteId")
+	a.OrganizationId = field.NewString(table, "organizationId")
 
 	a.fillFieldMap()
 
@@ -296,15 +245,16 @@ func (a *apLLDPNeighbor) GetFieldByName(fieldName string) (field.OrderExpr, bool
 
 func (a *apLLDPNeighbor) fillFieldMap() {
 	a.fieldMap = make(map[string]field.Expr, 14)
-	a.fieldMap["id"] = a.ID
-	a.fieldMap["created_at"] = a.CreatedAt
-	a.fieldMap["updated_at"] = a.UpdatedAt
-	a.fieldMap["source_interface_id"] = a.SourceInterfaceID
-	a.fieldMap["source_device_id"] = a.SourceDeviceID
-	a.fieldMap["target_ap_id"] = a.TargetApID
-	a.fieldMap["active"] = a.Active
-	a.fieldMap["site_id"] = a.SiteID
-	a.fieldMap["organization_id"] = a.OrganizationID
+	a.fieldMap["id"] = a.Id
+	a.fieldMap["createdAt"] = a.CreatedAt
+	a.fieldMap["updatedAt"] = a.UpdatedAt
+	a.fieldMap["localDeviceId"] = a.LocalDeviceId
+	a.fieldMap["localIfName"] = a.LocalIfName
+	a.fieldMap["localIfDescr"] = a.LocalIfDescr
+	a.fieldMap["remoteApId"] = a.RemoteApId
+	a.fieldMap["hashValue"] = a.HashValue
+	a.fieldMap["siteId"] = a.SiteId
+	a.fieldMap["organizationId"] = a.OrganizationId
 
 }
 
@@ -318,42 +268,27 @@ func (a apLLDPNeighbor) replaceDB(db *gorm.DB) apLLDPNeighbor {
 	return a
 }
 
-type apLLDPNeighborBelongsToSourceInterface struct {
+type apLLDPNeighborBelongsToLocalDevice struct {
 	db *gorm.DB
 
 	field.RelationField
 
-	Device struct {
+	Rack struct {
 		field.RelationField
-		Rack struct {
+		Location struct {
 			field.RelationField
-			Location struct {
+			Parent struct {
 				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}
+			}
+			Site struct {
+				field.RelationField
 				Organization struct {
 					field.RelationField
 				}
 			}
-			Site struct {
-				field.RelationField
-			}
 			Organization struct {
 				field.RelationField
 			}
-		}
-		Template struct {
-			field.RelationField
-		}
-		Location struct {
-			field.RelationField
 		}
 		Site struct {
 			field.RelationField
@@ -362,12 +297,21 @@ type apLLDPNeighborBelongsToSourceInterface struct {
 			field.RelationField
 		}
 	}
+	Template struct {
+		field.RelationField
+	}
+	Location struct {
+		field.RelationField
+	}
 	Site struct {
+		field.RelationField
+	}
+	Organization struct {
 		field.RelationField
 	}
 }
 
-func (a apLLDPNeighborBelongsToSourceInterface) Where(conds ...field.Expr) *apLLDPNeighborBelongsToSourceInterface {
+func (a apLLDPNeighborBelongsToLocalDevice) Where(conds ...field.Expr) *apLLDPNeighborBelongsToLocalDevice {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -380,27 +324,27 @@ func (a apLLDPNeighborBelongsToSourceInterface) Where(conds ...field.Expr) *apLL
 	return &a
 }
 
-func (a apLLDPNeighborBelongsToSourceInterface) WithContext(ctx context.Context) *apLLDPNeighborBelongsToSourceInterface {
+func (a apLLDPNeighborBelongsToLocalDevice) WithContext(ctx context.Context) *apLLDPNeighborBelongsToLocalDevice {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a apLLDPNeighborBelongsToSourceInterface) Session(session *gorm.Session) *apLLDPNeighborBelongsToSourceInterface {
+func (a apLLDPNeighborBelongsToLocalDevice) Session(session *gorm.Session) *apLLDPNeighborBelongsToLocalDevice {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a apLLDPNeighborBelongsToSourceInterface) Model(m *models.ApLLDPNeighbor) *apLLDPNeighborBelongsToSourceInterfaceTx {
-	return &apLLDPNeighborBelongsToSourceInterfaceTx{a.db.Model(m).Association(a.Name())}
+func (a apLLDPNeighborBelongsToLocalDevice) Model(m *models.ApLLDPNeighbor) *apLLDPNeighborBelongsToLocalDeviceTx {
+	return &apLLDPNeighborBelongsToLocalDeviceTx{a.db.Model(m).Association(a.Name())}
 }
 
-type apLLDPNeighborBelongsToSourceInterfaceTx struct{ tx *gorm.Association }
+type apLLDPNeighborBelongsToLocalDeviceTx struct{ tx *gorm.Association }
 
-func (a apLLDPNeighborBelongsToSourceInterfaceTx) Find() (result *models.DeviceInterface, err error) {
+func (a apLLDPNeighborBelongsToLocalDeviceTx) Find() (result *models.Device, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a apLLDPNeighborBelongsToSourceInterfaceTx) Append(values ...*models.DeviceInterface) (err error) {
+func (a apLLDPNeighborBelongsToLocalDeviceTx) Append(values ...*models.Device) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -408,7 +352,7 @@ func (a apLLDPNeighborBelongsToSourceInterfaceTx) Append(values ...*models.Devic
 	return a.tx.Append(targetValues...)
 }
 
-func (a apLLDPNeighborBelongsToSourceInterfaceTx) Replace(values ...*models.DeviceInterface) (err error) {
+func (a apLLDPNeighborBelongsToLocalDeviceTx) Replace(values ...*models.Device) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -416,7 +360,7 @@ func (a apLLDPNeighborBelongsToSourceInterfaceTx) Replace(values ...*models.Devi
 	return a.tx.Replace(targetValues...)
 }
 
-func (a apLLDPNeighborBelongsToSourceInterfaceTx) Delete(values ...*models.DeviceInterface) (err error) {
+func (a apLLDPNeighborBelongsToLocalDeviceTx) Delete(values ...*models.Device) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -424,86 +368,15 @@ func (a apLLDPNeighborBelongsToSourceInterfaceTx) Delete(values ...*models.Devic
 	return a.tx.Delete(targetValues...)
 }
 
-func (a apLLDPNeighborBelongsToSourceInterfaceTx) Clear() error {
+func (a apLLDPNeighborBelongsToLocalDeviceTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a apLLDPNeighborBelongsToSourceInterfaceTx) Count() int64 {
+func (a apLLDPNeighborBelongsToLocalDeviceTx) Count() int64 {
 	return a.tx.Count()
 }
 
-type apLLDPNeighborBelongsToSourceDevice struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a apLLDPNeighborBelongsToSourceDevice) Where(conds ...field.Expr) *apLLDPNeighborBelongsToSourceDevice {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a apLLDPNeighborBelongsToSourceDevice) WithContext(ctx context.Context) *apLLDPNeighborBelongsToSourceDevice {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a apLLDPNeighborBelongsToSourceDevice) Session(session *gorm.Session) *apLLDPNeighborBelongsToSourceDevice {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a apLLDPNeighborBelongsToSourceDevice) Model(m *models.ApLLDPNeighbor) *apLLDPNeighborBelongsToSourceDeviceTx {
-	return &apLLDPNeighborBelongsToSourceDeviceTx{a.db.Model(m).Association(a.Name())}
-}
-
-type apLLDPNeighborBelongsToSourceDeviceTx struct{ tx *gorm.Association }
-
-func (a apLLDPNeighborBelongsToSourceDeviceTx) Find() (result *models.Device, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a apLLDPNeighborBelongsToSourceDeviceTx) Append(values ...*models.Device) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a apLLDPNeighborBelongsToSourceDeviceTx) Replace(values ...*models.Device) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a apLLDPNeighborBelongsToSourceDeviceTx) Delete(values ...*models.Device) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a apLLDPNeighborBelongsToSourceDeviceTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a apLLDPNeighborBelongsToSourceDeviceTx) Count() int64 {
-	return a.tx.Count()
-}
-
-type apLLDPNeighborBelongsToTargetAp struct {
+type apLLDPNeighborBelongsToRemoteAp struct {
 	db *gorm.DB
 
 	field.RelationField
@@ -522,7 +395,7 @@ type apLLDPNeighborBelongsToTargetAp struct {
 	}
 }
 
-func (a apLLDPNeighborBelongsToTargetAp) Where(conds ...field.Expr) *apLLDPNeighborBelongsToTargetAp {
+func (a apLLDPNeighborBelongsToRemoteAp) Where(conds ...field.Expr) *apLLDPNeighborBelongsToRemoteAp {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -535,27 +408,27 @@ func (a apLLDPNeighborBelongsToTargetAp) Where(conds ...field.Expr) *apLLDPNeigh
 	return &a
 }
 
-func (a apLLDPNeighborBelongsToTargetAp) WithContext(ctx context.Context) *apLLDPNeighborBelongsToTargetAp {
+func (a apLLDPNeighborBelongsToRemoteAp) WithContext(ctx context.Context) *apLLDPNeighborBelongsToRemoteAp {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a apLLDPNeighborBelongsToTargetAp) Session(session *gorm.Session) *apLLDPNeighborBelongsToTargetAp {
+func (a apLLDPNeighborBelongsToRemoteAp) Session(session *gorm.Session) *apLLDPNeighborBelongsToRemoteAp {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a apLLDPNeighborBelongsToTargetAp) Model(m *models.ApLLDPNeighbor) *apLLDPNeighborBelongsToTargetApTx {
-	return &apLLDPNeighborBelongsToTargetApTx{a.db.Model(m).Association(a.Name())}
+func (a apLLDPNeighborBelongsToRemoteAp) Model(m *models.ApLLDPNeighbor) *apLLDPNeighborBelongsToRemoteApTx {
+	return &apLLDPNeighborBelongsToRemoteApTx{a.db.Model(m).Association(a.Name())}
 }
 
-type apLLDPNeighborBelongsToTargetApTx struct{ tx *gorm.Association }
+type apLLDPNeighborBelongsToRemoteApTx struct{ tx *gorm.Association }
 
-func (a apLLDPNeighborBelongsToTargetApTx) Find() (result *models.AP, err error) {
+func (a apLLDPNeighborBelongsToRemoteApTx) Find() (result *models.AP, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a apLLDPNeighborBelongsToTargetApTx) Append(values ...*models.AP) (err error) {
+func (a apLLDPNeighborBelongsToRemoteApTx) Append(values ...*models.AP) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -563,7 +436,7 @@ func (a apLLDPNeighborBelongsToTargetApTx) Append(values ...*models.AP) (err err
 	return a.tx.Append(targetValues...)
 }
 
-func (a apLLDPNeighborBelongsToTargetApTx) Replace(values ...*models.AP) (err error) {
+func (a apLLDPNeighborBelongsToRemoteApTx) Replace(values ...*models.AP) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -571,7 +444,7 @@ func (a apLLDPNeighborBelongsToTargetApTx) Replace(values ...*models.AP) (err er
 	return a.tx.Replace(targetValues...)
 }
 
-func (a apLLDPNeighborBelongsToTargetApTx) Delete(values ...*models.AP) (err error) {
+func (a apLLDPNeighborBelongsToRemoteApTx) Delete(values ...*models.AP) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -579,11 +452,11 @@ func (a apLLDPNeighborBelongsToTargetApTx) Delete(values ...*models.AP) (err err
 	return a.tx.Delete(targetValues...)
 }
 
-func (a apLLDPNeighborBelongsToTargetApTx) Clear() error {
+func (a apLLDPNeighborBelongsToRemoteApTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a apLLDPNeighborBelongsToTargetApTx) Count() int64 {
+func (a apLLDPNeighborBelongsToRemoteApTx) Count() int64 {
 	return a.tx.Count()
 }
 

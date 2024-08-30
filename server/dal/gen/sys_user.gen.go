@@ -26,18 +26,18 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 
 	tableName := _user.userDo.TableName()
 	_user.ALL = field.NewAsterisk(tableName)
-	_user.ID = field.NewString(tableName, "id")
-	_user.CreatedAt = field.NewTime(tableName, "created_at")
-	_user.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_user.Id = field.NewString(tableName, "id")
+	_user.CreatedAt = field.NewTime(tableName, "createdAt")
+	_user.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_user.Username = field.NewString(tableName, "username")
 	_user.Email = field.NewString(tableName, "email")
 	_user.Password = field.NewString(tableName, "password")
 	_user.Status = field.NewString(tableName, "status")
 	_user.Avatar = field.NewString(tableName, "avatar")
-	_user.GroupID = field.NewString(tableName, "group_id")
-	_user.RoleID = field.NewString(tableName, "role_id")
-	_user.AuthType = field.NewUint8(tableName, "auth_type")
-	_user.OrganizationID = field.NewString(tableName, "organization_id")
+	_user.GroupId = field.NewString(tableName, "groupId")
+	_user.RoleId = field.NewString(tableName, "roleId")
+	_user.AuthType = field.NewUint8(tableName, "authType")
+	_user.OrganizationId = field.NewString(tableName, "organizationId")
 	_user.Group = userBelongsToGroup{
 		db: db.Session(&gorm.Session{}),
 
@@ -156,7 +156,7 @@ type user struct {
 	userDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Username       field.String
@@ -164,10 +164,10 @@ type user struct {
 	Password       field.String
 	Status         field.String
 	Avatar         field.String
-	GroupID        field.String
-	RoleID         field.String
+	GroupId        field.String
+	RoleId         field.String
 	AuthType       field.Uint8
-	OrganizationID field.String
+	OrganizationId field.String
 	Group          userBelongsToGroup
 
 	Role userBelongsToRole
@@ -189,18 +189,18 @@ func (u user) As(alias string) *user {
 
 func (u *user) updateTableName(table string) *user {
 	u.ALL = field.NewAsterisk(table)
-	u.ID = field.NewString(table, "id")
-	u.CreatedAt = field.NewTime(table, "created_at")
-	u.UpdatedAt = field.NewTime(table, "updated_at")
+	u.Id = field.NewString(table, "id")
+	u.CreatedAt = field.NewTime(table, "createdAt")
+	u.UpdatedAt = field.NewTime(table, "updatedAt")
 	u.Username = field.NewString(table, "username")
 	u.Email = field.NewString(table, "email")
 	u.Password = field.NewString(table, "password")
 	u.Status = field.NewString(table, "status")
 	u.Avatar = field.NewString(table, "avatar")
-	u.GroupID = field.NewString(table, "group_id")
-	u.RoleID = field.NewString(table, "role_id")
-	u.AuthType = field.NewUint8(table, "auth_type")
-	u.OrganizationID = field.NewString(table, "organization_id")
+	u.GroupId = field.NewString(table, "groupId")
+	u.RoleId = field.NewString(table, "roleId")
+	u.AuthType = field.NewUint8(table, "authType")
+	u.OrganizationId = field.NewString(table, "organizationId")
 
 	u.fillFieldMap()
 
@@ -218,18 +218,18 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (u *user) fillFieldMap() {
 	u.fieldMap = make(map[string]field.Expr, 15)
-	u.fieldMap["id"] = u.ID
-	u.fieldMap["created_at"] = u.CreatedAt
-	u.fieldMap["updated_at"] = u.UpdatedAt
+	u.fieldMap["id"] = u.Id
+	u.fieldMap["createdAt"] = u.CreatedAt
+	u.fieldMap["updatedAt"] = u.UpdatedAt
 	u.fieldMap["username"] = u.Username
 	u.fieldMap["email"] = u.Email
 	u.fieldMap["password"] = u.Password
 	u.fieldMap["status"] = u.Status
 	u.fieldMap["avatar"] = u.Avatar
-	u.fieldMap["group_id"] = u.GroupID
-	u.fieldMap["role_id"] = u.RoleID
-	u.fieldMap["auth_type"] = u.AuthType
-	u.fieldMap["organization_id"] = u.OrganizationID
+	u.fieldMap["groupId"] = u.GroupId
+	u.fieldMap["roleId"] = u.RoleId
+	u.fieldMap["authType"] = u.AuthType
+	u.fieldMap["organizationId"] = u.OrganizationId
 
 }
 

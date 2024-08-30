@@ -25,7 +25,7 @@ type AccessToken struct {
 }
 
 type Claims struct {
-	UserID    string `json:"user_id"`
+	UserId    string `json:"user_id"`
 	Username  string `json:"username"`
 	Refreshed bool   `json:"refreshed"`
 	jwt.StandardClaims
@@ -36,7 +36,7 @@ func CreateAccessToken(userID string, username string, refresh bool, expire time
 	expiresAt = now.Add(expire).Unix()
 	issuedAt = now.Unix()
 	claims := Claims{
-		UserID:    userID,
+		UserId:    userID,
 		Username:  username,
 		Refreshed: refresh,
 		StandardClaims: jwt.StandardClaims{
@@ -124,7 +124,7 @@ func GenerateRefreshTokenResponse(tokenString string) *AccessToken {
 	_, _ = jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(core.Settings.Jwt.SecretKey), nil
 	})
-	return GenerateTokenResponse(claims.UserID, claims.Username)
+	return GenerateTokenResponse(claims.UserId, claims.Username)
 }
 
 // Hash password

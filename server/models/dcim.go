@@ -22,20 +22,21 @@ var DeviceConfigTableName = "dcim_device_config"
 var DeviceCliCredentialTableName = "dcim_device_cli_credential"
 var DeviceSnmpV2CredentialTableName = "dcim_device_snmp_v2_credential"
 var DeviceRestconfCredentialTableName = "dcim_device_restconf_credential"
+var MacAddressTableName = "mac_address"
 
 type Site struct {
 	BaseDbModel
-	Name           string       `gorm:"uniqueIndex:idx_name_organization_id;not null"`
-	SiteCode       string       `gorm:"uniqueIndex:idx_site_code_organization_id;not null"`
-	Status         string       `gorm:"not null;default:Active"` // Active, Inactive
-	Region         string       `gorm:"not null"`
-	TimeZone       string       `gorm:"not null"`
-	Latitude       string       `gorm:"not null"`
-	Longitude      string       `gorm:"not null"`
-	Address        string       `gorm:"not null"`
-	Description    *string      `gorm:"default:null"`
-	MonitorId      *string      `gorm:"default:null;unique"`
-	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_name_organization_id;uniqueIndex:idx_site_code_organization_id;index;"`
+	Name           string       `gorm:"column:name;uniqueIndex:idx_name_organization_id;not null"`
+	SiteCode       string       `gorm:"column:siteCode;uniqueIndex:idx_site_code_organization_id;not null"`
+	Status         string       `gorm:"column:status;not null;default:Active"` // Active, Inactive
+	Region         string       `gorm:"column:region;not null"`
+	TimeZone       string       `gorm:"column:timeZone;not null"`
+	Latitude       string       `gorm:"column:latitude;not null"`
+	Longitude      string       `gorm:"column:longitude;not null"`
+	Address        string       `gorm:"column:address;not null"`
+	Description    *string      `gorm:"column:description;default:null"`
+	MonitorId      *string      `gorm:"column:monitorId;default:null;unique"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_name_organization_id;uniqueIndex:idx_site_code_organization_id;index;"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -45,13 +46,13 @@ func (Site) TableName() string {
 
 type Location struct {
 	BaseDbModel
-	Name           string       `gorm:"uniqueIndex:idx_name_site_id;not null"`
-	Description    *string      `gorm:"default:null"`
-	ParentID       *string      `gorm:"type:uuid;default:null"`
-	Parent         *Location    `gorm:"constraint:Ondelete:CASCADE;references:ID"`
-	SiteID         string       `gorm:"type:uuid;uniqueIndex:idx_name_site_id;not null"`
+	Name           string       `gorm:"column:name;uniqueIndex:idx_name_site_id;not null"`
+	Description    *string      `gorm:"column:description;default:null"`
+	ParentId       *string      `gorm:"column:parentId;type:uuid;default:null"`
+	Parent         *Location    `gorm:"constraint:Ondelete:CASCADE;references:Id"`
+	SiteId         string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_name_site_id;not null"`
 	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationID string       `gorm:"type:uuid;index"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -61,19 +62,19 @@ func (Location) TableName() string {
 
 type Rack struct {
 	BaseDbModel
-	Name           string       `gorm:"not null"`
-	AssetTag       *string      `gorm:"column:asset_tag;uniqueIndex:idx_asset_tag_organization_id"`
-	SerialNumber   *string      `gorm:"column:serial_number"`
-	UHeight        uint8        `gorm:"type:smallint;default:42"`
-	Height         float32      `gorm:"type:float;default:2"`
-	Width          float32      `gorm:"type:float;default:0.6"`
-	Depth          float32      `gorm:"type:float;default:0.8"`
-	DescUnit       bool         `gorm:"default:true"`
-	LocationID     *string      `gorm:"type:uuid;default:null"`
+	Name           string       `gorm:"column:name;not null"`
+	AssetTag       *string      `gorm:"column:assetTag;"`
+	SerialNumber   *string      `gorm:"column:serialNumber"`
+	UHeight        uint8        `gorm:"column:uHeight;type:smallint;default:42"`
+	Height         float32      `gorm:"column:height;type:float;default:2"`
+	Width          float32      `gorm:"column:width;type:float;default:0.6"`
+	Depth          float32      `gorm:"column:depth;type:float;default:0.8"`
+	DescUnit       bool         `gorm:"column:descUnit;default:true"`
+	LocationId     *string      `gorm:"column:locationId;type:uuid;default:null"`
 	Location       Location     `gorm:"constraint:Ondelete:SET NULL"`
-	SiteID         string       `gorm:"type:uuid;not null"`
+	SiteId         string       `gorm:"column:siteId;type:uuid;not null"`
 	Site           Site         `gorm:"constraint:Ondelete:RESTRICT"`
-	OrganizationID string       `gorm:"index;not null;uniqueIndex:idx_asset_tag_organization_id"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;index;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -84,33 +85,33 @@ func (Rack) TableName() string {
 type Device struct {
 	BaseDbModel
 
-	Name           string       `gorm:"uniqueIndex:idx_name_organization_id;not null"`
-	ManagementIp   string       `gorm:"uniqueIndex:idx_management_ip_organization_id;not null;index"`
-	Status         string       `gorm:"default:Active"`
-	Platform       string       `gorm:"default:Unknown"`
-	ProductFamily  string       `gorm:"default:Unknown"`
-	DeviceModel    string       `gorm:"default:Unknown"`
-	Manufacturer   string       `gorm:"default:Unknown"`
-	DeviceRole     string       `gorm:"default:Unknown"`
-	ChassisID      *string      `gorm:"uniqueIndex:idx_chassis_id_organization_id;default:null;index"`
-	SerialNumber   *string      `gorm:"column:serial_number;uniqueIndex:idx_serial_number_organization_id"`
-	AssetTag       *string      `gorm:"column:asset_tag"`
+	Name           string       `gorm:"column:name;uniqueIndex:idx_name_organization_id;not null"`
+	ManagementIp   string       `gorm:"column:managementIp;uniqueIndex:idx_management_ip_organization_id;not null;index"`
+	Status         string       `gorm:"column:status;default:Active"`
+	Platform       string       `gorm:"column:platform;default:Unknown"`
+	ProductFamily  string       `gorm:"column:productFamily;default:Unknown"`
+	DeviceModel    string       `gorm:"column:deviceModel;default:Unknown"`
+	Manufacturer   string       `gorm:"column:manufacturer;default:Unknown"`
+	DeviceRole     string       `gorm:"column:deviceRole;default:Unknown"`
+	ChassisId      *string      `gorm:"column:chassisId;uniqueIndex:idx_chassis_id_organization_id;default:null;index"`
+	SerialNumber   *string      `gorm:"column:serialNumber;uniqueIndex:idx_serial_number_organization_id"`
+	AssetTag       *string      `gorm:"column:assetTag;default:null"`
 	Description    *string      `gorm:"column:description"`
-	OsVersion      *string      `gorm:"column:os_version"`
-	OsPatch        *string      `gorm:"column:os_patch"`
-	RackID         *string      `gorm:"type:uuid;default:null"`
+	OsVersion      *string      `gorm:"column:osVersion"`
+	OsPatch        *string      `gorm:"column:osPatch"`
+	RackId         *string      `gorm:"column:rackId;type:uuid;default:null"`
 	Rack           Rack         `gorm:"constraint:Ondelete:SET NULL"`
-	RackPosition   *uint8       `gorm:"type:smallint;default:null"`
-	RackDirection  string       `gorm:"default:Front"` // Front, Rear
-	UHeight        *uint8       `gorm:"type:smallint;default:null"`
-	MonitorID      *string      `gorm:"default:null;unique"`
-	TemplateID     *string      `gorm:"type:uuid;default:null"`
+	RackPosition   *uint8       `gorm:"column:rackPosition;type:smallint;default:null"`
+	RackDirection  string       `gorm:"column:rackDirection;default:Front"` // Front, Rear
+	UHeight        *uint8       `gorm:"column:uHeight;type:smallint;default:null"`
+	MonitorId      *string      `gorm:"column:monitorId;default:null;unique"`
+	TemplateId     *string      `gorm:"column:templateId;type:uuid;default:null"`
 	Template       Template     `gorm:"constraint:Ondelete:SET NULL"`
-	LocationID     *string      `gorm:"type:uuid;default:null"`
+	LocationId     *string      `gorm:"column:locationId;type:uuid;default:null"`
 	Location       Location     `gorm:"constraint:Ondelete:SET NULL"`
-	SiteID         string       `gorm:"type:uuid;index;not null"`
+	SiteId         string       `gorm:"column:siteId;type:uuid;index;not null"`
 	Site           Site         `gorm:"constraint:Ondelete:RESTRICT"`
-	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_name_organization_id;uniqueIndex:idx_management_ip_organization_id;uniqueIndex:idx_serial_number_organization_id;uniqueIndex:idx_chassis_id_organization_id;index"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_name_organization_id;uniqueIndex:idx_management_ip_organization_id;uniqueIndex:idx_serial_number_organization_id;uniqueIndex:idx_chassis_id_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -120,19 +121,22 @@ func (Device) TableName() string {
 
 type DeviceInterface struct {
 	BaseDbModel
-	IfName      string `gorm:"uniqueIndex:idx_if_name_device_id;not null"`
-	IfIndex     uint64 `gorm:"uniqueIndex:idx_if_index_device_id;not null"`
-	IfDescr     string `gorm:"default:null"`
-	Speed       uint64 `gorm:"default:1000000"`
-	Mode        uint64 `gorm:"default:1"`
-	Mtu         uint64 `gorm:"column:mtu;default:1500"`
-	AdminStatus uint64 `gorm:"default:1"`
-	OperStatus  uint64 `gorm:"default:1"`
-	LastChange  uint64 `gorm:"default:0"`
-	DeviceID    string `gorm:"type:uuid;index;uniqueIndex:idx_if_name_device_id;uniqueIndex:idx_if_index_device_id"`
-	Device      Device `gorm:"constraint:Ondelete:CASCADE"`
-	SiteID      string `gorm:"type:uuid;index"`
-	Site        Site   `gorm:"constraint:Ondelete:CASCADE"`
+	IfName        string  `gorm:"column:ifName;uniqueIndex:idx_if_name_device_id;not null"`
+	IfIndex       uint64  `gorm:"column:ifIndex;uniqueIndex:idx_if_index_device_id;not null"`
+	IfDescr       string  `gorm:"column:ifDescr;default:null"`
+	IfSpeed       uint64  `gorm:"column:ifSpeed;default:1000"`
+	IfType        uint64  `gorm:"column:ifType;default:1"`
+	IfMtu         uint64  `gorm:"column:mtu;default:1500"`
+	IfAdminStatus uint64  `gorm:"column:ifAdminStatus;default:1"`
+	IfOperStatus  uint64  `gorm:"column:ifOperStatus;default:1"`
+	IfLastChange  uint64  `gorm:"column:ifLastChange;default:0"`
+	IfHighSpeed   uint64  `gorm:"column:ifHighSpeed;default:1000"`
+	IfPhyAddr     *string `gorm:"column:ifPhyAddr;default:null"`
+	IfIpAddress   *string `gorm:"column:ifIpAddress;default:null"`
+	DeviceId      string  `gorm:"column:deviceId;type:uuid;index;uniqueIndex:idx_if_name_device_id;uniqueIndex:idx_if_index_device_id"`
+	Device        Device  `gorm:"constraint:Ondelete:CASCADE"`
+	SiteId        string  `gorm:"column:siteId;type:uuid;index"`
+	Site          Site    `gorm:"constraint:Ondelete:CASCADE"`
 }
 
 func (DeviceInterface) TableName() string {
@@ -141,10 +145,10 @@ func (DeviceInterface) TableName() string {
 
 type DeviceStack struct {
 	BaseDbModel
-	Priority     uint8   `gorm:"type:smallint;uniqueIndex:idx_priority_device_id;default:0"`
-	SerialNumber *string `gorm:"default:null"`
-	MacAddress   string  `gorm:"not null;uniqueIndex:idx_mac_address_device_id"`
-	DeviceID     string  `gorm:"type:uuid;uniqueIndex:idx_mac_address_device_id;uniqueIndex:idx_priority_device_id;not null"`
+	Priority     uint8   `gorm:"column:priority;type:smallint;uniqueIndex:idx_priority_device_id;default:0"`
+	SerialNumber *string `gorm:"column:serialNumber;default:null"`
+	MacAddress   string  `gorm:"column:macAddress;not null;uniqueIndex:idx_mac_address_device_id"`
+	DeviceId     string  `gorm:"column:deviceId;type:uuid;uniqueIndex:idx_mac_address_device_id;uniqueIndex:idx_priority_device_id;not null"`
 	Device       Device  `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -155,19 +159,19 @@ func (DeviceStack) TableName() string {
 type LLDPNeighbor struct {
 	BaseDbModel
 
-	SourceInterfaceID string          `gorm:"type:uuid;not null"`
-	SourceInterface   DeviceInterface `gorm:"constraint:Ondelete:CASCADE;foreignKey:SourceInterfaceID"`
-	SourceDeviceID    string          `gorm:"type:uuid;not null;index"`
-	SourceDevice      Device          `gorm:"constraint:Ondelete:CASCADE;foreignKey:SourceDeviceID"`
-	TargetInterfaceID string          `gorm:"type:uuid;not null"`
-	TargetInterface   DeviceInterface `gorm:"constraint:Ondelete:CASCADE;foreignKey:TargetInterfaceID"`
-	TargetDeviceID    string          `gorm:"type:uuid;not null"`
-	TargetDevice      Device          `gorm:"constraint:Ondelete:CASCADE;foreignKey:TargetDeviceID"`
-	Active            bool            `gorm:"default:true"`
-	SiteID            string          `gorm:"type:uuid;not null;index"`
-	Site              Site            `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationID    string          `gorm:"type:uuid;not null;index"`
-	Organization      Organization    `gorm:"constraint:Ondelete:CASCADE"`
+	LocalDeviceId  string       `gorm:"column:localDeviceId;type:uuid;not null;index"`
+	LocalDevice    Device       `gorm:"constraint:Ondelete:CASCADE;foreignKey:LocalDeviceId"`
+	LocalIfName    string       `gorm:"column:localIfName;not null"`
+	LocalIfDescr   string       `gorm:"column:localIfDescr;not null"`
+	RemoteDeviceId string       `gorm:"column:remoteDeviceId;type:uuid;not null"`
+	RemoteDevice   Device       `gorm:"constraint:Ondelete:CASCADE;foreignKey:RemoteDeviceId"`
+	RemoteIfName   string       `gorm:"column:remoteIfName;not null"`
+	RemoteIfDescr  string       `gorm:"column:remoteIfDescr;not null"`
+	HashValue      string       `gorm:"column:hashValue;unique;not null"` // MD5 hash for the local and neighbor
+	SiteId         string       `gorm:"type:uuid;not null;index"`
+	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
+	OrganizationId string       `gorm:"type:uuid;not null;index"`
+	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
 func (LLDPNeighbor) TableName() string {
@@ -177,17 +181,17 @@ func (LLDPNeighbor) TableName() string {
 type ApLLDPNeighbor struct {
 	BaseDbModel
 
-	SourceInterfaceID string          `gorm:"type:uuid;not null"`
-	SourceInterface   DeviceInterface `gorm:"constraint:Ondelete:CASCADE;foreignKey:SourceInterfaceID"`
-	SourceDeviceID    string          `gorm:"type:uuid;not null;index"`
-	SourceDevice      Device          `gorm:"constraint:Ondelete:CASCADE;foreignKey:SourceDeviceID"`
-	TargetApID        string          `gorm:"type:uuid;not null"`
-	TargetAp          AP              `gorm:"constraint:Ondelete:CASCADE;foreignKey:TargetApID"`
-	Active            bool            `gorm:"default:true"`
-	SiteID            string          `gorm:"type:uuid;not null;index"`
-	Site              Site            `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationID    string          `gorm:"type:uuid;not null;index"`
-	Organization      Organization    `gorm:"constraint:Ondelete:CASCADE"`
+	LocalDeviceId  string       `gorm:"column:localDeviceId;type:uuid;not null;index"`
+	LocalDevice    Device       `gorm:"constraint:Ondelete:CASCADE;foreignKey:LocalDeviceId"`
+	LocalIfName    string       `gorm:"column:localIfName;not null"`
+	LocalIfDescr   string       `gorm:"column:localIfDescr;not null"`
+	RemoteApId     string       `gorm:"column:remoteApId;type:uuid;not null"`
+	RemoteAp       AP           `gorm:"constraint:Ondelete:CASCADE;foreignKey:RemoteApId"`
+	HashValue      string       `gorm:"column:hashValue;unique;not null"` // MD5 hash for the local and neighbor
+	SiteId         string       `gorm:"column:siteId;type:uuid;not null;index"`
+	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;not null;index"`
+	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
 func (ApLLDPNeighbor) TableName() string {
@@ -197,12 +201,12 @@ func (ApLLDPNeighbor) TableName() string {
 type DeviceConfig struct {
 	BaseDbSingleModel
 
-	Configuration string `gorm:"not null"`
-	TotalLines    uint32 `gorm:"not null;default:0"`
-	LinesAdded    uint32 `gorm:"not null;default:0"`
-	LinesDeleted  uint32 `gorm:"not null;default:0"`
-	Md5Checksum   string `gorm:"not null"`
-	DeviceID      string `gorm:"type:uuid;index"`
+	Configuration string `gorm:"column:configuration;not null"`
+	TotalLines    uint32 `gorm:"column:totalLines;not null;default:0"`
+	LinesAdded    uint32 `gorm:"column:linesAdded;not null;default:0"`
+	LinesDeleted  uint32 `gorm:"column:linesDeleted;not null;default:0"`
+	Md5Checksum   string `gorm:"column:md5Checksum;not null"`
+	DeviceId      string `gorm:"column:deviceId;type:uuid;index"`
 	Device        Device `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -212,12 +216,12 @@ func (DeviceConfig) TableName() string {
 
 type DeviceCliCredential struct {
 	BaseDbModel
-	Username       string       `gorm:"not null"`
-	Password       string       `gorm:"not null"`
-	Port           uint16       `gorm:"not null;default:22"`
-	DeviceID       *string      `gorm:"type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
+	Username       string       `gorm:"column:username;not null"`
+	Password       string       `gorm:"column:password;not null"`
+	Port           uint16       `gorm:"column:port;not null;default:22"`
+	DeviceId       *string      `gorm:"column:deviceId;type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
 	Device         Device       `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -227,13 +231,13 @@ func (DeviceCliCredential) TableName() string {
 
 type DeviceSnmpV2Credential struct {
 	BaseDbModel
-	Community      string       `gorm:"not null"`
-	MaxRepetitions uint8        `gorm:"type:smallint;not null;default:50"`
-	Timeout        uint8        `gorm:"type:smallint;not null;default:10"`
-	Port           uint16       `gorm:"not null;default:161"`
-	DeviceID       *string      `gorm:"type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
+	Community      string       `gorm:"column:community;not null"`
+	MaxRepetitions uint8        `gorm:"column:maxRepetitions;type:smallint;not null;default:50"`
+	Timeout        uint8        `gorm:"column:timeout;type:smallint;not null;default:10"`
+	Port           uint16       `gorm:"column:port;not null;default:161"`
+	DeviceId       *string      `gorm:"column:deviceId;type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
 	Device         Device       `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -243,12 +247,12 @@ func (DeviceSnmpV2Credential) TableName() string {
 
 type DeviceRestconfCredential struct {
 	BaseDbModel
-	Url            string       `gorm:"not null"`
-	Username       string       `gorm:"not null"`
-	Password       string       `gorm:"not null"`
-	DeviceID       *string      `gorm:"type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
+	Url            string       `gorm:"column:url;not null"`
+	Username       string       `gorm:"column:username;not null"`
+	Password       string       `gorm:"column:password;not null"`
+	DeviceId       *string      `gorm:"column:deviceId;type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
 	Device         Device       `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationID string       `gorm:"type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -264,24 +268,24 @@ type ApCoordinate struct {
 
 type AP struct {
 	BaseDbModel
-	Name           string                            `gorm:"not null;uniqueIndex:idx_name_site_id"`
-	Status         string                            `gorm:"default:Active"`
-	MacAddress     *string                           `gorm:"macaddr;default:null"`
-	SerialNumber   *string                           `gorm:"column:serial_number;default:null"`
-	ManagementIP   *string                           `gorm:"column:management_ip;default:null"`
-	DeviceModel    string                            `gorm:"default:Unknown"`
-	Manufacturer   string                            `gorm:"default:Unknown"`
-	DeviceRole     string                            `gorm:"default:WlanAP"`
-	Version        *string                           `gorm:"default:null"`
-	GroupName      *string                           `gorm:"default:null"`
-	Coordinate     *datatypes.JSONType[ApCoordinate] `gorm:"type:json;default:null"`
-	ActiveWacID    *string                           `gorm:"type:uuid;default:null"`
+	Name           string                            `gorm:"column:name;not null;uniqueIndex:idx_name_site_id"`
+	Status         string                            `gorm:"column:status;default:Active"`
+	MacAddress     *string                           `gorm:"column:macAddress;type:macaddr;default:null"`
+	SerialNumber   *string                           `gorm:"column:serialNumber;default:null"`
+	ManagementIP   *string                           `gorm:"column:managementIp;default:null"`
+	DeviceModel    string                            `gorm:"column:deviceModel;default:Unknown"`
+	Manufacturer   string                            `gorm:"column:manufacturer;default:Unknown"`
+	DeviceRole     string                            `gorm:"column:deviceRole;default:WlanAP"`
+	OsVersion      *string                           `gorm:"column:osVersion;default:null"`
+	GroupName      *string                           `gorm:"column:groupName;default:null"`
+	Coordinate     *datatypes.JSONType[ApCoordinate] `gorm:"column:coordinate;type:json;default:null"`
+	ActiveWacId    *string                           `gorm:"column:activeWacId;type:uuid;default:null"`
 	ActiveWac      Device                            `gorm:"constraint:Ondelete:SET NULL"`
-	LocationID     *string                           `gorm:"type:uuid;default:null"`
+	LocationId     *string                           `gorm:"column:locationId;type:uuid;default:null"`
 	Location       Location                          `gorm:"constraint:Ondelete:SET NULL"`
-	SiteID         string                            `gorm:"type:uuid;uniqueIndex:idx_name_site_id;not null"`
+	SiteId         string                            `gorm:"column:siteId;type:uuid;uniqueIndex:idx_name_site_id;not null"`
 	Site           Site                              `gorm:"constraint:Ondelete:RESTRICT"`
-	OrganizationID string                            `gorm:"type:uuid;index"`
+	OrganizationId string                            `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization                      `gorm:"constraint:Ondelete:CASCADE"`
 }
 
@@ -290,8 +294,12 @@ func (AP) TableName() string {
 }
 
 type MacAddress struct {
-	ID        string `gorm:"primary_key;type:uuid;default:uuid_generate_v4()" json:"id"`
-	MacOUI    string `gorm:"column:mac_oui;not null" json:"mac_oui"`
-	ShortName string `gorm:"column:short_name;not null" json:"short_name"`
-	LongName  string `gorm:"column:long_name;not null" json:"long_name"`
+	Id        string `gorm:"primary_key;type:uuid;default:uuid_generate_v4()" json:"id"`
+	MacOUI    string `gorm:"column:macOui;not null" json:"macOui"`
+	ShortName string `gorm:"column:shortName;not null" json:"shortName"`
+	LongName  string `gorm:"column:longName;not null" json:"longName"`
+}
+
+func (MacAddress) TableName() string {
+	return MacAddressTableName
 }

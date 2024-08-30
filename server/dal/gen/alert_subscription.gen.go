@@ -26,19 +26,19 @@ func newSubscription(db *gorm.DB, opts ...gen.DOOption) subscription {
 
 	tableName := _subscription.subscriptionDo.TableName()
 	_subscription.ALL = field.NewAsterisk(tableName)
-	_subscription.ID = field.NewString(tableName, "id")
-	_subscription.CreatedAt = field.NewTime(tableName, "created_at")
-	_subscription.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_subscription.Id = field.NewString(tableName, "id")
+	_subscription.CreatedAt = field.NewTime(tableName, "createdAt")
+	_subscription.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_subscription.Name = field.NewString(tableName, "name")
 	_subscription.Enabled = field.NewBool(tableName, "enabled")
 	_subscription.Deduplication = field.NewBool(tableName, "deduplication")
 	_subscription.Conditions = field.NewField(tableName, "conditions")
-	_subscription.SendResolved = field.NewBool(tableName, "send_resolved")
-	_subscription.RepeatInterval = field.NewInt(tableName, "repeat_interval")
-	_subscription.ChannelType = field.NewUint8(tableName, "channel_type")
-	_subscription.ChannelConfig = field.NewField(tableName, "channel_config")
-	_subscription.CreatedByID = field.NewString(tableName, "created_by_id")
-	_subscription.OrganizationID = field.NewString(tableName, "organization_id")
+	_subscription.SendResolved = field.NewBool(tableName, "sendResolved")
+	_subscription.RepeatInterval = field.NewUint32(tableName, "repeatInterval")
+	_subscription.ChannelType = field.NewUint8(tableName, "channelType")
+	_subscription.ChannelConfig = field.NewField(tableName, "channelConfig")
+	_subscription.CreatedById = field.NewString(tableName, "createdById")
+	_subscription.OrganizationId = field.NewString(tableName, "organizationId")
 	_subscription.CreatedBy = subscriptionBelongsToCreatedBy{
 		db: db.Session(&gorm.Session{}),
 
@@ -166,7 +166,7 @@ type subscription struct {
 	subscriptionDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
@@ -174,11 +174,11 @@ type subscription struct {
 	Deduplication  field.Bool
 	Conditions     field.Field
 	SendResolved   field.Bool
-	RepeatInterval field.Int
+	RepeatInterval field.Uint32
 	ChannelType    field.Uint8
 	ChannelConfig  field.Field
-	CreatedByID    field.String
-	OrganizationID field.String
+	CreatedById    field.String
+	OrganizationId field.String
 	CreatedBy      subscriptionBelongsToCreatedBy
 
 	Organization subscriptionBelongsToOrganization
@@ -198,19 +198,19 @@ func (s subscription) As(alias string) *subscription {
 
 func (s *subscription) updateTableName(table string) *subscription {
 	s.ALL = field.NewAsterisk(table)
-	s.ID = field.NewString(table, "id")
-	s.CreatedAt = field.NewTime(table, "created_at")
-	s.UpdatedAt = field.NewTime(table, "updated_at")
+	s.Id = field.NewString(table, "id")
+	s.CreatedAt = field.NewTime(table, "createdAt")
+	s.UpdatedAt = field.NewTime(table, "updatedAt")
 	s.Name = field.NewString(table, "name")
 	s.Enabled = field.NewBool(table, "enabled")
 	s.Deduplication = field.NewBool(table, "deduplication")
 	s.Conditions = field.NewField(table, "conditions")
-	s.SendResolved = field.NewBool(table, "send_resolved")
-	s.RepeatInterval = field.NewInt(table, "repeat_interval")
-	s.ChannelType = field.NewUint8(table, "channel_type")
-	s.ChannelConfig = field.NewField(table, "channel_config")
-	s.CreatedByID = field.NewString(table, "created_by_id")
-	s.OrganizationID = field.NewString(table, "organization_id")
+	s.SendResolved = field.NewBool(table, "sendResolved")
+	s.RepeatInterval = field.NewUint32(table, "repeatInterval")
+	s.ChannelType = field.NewUint8(table, "channelType")
+	s.ChannelConfig = field.NewField(table, "channelConfig")
+	s.CreatedById = field.NewString(table, "createdById")
+	s.OrganizationId = field.NewString(table, "organizationId")
 
 	s.fillFieldMap()
 
@@ -228,19 +228,19 @@ func (s *subscription) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 
 func (s *subscription) fillFieldMap() {
 	s.fieldMap = make(map[string]field.Expr, 15)
-	s.fieldMap["id"] = s.ID
-	s.fieldMap["created_at"] = s.CreatedAt
-	s.fieldMap["updated_at"] = s.UpdatedAt
+	s.fieldMap["id"] = s.Id
+	s.fieldMap["createdAt"] = s.CreatedAt
+	s.fieldMap["updatedAt"] = s.UpdatedAt
 	s.fieldMap["name"] = s.Name
 	s.fieldMap["enabled"] = s.Enabled
 	s.fieldMap["deduplication"] = s.Deduplication
 	s.fieldMap["conditions"] = s.Conditions
-	s.fieldMap["send_resolved"] = s.SendResolved
-	s.fieldMap["repeat_interval"] = s.RepeatInterval
-	s.fieldMap["channel_type"] = s.ChannelType
-	s.fieldMap["channel_config"] = s.ChannelConfig
-	s.fieldMap["created_by_id"] = s.CreatedByID
-	s.fieldMap["organization_id"] = s.OrganizationID
+	s.fieldMap["sendResolved"] = s.SendResolved
+	s.fieldMap["repeatInterval"] = s.RepeatInterval
+	s.fieldMap["channelType"] = s.ChannelType
+	s.fieldMap["channelConfig"] = s.ChannelConfig
+	s.fieldMap["createdById"] = s.CreatedById
+	s.fieldMap["organizationId"] = s.OrganizationId
 
 }
 

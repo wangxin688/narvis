@@ -26,9 +26,9 @@ func newProvider(db *gorm.DB, opts ...gen.DOOption) provider {
 
 	tableName := _provider.providerDo.TableName()
 	_provider.ALL = field.NewAsterisk(tableName)
-	_provider.ID = field.NewString(tableName, "id")
-	_provider.CreatedAt = field.NewTime(tableName, "created_at")
-	_provider.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_provider.Id = field.NewString(tableName, "id")
+	_provider.CreatedAt = field.NewTime(tableName, "createdAt")
+	_provider.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_provider.Name = field.NewString(tableName, "name")
 	_provider.Icon = field.NewString(tableName, "icon")
 	_provider.Description = field.NewString(tableName, "description")
@@ -42,7 +42,7 @@ type provider struct {
 	providerDo
 
 	ALL         field.Asterisk
-	ID          field.String
+	Id          field.String
 	CreatedAt   field.Time
 	UpdatedAt   field.Time
 	Name        field.String
@@ -64,9 +64,9 @@ func (p provider) As(alias string) *provider {
 
 func (p *provider) updateTableName(table string) *provider {
 	p.ALL = field.NewAsterisk(table)
-	p.ID = field.NewString(table, "id")
-	p.CreatedAt = field.NewTime(table, "created_at")
-	p.UpdatedAt = field.NewTime(table, "updated_at")
+	p.Id = field.NewString(table, "id")
+	p.CreatedAt = field.NewTime(table, "createdAt")
+	p.UpdatedAt = field.NewTime(table, "updatedAt")
 	p.Name = field.NewString(table, "name")
 	p.Icon = field.NewString(table, "icon")
 	p.Description = field.NewString(table, "description")
@@ -87,9 +87,9 @@ func (p *provider) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (p *provider) fillFieldMap() {
 	p.fieldMap = make(map[string]field.Expr, 6)
-	p.fieldMap["id"] = p.ID
-	p.fieldMap["created_at"] = p.CreatedAt
-	p.fieldMap["updated_at"] = p.UpdatedAt
+	p.fieldMap["id"] = p.Id
+	p.fieldMap["createdAt"] = p.CreatedAt
+	p.fieldMap["updatedAt"] = p.UpdatedAt
 	p.fieldMap["name"] = p.Name
 	p.fieldMap["icon"] = p.Icon
 	p.fieldMap["description"] = p.Description

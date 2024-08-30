@@ -5,12 +5,12 @@ import (
 )
 
 type BaseDbModel struct {
-	ID        string    `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	CreatedAt time.Time `gorm:"autoCreateTime"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+	Id        string    `gorm:"column:id;primary_key;type:uuid;default:uuid_generate_v4()"`
+	CreatedAt time.Time `gorm:"column:createdAt;autoCreateTime"`
+	UpdatedAt time.Time `gorm:"column:updatedAt;autoUpdateTime"`
 }
 
 type BaseDbSingleModel struct {
-	ID        string    `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	CreatedAt time.Time `gorm:"autoCreateTime"`
+	Id        string    `gorm:"column:id;primary_key;type:uuid;default:uuid_generate_v4()"`
+	CreatedAt time.Time `gorm:"column:createdAt;autoCreateTime"`
 }

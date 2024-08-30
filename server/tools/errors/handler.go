@@ -53,7 +53,7 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 	case errors.As(e, &generalError):
 		if generalError == nil {
 			core.Logger.Error("unknown error", zap.Error(e))
-			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
 		if generalError.Code <= 500 {
@@ -65,7 +65,7 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 	case errors.As(e, &pgError):
 		if pgError == nil {
 			core.Logger.Error("unknown error", zap.Error(e))
-			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
 		if pgError.Code == "23505" {
@@ -80,19 +80,19 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 			g.AbortWithStatusJSON(http.StatusConflict, NewError(CodeExist, MsgExist, pgError.TableName, fields, values))
 			return
 		}
-		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 		return
 	case errors.As(e, &validationError):
 		if validationError == nil {
 			core.Logger.Error("unknown error", zap.Error(e))
-			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
 		g.AbortWithStatusJSON(http.StatusUnprocessableEntity, NewErrorWithData(CodeUnprocessableEntity, MsgUnprocessableEntity, e.Error()))
 		return
 	default:
 		core.Logger.Error("unknown error", zap.Error(e))
-		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestID.Get()))
+		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 		return
 	}
 

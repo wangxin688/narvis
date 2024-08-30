@@ -12,9 +12,9 @@ type UserCreate struct {
 	Password string  `json:"password" `
 	Status   string  `json:"status" binding:"required,oneof=Active Inactive"`
 	Avatar   *string `json:"avatar"`
-	GroupID  string  `json:"group_id" binding:"required,uuid"`
-	RoleID   string  `json:"role_id" binding:"required,uuid"`
-	AuthType uint8   `json:"auth_type" binding:"required,gte=0,lte=4"`
+	GroupId  string  `json:"groupId" binding:"required,uuid"`
+	RoleId   string  `json:"roleId" binding:"required,uuid"`
+	AuthType uint8   `json:"authType" binding:"required,gte=0,lte=4"`
 }
 
 type UserUpdate struct {
@@ -23,30 +23,30 @@ type UserUpdate struct {
 	Password *string `json:"password" binding:"omitempty"`
 	Status   *string `json:"status" binding:"omitempty,oneof=Active Inactive"`
 	Avatar   *string `json:"avatar" binding:"omitempty"`
-	GroupID  *string `json:"group_id" binding:"omitempty,uuid"`
-	RoleID   *string `json:"role_id" binding:"omitempty,uuid"`
+	GroupId  *string `json:"groupId" binding:"omitempty,uuid"`
+	RoleId   *string `json:"roleId" binding:"omitempty,uuid"`
 }
 
 type UserQuery struct {
 	schemas.PageInfo
-	ID       *[]string `form:"id" binding:"omitempty,list_uuid"`
+	Id       *[]string `form:"id" binding:"omitempty,list_uuid"`
 	Username *[]string `form:"username" binding:"omitempty"`
 	Email    *[]string `form:"email" binding:"omitempty"`
 	Status   *string   `form:"status" binding:"omitempty,oneof=Active Inactive"`
-	RoleID   *[]string `form:"role_id" binding:"omitempty,list_uuid"`
-	GroupID  *[]string `form:"group_id" binding:"omitempty,list_uuid"`
-	AuthType *uint8    `form:"auth_type" binding:"omitempty,gte=0,lte=4"`
+	RoleId   *[]string `form:"roleId" binding:"omitempty,list_uuid"`
+	GroupId  *[]string `form:"groupId" binding:"omitempty,list_uuid"`
+	AuthType *uint8    `form:"authType" binding:"omitempty,gte=0,lte=4"`
 }
 
 type User struct {
-	ID        string     `json:"id"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	Id        string     `json:"id"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
 	Username  string     `json:"username"`
 	Email     string     `json:"email"`
 	Status    string     `json:"status"`
 	Avatar    *string    `json:"avatar"`
-	AuthType  uint8      `json:"auth_type"`
+	AuthType  uint8      `json:"authType"`
 	Group     GroupShort `json:"group"`
 	Role      RoleShort  `json:"role"`
 }
@@ -54,14 +54,14 @@ type User struct {
 type UserList []*User
 
 type UserMe struct {
-	ID        string     `json:"id"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	Id        string     `json:"id"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
 	Username  string     `json:"username"`
 	Email     string     `json:"email"`
 	Status    string     `json:"status"`
 	Avatar    *string    `json:"avatar"`
-	AuthType  uint8      `json:"auth_type"`
+	AuthType  uint8      `json:"authType"`
 	Group     GroupShort `json:"group"`
 	Role      RoleShort  `json:"role"`
 	// Menus     MenuList   `json:"menus"`

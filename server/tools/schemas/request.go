@@ -16,10 +16,10 @@ const (
 
 type PageInfo struct {
 	Page     *int    `form:"page" binding:"omitempty,gte=1"`
-	PageSize *int    `form:"page_size" binding:"omitempty,gte=1,lte=1000"`
+	PageSize *int    `form:"pageSize" binding:"omitempty,gte=1,lte=1000"`
 	Keyword  *string `form:"keyword" binding:"omitempty" `
 	Order    *string `form:"order" binding:"omitempty,oneof=asc desc"`
-	OrderBy  *string `form:"order_by" binding:"omitempty"`
+	OrderBy  *string `form:"orderBy" binding:"omitempty"`
 }
 
 func (r *PageInfo) LimitOffset() func(db *gorm.DB) *gorm.DB {

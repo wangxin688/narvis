@@ -26,25 +26,25 @@ func newCircuit(db *gorm.DB, opts ...gen.DOOption) circuit {
 
 	tableName := _circuit.circuitDo.TableName()
 	_circuit.ALL = field.NewAsterisk(tableName)
-	_circuit.ID = field.NewString(tableName, "id")
-	_circuit.CreatedAt = field.NewTime(tableName, "created_at")
-	_circuit.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_circuit.Id = field.NewString(tableName, "id")
+	_circuit.CreatedAt = field.NewTime(tableName, "createdAt")
+	_circuit.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_circuit.Name = field.NewString(tableName, "name")
-	_circuit.CID = field.NewString(tableName, "c_id")
+	_circuit.CId = field.NewString(tableName, "cId")
 	_circuit.Status = field.NewString(tableName, "status")
-	_circuit.CircuitType = field.NewString(tableName, "circuit_type")
-	_circuit.BandWidth = field.NewUint32(tableName, "band_width")
-	_circuit.IpAddress = field.NewString(tableName, "ip_address")
+	_circuit.CircuitType = field.NewString(tableName, "circuitType")
+	_circuit.BandWidth = field.NewUint32(tableName, "bandWidth")
+	_circuit.IpAddress = field.NewString(tableName, "ipAddress")
 	_circuit.Description = field.NewString(tableName, "description")
-	_circuit.ProviderID = field.NewString(tableName, "provider_id")
-	_circuit.ASiteID = field.NewString(tableName, "a_site_id")
-	_circuit.ADeviceID = field.NewString(tableName, "a_device_id")
-	_circuit.AInterfaceID = field.NewString(tableName, "a_interface_id")
-	_circuit.ZSiteID = field.NewString(tableName, "z_site_id")
-	_circuit.ZDeviceID = field.NewString(tableName, "z_device_id")
-	_circuit.ZInterfaceID = field.NewString(tableName, "z_interface_id")
-	_circuit.MonitorID = field.NewString(tableName, "monitor_id")
-	_circuit.OrganizationID = field.NewString(tableName, "organization_id")
+	_circuit.ProviderId = field.NewString(tableName, "providerId")
+	_circuit.ASiteId = field.NewString(tableName, "aSiteId")
+	_circuit.ADeviceId = field.NewString(tableName, "aDeviceId")
+	_circuit.AInterfaceId = field.NewString(tableName, "aInterfaceId")
+	_circuit.ZSiteId = field.NewString(tableName, "zSiteId")
+	_circuit.ZDeviceId = field.NewString(tableName, "zDeviceId")
+	_circuit.ZInterfaceId = field.NewString(tableName, "zInterfaceId")
+	_circuit.MonitorId = field.NewString(tableName, "monitorId")
+	_circuit.OrganizationId = field.NewString(tableName, "organizationId")
 	_circuit.Provider = circuitBelongsToProvider{
 		db: db.Session(&gorm.Session{}),
 
@@ -199,25 +199,25 @@ type circuit struct {
 	circuitDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
-	CID            field.String
+	CId            field.String
 	Status         field.String
 	CircuitType    field.String
 	BandWidth      field.Uint32
 	IpAddress      field.String
 	Description    field.String
-	ProviderID     field.String
-	ASiteID        field.String
-	ADeviceID      field.String
-	AInterfaceID   field.String
-	ZSiteID        field.String
-	ZDeviceID      field.String
-	ZInterfaceID   field.String
-	MonitorID      field.String
-	OrganizationID field.String
+	ProviderId     field.String
+	ASiteId        field.String
+	ADeviceId      field.String
+	AInterfaceId   field.String
+	ZSiteId        field.String
+	ZDeviceId      field.String
+	ZInterfaceId   field.String
+	MonitorId      field.String
+	OrganizationId field.String
 	Provider       circuitBelongsToProvider
 
 	ASite circuitBelongsToASite
@@ -249,25 +249,25 @@ func (c circuit) As(alias string) *circuit {
 
 func (c *circuit) updateTableName(table string) *circuit {
 	c.ALL = field.NewAsterisk(table)
-	c.ID = field.NewString(table, "id")
-	c.CreatedAt = field.NewTime(table, "created_at")
-	c.UpdatedAt = field.NewTime(table, "updated_at")
+	c.Id = field.NewString(table, "id")
+	c.CreatedAt = field.NewTime(table, "createdAt")
+	c.UpdatedAt = field.NewTime(table, "updatedAt")
 	c.Name = field.NewString(table, "name")
-	c.CID = field.NewString(table, "c_id")
+	c.CId = field.NewString(table, "cId")
 	c.Status = field.NewString(table, "status")
-	c.CircuitType = field.NewString(table, "circuit_type")
-	c.BandWidth = field.NewUint32(table, "band_width")
-	c.IpAddress = field.NewString(table, "ip_address")
+	c.CircuitType = field.NewString(table, "circuitType")
+	c.BandWidth = field.NewUint32(table, "bandWidth")
+	c.IpAddress = field.NewString(table, "ipAddress")
 	c.Description = field.NewString(table, "description")
-	c.ProviderID = field.NewString(table, "provider_id")
-	c.ASiteID = field.NewString(table, "a_site_id")
-	c.ADeviceID = field.NewString(table, "a_device_id")
-	c.AInterfaceID = field.NewString(table, "a_interface_id")
-	c.ZSiteID = field.NewString(table, "z_site_id")
-	c.ZDeviceID = field.NewString(table, "z_device_id")
-	c.ZInterfaceID = field.NewString(table, "z_interface_id")
-	c.MonitorID = field.NewString(table, "monitor_id")
-	c.OrganizationID = field.NewString(table, "organization_id")
+	c.ProviderId = field.NewString(table, "providerId")
+	c.ASiteId = field.NewString(table, "aSiteId")
+	c.ADeviceId = field.NewString(table, "aDeviceId")
+	c.AInterfaceId = field.NewString(table, "aInterfaceId")
+	c.ZSiteId = field.NewString(table, "zSiteId")
+	c.ZDeviceId = field.NewString(table, "zDeviceId")
+	c.ZInterfaceId = field.NewString(table, "zInterfaceId")
+	c.MonitorId = field.NewString(table, "monitorId")
+	c.OrganizationId = field.NewString(table, "organizationId")
 
 	c.fillFieldMap()
 
@@ -285,25 +285,25 @@ func (c *circuit) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (c *circuit) fillFieldMap() {
 	c.fieldMap = make(map[string]field.Expr, 27)
-	c.fieldMap["id"] = c.ID
-	c.fieldMap["created_at"] = c.CreatedAt
-	c.fieldMap["updated_at"] = c.UpdatedAt
+	c.fieldMap["id"] = c.Id
+	c.fieldMap["createdAt"] = c.CreatedAt
+	c.fieldMap["updatedAt"] = c.UpdatedAt
 	c.fieldMap["name"] = c.Name
-	c.fieldMap["c_id"] = c.CID
+	c.fieldMap["cId"] = c.CId
 	c.fieldMap["status"] = c.Status
-	c.fieldMap["circuit_type"] = c.CircuitType
-	c.fieldMap["band_width"] = c.BandWidth
-	c.fieldMap["ip_address"] = c.IpAddress
+	c.fieldMap["circuitType"] = c.CircuitType
+	c.fieldMap["bandWidth"] = c.BandWidth
+	c.fieldMap["ipAddress"] = c.IpAddress
 	c.fieldMap["description"] = c.Description
-	c.fieldMap["provider_id"] = c.ProviderID
-	c.fieldMap["a_site_id"] = c.ASiteID
-	c.fieldMap["a_device_id"] = c.ADeviceID
-	c.fieldMap["a_interface_id"] = c.AInterfaceID
-	c.fieldMap["z_site_id"] = c.ZSiteID
-	c.fieldMap["z_device_id"] = c.ZDeviceID
-	c.fieldMap["z_interface_id"] = c.ZInterfaceID
-	c.fieldMap["monitor_id"] = c.MonitorID
-	c.fieldMap["organization_id"] = c.OrganizationID
+	c.fieldMap["providerId"] = c.ProviderId
+	c.fieldMap["aSiteId"] = c.ASiteId
+	c.fieldMap["aDeviceId"] = c.ADeviceId
+	c.fieldMap["aInterfaceId"] = c.AInterfaceId
+	c.fieldMap["zSiteId"] = c.ZSiteId
+	c.fieldMap["zDeviceId"] = c.ZDeviceId
+	c.fieldMap["zInterfaceId"] = c.ZInterfaceId
+	c.fieldMap["monitorId"] = c.MonitorId
+	c.fieldMap["organizationId"] = c.OrganizationId
 
 }
 

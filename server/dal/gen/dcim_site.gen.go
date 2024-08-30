@@ -26,20 +26,20 @@ func newSite(db *gorm.DB, opts ...gen.DOOption) site {
 
 	tableName := _site.siteDo.TableName()
 	_site.ALL = field.NewAsterisk(tableName)
-	_site.ID = field.NewString(tableName, "id")
-	_site.CreatedAt = field.NewTime(tableName, "created_at")
-	_site.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_site.Id = field.NewString(tableName, "id")
+	_site.CreatedAt = field.NewTime(tableName, "createdAt")
+	_site.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_site.Name = field.NewString(tableName, "name")
-	_site.SiteCode = field.NewString(tableName, "site_code")
+	_site.SiteCode = field.NewString(tableName, "siteCode")
 	_site.Status = field.NewString(tableName, "status")
 	_site.Region = field.NewString(tableName, "region")
-	_site.TimeZone = field.NewString(tableName, "time_zone")
+	_site.TimeZone = field.NewString(tableName, "timeZone")
 	_site.Latitude = field.NewString(tableName, "latitude")
 	_site.Longitude = field.NewString(tableName, "longitude")
 	_site.Address = field.NewString(tableName, "address")
 	_site.Description = field.NewString(tableName, "description")
-	_site.MonitorId = field.NewString(tableName, "monitor_id")
-	_site.OrganizationID = field.NewString(tableName, "organization_id")
+	_site.MonitorId = field.NewString(tableName, "monitorId")
+	_site.OrganizationId = field.NewString(tableName, "organizationId")
 	_site.Organization = siteBelongsToOrganization{
 		db: db.Session(&gorm.Session{}),
 
@@ -55,7 +55,7 @@ type site struct {
 	siteDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
@@ -68,7 +68,7 @@ type site struct {
 	Address        field.String
 	Description    field.String
 	MonitorId      field.String
-	OrganizationID field.String
+	OrganizationId field.String
 	Organization   siteBelongsToOrganization
 
 	fieldMap map[string]field.Expr
@@ -86,20 +86,20 @@ func (s site) As(alias string) *site {
 
 func (s *site) updateTableName(table string) *site {
 	s.ALL = field.NewAsterisk(table)
-	s.ID = field.NewString(table, "id")
-	s.CreatedAt = field.NewTime(table, "created_at")
-	s.UpdatedAt = field.NewTime(table, "updated_at")
+	s.Id = field.NewString(table, "id")
+	s.CreatedAt = field.NewTime(table, "createdAt")
+	s.UpdatedAt = field.NewTime(table, "updatedAt")
 	s.Name = field.NewString(table, "name")
-	s.SiteCode = field.NewString(table, "site_code")
+	s.SiteCode = field.NewString(table, "siteCode")
 	s.Status = field.NewString(table, "status")
 	s.Region = field.NewString(table, "region")
-	s.TimeZone = field.NewString(table, "time_zone")
+	s.TimeZone = field.NewString(table, "timeZone")
 	s.Latitude = field.NewString(table, "latitude")
 	s.Longitude = field.NewString(table, "longitude")
 	s.Address = field.NewString(table, "address")
 	s.Description = field.NewString(table, "description")
-	s.MonitorId = field.NewString(table, "monitor_id")
-	s.OrganizationID = field.NewString(table, "organization_id")
+	s.MonitorId = field.NewString(table, "monitorId")
+	s.OrganizationId = field.NewString(table, "organizationId")
 
 	s.fillFieldMap()
 
@@ -117,20 +117,20 @@ func (s *site) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (s *site) fillFieldMap() {
 	s.fieldMap = make(map[string]field.Expr, 15)
-	s.fieldMap["id"] = s.ID
-	s.fieldMap["created_at"] = s.CreatedAt
-	s.fieldMap["updated_at"] = s.UpdatedAt
+	s.fieldMap["id"] = s.Id
+	s.fieldMap["createdAt"] = s.CreatedAt
+	s.fieldMap["updatedAt"] = s.UpdatedAt
 	s.fieldMap["name"] = s.Name
-	s.fieldMap["site_code"] = s.SiteCode
+	s.fieldMap["siteCode"] = s.SiteCode
 	s.fieldMap["status"] = s.Status
 	s.fieldMap["region"] = s.Region
-	s.fieldMap["time_zone"] = s.TimeZone
+	s.fieldMap["timeZone"] = s.TimeZone
 	s.fieldMap["latitude"] = s.Latitude
 	s.fieldMap["longitude"] = s.Longitude
 	s.fieldMap["address"] = s.Address
 	s.fieldMap["description"] = s.Description
-	s.fieldMap["monitor_id"] = s.MonitorId
-	s.fieldMap["organization_id"] = s.OrganizationID
+	s.fieldMap["monitorId"] = s.MonitorId
+	s.fieldMap["organizationId"] = s.OrganizationId
 
 }
 

@@ -26,13 +26,13 @@ func newRootCause(db *gorm.DB, opts ...gen.DOOption) rootCause {
 
 	tableName := _rootCause.rootCauseDo.TableName()
 	_rootCause.ALL = field.NewAsterisk(tableName)
-	_rootCause.ID = field.NewString(tableName, "id")
-	_rootCause.CreatedAt = field.NewTime(tableName, "created_at")
-	_rootCause.UpdatedAt = field.NewTime(tableName, "updated_at")
+	_rootCause.Id = field.NewString(tableName, "id")
+	_rootCause.CreatedAt = field.NewTime(tableName, "createdAt")
+	_rootCause.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_rootCause.Name = field.NewString(tableName, "name")
 	_rootCause.Description = field.NewString(tableName, "description")
 	_rootCause.Category = field.NewString(tableName, "category")
-	_rootCause.OrganizationID = field.NewString(tableName, "organization_id")
+	_rootCause.OrganizationId = field.NewString(tableName, "organizationId")
 	_rootCause.Organization = rootCauseBelongsToOrganization{
 		db: db.Session(&gorm.Session{}),
 
@@ -48,13 +48,13 @@ type rootCause struct {
 	rootCauseDo
 
 	ALL            field.Asterisk
-	ID             field.String
+	Id             field.String
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
 	Description    field.String
 	Category       field.String
-	OrganizationID field.String
+	OrganizationId field.String
 	Organization   rootCauseBelongsToOrganization
 
 	fieldMap map[string]field.Expr
@@ -72,13 +72,13 @@ func (r rootCause) As(alias string) *rootCause {
 
 func (r *rootCause) updateTableName(table string) *rootCause {
 	r.ALL = field.NewAsterisk(table)
-	r.ID = field.NewString(table, "id")
-	r.CreatedAt = field.NewTime(table, "created_at")
-	r.UpdatedAt = field.NewTime(table, "updated_at")
+	r.Id = field.NewString(table, "id")
+	r.CreatedAt = field.NewTime(table, "createdAt")
+	r.UpdatedAt = field.NewTime(table, "updatedAt")
 	r.Name = field.NewString(table, "name")
 	r.Description = field.NewString(table, "description")
 	r.Category = field.NewString(table, "category")
-	r.OrganizationID = field.NewString(table, "organization_id")
+	r.OrganizationId = field.NewString(table, "organizationId")
 
 	r.fillFieldMap()
 
@@ -96,13 +96,13 @@ func (r *rootCause) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (r *rootCause) fillFieldMap() {
 	r.fieldMap = make(map[string]field.Expr, 8)
-	r.fieldMap["id"] = r.ID
-	r.fieldMap["created_at"] = r.CreatedAt
-	r.fieldMap["updated_at"] = r.UpdatedAt
+	r.fieldMap["id"] = r.Id
+	r.fieldMap["createdAt"] = r.CreatedAt
+	r.fieldMap["updatedAt"] = r.UpdatedAt
 	r.fieldMap["name"] = r.Name
 	r.fieldMap["description"] = r.Description
 	r.fieldMap["category"] = r.Category
-	r.fieldMap["organization_id"] = r.OrganizationID
+	r.fieldMap["organizationId"] = r.OrganizationId
 
 }
 

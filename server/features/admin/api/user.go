@@ -17,7 +17,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param user body schemas.UserCreate true "user"
-// @Success 200 {object} ts.IDResponse
+// @Success 200 {object} ts.IdResponse
 // @Router /admin/users [post]
 func createUser(c *gin.Context) {
 	var user schemas.UserCreate
@@ -34,7 +34,7 @@ func createUser(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, ts.IDResponse{ID: newUser.ID})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: newUser.Id})
 }
 
 // @Tags Admin
@@ -53,7 +53,7 @@ func getUser(c *gin.Context) {
 		}
 	}()
 	userId := c.Param("id")
-	user, err := biz.NewUserService().GetUserByID(userId)
+	user, err := biz.NewUserService().GetUserById(userId)
 	if err != nil {
 		return
 	}
@@ -96,7 +96,7 @@ func listUsers(c *gin.Context) {
 // @Produce json
 // @Param id path string true "user id"
 // @Param user body schemas.UserUpdate true "user"
-// @Success 200 {object} ts.IDResponse
+// @Success 200 {object} ts.IdResponse
 // @Router /admin/users/{id} [patch]
 func updateUser(c *gin.Context) {
 	var err error
@@ -114,7 +114,7 @@ func updateUser(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, ts.IDResponse{ID: userId})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: userId})
 }
 
 // @Tags Admin
@@ -123,7 +123,7 @@ func updateUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "user id"
-// @Success 200 {object} ts.IDResponse
+// @Success 200 {object} ts.IdResponse
 // @Router /admin/users/{id} [delete]
 func deleteUser(c *gin.Context) {
 	var err error
@@ -137,5 +137,5 @@ func deleteUser(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, ts.IDResponse{ID: userId})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: userId})
 }
