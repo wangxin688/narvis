@@ -38,12 +38,12 @@ func CheckRolePathPermission(user *models.User, path string) bool {
 	roleId := user.Role.Id
 	var result string
 	stmt := `
-	SELECT rm.role_id  
+	SELECT rm.roleId  
 	FROM role_menus rm  
-	JOIN menus m ON rm.menu_id = m.id  
-	JOIN menu_permissions mp ON m.id = mp.menu_id  
-	JOIN permissions p ON mp.permission_id = p.id  
-	WHERE rm.role_id = ? AND p.path = ?  
+	JOIN menus m ON rm.menuId = m.id  
+	JOIN menu_permission mp ON m.id = mp.menuId  
+	JOIN permission p ON mp.permissionId = p.id  
+	WHERE rm.roleId = ? AND p.path = ?  
 	LIMIT 1;
 	`
 	infra.DB.Raw(stmt, roleId, path).Scan(&result)

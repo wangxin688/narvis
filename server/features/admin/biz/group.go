@@ -59,7 +59,7 @@ func (g *GroupService) UpdateGroup(groupId string, group *schemas.GroupUpdate) e
 		updateFields["description"] = *group.Description
 	}
 	if group.RoleId != nil {
-		updateFields["role_id"] = *group.RoleId
+		updateFields["roleId"] = *group.RoleId
 	}
 	_, err := gen.Group.Where(gen.Group.Id.Eq(groupId), gen.Group.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
 	if err != nil {

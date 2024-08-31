@@ -126,10 +126,10 @@ func (u *UserService) UpdateUser(userId string, user *schemas.UserUpdate) error 
 		updateFields["avatar"] = *user.Avatar
 	}
 	if user.GroupId != nil {
-		updateFields["group_id"] = *user.GroupId
+		updateFields["groupId"] = *user.GroupId
 	}
 	if user.RoleId != nil {
-		updateFields["role_id"] = *user.RoleId
+		updateFields["roleId"] = *user.RoleId
 	}
 	if user.Status != nil {
 		updateFields["status"] = *user.Status

@@ -3,7 +3,7 @@ package errors
 import "strings"
 
 func removeOrgInError(fields, values string) (string, string) {
-	if strings.Contains(fields, "organization_id") {
+	if strings.Contains(fields, "organizationId") {
 		tmpFields := strings.Split(strings.ReplaceAll(fields, " ", ""), ",")
 		tmpValues := strings.Split(strings.ReplaceAll(values, " ", ""), ",")
 
@@ -11,7 +11,7 @@ func removeOrgInError(fields, values string) (string, string) {
 		resultValues := make([]string, 0, len(tmpValues)-1)
 
 		for index, value := range tmpFields {
-			if value != "organization_id" {
+			if value != "organizationId" {
 				resultFields = append(resultFields, value)
 				resultValues = append(resultValues, tmpValues[index])
 			}

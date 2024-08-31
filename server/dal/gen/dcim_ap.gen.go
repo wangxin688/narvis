@@ -33,7 +33,7 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 	_aP.Status = field.NewString(tableName, "status")
 	_aP.MacAddress = field.NewString(tableName, "macAddress")
 	_aP.SerialNumber = field.NewString(tableName, "serialNumber")
-	_aP.ManagementIP = field.NewString(tableName, "managementIp")
+	_aP.ManagementIp = field.NewString(tableName, "managementIp")
 	_aP.DeviceModel = field.NewString(tableName, "deviceModel")
 	_aP.Manufacturer = field.NewString(tableName, "manufacturer")
 	_aP.DeviceRole = field.NewString(tableName, "deviceRole")
@@ -180,7 +180,7 @@ type aP struct {
 	Status         field.String
 	MacAddress     field.String
 	SerialNumber   field.String
-	ManagementIP   field.String
+	ManagementIp   field.String
 	DeviceModel    field.String
 	Manufacturer   field.String
 	DeviceRole     field.String
@@ -221,7 +221,7 @@ func (a *aP) updateTableName(table string) *aP {
 	a.Status = field.NewString(table, "status")
 	a.MacAddress = field.NewString(table, "macAddress")
 	a.SerialNumber = field.NewString(table, "serialNumber")
-	a.ManagementIP = field.NewString(table, "managementIp")
+	a.ManagementIp = field.NewString(table, "managementIp")
 	a.DeviceModel = field.NewString(table, "deviceModel")
 	a.Manufacturer = field.NewString(table, "manufacturer")
 	a.DeviceRole = field.NewString(table, "deviceRole")
@@ -256,7 +256,7 @@ func (a *aP) fillFieldMap() {
 	a.fieldMap["status"] = a.Status
 	a.fieldMap["macAddress"] = a.MacAddress
 	a.fieldMap["serialNumber"] = a.SerialNumber
-	a.fieldMap["managementIp"] = a.ManagementIP
+	a.fieldMap["managementIp"] = a.ManagementIp
 	a.fieldMap["deviceModel"] = a.DeviceModel
 	a.fieldMap["manufacturer"] = a.Manufacturer
 	a.fieldMap["deviceRole"] = a.DeviceRole

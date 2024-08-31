@@ -37,8 +37,6 @@ func SupportedPlatform() []Platform {
 		CiscoIosXR,
 		CiscoNexusOS,
 		Huawei,
-		HuaweiVrp,
-		HuaweiVrpV8,
 		Aruba,
 		ArubaOSSwitch,
 		Arista,

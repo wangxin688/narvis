@@ -62,7 +62,7 @@ func (c *VtmClient) GetLabelValues(label QueryLabelRequest, OrganizationId strin
 		c.R().SetQueryParam("end", fmt.Sprintf("%d", *label.End))
 	}
 	if OrganizationId != "" {
-		c.R().SetQueryParam("extra_label=organization_id", OrganizationId)
+		c.R().SetQueryParam("extra_label=organizationId", OrganizationId)
 	}
 	rsp := VtmResponse{}
 	c.R().SetSuccessResult(&rsp)
@@ -84,7 +84,7 @@ func (c *VtmClient) GetVector(query VectorRequest, OrganizationId string) (resul
 		c.R().SetQueryParam("legend_format", *query.LegendFormat)
 	}
 	if OrganizationId != "" {
-		c.R().SetQueryParam("extra_label=organization_id", OrganizationId)
+		c.R().SetQueryParam("extra_label=organizationId", OrganizationId)
 	}
 	rsp := VtmResponse{}
 	c.R().SetSuccessResult(&rsp)
@@ -113,7 +113,7 @@ func (c *VtmClient) GetMatrix(query MatrixRequest, OrganizationId string) (resul
 		c.R().SetQueryParam("legend_format", *query.LegendFormat)
 	}
 	if OrganizationId != "" {
-		c.R().SetQueryParam("extra_label=organization_id", OrganizationId)
+		c.R().SetQueryParam("extra_label=organizationId", OrganizationId)
 	}
 
 	rsp := VtmResponse{}
@@ -169,7 +169,7 @@ func (v *VtmClient) GetBulkMatrix(query []MatrixRequest, OrganizationId string) 
 func (c *VtmClient) BulkImportMetrics(metrics []Metric, OrganizationId string) {
 	importPath := "/api/v1/import/prometheus"
 	if OrganizationId != "" {
-		c.R().SetQueryParam("extra_label=organization_id", OrganizationId)
+		c.R().SetQueryParam("extra_label=organizationId", OrganizationId)
 	}
 
 	metricJson := metricStringBuilder(metrics)

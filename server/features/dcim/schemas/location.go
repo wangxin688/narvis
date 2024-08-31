@@ -3,8 +3,8 @@ package schemas
 type LocationCreate struct {
 	Name        string  `json:"name" binding:"required"`
 	Description *string `json:"description" binding:"omitempty"`
-	ParentId    *string `json:"parent_id" binding:"omitempty,uuid"`
-	SiteId      *string `json:"site_id" binding:"omitempty,uuid"`
+	ParentId    *string `json:"parentId" binding:"omitempty,uuid"`
+	SiteId      *string `json:"siteId" binding:"omitempty,uuid"`
 }
 
 type LocationShort struct {

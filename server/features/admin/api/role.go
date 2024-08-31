@@ -7,6 +7,7 @@ import (
 	"github.com/wangxin688/narvis/server/features/admin/biz"
 	"github.com/wangxin688/narvis/server/features/admin/schemas"
 	"github.com/wangxin688/narvis/server/tools/errors"
+	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
@@ -53,6 +54,9 @@ func getRole(c *gin.Context) {
 		}
 	}()
 	roleId := c.Param("id")
+	if err := helpers.ValidateUuidString(roleId); err != nil {
+		return
+	}
 	role, err := biz.NewRoleService().GetRoleById(roleId)
 	if err != nil {
 		return
@@ -106,6 +110,9 @@ func updateRole(c *gin.Context) {
 		}
 	}()
 	roleId := c.Param("id")
+	if err := helpers.ValidateUuidString(roleId); err != nil {
+		return
+	}
 	var role schemas.RoleUpdate
 	if err = c.ShouldBindJSON(&role); err != nil {
 		return
@@ -133,6 +140,9 @@ func deleteRole(c *gin.Context) {
 		}
 	}()
 	roleId := c.Param("id")
+	if err := helpers.ValidateUuidString(roleId); err != nil {
+		return
+	}
 	err = biz.NewRoleService().DeleteRole(roleId)
 	if err != nil {
 		return

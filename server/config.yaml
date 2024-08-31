@@ -1,5 +1,5 @@
 jwt:
-  secret_key: 'secret'
+  secret_key: '26c78673faa8bbad298ad025e09a4e61'
   algorithm: 'HS256'
   access_token_expired_minutes: 1440
   refresh_token_expired_minutes: 10080

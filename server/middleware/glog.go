@@ -22,12 +22,12 @@ func ZapLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 		// 开始时间
 		startTime := time.Now()
 		// 获取或生成request id
-		requestID := global.XRequestId.Get()
-		if requestID == "" {
-			_requestID := uuid.New().String()
-			global.XRequestId.Set(_requestID)
-			c.Writer.Header().Set(XRequestIdHeaderName, _requestID)
-			requestID = _requestID
+		requestId := global.XRequestId.Get()
+		if requestId == "" {
+			_requestId := uuid.New().String()
+			global.XRequestId.Set(_requestId)
+			c.Writer.Header().Set(XRequestIdHeaderName, _requestId)
+			requestId = _requestId
 		}
 		// 处理请求
 		c.Next()
@@ -44,7 +44,7 @@ func ZapLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 		// 请求IP
 		clientIP := c.ClientIP()
 		// 日志格式
-		logger.Info(requestID,
+		logger.Info(requestId,
 			zap.Int("status", statusCode),
 			zap.String("method", reqMethod),
 			zap.String("path", reqPath),
@@ -54,7 +54,7 @@ func ZapLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 
 		if len(c.Errors) > 0 {
 			for _, e := range c.Errors.Errors() {
-				zap.L().Error("Request error", zap.String("request_id", requestID), zap.String("error", e))
+				zap.L().Error("Request error", zap.String("requestId", requestId), zap.String("error", e))
 			}
 		}
 	}

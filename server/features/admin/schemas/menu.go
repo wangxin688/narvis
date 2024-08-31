@@ -33,7 +33,7 @@ type MenuCreate struct {
 	Name     string  `json:"name" binding:"required"`
 	Redirect *string `json:"redirect"`
 	Meta     *Meta   `json:"meta"`
-	ParentId *string `json:"parent_id" binding:"omitempty,uuid"`
+	ParentId *string `json:"parentId" binding:"omitempty,uuid"`
 }
 
 type MenuUpdate struct {

@@ -85,7 +85,7 @@ func GetManufacturerByEnterpriseId(etpId string) Manufacturer {
 func GetAllManufacturerPlatform() map[Manufacturer][]platform.Platform {
 	return map[Manufacturer][]platform.Platform{
 		Cisco:      {platform.CiscoIos, platform.CiscoIosXE, platform.CiscoIosXR, platform.CiscoNexusOS},
-		Huawei:     {platform.Huawei, platform.HuaweiVrp, platform.HuaweiVrpV8},
+		Huawei:     {platform.Huawei},
 		Aruba:      {platform.Aruba, platform.ArubaOSSwitch},
 		Arista:     {platform.Arista},
 		RuiJie:     {platform.RuiJie},
@@ -119,8 +119,6 @@ func GetAllPlatformManufacturer(plt platform.Platform) map[platform.Platform]Man
 		platform.CiscoIosXR:    Cisco,
 		platform.CiscoNexusOS:  Cisco,
 		platform.Huawei:        Huawei,
-		platform.HuaweiVrp:     Huawei,
-		platform.HuaweiVrpV8:   Huawei,
 		platform.Aruba:         Aruba,
 		platform.ArubaOSSwitch: Aruba,
 		platform.Arista:        Arista,

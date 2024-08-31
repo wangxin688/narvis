@@ -11,8 +11,8 @@ type RackCreate struct {
 	Width        float32 `json:"width" binding:"omitempty"`    // default 0.6
 	Depth        float32 `json:"depth" binding:"omitempty"`    // default 0.8
 	DescUnit     *bool   `json:"descUnit" binding:"omitempty"` // default true
-	LocationId   *string `json:"location_id" binding:"omitempty,uuid"`
-	SiteId       string  `json:"site_id" binding:"uuid"`
+	LocationId   *string `json:"locationId" binding:"omitempty,uuid"`
+	SiteId       string  `json:"siteId" binding:"uuid"`
 }
 
 type RackUpdate struct {

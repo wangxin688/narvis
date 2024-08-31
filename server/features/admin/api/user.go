@@ -7,6 +7,7 @@ import (
 	"github.com/wangxin688/narvis/server/features/admin/biz"
 	"github.com/wangxin688/narvis/server/features/admin/schemas"
 	"github.com/wangxin688/narvis/server/tools/errors"
+	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
@@ -53,6 +54,9 @@ func getUser(c *gin.Context) {
 		}
 	}()
 	userId := c.Param("id")
+	if err := helpers.ValidateUuidString(userId); err != nil {
+		return
+	}
 	user, err := biz.NewUserService().GetUserById(userId)
 	if err != nil {
 		return
@@ -106,6 +110,9 @@ func updateUser(c *gin.Context) {
 		}
 	}()
 	userId := c.Param("id")
+	if err := helpers.ValidateUuidString(userId); err != nil {
+		return
+	}
 	var user schemas.UserUpdate
 	if err = c.ShouldBindJSON(&user); err != nil {
 		return
@@ -133,6 +140,9 @@ func deleteUser(c *gin.Context) {
 		}
 	}()
 	userId := c.Param("id")
+	if err := helpers.ValidateUuidString(userId); err != nil {
+		return
+	}
 	err = biz.NewUserService().DeleteUser(c, userId)
 	if err != nil {
 		return

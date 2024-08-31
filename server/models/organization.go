@@ -6,12 +6,12 @@ import (
 	"gorm.io/datatypes"
 )
 
-var OrganizationSearchFields = []string{"name", "enterprise_code", "domain_name"}
-var ProxySearchFields = []string{"name", "ip_address"}
+var OrganizationSearchFields = []string{"name", "enterpriseCode", "domainName"}
+var ProxySearchFields = []string{"name", "ipAddress"}
 
 type AuthConfig struct {
-	ClientId     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
+	ClientId     string `json:"clientId"`
+	ClientSecret string `json:"clientSecret"`
 }
 
 type Organization struct {
@@ -31,7 +31,7 @@ type Proxy struct {
 	Active         bool         `gorm:"column:active;type:bool;default:true"`
 	SecretKey      string       `gorm:"column:secretKey;not null"`
 	IpAddress      string       `gorm:"column:ipAddress;uniqueIndex:idx_ip_address_organization_id;not null"`
-	ProxyId        *string      `gorm:"column:proxyId;column:proxy_id;"`
+	ProxyId        *string      `gorm:"column:proxyId"`
 	LastSeen       *time.Time   `gorm:"column:lastSeen;default:null"`
 	OrganizationId string       `gorm:"column:organizationId;uniqueIndex:idx_ip_address_organization_id;uniqueIndex:idx_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`

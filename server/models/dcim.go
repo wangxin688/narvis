@@ -4,10 +4,10 @@ import (
 	"gorm.io/datatypes"
 )
 
-var SiteSearchFields = []string{"name", "site_code", "address"}
+var SiteSearchFields = []string{"name", "siteCode", "address"}
 var LocationSearchFields = []string{"name"}
-var DeviceSearchFields = []string{"name", "management_ip", "chassis_id", "serial_number", "asset_tag"}
-var APSearchFields = []string{"name", "mac_address", "serial_number", "management_ip"}
+var DeviceSearchFields = []string{"name", "managementIp", "chassisId", "serialNumber", "assetTag"}
+var APSearchFields = []string{"name", "macAddress", "serialNumber", "managementIp"}
 
 var SiteTableName = "dcim_site"
 var LocationTableName = "dcim_location"
@@ -19,9 +19,9 @@ var LLDPNeighborTableName = "dcim_lldp_neighbor"
 var ApLLDPNeighborTableName = "dcim_ap_lldp_neighbor"
 var DeviceStackTableName = "dcim_device_stack"
 var DeviceConfigTableName = "dcim_device_config"
-var DeviceCliCredentialTableName = "dcim_device_cli_credential"
-var DeviceSnmpV2CredentialTableName = "dcim_device_snmp_v2_credential"
-var DeviceRestconfCredentialTableName = "dcim_device_restconf_credential"
+var CliCredentialTableName = "dcim_cli_credential"
+var SnmpV2CredentialTableName = "dcim_snmp_v2_credential"
+var RestconfCredentialTableName = "dcim_restconf_credential"
 var MacAddressTableName = "mac_address"
 
 type Site struct {
@@ -96,9 +96,9 @@ type Device struct {
 	ChassisId      *string      `gorm:"column:chassisId;uniqueIndex:idx_chassis_id_organization_id;default:null;index"`
 	SerialNumber   *string      `gorm:"column:serialNumber;uniqueIndex:idx_serial_number_organization_id"`
 	AssetTag       *string      `gorm:"column:assetTag;default:null"`
-	Description    *string      `gorm:"column:description"`
-	OsVersion      *string      `gorm:"column:osVersion"`
-	OsPatch        *string      `gorm:"column:osPatch"`
+	Description    *string      `gorm:"column:description;default:null"`
+	OsVersion      *string      `gorm:"column:osVersion;default:null"`
+	OsPatch        *string      `gorm:"column:osPatch;default:null"`
 	RackId         *string      `gorm:"column:rackId;type:uuid;default:null"`
 	Rack           Rack         `gorm:"constraint:Ondelete:SET NULL"`
 	RackPosition   *uint8       `gorm:"column:rackPosition;type:smallint;default:null"`
@@ -214,7 +214,7 @@ func (DeviceConfig) TableName() string {
 	return DeviceConfigTableName
 }
 
-type DeviceCliCredential struct {
+type CliCredential struct {
 	BaseDbModel
 	Username       string       `gorm:"column:username;not null"`
 	Password       string       `gorm:"column:password;not null"`
@@ -225,11 +225,11 @@ type DeviceCliCredential struct {
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
-func (DeviceCliCredential) TableName() string {
-	return DeviceCliCredentialTableName
+func (CliCredential) TableName() string {
+	return CliCredentialTableName
 }
 
-type DeviceSnmpV2Credential struct {
+type SnmpV2Credential struct {
 	BaseDbModel
 	Community      string       `gorm:"column:community;not null"`
 	MaxRepetitions uint8        `gorm:"column:maxRepetitions;type:smallint;not null;default:50"`
@@ -241,11 +241,11 @@ type DeviceSnmpV2Credential struct {
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
-func (DeviceSnmpV2Credential) TableName() string {
-	return DeviceSnmpV2CredentialTableName
+func (SnmpV2Credential) TableName() string {
+	return SnmpV2CredentialTableName
 }
 
-type DeviceRestconfCredential struct {
+type RestconfCredential struct {
 	BaseDbModel
 	Url            string       `gorm:"column:url;not null"`
 	Username       string       `gorm:"column:username;not null"`
@@ -256,8 +256,8 @@ type DeviceRestconfCredential struct {
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
-func (DeviceRestconfCredential) TableName() string {
-	return DeviceRestconfCredentialTableName
+func (RestconfCredential) TableName() string {
+	return RestconfCredentialTableName
 }
 
 type ApCoordinate struct {
@@ -272,7 +272,7 @@ type AP struct {
 	Status         string                            `gorm:"column:status;default:Active"`
 	MacAddress     *string                           `gorm:"column:macAddress;type:macaddr;default:null"`
 	SerialNumber   *string                           `gorm:"column:serialNumber;default:null"`
-	ManagementIP   *string                           `gorm:"column:managementIp;default:null"`
+	ManagementIp   string                            `gorm:"column:managementIp;not null;uniqueIndex:idx_management_ip_site_id"`
 	DeviceModel    string                            `gorm:"column:deviceModel;default:Unknown"`
 	Manufacturer   string                            `gorm:"column:manufacturer;default:Unknown"`
 	DeviceRole     string                            `gorm:"column:deviceRole;default:WlanAP"`
@@ -283,7 +283,7 @@ type AP struct {
 	ActiveWac      Device                            `gorm:"constraint:Ondelete:SET NULL"`
 	LocationId     *string                           `gorm:"column:locationId;type:uuid;default:null"`
 	Location       Location                          `gorm:"constraint:Ondelete:SET NULL"`
-	SiteId         string                            `gorm:"column:siteId;type:uuid;uniqueIndex:idx_name_site_id;not null"`
+	SiteId         string                            `gorm:"column:siteId;type:uuid;uniqueIndex:idx_name_site_id;uniqueIndex:idx_management_ip_site_id;not null"`
 	Site           Site                              `gorm:"constraint:Ondelete:RESTRICT"`
 	OrganizationId string                            `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization                      `gorm:"constraint:Ondelete:CASCADE"`

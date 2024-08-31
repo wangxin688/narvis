@@ -33,7 +33,7 @@ func newProxy(db *gorm.DB, opts ...gen.DOOption) proxy {
 	_proxy.Active = field.NewBool(tableName, "active")
 	_proxy.SecretKey = field.NewString(tableName, "secretKey")
 	_proxy.IpAddress = field.NewString(tableName, "ipAddress")
-	_proxy.ProxyId = field.NewString(tableName, "proxy_id")
+	_proxy.ProxyId = field.NewString(tableName, "proxyId")
 	_proxy.LastSeen = field.NewTime(tableName, "lastSeen")
 	_proxy.OrganizationId = field.NewString(tableName, "organizationId")
 	_proxy.Organization = proxyBelongsToOrganization{
@@ -85,7 +85,7 @@ func (p *proxy) updateTableName(table string) *proxy {
 	p.Active = field.NewBool(table, "active")
 	p.SecretKey = field.NewString(table, "secretKey")
 	p.IpAddress = field.NewString(table, "ipAddress")
-	p.ProxyId = field.NewString(table, "proxy_id")
+	p.ProxyId = field.NewString(table, "proxyId")
 	p.LastSeen = field.NewTime(table, "lastSeen")
 	p.OrganizationId = field.NewString(table, "organizationId")
 
@@ -112,7 +112,7 @@ func (p *proxy) fillFieldMap() {
 	p.fieldMap["active"] = p.Active
 	p.fieldMap["secretKey"] = p.SecretKey
 	p.fieldMap["ipAddress"] = p.IpAddress
-	p.fieldMap["proxy_id"] = p.ProxyId
+	p.fieldMap["proxyId"] = p.ProxyId
 	p.fieldMap["lastSeen"] = p.LastSeen
 	p.fieldMap["organizationId"] = p.OrganizationId
 

@@ -7,6 +7,7 @@ import (
 	"github.com/wangxin688/narvis/server/features/admin/biz"
 	"github.com/wangxin688/narvis/server/features/admin/schemas"
 	"github.com/wangxin688/narvis/server/tools/errors"
+	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
@@ -54,6 +55,9 @@ func getGroup(c *gin.Context) {
 		}
 	}()
 	groupId := c.Param("id")
+	if err := helpers.ValidateUuidString(groupId); err != nil {
+		return
+	}
 	group, err := biz.NewGroupService().GetGroupById(groupId)
 	if err != nil {
 		return
@@ -107,6 +111,9 @@ func updateGroup(c *gin.Context) {
 		}
 	}()
 	groupId := c.Param("id")
+	if err := helpers.ValidateUuidString(groupId); err != nil {
+		return
+	}
 	var group schemas.GroupUpdate
 	if err = c.ShouldBindJSON(&group); err != nil {
 		return
@@ -134,6 +141,9 @@ func deleteGroup(c *gin.Context) {
 		}
 	}()
 	groupId := c.Param("id")
+	if err := helpers.ValidateUuidString(groupId); err != nil {
+		return
+	}
 	err = biz.NewGroupService().DeleteGroup(groupId)
 	if err != nil {
 		return

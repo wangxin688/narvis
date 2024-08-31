@@ -5,7 +5,7 @@ import (
 )
 
 func TestRemoveOrgString(t *testing.T) {
-	fields := "name, organization_id"
+	fields := "name, organizationId"
 	values := "string, 215e09ee-10d0-43af-953e-4faca45d57d2"
 
 	fields, values = removeOrgInError(fields, values)
