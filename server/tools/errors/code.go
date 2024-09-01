@@ -71,28 +71,15 @@ const (
 // dcim error codes (500000 - 600000)
 
 const (
-	CodeCredentialDeviceIdMissing ErrorCode = 500000
-	MsgCredentialDeviceIdMissing  ErrorMsg  = "credential device Id missing, global credential is already created"
+	CodeCredentialDeviceIdMissing   ErrorCode = 500000
+	MsgCredentialDeviceIdMissing    ErrorMsg  = "credential device Id missing, global credential is already created"
 	CodeGlobalCredentialMoreThanOne ErrorCode = 500001
-	MsgGlobalCredentialMoreThanOne ErrorMsg  = "global CLI credential already created more than one"
+	MsgGlobalCredentialMoreThanOne  ErrorMsg  = "global CLI credential already created more than one"
 )
 
 // ipam error codes (600000 - 700000)
 
 // circuit error codes (700000 - 800000)
-
-const (
-	CodeCircuitZInterfaceMissing  ErrorCode = 700000
-	MsgCircuitZInterfaceMissing   ErrorMsg  = "z side interface ID missing when create circuit type is Intranet"
-	CodeCircuitSameInterface      ErrorCode = 700001
-	MsgCircuitSameInterface       ErrorMsg  = "same interface ID in a side and z side is not allowed"
-	CodeCircuitAInterfaceMissing  ErrorCode = 700002
-	MsgCircuitAInterfaceMissing   ErrorMsg  = "a side interface ID missing when create circuit type is Intranet"
-	CodeCircuitSameDevice         ErrorCode = 700003
-	MsgCircuitSameDevice          ErrorMsg  = "same device ID in a side and z side is not allowed"
-	CodeCircuitZInterfaceNotAllow ErrorCode = 700004
-	MsgCircuitZInterfaceNotAllow  ErrorMsg  = "z side interface ID not allowed for internet circuit type"
-)
 
 // monitor error codes (800000 - 900000)
 

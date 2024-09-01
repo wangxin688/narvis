@@ -5,7 +5,6 @@ import (
 	schemas "github.com/wangxin688/narvis/server/features/circuit/scheams"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
-	"github.com/wangxin688/narvis/server/tools/errors"
 )
 
 type CircuitService struct{}
@@ -28,41 +27,24 @@ func (c *CircuitService) GetDeviceSiteIdByInterfaceId(interfaceId string) (devic
 }
 
 func (c *CircuitService) CreateCircuit(circuit *schemas.CircuitCreate) (string, error) {
-
-	circuit, err := c.validateCreateCircuit(circuit)
-	if err != nil {
-		return "", err
-	}
 	newCircuit := &models.Circuit{
 		Name:        circuit.Name,
 		CId:         circuit.CId,
 		Status:      circuit.Status,
-		BandWidth:   circuit.BandWidth,
-		IpAddress:   circuit.IpAddress,
+		RxBandWidth: circuit.RxBandWidth,
+		TxBandWidth: circuit.TxBandWidth,
+		Ipv4Address: circuit.Ipv4Address,
 		Description: circuit.Description,
 		CircuitType: circuit.CircuitType,
-		ProviderId:  circuit.ProviderId,
+		Provider:    circuit.Provider,
 	}
-	aSiteId, aDeviceId, err := c.GetDeviceSiteIdByInterfaceId(circuit.AInterfaceId)
+	siteId, deviceId, err := c.GetDeviceSiteIdByInterfaceId(circuit.InterfaceId)
 	if err != nil {
 		return "", err
 	}
-	newCircuit.ASiteId = aSiteId
-	newCircuit.ADeviceId = aDeviceId
-	newCircuit.AInterfaceId = circuit.AInterfaceId
-	if circuit.ZInterfaceId != nil {
-		zSiteId, zDeviceId, err := c.GetDeviceSiteIdByInterfaceId(*circuit.ZInterfaceId)
-		if err != nil {
-			return "", err
-		}
-		if zDeviceId == aDeviceId {
-			return "", errors.NewError(errors.CodeCircuitSameDevice, errors.MsgCircuitSameDevice)
-		}
-		newCircuit.ZSiteId = zSiteId
-		newCircuit.ZDeviceId = zDeviceId
-		newCircuit.ZInterfaceId = *circuit.ZInterfaceId
-	}
-
+	newCircuit.SiteId = siteId
+	newCircuit.DeviceId = deviceId
+	newCircuit.InterfaceId = circuit.InterfaceId
 	err = gen.Circuit.Create(newCircuit)
 	if err != nil {
 		return "", err
@@ -84,23 +66,26 @@ func (c *CircuitService) UpdateCircuit(circuitId string, circuit *schemas.Circui
 	if circuit.CircuitType != nil {
 		updateFields["circuitType"] = *circuit.CircuitType
 	}
-	if circuit.BandWidth != nil {
-		updateFields["bandWidth"] = *circuit.BandWidth
+	if circuit.RxBandWidth != nil {
+		updateFields["rxBandWidth"] = *circuit.RxBandWidth
 	}
-	if circuit.IpAddress != nil {
-		updateFields["ipAddress"] = *circuit.IpAddress
+	if circuit.TxBandWidth != nil {
+		updateFields["txBandWidth"] = *circuit.TxBandWidth
+	}
+	if circuit.Ipv4Address != nil {
+		updateFields["ipv4Address"] = *circuit.Ipv4Address
+	}
+	if circuit.Ipv6Address != nil {
+		updateFields["ipv6Address"] = *circuit.Ipv6Address
 	}
 	if circuit.Description != nil {
 		updateFields["description"] = *circuit.Description
 	}
-	if circuit.ProviderId != nil {
-		updateFields["providerId"] = *circuit.ProviderId
+	if circuit.Provider != nil {
+		updateFields["provider"] = *circuit.Provider
 	}
-	if circuit.ZInterfaceId != nil {
-		updateFields["zInterfaceId"] = *circuit.ZInterfaceId
-	}
-	if circuit.AInterfaceId != nil {
-		updateFields["aInterfaceId"] = *circuit.AInterfaceId
+	if circuit.InterfaceId != nil {
+		updateFields["InterfaceId"] = *circuit.InterfaceId
 	}
 	_, err := gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
 	if err != nil {
@@ -128,11 +113,13 @@ func (c *CircuitService) GetCircuitById(id string) (*schemas.Circuit, error) {
 		Name:        circuit.Name,
 		CId:         circuit.CId,
 		Status:      circuit.Status,
-		BandWidth:   circuit.BandWidth,
-		IpAddress:   circuit.IpAddress,
+		RxBandWidth: circuit.RxBandWidth,
+		TxBandWidth: circuit.TxBandWidth,
+		Ipv4Address: circuit.Ipv4Address,
+		Ipv6Address: circuit.Ipv6Address,
 		Description: circuit.Description,
 		CircuitType: circuit.CircuitType,
-		Provider:    schemas.ProviderShort{Id: circuit.ProviderId, Name: circuit.Provider.Name},
+		Provider:    circuit.Provider,
 		CreatedAt:   circuit.CreatedAt,
 		UpdatedAt:   circuit.UpdatedAt,
 	}, nil
@@ -144,53 +131,4 @@ func (c *CircuitService) DeleteCircuit(id string) error {
 		return err
 	}
 	return nil
-}
-
-func (c *CircuitService) validateCreateCircuit(circuit *schemas.CircuitCreate) (*schemas.CircuitCreate, error) {
-	if circuit.AInterfaceId == "" {
-		return nil, errors.NewError(errors.CodeCircuitAInterfaceMissing, errors.MsgCircuitAInterfaceMissing)
-	}
-
-	if circuit.ZInterfaceId == nil {
-		if circuit.AInterfaceId == *circuit.ZInterfaceId {
-			return nil, errors.NewError(errors.CodeCircuitSameInterface, errors.MsgCircuitSameInterface)
-		}
-	}
-
-	if circuit.CircuitType == "Intranet" && circuit.ZInterfaceId == nil {
-		return nil, errors.NewError(errors.CodeCircuitZInterfaceMissing, errors.MsgCircuitZInterfaceMissing)
-	}
-	return circuit, nil
-}
-
-func (c *CircuitService) validateUpdateCircuit(circuit *schemas.CircuitUpdate, dbCircuit *models.Circuit) (*schemas.CircuitUpdate, error) {
-	if circuit.AInterfaceId != nil && circuit.ZInterfaceId != nil {
-		if *circuit.AInterfaceId == *circuit.ZInterfaceId {
-			return nil, errors.NewError(errors.CodeCircuitSameInterface, errors.MsgCircuitSameInterface)
-		}
-		aDeviceId, _, err := c.GetDeviceSiteIdByInterfaceId(*circuit.AInterfaceId)
-		if err != nil {
-			return nil, err
-		}
-		zDeviceId, _, err := c.GetDeviceSiteIdByInterfaceId(*circuit.ZInterfaceId)
-		if err != nil {
-			return nil, err
-		}
-		if aDeviceId == zDeviceId {
-			return nil, errors.NewError(errors.CodeCircuitSameDevice, errors.MsgCircuitSameDevice)
-		}
-	}
-
-	if dbCircuit.CircuitType == "Internet" {
-		if circuit.CircuitType != nil && *circuit.CircuitType != "Internet" {
-			if circuit.ZInterfaceId != nil {
-				return nil, errors.NewError(errors.CodeCircuitZInterfaceMissing, errors.MsgCircuitZInterfaceMissing)
-			}
-			if *circuit.CircuitType == "Internet" && circuit.ZInterfaceId != nil {
-				return nil, errors.NewError(errors.CodeCircuitZInterfaceNotAllow, errors.MsgCircuitZInterfaceNotAllow)
-			}
-		}
-	}
-
-	return circuit, nil
 }

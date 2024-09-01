@@ -7,11 +7,9 @@ import (
 
 var UserSearchFields = []string{"username", "email"}
 var RoleSearchFields = []string{"name"}
-var GroupSearchFields = []string{"name"}
 
 var UserTableName = "sys_user"
 var RoleTableName = "sys_role"
-var GroupTableName = "sys_group"
 var MenuTableName = "sys_menu"
 var PermissionTableName = "sys_permission"
 
@@ -46,8 +44,6 @@ type User struct {
 	Password       string       `gorm:"column:password;not null"`
 	Status         string       `gorm:"column:status;not null;default:Active"` // Active, Inactive
 	Avatar         *string      `gorm:"column:avatar;default:null"`
-	GroupId        string       `gorm:"column:groupId;type:uuid;not null"`
-	Group          Group        `gorm:"constraint:Ondelete:RESTRICT"`
 	RoleId         string       `gorm:"column:roleId;type:uuid,not null"`
 	Role           Role         `gorm:"constraint:Ondelete:RESTRICT"`
 	AuthType       uint8        `gorm:"column:authType;type:smallint;default:0"`
@@ -72,20 +68,6 @@ func (Role) TableName() string {
 	return RoleTableName
 }
 
-type Group struct {
-	BaseDbModel
-	Name           string       `gorm:"column:name;uniqueIndex:idx_group_name_organization_id;not null"`
-	Description    *string      `gorm:"column:description;default:null"`
-	RoleId         string       `gorm:"column:role_id;type:uuid;not null"`
-	Role           Role         `gorm:"constraint:Ondelete:RESTRICT"`
-	OrganizationId string       `gorm:"column:organizationId;tye:uuid;uniqueIndex:idx_group_name_organization_id;not null"`
-	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
-	User           []User
-}
-
-func (Group) TableName() string {
-	return GroupTableName
-}
 
 type Permission struct {
 	BaseDbModel

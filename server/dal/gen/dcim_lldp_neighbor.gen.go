@@ -44,73 +44,29 @@ func newLLDPNeighbor(db *gorm.DB, opts ...gen.DOOption) lLDPNeighbor {
 		RelationField: field.NewRelation("LocalDevice", "models.Device"),
 		Rack: struct {
 			field.RelationField
-			Location struct {
+			Site struct {
 				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}
 				Organization struct {
 					field.RelationField
 				}
-			}
-			Site struct {
-				field.RelationField
 			}
 			Organization struct {
 				field.RelationField
 			}
 		}{
 			RelationField: field.NewRelation("LocalDevice.Rack", "models.Rack"),
-			Location: struct {
+			Site: struct {
 				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}
 				Organization struct {
 					field.RelationField
 				}
 			}{
-				RelationField: field.NewRelation("LocalDevice.Rack.Location", "models.Location"),
-				Parent: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("LocalDevice.Rack.Location.Parent", "models.Location"),
-				},
-				Site: struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}{
-					RelationField: field.NewRelation("LocalDevice.Rack.Location.Site", "models.Site"),
-					Organization: struct {
-						field.RelationField
-					}{
-						RelationField: field.NewRelation("LocalDevice.Rack.Location.Site.Organization", "models.Organization"),
-					},
-				},
+				RelationField: field.NewRelation("LocalDevice.Rack.Site", "models.Site"),
 				Organization: struct {
 					field.RelationField
 				}{
-					RelationField: field.NewRelation("LocalDevice.Rack.Location.Organization", "models.Organization"),
+					RelationField: field.NewRelation("LocalDevice.Rack.Site.Organization", "models.Organization"),
 				},
-			},
-			Site: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("LocalDevice.Rack.Site", "models.Site"),
 			},
 			Organization: struct {
 				field.RelationField
@@ -122,11 +78,6 @@ func newLLDPNeighbor(db *gorm.DB, opts ...gen.DOOption) lLDPNeighbor {
 			field.RelationField
 		}{
 			RelationField: field.NewRelation("LocalDevice.Template", "models.Template"),
-		},
-		Location: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("LocalDevice.Location", "models.Location"),
 		},
 		Site: struct {
 			field.RelationField
@@ -263,32 +214,17 @@ type lLDPNeighborBelongsToLocalDevice struct {
 
 	Rack struct {
 		field.RelationField
-		Location struct {
+		Site struct {
 			field.RelationField
-			Parent struct {
-				field.RelationField
-			}
-			Site struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-			}
 			Organization struct {
 				field.RelationField
 			}
-		}
-		Site struct {
-			field.RelationField
 		}
 		Organization struct {
 			field.RelationField
 		}
 	}
 	Template struct {
-		field.RelationField
-	}
-	Location struct {
 		field.RelationField
 	}
 	Site struct {

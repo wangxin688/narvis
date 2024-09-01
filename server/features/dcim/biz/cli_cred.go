@@ -26,7 +26,7 @@ func (s *CliCredentialService) CreateCredential(credential *schemas.CliCredentia
 
 	cred := &models.CliCredential{
 		OrganizationId: global.OrganizationId.Get(),
-		DeviceId:       &credential.DeviceId,
+		DeviceId:       credential.DeviceId,
 		Username:       credential.Username,
 		Password:       credential.Password,
 	}
@@ -186,9 +186,3 @@ func (s *CliCredentialService) GetCredentialByDeviceIds(deviceIds []string) (map
 	return results, nil
 }
 
-
-// tdb: 全局的snmp以及CLI的配置在ogr admin下管理？device层面允许独立的配置，如果直接当到设备层面？
-
-// org初始化的引导
-// 1. 创建Org，指定管理员密码，指定全局的网络设备cli登陆凭证，指定全局的snmp配置
-// 2. 创建proxy，给出IP地址

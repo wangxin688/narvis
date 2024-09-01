@@ -4,13 +4,16 @@ import (
 	"github.com/getsentry/sentry-go"
 	sentry_gin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
+
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/core/config"
-	"github.com/wangxin688/narvis/server/dal/gen"
-	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/middleware"
 	"github.com/wangxin688/narvis/server/register"
 	"github.com/wangxin688/narvis/server/tools/helpers"
+
+	"github.com/wangxin688/narvis/server/dal/gen"
+	"github.com/wangxin688/narvis/server/infra"
+
 	"go.uber.org/zap"
 )
 

@@ -41,7 +41,7 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 	_aP.GroupName = field.NewString(tableName, "groupName")
 	_aP.Coordinate = field.NewField(tableName, "coordinate")
 	_aP.ActiveWacId = field.NewString(tableName, "activeWacId")
-	_aP.LocationId = field.NewString(tableName, "locationId")
+	_aP.Floor = field.NewString(tableName, "floor")
 	_aP.SiteId = field.NewString(tableName, "siteId")
 	_aP.OrganizationId = field.NewString(tableName, "organizationId")
 	_aP.ActiveWac = aPBelongsToActiveWac{
@@ -50,73 +50,29 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 		RelationField: field.NewRelation("ActiveWac", "models.Device"),
 		Rack: struct {
 			field.RelationField
-			Location struct {
+			Site struct {
 				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}
 				Organization struct {
 					field.RelationField
 				}
-			}
-			Site struct {
-				field.RelationField
 			}
 			Organization struct {
 				field.RelationField
 			}
 		}{
 			RelationField: field.NewRelation("ActiveWac.Rack", "models.Rack"),
-			Location: struct {
+			Site: struct {
 				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}
 				Organization struct {
 					field.RelationField
 				}
 			}{
-				RelationField: field.NewRelation("ActiveWac.Rack.Location", "models.Location"),
-				Parent: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("ActiveWac.Rack.Location.Parent", "models.Location"),
-				},
-				Site: struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}{
-					RelationField: field.NewRelation("ActiveWac.Rack.Location.Site", "models.Site"),
-					Organization: struct {
-						field.RelationField
-					}{
-						RelationField: field.NewRelation("ActiveWac.Rack.Location.Site.Organization", "models.Organization"),
-					},
-				},
+				RelationField: field.NewRelation("ActiveWac.Rack.Site", "models.Site"),
 				Organization: struct {
 					field.RelationField
 				}{
-					RelationField: field.NewRelation("ActiveWac.Rack.Location.Organization", "models.Organization"),
+					RelationField: field.NewRelation("ActiveWac.Rack.Site.Organization", "models.Organization"),
 				},
-			},
-			Site: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("ActiveWac.Rack.Site", "models.Site"),
 			},
 			Organization: struct {
 				field.RelationField
@@ -129,11 +85,6 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 		}{
 			RelationField: field.NewRelation("ActiveWac.Template", "models.Template"),
 		},
-		Location: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("ActiveWac.Location", "models.Location"),
-		},
 		Site: struct {
 			field.RelationField
 		}{
@@ -144,12 +95,6 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 		}{
 			RelationField: field.NewRelation("ActiveWac.Organization", "models.Organization"),
 		},
-	}
-
-	_aP.Location = aPBelongsToLocation{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("Location", "models.Location"),
 	}
 
 	_aP.Site = aPBelongsToSite{
@@ -188,12 +133,10 @@ type aP struct {
 	GroupName      field.String
 	Coordinate     field.Field
 	ActiveWacId    field.String
-	LocationId     field.String
+	Floor          field.String
 	SiteId         field.String
 	OrganizationId field.String
 	ActiveWac      aPBelongsToActiveWac
-
-	Location aPBelongsToLocation
 
 	Site aPBelongsToSite
 
@@ -229,7 +172,7 @@ func (a *aP) updateTableName(table string) *aP {
 	a.GroupName = field.NewString(table, "groupName")
 	a.Coordinate = field.NewField(table, "coordinate")
 	a.ActiveWacId = field.NewString(table, "activeWacId")
-	a.LocationId = field.NewString(table, "locationId")
+	a.Floor = field.NewString(table, "floor")
 	a.SiteId = field.NewString(table, "siteId")
 	a.OrganizationId = field.NewString(table, "organizationId")
 
@@ -248,7 +191,7 @@ func (a *aP) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *aP) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 22)
+	a.fieldMap = make(map[string]field.Expr, 21)
 	a.fieldMap["id"] = a.Id
 	a.fieldMap["createdAt"] = a.CreatedAt
 	a.fieldMap["updatedAt"] = a.UpdatedAt
@@ -264,7 +207,7 @@ func (a *aP) fillFieldMap() {
 	a.fieldMap["groupName"] = a.GroupName
 	a.fieldMap["coordinate"] = a.Coordinate
 	a.fieldMap["activeWacId"] = a.ActiveWacId
-	a.fieldMap["locationId"] = a.LocationId
+	a.fieldMap["floor"] = a.Floor
 	a.fieldMap["siteId"] = a.SiteId
 	a.fieldMap["organizationId"] = a.OrganizationId
 
@@ -287,32 +230,17 @@ type aPBelongsToActiveWac struct {
 
 	Rack struct {
 		field.RelationField
-		Location struct {
+		Site struct {
 			field.RelationField
-			Parent struct {
-				field.RelationField
-			}
-			Site struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-			}
 			Organization struct {
 				field.RelationField
 			}
-		}
-		Site struct {
-			field.RelationField
 		}
 		Organization struct {
 			field.RelationField
 		}
 	}
 	Template struct {
-		field.RelationField
-	}
-	Location struct {
 		field.RelationField
 	}
 	Site struct {
@@ -385,77 +313,6 @@ func (a aPBelongsToActiveWacTx) Clear() error {
 }
 
 func (a aPBelongsToActiveWacTx) Count() int64 {
-	return a.tx.Count()
-}
-
-type aPBelongsToLocation struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a aPBelongsToLocation) Where(conds ...field.Expr) *aPBelongsToLocation {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a aPBelongsToLocation) WithContext(ctx context.Context) *aPBelongsToLocation {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a aPBelongsToLocation) Session(session *gorm.Session) *aPBelongsToLocation {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a aPBelongsToLocation) Model(m *models.AP) *aPBelongsToLocationTx {
-	return &aPBelongsToLocationTx{a.db.Model(m).Association(a.Name())}
-}
-
-type aPBelongsToLocationTx struct{ tx *gorm.Association }
-
-func (a aPBelongsToLocationTx) Find() (result *models.Location, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a aPBelongsToLocationTx) Append(values ...*models.Location) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a aPBelongsToLocationTx) Replace(values ...*models.Location) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a aPBelongsToLocationTx) Delete(values ...*models.Location) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a aPBelongsToLocationTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a aPBelongsToLocationTx) Count() int64 {
 	return a.tx.Count()
 }
 

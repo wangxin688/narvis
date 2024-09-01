@@ -26,12 +26,12 @@ func newPrefix(db *gorm.DB, opts ...gen.DOOption) prefix {
 
 	tableName := _prefix.prefixDo.TableName()
 	_prefix.ALL = field.NewAsterisk(tableName)
-	_prefix.Prefix = field.NewString(tableName, "prefix")
+	_prefix.Id = field.NewString(tableName, "id")
+	_prefix.CreatedAt = field.NewTime(tableName, "createdAt")
+	_prefix.UpdatedAt = field.NewTime(tableName, "updatedAt")
+	_prefix.Range = field.NewString(tableName, "range")
 	_prefix.Version = field.NewString(tableName, "version")
-	_prefix.Description = field.NewString(tableName, "description")
-	_prefix.Status = field.NewString(tableName, "status")
-	_prefix.IsPool = field.NewBool(tableName, "isPool")
-	_prefix.MarkAsFull = field.NewBool(tableName, "markAsFull")
+	_prefix.Type = field.NewString(tableName, "type")
 	_prefix.VlanId = field.NewString(tableName, "VlanId")
 	_prefix.SiteId = field.NewString(tableName, "siteId")
 	_prefix.OrganizationId = field.NewString(tableName, "organizationId")
@@ -80,12 +80,12 @@ type prefix struct {
 	prefixDo
 
 	ALL            field.Asterisk
-	Prefix         field.String
+	Id             field.String
+	CreatedAt      field.Time
+	UpdatedAt      field.Time
+	Range          field.String
 	Version        field.String
-	Description    field.String
-	Status         field.String
-	IsPool         field.Bool
-	MarkAsFull     field.Bool
+	Type           field.String
 	VlanId         field.String
 	SiteId         field.String
 	OrganizationId field.String
@@ -110,12 +110,12 @@ func (p prefix) As(alias string) *prefix {
 
 func (p *prefix) updateTableName(table string) *prefix {
 	p.ALL = field.NewAsterisk(table)
-	p.Prefix = field.NewString(table, "prefix")
+	p.Id = field.NewString(table, "id")
+	p.CreatedAt = field.NewTime(table, "createdAt")
+	p.UpdatedAt = field.NewTime(table, "updatedAt")
+	p.Range = field.NewString(table, "range")
 	p.Version = field.NewString(table, "version")
-	p.Description = field.NewString(table, "description")
-	p.Status = field.NewString(table, "status")
-	p.IsPool = field.NewBool(table, "isPool")
-	p.MarkAsFull = field.NewBool(table, "markAsFull")
+	p.Type = field.NewString(table, "type")
 	p.VlanId = field.NewString(table, "VlanId")
 	p.SiteId = field.NewString(table, "siteId")
 	p.OrganizationId = field.NewString(table, "organizationId")
@@ -136,12 +136,12 @@ func (p *prefix) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 
 func (p *prefix) fillFieldMap() {
 	p.fieldMap = make(map[string]field.Expr, 12)
-	p.fieldMap["prefix"] = p.Prefix
+	p.fieldMap["id"] = p.Id
+	p.fieldMap["createdAt"] = p.CreatedAt
+	p.fieldMap["updatedAt"] = p.UpdatedAt
+	p.fieldMap["range"] = p.Range
 	p.fieldMap["version"] = p.Version
-	p.fieldMap["description"] = p.Description
-	p.fieldMap["status"] = p.Status
-	p.fieldMap["isPool"] = p.IsPool
-	p.fieldMap["markAsFull"] = p.MarkAsFull
+	p.fieldMap["type"] = p.Type
 	p.fieldMap["VlanId"] = p.VlanId
 	p.fieldMap["siteId"] = p.SiteId
 	p.fieldMap["organizationId"] = p.OrganizationId

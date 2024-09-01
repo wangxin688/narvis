@@ -50,106 +50,62 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("User", "models.User"),
-		Group: struct {
+		Role: struct {
 			field.RelationField
-			Role struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-				Menus struct {
-					field.RelationField
-					Parent struct {
-						field.RelationField
-					}
-					Permission struct {
-						field.RelationField
-						Menu struct {
-							field.RelationField
-						}
-					}
-				}
-			}
 			Organization struct {
 				field.RelationField
 			}
-			User struct {
+			Menus struct {
 				field.RelationField
+				Parent struct {
+					field.RelationField
+				}
+				Permission struct {
+					field.RelationField
+					Menu struct {
+						field.RelationField
+					}
+				}
 			}
 		}{
-			RelationField: field.NewRelation("User.Group", "models.Group"),
-			Role: struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-				Menus struct {
-					field.RelationField
-					Parent struct {
-						field.RelationField
-					}
-					Permission struct {
-						field.RelationField
-						Menu struct {
-							field.RelationField
-						}
-					}
-				}
-			}{
-				RelationField: field.NewRelation("User.Group.Role", "models.Role"),
-				Organization: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("User.Group.Role.Organization", "models.Organization"),
-				},
-				Menus: struct {
-					field.RelationField
-					Parent struct {
-						field.RelationField
-					}
-					Permission struct {
-						field.RelationField
-						Menu struct {
-							field.RelationField
-						}
-					}
-				}{
-					RelationField: field.NewRelation("User.Group.Role.Menus", "models.Menu"),
-					Parent: struct {
-						field.RelationField
-					}{
-						RelationField: field.NewRelation("User.Group.Role.Menus.Parent", "models.Menu"),
-					},
-					Permission: struct {
-						field.RelationField
-						Menu struct {
-							field.RelationField
-						}
-					}{
-						RelationField: field.NewRelation("User.Group.Role.Menus.Permission", "models.Permission"),
-						Menu: struct {
-							field.RelationField
-						}{
-							RelationField: field.NewRelation("User.Group.Role.Menus.Permission.Menu", "models.Menu"),
-						},
-					},
-				},
-			},
+			RelationField: field.NewRelation("User.Role", "models.Role"),
 			Organization: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("User.Group.Organization", "models.Organization"),
+				RelationField: field.NewRelation("User.Role.Organization", "models.Organization"),
 			},
-			User: struct {
+			Menus: struct {
 				field.RelationField
+				Parent struct {
+					field.RelationField
+				}
+				Permission struct {
+					field.RelationField
+					Menu struct {
+						field.RelationField
+					}
+				}
 			}{
-				RelationField: field.NewRelation("User.Group.User", "models.User"),
+				RelationField: field.NewRelation("User.Role.Menus", "models.Menu"),
+				Parent: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("User.Role.Menus.Parent", "models.Menu"),
+				},
+				Permission: struct {
+					field.RelationField
+					Menu struct {
+						field.RelationField
+					}
+				}{
+					RelationField: field.NewRelation("User.Role.Menus.Permission", "models.Permission"),
+					Menu: struct {
+						field.RelationField
+					}{
+						RelationField: field.NewRelation("User.Role.Menus.Permission.Menu", "models.Menu"),
+					},
+				},
 			},
-		},
-		Role: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("User.Role", "models.Role"),
 		},
 		Organization: struct {
 			field.RelationField
@@ -175,18 +131,6 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 		RelationField: field.NewRelation("Device", "models.Device"),
 		Rack: struct {
 			field.RelationField
-			Location struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-				}
-				Organization struct {
-					field.RelationField
-				}
-			}
 			Site struct {
 				field.RelationField
 			}
@@ -195,35 +139,6 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 			}
 		}{
 			RelationField: field.NewRelation("Device.Rack", "models.Rack"),
-			Location: struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-				}
-				Organization struct {
-					field.RelationField
-				}
-			}{
-				RelationField: field.NewRelation("Device.Rack.Location", "models.Location"),
-				Parent: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("Device.Rack.Location.Parent", "models.Location"),
-				},
-				Site: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("Device.Rack.Location.Site", "models.Site"),
-				},
-				Organization: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("Device.Rack.Location.Organization", "models.Organization"),
-				},
-			},
 			Site: struct {
 				field.RelationField
 			}{
@@ -239,11 +154,6 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 			field.RelationField
 		}{
 			RelationField: field.NewRelation("Device.Template", "models.Template"),
-		},
-		Location: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Device.Location", "models.Location"),
 		},
 		Site: struct {
 			field.RelationField
@@ -266,11 +176,6 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 		}{
 			RelationField: field.NewRelation("Ap.ActiveWac", "models.Device"),
 		},
-		Location: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Ap.Location", "models.Location"),
-		},
 		Site: struct {
 			field.RelationField
 		}{
@@ -287,22 +192,17 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Circuit", "models.Circuit"),
-		Provider: struct {
+		Site: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("Circuit.Provider", "models.Provider"),
+			RelationField: field.NewRelation("Circuit.Site", "models.Site"),
 		},
-		ASite: struct {
+		Device: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("Circuit.ASite", "models.Site"),
+			RelationField: field.NewRelation("Circuit.Device", "models.Device"),
 		},
-		ADevice: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Circuit.ADevice", "models.Device"),
-		},
-		AInterface: struct {
+		DeviceInterface: struct {
 			field.RelationField
 			Device struct {
 				field.RelationField
@@ -311,32 +211,17 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 				field.RelationField
 			}
 		}{
-			RelationField: field.NewRelation("Circuit.AInterface", "models.DeviceInterface"),
+			RelationField: field.NewRelation("Circuit.DeviceInterface", "models.DeviceInterface"),
 			Device: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("Circuit.AInterface.Device", "models.Device"),
+				RelationField: field.NewRelation("Circuit.DeviceInterface.Device", "models.Device"),
 			},
 			Site: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("Circuit.AInterface.Site", "models.Site"),
+				RelationField: field.NewRelation("Circuit.DeviceInterface.Site", "models.Site"),
 			},
-		},
-		ZSite: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Circuit.ZSite", "models.Site"),
-		},
-		ZDevice: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Circuit.ZDevice", "models.Device"),
-		},
-		ZInterface: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Circuit.ZInterface", "models.DeviceInterface"),
 		},
 		Organization: struct {
 			field.RelationField
@@ -572,35 +457,23 @@ type alertBelongsToUser struct {
 
 	field.RelationField
 
-	Group struct {
+	Role struct {
 		field.RelationField
-		Role struct {
-			field.RelationField
-			Organization struct {
-				field.RelationField
-			}
-			Menus struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Permission struct {
-					field.RelationField
-					Menu struct {
-						field.RelationField
-					}
-				}
-			}
-		}
 		Organization struct {
 			field.RelationField
 		}
-		User struct {
+		Menus struct {
 			field.RelationField
+			Parent struct {
+				field.RelationField
+			}
+			Permission struct {
+				field.RelationField
+				Menu struct {
+					field.RelationField
+				}
+			}
 		}
-	}
-	Role struct {
-		field.RelationField
 	}
 	Organization struct {
 		field.RelationField
@@ -754,18 +627,6 @@ type alertBelongsToDevice struct {
 
 	Rack struct {
 		field.RelationField
-		Location struct {
-			field.RelationField
-			Parent struct {
-				field.RelationField
-			}
-			Site struct {
-				field.RelationField
-			}
-			Organization struct {
-				field.RelationField
-			}
-		}
 		Site struct {
 			field.RelationField
 		}
@@ -774,9 +635,6 @@ type alertBelongsToDevice struct {
 		}
 	}
 	Template struct {
-		field.RelationField
-	}
-	Location struct {
 		field.RelationField
 	}
 	Site struct {
@@ -860,9 +718,6 @@ type alertBelongsToAp struct {
 	ActiveWac struct {
 		field.RelationField
 	}
-	Location struct {
-		field.RelationField
-	}
 	Site struct {
 		field.RelationField
 	}
@@ -941,16 +796,13 @@ type alertBelongsToCircuit struct {
 
 	field.RelationField
 
-	Provider struct {
+	Site struct {
 		field.RelationField
 	}
-	ASite struct {
+	Device struct {
 		field.RelationField
 	}
-	ADevice struct {
-		field.RelationField
-	}
-	AInterface struct {
+	DeviceInterface struct {
 		field.RelationField
 		Device struct {
 			field.RelationField
@@ -958,15 +810,6 @@ type alertBelongsToCircuit struct {
 		Site struct {
 			field.RelationField
 		}
-	}
-	ZSite struct {
-		field.RelationField
-	}
-	ZDevice struct {
-		field.RelationField
-	}
-	ZInterface struct {
-		field.RelationField
 	}
 	Organization struct {
 		field.RelationField

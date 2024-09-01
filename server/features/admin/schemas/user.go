@@ -12,7 +12,6 @@ type UserCreate struct {
 	Password string  `json:"password" `
 	Status   string  `json:"status" binding:"required,oneof=Active Inactive"`
 	Avatar   *string `json:"avatar"`
-	GroupId  string  `json:"groupId" binding:"required,uuid"`
 	RoleId   string  `json:"roleId" binding:"required,uuid"`
 	AuthType uint8   `json:"authType" binding:"required,gte=0,lte=4"`
 }
@@ -23,7 +22,6 @@ type UserUpdate struct {
 	Password *string `json:"password" binding:"omitempty"`
 	Status   *string `json:"status" binding:"omitempty,oneof=Active Inactive"`
 	Avatar   *string `json:"avatar" binding:"omitempty"`
-	GroupId  *string `json:"groupId" binding:"omitempty,uuid"`
 	RoleId   *string `json:"roleId" binding:"omitempty,uuid"`
 }
 
@@ -34,7 +32,6 @@ type UserQuery struct {
 	Email    *[]string `form:"email" binding:"omitempty"`
 	Status   *string   `form:"status" binding:"omitempty,oneof=Active Inactive"`
 	RoleId   *[]string `form:"roleId" binding:"omitempty,list_uuid"`
-	GroupId  *[]string `form:"groupId" binding:"omitempty,list_uuid"`
 	AuthType *uint8    `form:"authType" binding:"omitempty,gte=0,lte=4"`
 }
 
@@ -47,7 +44,6 @@ type User struct {
 	Status    string     `json:"status"`
 	Avatar    *string    `json:"avatar"`
 	AuthType  uint8      `json:"authType"`
-	Group     GroupShort `json:"group"`
 	Role      RoleShort  `json:"role"`
 }
 
@@ -62,7 +58,6 @@ type UserMe struct {
 	Status    string     `json:"status"`
 	Avatar    *string    `json:"avatar"`
 	AuthType  uint8      `json:"authType"`
-	Group     GroupShort `json:"group"`
 	Role      RoleShort  `json:"role"`
 	// Menus     MenuList   `json:"menus"`
 }

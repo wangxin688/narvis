@@ -37,69 +37,35 @@ func newDevice(db *gorm.DB, opts ...gen.DOOption) device {
 	_device.DeviceModel = field.NewString(tableName, "deviceModel")
 	_device.Manufacturer = field.NewString(tableName, "manufacturer")
 	_device.DeviceRole = field.NewString(tableName, "deviceRole")
+	_device.Floor = field.NewString(tableName, "floor")
+	_device.IsRegistered = field.NewBool(tableName, "isRegistered")
 	_device.ChassisId = field.NewString(tableName, "chassisId")
 	_device.SerialNumber = field.NewString(tableName, "serialNumber")
-	_device.AssetTag = field.NewString(tableName, "assetTag")
 	_device.Description = field.NewString(tableName, "description")
 	_device.OsVersion = field.NewString(tableName, "osVersion")
 	_device.OsPatch = field.NewString(tableName, "osPatch")
 	_device.RackId = field.NewString(tableName, "rackId")
-	_device.RackPosition = field.NewUint8(tableName, "rackPosition")
-	_device.RackDirection = field.NewString(tableName, "rackDirection")
-	_device.UHeight = field.NewUint8(tableName, "uHeight")
+	_device.RackPosition = field.NewField(tableName, "rackPosition")
 	_device.MonitorId = field.NewString(tableName, "monitorId")
 	_device.TemplateId = field.NewString(tableName, "templateId")
-	_device.LocationId = field.NewString(tableName, "locationId")
 	_device.SiteId = field.NewString(tableName, "siteId")
 	_device.OrganizationId = field.NewString(tableName, "organizationId")
 	_device.Rack = deviceBelongsToRack{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Rack", "models.Rack"),
-		Location: struct {
+		Site: struct {
 			field.RelationField
-			Parent struct {
-				field.RelationField
-			}
-			Site struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-			}
 			Organization struct {
 				field.RelationField
 			}
 		}{
-			RelationField: field.NewRelation("Rack.Location", "models.Location"),
-			Parent: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Rack.Location.Parent", "models.Location"),
-			},
-			Site: struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-			}{
-				RelationField: field.NewRelation("Rack.Location.Site", "models.Site"),
-				Organization: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("Rack.Location.Site.Organization", "models.Organization"),
-				},
-			},
+			RelationField: field.NewRelation("Rack.Site", "models.Site"),
 			Organization: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("Rack.Location.Organization", "models.Organization"),
+				RelationField: field.NewRelation("Rack.Site.Organization", "models.Organization"),
 			},
-		},
-		Site: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Rack.Site", "models.Site"),
 		},
 		Organization: struct {
 			field.RelationField
@@ -112,12 +78,6 @@ func newDevice(db *gorm.DB, opts ...gen.DOOption) device {
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Template", "models.Template"),
-	}
-
-	_device.Location = deviceBelongsToLocation{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("Location", "models.Location"),
 	}
 
 	_device.Site = deviceBelongsToSite{
@@ -152,26 +112,22 @@ type device struct {
 	DeviceModel    field.String
 	Manufacturer   field.String
 	DeviceRole     field.String
+	Floor          field.String
+	IsRegistered   field.Bool
 	ChassisId      field.String
 	SerialNumber   field.String
-	AssetTag       field.String
 	Description    field.String
 	OsVersion      field.String
 	OsPatch        field.String
 	RackId         field.String
-	RackPosition   field.Uint8
-	RackDirection  field.String
-	UHeight        field.Uint8
+	RackPosition   field.Field
 	MonitorId      field.String
 	TemplateId     field.String
-	LocationId     field.String
 	SiteId         field.String
 	OrganizationId field.String
 	Rack           deviceBelongsToRack
 
 	Template deviceBelongsToTemplate
-
-	Location deviceBelongsToLocation
 
 	Site deviceBelongsToSite
 
@@ -203,19 +159,17 @@ func (d *device) updateTableName(table string) *device {
 	d.DeviceModel = field.NewString(table, "deviceModel")
 	d.Manufacturer = field.NewString(table, "manufacturer")
 	d.DeviceRole = field.NewString(table, "deviceRole")
+	d.Floor = field.NewString(table, "floor")
+	d.IsRegistered = field.NewBool(table, "isRegistered")
 	d.ChassisId = field.NewString(table, "chassisId")
 	d.SerialNumber = field.NewString(table, "serialNumber")
-	d.AssetTag = field.NewString(table, "assetTag")
 	d.Description = field.NewString(table, "description")
 	d.OsVersion = field.NewString(table, "osVersion")
 	d.OsPatch = field.NewString(table, "osPatch")
 	d.RackId = field.NewString(table, "rackId")
-	d.RackPosition = field.NewUint8(table, "rackPosition")
-	d.RackDirection = field.NewString(table, "rackDirection")
-	d.UHeight = field.NewUint8(table, "uHeight")
+	d.RackPosition = field.NewField(table, "rackPosition")
 	d.MonitorId = field.NewString(table, "monitorId")
 	d.TemplateId = field.NewString(table, "templateId")
-	d.LocationId = field.NewString(table, "locationId")
 	d.SiteId = field.NewString(table, "siteId")
 	d.OrganizationId = field.NewString(table, "organizationId")
 
@@ -234,7 +188,7 @@ func (d *device) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (d *device) fillFieldMap() {
-	d.fieldMap = make(map[string]field.Expr, 31)
+	d.fieldMap = make(map[string]field.Expr, 28)
 	d.fieldMap["id"] = d.Id
 	d.fieldMap["createdAt"] = d.CreatedAt
 	d.fieldMap["updatedAt"] = d.UpdatedAt
@@ -246,19 +200,17 @@ func (d *device) fillFieldMap() {
 	d.fieldMap["deviceModel"] = d.DeviceModel
 	d.fieldMap["manufacturer"] = d.Manufacturer
 	d.fieldMap["deviceRole"] = d.DeviceRole
+	d.fieldMap["floor"] = d.Floor
+	d.fieldMap["isRegistered"] = d.IsRegistered
 	d.fieldMap["chassisId"] = d.ChassisId
 	d.fieldMap["serialNumber"] = d.SerialNumber
-	d.fieldMap["assetTag"] = d.AssetTag
 	d.fieldMap["description"] = d.Description
 	d.fieldMap["osVersion"] = d.OsVersion
 	d.fieldMap["osPatch"] = d.OsPatch
 	d.fieldMap["rackId"] = d.RackId
 	d.fieldMap["rackPosition"] = d.RackPosition
-	d.fieldMap["rackDirection"] = d.RackDirection
-	d.fieldMap["uHeight"] = d.UHeight
 	d.fieldMap["monitorId"] = d.MonitorId
 	d.fieldMap["templateId"] = d.TemplateId
-	d.fieldMap["locationId"] = d.LocationId
 	d.fieldMap["siteId"] = d.SiteId
 	d.fieldMap["organizationId"] = d.OrganizationId
 
@@ -279,23 +231,11 @@ type deviceBelongsToRack struct {
 
 	field.RelationField
 
-	Location struct {
+	Site struct {
 		field.RelationField
-		Parent struct {
-			field.RelationField
-		}
-		Site struct {
-			field.RelationField
-			Organization struct {
-				field.RelationField
-			}
-		}
 		Organization struct {
 			field.RelationField
 		}
-	}
-	Site struct {
-		field.RelationField
 	}
 	Organization struct {
 		field.RelationField
@@ -435,77 +375,6 @@ func (a deviceBelongsToTemplateTx) Clear() error {
 }
 
 func (a deviceBelongsToTemplateTx) Count() int64 {
-	return a.tx.Count()
-}
-
-type deviceBelongsToLocation struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a deviceBelongsToLocation) Where(conds ...field.Expr) *deviceBelongsToLocation {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a deviceBelongsToLocation) WithContext(ctx context.Context) *deviceBelongsToLocation {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a deviceBelongsToLocation) Session(session *gorm.Session) *deviceBelongsToLocation {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a deviceBelongsToLocation) Model(m *models.Device) *deviceBelongsToLocationTx {
-	return &deviceBelongsToLocationTx{a.db.Model(m).Association(a.Name())}
-}
-
-type deviceBelongsToLocationTx struct{ tx *gorm.Association }
-
-func (a deviceBelongsToLocationTx) Find() (result *models.Location, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a deviceBelongsToLocationTx) Append(values ...*models.Location) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a deviceBelongsToLocationTx) Replace(values ...*models.Location) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a deviceBelongsToLocationTx) Delete(values ...*models.Location) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a deviceBelongsToLocationTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a deviceBelongsToLocationTx) Count() int64 {
 	return a.tx.Count()
 }
 

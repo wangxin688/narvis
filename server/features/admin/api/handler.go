@@ -17,12 +17,6 @@ func RegisterAdminRoutes(e *gin.Engine) {
 		router.PUT("/users/:id", updateUser)
 		router.DELETE("/users/:id", deleteUser)
 
-		router.POST("/groups", createGroup)
-		router.GET("/groups", listGroups)
-		router.GET("/groups/:id", getGroup)
-		router.PUT("/groups/:id", updateGroup)
-		router.DELETE("/groups/:id", deleteGroup)
-
 		router.POST("/roles", createRole)
 		router.GET("/roles", listRoles)
 		router.GET("/roles/:id", getRole)

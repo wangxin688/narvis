@@ -24,7 +24,6 @@ type AP struct {
 	GroupName    *string       `json:"groupName"`
 	Coordinate   *ApCoordinate `json:"coordinate"`
 	ActiveWac    DeviceShort   `json:"activeWac"`
-	Location     LocationShort `json:"location"`
 	Site         SiteShort     `json:"site"`
 }
 

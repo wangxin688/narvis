@@ -40,73 +40,29 @@ func newDeviceConfig(db *gorm.DB, opts ...gen.DOOption) deviceConfig {
 		RelationField: field.NewRelation("Device", "models.Device"),
 		Rack: struct {
 			field.RelationField
-			Location struct {
+			Site struct {
 				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}
 				Organization struct {
 					field.RelationField
 				}
-			}
-			Site struct {
-				field.RelationField
 			}
 			Organization struct {
 				field.RelationField
 			}
 		}{
 			RelationField: field.NewRelation("Device.Rack", "models.Rack"),
-			Location: struct {
+			Site: struct {
 				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}
 				Organization struct {
 					field.RelationField
 				}
 			}{
-				RelationField: field.NewRelation("Device.Rack.Location", "models.Location"),
-				Parent: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("Device.Rack.Location.Parent", "models.Location"),
-				},
-				Site: struct {
-					field.RelationField
-					Organization struct {
-						field.RelationField
-					}
-				}{
-					RelationField: field.NewRelation("Device.Rack.Location.Site", "models.Site"),
-					Organization: struct {
-						field.RelationField
-					}{
-						RelationField: field.NewRelation("Device.Rack.Location.Site.Organization", "models.Organization"),
-					},
-				},
+				RelationField: field.NewRelation("Device.Rack.Site", "models.Site"),
 				Organization: struct {
 					field.RelationField
 				}{
-					RelationField: field.NewRelation("Device.Rack.Location.Organization", "models.Organization"),
+					RelationField: field.NewRelation("Device.Rack.Site.Organization", "models.Organization"),
 				},
-			},
-			Site: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Device.Rack.Site", "models.Site"),
 			},
 			Organization: struct {
 				field.RelationField
@@ -118,11 +74,6 @@ func newDeviceConfig(db *gorm.DB, opts ...gen.DOOption) deviceConfig {
 			field.RelationField
 		}{
 			RelationField: field.NewRelation("Device.Template", "models.Template"),
-		},
-		Location: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Device.Location", "models.Location"),
 		},
 		Site: struct {
 			field.RelationField
@@ -223,32 +174,17 @@ type deviceConfigBelongsToDevice struct {
 
 	Rack struct {
 		field.RelationField
-		Location struct {
+		Site struct {
 			field.RelationField
-			Parent struct {
-				field.RelationField
-			}
-			Site struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-			}
 			Organization struct {
 				field.RelationField
 			}
-		}
-		Site struct {
-			field.RelationField
 		}
 		Organization struct {
 			field.RelationField
 		}
 	}
 	Template struct {
-		field.RelationField
-	}
-	Location struct {
 		field.RelationField
 	}
 	Site struct {

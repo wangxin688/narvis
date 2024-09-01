@@ -61,7 +61,6 @@ func registerAuditLogMixin() {
 	newAuditLogMixin := audit.NewAuditLogMixin()
 	registeredTables := []string{
 		models.SiteTableName,
-		models.LocationTableName,
 		models.RackTableName,
 		models.DeviceTableName,
 		models.APTableName,
@@ -69,7 +68,6 @@ func registerAuditLogMixin() {
 		models.SnmpV2CredentialTableName,
 		models.RestconfCredentialTableName,
 		models.CircuitTableName,
-		models.BlockTableName,
 		models.PrefixTableName,
 	}
 	newAuditLogMixin.AuditTableRegister(registeredTables)

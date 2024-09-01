@@ -34,111 +34,50 @@ func newUser(db *gorm.DB, opts ...gen.DOOption) user {
 	_user.Password = field.NewString(tableName, "password")
 	_user.Status = field.NewString(tableName, "status")
 	_user.Avatar = field.NewString(tableName, "avatar")
-	_user.GroupId = field.NewString(tableName, "groupId")
 	_user.RoleId = field.NewString(tableName, "roleId")
 	_user.AuthType = field.NewUint8(tableName, "authType")
 	_user.OrganizationId = field.NewString(tableName, "organizationId")
-	_user.Group = userBelongsToGroup{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("Group", "models.Group"),
-		Role: struct {
-			field.RelationField
-			Organization struct {
-				field.RelationField
-			}
-			Menus struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Permission struct {
-					field.RelationField
-					Menu struct {
-						field.RelationField
-					}
-				}
-			}
-		}{
-			RelationField: field.NewRelation("Group.Role", "models.Role"),
-			Organization: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Group.Role.Organization", "models.Organization"),
-			},
-			Menus: struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Permission struct {
-					field.RelationField
-					Menu struct {
-						field.RelationField
-					}
-				}
-			}{
-				RelationField: field.NewRelation("Group.Role.Menus", "models.Menu"),
-				Parent: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("Group.Role.Menus.Parent", "models.Menu"),
-				},
-				Permission: struct {
-					field.RelationField
-					Menu struct {
-						field.RelationField
-					}
-				}{
-					RelationField: field.NewRelation("Group.Role.Menus.Permission", "models.Permission"),
-					Menu: struct {
-						field.RelationField
-					}{
-						RelationField: field.NewRelation("Group.Role.Menus.Permission.Menu", "models.Menu"),
-					},
-				},
-			},
-		},
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Group.Organization", "models.Organization"),
-		},
-		User: struct {
-			field.RelationField
-			Group struct {
-				field.RelationField
-			}
-			Role struct {
-				field.RelationField
-			}
-			Organization struct {
-				field.RelationField
-			}
-		}{
-			RelationField: field.NewRelation("Group.User", "models.User"),
-			Group: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Group.User.Group", "models.Group"),
-			},
-			Role: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Group.User.Role", "models.Role"),
-			},
-			Organization: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Group.User.Organization", "models.Organization"),
-			},
-		},
-	}
-
 	_user.Role = userBelongsToRole{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Role", "models.Role"),
+		Organization: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Role.Organization", "models.Organization"),
+		},
+		Menus: struct {
+			field.RelationField
+			Parent struct {
+				field.RelationField
+			}
+			Permission struct {
+				field.RelationField
+				Menu struct {
+					field.RelationField
+				}
+			}
+		}{
+			RelationField: field.NewRelation("Role.Menus", "models.Menu"),
+			Parent: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Role.Menus.Parent", "models.Menu"),
+			},
+			Permission: struct {
+				field.RelationField
+				Menu struct {
+					field.RelationField
+				}
+			}{
+				RelationField: field.NewRelation("Role.Menus.Permission", "models.Permission"),
+				Menu: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("Role.Menus.Permission.Menu", "models.Menu"),
+				},
+			},
+		},
 	}
 
 	_user.Organization = userBelongsToOrganization{
@@ -164,13 +103,10 @@ type user struct {
 	Password       field.String
 	Status         field.String
 	Avatar         field.String
-	GroupId        field.String
 	RoleId         field.String
 	AuthType       field.Uint8
 	OrganizationId field.String
-	Group          userBelongsToGroup
-
-	Role userBelongsToRole
+	Role           userBelongsToRole
 
 	Organization userBelongsToOrganization
 
@@ -197,7 +133,6 @@ func (u *user) updateTableName(table string) *user {
 	u.Password = field.NewString(table, "password")
 	u.Status = field.NewString(table, "status")
 	u.Avatar = field.NewString(table, "avatar")
-	u.GroupId = field.NewString(table, "groupId")
 	u.RoleId = field.NewString(table, "roleId")
 	u.AuthType = field.NewUint8(table, "authType")
 	u.OrganizationId = field.NewString(table, "organizationId")
@@ -217,7 +152,7 @@ func (u *user) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (u *user) fillFieldMap() {
-	u.fieldMap = make(map[string]field.Expr, 15)
+	u.fieldMap = make(map[string]field.Expr, 13)
 	u.fieldMap["id"] = u.Id
 	u.fieldMap["createdAt"] = u.CreatedAt
 	u.fieldMap["updatedAt"] = u.UpdatedAt
@@ -226,7 +161,6 @@ func (u *user) fillFieldMap() {
 	u.fieldMap["password"] = u.Password
 	u.fieldMap["status"] = u.Status
 	u.fieldMap["avatar"] = u.Avatar
-	u.fieldMap["groupId"] = u.GroupId
 	u.fieldMap["roleId"] = u.RoleId
 	u.fieldMap["authType"] = u.AuthType
 	u.fieldMap["organizationId"] = u.OrganizationId
@@ -243,115 +177,26 @@ func (u user) replaceDB(db *gorm.DB) user {
 	return u
 }
 
-type userBelongsToGroup struct {
-	db *gorm.DB
-
-	field.RelationField
-
-	Role struct {
-		field.RelationField
-		Organization struct {
-			field.RelationField
-		}
-		Menus struct {
-			field.RelationField
-			Parent struct {
-				field.RelationField
-			}
-			Permission struct {
-				field.RelationField
-				Menu struct {
-					field.RelationField
-				}
-			}
-		}
-	}
-	Organization struct {
-		field.RelationField
-	}
-	User struct {
-		field.RelationField
-		Group struct {
-			field.RelationField
-		}
-		Role struct {
-			field.RelationField
-		}
-		Organization struct {
-			field.RelationField
-		}
-	}
-}
-
-func (a userBelongsToGroup) Where(conds ...field.Expr) *userBelongsToGroup {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a userBelongsToGroup) WithContext(ctx context.Context) *userBelongsToGroup {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a userBelongsToGroup) Session(session *gorm.Session) *userBelongsToGroup {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a userBelongsToGroup) Model(m *models.User) *userBelongsToGroupTx {
-	return &userBelongsToGroupTx{a.db.Model(m).Association(a.Name())}
-}
-
-type userBelongsToGroupTx struct{ tx *gorm.Association }
-
-func (a userBelongsToGroupTx) Find() (result *models.Group, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a userBelongsToGroupTx) Append(values ...*models.Group) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a userBelongsToGroupTx) Replace(values ...*models.Group) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a userBelongsToGroupTx) Delete(values ...*models.Group) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a userBelongsToGroupTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a userBelongsToGroupTx) Count() int64 {
-	return a.tx.Count()
-}
-
 type userBelongsToRole struct {
 	db *gorm.DB
 
 	field.RelationField
+
+	Organization struct {
+		field.RelationField
+	}
+	Menus struct {
+		field.RelationField
+		Parent struct {
+			field.RelationField
+		}
+		Permission struct {
+			field.RelationField
+			Menu struct {
+				field.RelationField
+			}
+		}
+	}
 }
 
 func (a userBelongsToRole) Where(conds ...field.Expr) *userBelongsToRole {

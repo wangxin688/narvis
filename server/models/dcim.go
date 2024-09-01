@@ -5,12 +5,10 @@ import (
 )
 
 var SiteSearchFields = []string{"name", "siteCode", "address"}
-var LocationSearchFields = []string{"name"}
 var DeviceSearchFields = []string{"name", "managementIp", "chassisId", "serialNumber", "assetTag"}
 var APSearchFields = []string{"name", "macAddress", "serialNumber", "managementIp"}
 
 var SiteTableName = "dcim_site"
-var LocationTableName = "dcim_location"
 var RackTableName = "dcim_rack"
 var DeviceTableName = "dcim_device"
 var APTableName = "dcim_ap"
@@ -44,34 +42,12 @@ func (Site) TableName() string {
 	return SiteTableName
 }
 
-type Location struct {
-	BaseDbModel
-	Name           string       `gorm:"column:name;uniqueIndex:idx_name_site_id;not null"`
-	Description    *string      `gorm:"column:description;default:null"`
-	ParentId       *string      `gorm:"column:parentId;type:uuid;default:null"`
-	Parent         *Location    `gorm:"constraint:Ondelete:CASCADE;references:Id"`
-	SiteId         string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_name_site_id;not null"`
-	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
-	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
-}
-
-func (Location) TableName() string {
-	return LocationTableName
-}
-
 type Rack struct {
 	BaseDbModel
 	Name           string       `gorm:"column:name;not null"`
-	AssetTag       *string      `gorm:"column:assetTag;"`
 	SerialNumber   *string      `gorm:"column:serialNumber"`
 	UHeight        uint8        `gorm:"column:uHeight;type:smallint;default:42"`
-	Height         float32      `gorm:"column:height;type:float;default:2"`
-	Width          float32      `gorm:"column:width;type:float;default:0.6"`
-	Depth          float32      `gorm:"column:depth;type:float;default:0.8"`
 	DescUnit       bool         `gorm:"column:descUnit;default:true"`
-	LocationId     *string      `gorm:"column:locationId;type:uuid;default:null"`
-	Location       Location     `gorm:"constraint:Ondelete:SET NULL"`
 	SiteId         string       `gorm:"column:siteId;type:uuid;not null"`
 	Site           Site         `gorm:"constraint:Ondelete:RESTRICT"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;index;not null"`
@@ -85,34 +61,31 @@ func (Rack) TableName() string {
 type Device struct {
 	BaseDbModel
 
-	Name           string       `gorm:"column:name;uniqueIndex:idx_name_organization_id;not null"`
-	ManagementIp   string       `gorm:"column:managementIp;uniqueIndex:idx_management_ip_organization_id;not null;index"`
-	Status         string       `gorm:"column:status;default:Active"`
-	Platform       string       `gorm:"column:platform;default:Unknown"`
-	ProductFamily  string       `gorm:"column:productFamily;default:Unknown"`
-	DeviceModel    string       `gorm:"column:deviceModel;default:Unknown"`
-	Manufacturer   string       `gorm:"column:manufacturer;default:Unknown"`
-	DeviceRole     string       `gorm:"column:deviceRole;default:Unknown"`
-	ChassisId      *string      `gorm:"column:chassisId;uniqueIndex:idx_chassis_id_organization_id;default:null;index"`
-	SerialNumber   *string      `gorm:"column:serialNumber;uniqueIndex:idx_serial_number_organization_id"`
-	AssetTag       *string      `gorm:"column:assetTag;default:null"`
-	Description    *string      `gorm:"column:description;default:null"`
-	OsVersion      *string      `gorm:"column:osVersion;default:null"`
-	OsPatch        *string      `gorm:"column:osPatch;default:null"`
-	RackId         *string      `gorm:"column:rackId;type:uuid;default:null"`
-	Rack           Rack         `gorm:"constraint:Ondelete:SET NULL"`
-	RackPosition   *uint8       `gorm:"column:rackPosition;type:smallint;default:null"`
-	RackDirection  string       `gorm:"column:rackDirection;default:Front"` // Front, Rear
-	UHeight        *uint8       `gorm:"column:uHeight;type:smallint;default:null"`
-	MonitorId      *string      `gorm:"column:monitorId;default:null;unique"`
-	TemplateId     *string      `gorm:"column:templateId;type:uuid;default:null"`
-	Template       Template     `gorm:"constraint:Ondelete:SET NULL"`
-	LocationId     *string      `gorm:"column:locationId;type:uuid;default:null"`
-	Location       Location     `gorm:"constraint:Ondelete:SET NULL"`
-	SiteId         string       `gorm:"column:siteId;type:uuid;index;not null"`
-	Site           Site         `gorm:"constraint:Ondelete:RESTRICT"`
-	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_name_organization_id;uniqueIndex:idx_management_ip_organization_id;uniqueIndex:idx_serial_number_organization_id;uniqueIndex:idx_chassis_id_organization_id;index"`
-	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+	Name           string                       `gorm:"column:name;not null"`
+	ManagementIp   string                       `gorm:"column:managementIp;uniqueIndex:idx_management_ip_organization_id;not null;index"`
+	Status         string                       `gorm:"column:status;default:Active"`
+	Platform       string                       `gorm:"column:platform;default:Unknown"`
+	ProductFamily  string                       `gorm:"column:productFamily;default:Unknown"`
+	DeviceModel    string                       `gorm:"column:deviceModel;default:Unknown"`
+	Manufacturer   string                       `gorm:"column:manufacturer;default:Unknown"`
+	DeviceRole     string                       `gorm:"column:deviceRole;default:Unknown"`
+	Floor          *string                      `gorm:"column:floor;default:null"`
+	IsRegistered   bool                         `gorm:"column:isRegistered;type:bool;default:false"`
+	ChassisId      *string                      `gorm:"column:chassisId;uniqueIndex:idx_chassis_id_organization_id;default:null;index"`
+	SerialNumber   *string                      `gorm:"column:serialNumber;uniqueIndex:idx_serial_number_organization_id"`
+	Description    *string                      `gorm:"column:description;default:null"`
+	OsVersion      *string                      `gorm:"column:osVersion;default:null"`
+	OsPatch        *string                      `gorm:"column:osPatch;default:null"`
+	RackId         *string                      `gorm:"column:rackId;type:uuid;default:null"`
+	Rack           Rack                         `gorm:"constraint:Ondelete:SET NULL"`
+	RackPosition   *datatypes.JSONSlice[string] `gorm:"column:rackPosition;type:json;default:null"`
+	MonitorId      *string                      `gorm:"column:monitorId;default:null;unique"`
+	TemplateId     *string                      `gorm:"column:templateId;type:uuid;default:null"`
+	Template       Template                     `gorm:"constraint:Ondelete:SET NULL"`
+	SiteId         string                       `gorm:"column:siteId;type:uuid;index;not null"`
+	Site           Site                         `gorm:"constraint:Ondelete:RESTRICT"`
+	OrganizationId string                       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_management_ip_organization_id;uniqueIndex:idx_serial_number_organization_id;uniqueIndex:idx_chassis_id_organization_id;index"`
+	Organization   Organization                 `gorm:"constraint:Ondelete:CASCADE"`
 }
 
 func (Device) TableName() string {
@@ -281,8 +254,7 @@ type AP struct {
 	Coordinate     *datatypes.JSONType[ApCoordinate] `gorm:"column:coordinate;type:json;default:null"`
 	ActiveWacId    *string                           `gorm:"column:activeWacId;type:uuid;default:null"`
 	ActiveWac      Device                            `gorm:"constraint:Ondelete:SET NULL"`
-	LocationId     *string                           `gorm:"column:locationId;type:uuid;default:null"`
-	Location       Location                          `gorm:"constraint:Ondelete:SET NULL"`
+	Floor          *string                           `gorm:"column:floor;default:null"`
 	SiteId         string                            `gorm:"column:siteId;type:uuid;uniqueIndex:idx_name_site_id;uniqueIndex:idx_management_ip_site_id;not null"`
 	Site           Site                              `gorm:"constraint:Ondelete:RESTRICT"`
 	OrganizationId string                            `gorm:"column:organizationId;type:uuid;index"`

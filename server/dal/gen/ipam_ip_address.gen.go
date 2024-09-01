@@ -31,9 +31,21 @@ func newIpAddress(db *gorm.DB, opts ...gen.DOOption) ipAddress {
 	_ipAddress.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_ipAddress.Address = field.NewString(tableName, "address")
 	_ipAddress.Status = field.NewString(tableName, "status")
-	_ipAddress.DnsName = field.NewString(tableName, "dnsName")
-	_ipAddress.AssignTo = field.NewString(tableName, "assignTo")
+	_ipAddress.MacAddress = field.NewString(tableName, "macAddress")
+	_ipAddress.Description = field.NewString(tableName, "description")
+	_ipAddress.SiteId = field.NewString(tableName, "siteId")
 	_ipAddress.OrganizationId = field.NewString(tableName, "organizationId")
+	_ipAddress.Site = ipAddressBelongsToSite{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Site", "models.Site"),
+		Organization: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Site.Organization", "models.Organization"),
+		},
+	}
+
 	_ipAddress.Organization = ipAddressBelongsToOrganization{
 		db: db.Session(&gorm.Session{}),
 
@@ -54,10 +66,13 @@ type ipAddress struct {
 	UpdatedAt      field.Time
 	Address        field.String
 	Status         field.String
-	DnsName        field.String
-	AssignTo       field.String
+	MacAddress     field.String
+	Description    field.String
+	SiteId         field.String
 	OrganizationId field.String
-	Organization   ipAddressBelongsToOrganization
+	Site           ipAddressBelongsToSite
+
+	Organization ipAddressBelongsToOrganization
 
 	fieldMap map[string]field.Expr
 }
@@ -79,8 +94,9 @@ func (i *ipAddress) updateTableName(table string) *ipAddress {
 	i.UpdatedAt = field.NewTime(table, "updatedAt")
 	i.Address = field.NewString(table, "address")
 	i.Status = field.NewString(table, "status")
-	i.DnsName = field.NewString(table, "dnsName")
-	i.AssignTo = field.NewString(table, "assignTo")
+	i.MacAddress = field.NewString(table, "macAddress")
+	i.Description = field.NewString(table, "description")
+	i.SiteId = field.NewString(table, "siteId")
 	i.OrganizationId = field.NewString(table, "organizationId")
 
 	i.fillFieldMap()
@@ -98,14 +114,15 @@ func (i *ipAddress) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (i *ipAddress) fillFieldMap() {
-	i.fieldMap = make(map[string]field.Expr, 9)
+	i.fieldMap = make(map[string]field.Expr, 11)
 	i.fieldMap["id"] = i.Id
 	i.fieldMap["createdAt"] = i.CreatedAt
 	i.fieldMap["updatedAt"] = i.UpdatedAt
 	i.fieldMap["address"] = i.Address
 	i.fieldMap["status"] = i.Status
-	i.fieldMap["dnsName"] = i.DnsName
-	i.fieldMap["assignTo"] = i.AssignTo
+	i.fieldMap["macAddress"] = i.MacAddress
+	i.fieldMap["description"] = i.Description
+	i.fieldMap["siteId"] = i.SiteId
 	i.fieldMap["organizationId"] = i.OrganizationId
 
 }
@@ -118,6 +135,81 @@ func (i ipAddress) clone(db *gorm.DB) ipAddress {
 func (i ipAddress) replaceDB(db *gorm.DB) ipAddress {
 	i.ipAddressDo.ReplaceDB(db)
 	return i
+}
+
+type ipAddressBelongsToSite struct {
+	db *gorm.DB
+
+	field.RelationField
+
+	Organization struct {
+		field.RelationField
+	}
+}
+
+func (a ipAddressBelongsToSite) Where(conds ...field.Expr) *ipAddressBelongsToSite {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a ipAddressBelongsToSite) WithContext(ctx context.Context) *ipAddressBelongsToSite {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a ipAddressBelongsToSite) Session(session *gorm.Session) *ipAddressBelongsToSite {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a ipAddressBelongsToSite) Model(m *models.IpAddress) *ipAddressBelongsToSiteTx {
+	return &ipAddressBelongsToSiteTx{a.db.Model(m).Association(a.Name())}
+}
+
+type ipAddressBelongsToSiteTx struct{ tx *gorm.Association }
+
+func (a ipAddressBelongsToSiteTx) Find() (result *models.Site, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a ipAddressBelongsToSiteTx) Append(values ...*models.Site) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a ipAddressBelongsToSiteTx) Replace(values ...*models.Site) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a ipAddressBelongsToSiteTx) Delete(values ...*models.Site) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a ipAddressBelongsToSiteTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a ipAddressBelongsToSiteTx) Count() int64 {
+	return a.tx.Count()
 }
 
 type ipAddressBelongsToOrganization struct {

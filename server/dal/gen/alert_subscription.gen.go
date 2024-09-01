@@ -43,106 +43,62 @@ func newSubscription(db *gorm.DB, opts ...gen.DOOption) subscription {
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("CreatedBy", "models.User"),
-		Group: struct {
+		Role: struct {
 			field.RelationField
-			Role struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-				Menus struct {
-					field.RelationField
-					Parent struct {
-						field.RelationField
-					}
-					Permission struct {
-						field.RelationField
-						Menu struct {
-							field.RelationField
-						}
-					}
-				}
-			}
 			Organization struct {
 				field.RelationField
 			}
-			User struct {
+			Menus struct {
 				field.RelationField
+				Parent struct {
+					field.RelationField
+				}
+				Permission struct {
+					field.RelationField
+					Menu struct {
+						field.RelationField
+					}
+				}
 			}
 		}{
-			RelationField: field.NewRelation("CreatedBy.Group", "models.Group"),
-			Role: struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-				Menus struct {
-					field.RelationField
-					Parent struct {
-						field.RelationField
-					}
-					Permission struct {
-						field.RelationField
-						Menu struct {
-							field.RelationField
-						}
-					}
-				}
-			}{
-				RelationField: field.NewRelation("CreatedBy.Group.Role", "models.Role"),
-				Organization: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("CreatedBy.Group.Role.Organization", "models.Organization"),
-				},
-				Menus: struct {
-					field.RelationField
-					Parent struct {
-						field.RelationField
-					}
-					Permission struct {
-						field.RelationField
-						Menu struct {
-							field.RelationField
-						}
-					}
-				}{
-					RelationField: field.NewRelation("CreatedBy.Group.Role.Menus", "models.Menu"),
-					Parent: struct {
-						field.RelationField
-					}{
-						RelationField: field.NewRelation("CreatedBy.Group.Role.Menus.Parent", "models.Menu"),
-					},
-					Permission: struct {
-						field.RelationField
-						Menu struct {
-							field.RelationField
-						}
-					}{
-						RelationField: field.NewRelation("CreatedBy.Group.Role.Menus.Permission", "models.Permission"),
-						Menu: struct {
-							field.RelationField
-						}{
-							RelationField: field.NewRelation("CreatedBy.Group.Role.Menus.Permission.Menu", "models.Menu"),
-						},
-					},
-				},
-			},
+			RelationField: field.NewRelation("CreatedBy.Role", "models.Role"),
 			Organization: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("CreatedBy.Group.Organization", "models.Organization"),
+				RelationField: field.NewRelation("CreatedBy.Role.Organization", "models.Organization"),
 			},
-			User: struct {
+			Menus: struct {
 				field.RelationField
+				Parent struct {
+					field.RelationField
+				}
+				Permission struct {
+					field.RelationField
+					Menu struct {
+						field.RelationField
+					}
+				}
 			}{
-				RelationField: field.NewRelation("CreatedBy.Group.User", "models.User"),
+				RelationField: field.NewRelation("CreatedBy.Role.Menus", "models.Menu"),
+				Parent: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("CreatedBy.Role.Menus.Parent", "models.Menu"),
+				},
+				Permission: struct {
+					field.RelationField
+					Menu struct {
+						field.RelationField
+					}
+				}{
+					RelationField: field.NewRelation("CreatedBy.Role.Menus.Permission", "models.Permission"),
+					Menu: struct {
+						field.RelationField
+					}{
+						RelationField: field.NewRelation("CreatedBy.Role.Menus.Permission.Menu", "models.Menu"),
+					},
+				},
 			},
-		},
-		Role: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("CreatedBy.Role", "models.Role"),
 		},
 		Organization: struct {
 			field.RelationField
@@ -259,35 +215,23 @@ type subscriptionBelongsToCreatedBy struct {
 
 	field.RelationField
 
-	Group struct {
+	Role struct {
 		field.RelationField
-		Role struct {
-			field.RelationField
-			Organization struct {
-				field.RelationField
-			}
-			Menus struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Permission struct {
-					field.RelationField
-					Menu struct {
-						field.RelationField
-					}
-				}
-			}
-		}
 		Organization struct {
 			field.RelationField
 		}
-		User struct {
+		Menus struct {
 			field.RelationField
+			Parent struct {
+				field.RelationField
+			}
+			Permission struct {
+				field.RelationField
+				Menu struct {
+					field.RelationField
+				}
+			}
 		}
-	}
-	Role struct {
-		field.RelationField
 	}
 	Organization struct {
 		field.RelationField

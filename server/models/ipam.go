@@ -1,42 +1,24 @@
 package models
 
 var IpSearchFields = []string{"address"}
-var BlockSearchFields = []string{"prefix"}
 var PrefixSearchFields = []string{"prefix"}
 var VlanSearchFields = []string{"name", "vid"}
 
-var BlockTableName = "ipam_block"
 var PrefixTableName = "ipam_prefix"
 var IpAddressTableName = "ipam_ip_address"
 var VlanTableName = "ipam_vlan"
 
-type Block struct {
+type Prefix struct {
 	BaseDbModel
 
-	Prefix         string       `gorm:"column:prefix;type:cidr;not null"`
-	Description    *string      `gorm:"column:description;default:null"`
-	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
-	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
-}
-
-// method: family, child_prefixes, utilization
-
-func (Block) TableName() string {
-	return BlockTableName
-}
-
-type Prefix struct {
-	Prefix         string       `gorm:"column:prefix;type:cidr;index;not null;uniqueIndex:idx_prefix_organization_id;index"`
-	Version        string       `gorm:"column:version;not null"` // IPv4 or IPv6
-	Description    *string      `gorm:"column:description;default:null"`
-	Status         *string      `gorm:"column:status;default:Active"`
-	IsPool         *bool        `gorm:"column:isPool;default:false"`
-	MarkAsFull     *bool        `gorm:"column:markAsFull;default:false"`
+	Range          string       `gorm:"column:range;type:cidr;index;not null"`
+	Version        string       `gorm:"column:version;not null"`     // IPv4 or IPv6
+	Type           string       `gorm:"column:type;default:Dynamic"` // Dynamic or Static
 	VlanId         *string      `gorm:"column:VlanId;type:uuid;default:null"`
 	Vlan           Vlan         `gorm:"constraint:Ondelete:SET NULL"`
 	SiteId         *string      `gorm:"column:siteId;type:uuid;index"`
 	Site           Site         `gorm:"constraint:Ondelete:SET NULL"`
-	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_prefix_organization_id;index"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 	// TODO: Add utilization
 	// TODO: Add child prefixes
@@ -50,11 +32,13 @@ func (Prefix) TableName() string {
 type IpAddress struct {
 	BaseDbModel
 
-	Address        string       `gorm:"column:address;type:inet;not null;uniqueIndex:idx_address_organization_id;index"`
-	Status         string       `gorm:"column:status;default:Active"`
-	DnsName        *string      `gorm:"column:dnsName;default:null"`
-	AssignTo       *string      `gorm:"column:assignTo;default:null"`
-	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_address_organization_id;index"`
+	Address        string       `gorm:"column:address;type:inet;not null;uniqueIndex:idx_address_site_id;index"`
+	Status         string       `gorm:"column:status;default:Active"` // Active or Reserved
+	MacAddress     string       `gorm:"column:macAddress;type:macaddr;default:null"`
+	Description    *string      `gorm:"column:description;default:null"`
+	SiteId         string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_address_site_id;index"`
+	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 

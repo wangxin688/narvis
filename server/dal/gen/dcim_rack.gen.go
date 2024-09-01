@@ -30,49 +30,20 @@ func newRack(db *gorm.DB, opts ...gen.DOOption) rack {
 	_rack.CreatedAt = field.NewTime(tableName, "createdAt")
 	_rack.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_rack.Name = field.NewString(tableName, "name")
-	_rack.AssetTag = field.NewString(tableName, "assetTag")
 	_rack.SerialNumber = field.NewString(tableName, "serialNumber")
 	_rack.UHeight = field.NewUint8(tableName, "uHeight")
-	_rack.Height = field.NewFloat32(tableName, "height")
-	_rack.Width = field.NewFloat32(tableName, "width")
-	_rack.Depth = field.NewFloat32(tableName, "depth")
 	_rack.DescUnit = field.NewBool(tableName, "descUnit")
-	_rack.LocationId = field.NewString(tableName, "locationId")
 	_rack.SiteId = field.NewString(tableName, "siteId")
 	_rack.OrganizationId = field.NewString(tableName, "organizationId")
-	_rack.Location = rackBelongsToLocation{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("Location", "models.Location"),
-		Parent: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Location.Parent", "models.Location"),
-		},
-		Site: struct {
-			field.RelationField
-			Organization struct {
-				field.RelationField
-			}
-		}{
-			RelationField: field.NewRelation("Location.Site", "models.Site"),
-			Organization: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Location.Site.Organization", "models.Organization"),
-			},
-		},
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Location.Organization", "models.Organization"),
-		},
-	}
-
 	_rack.Site = rackBelongsToSite{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Site", "models.Site"),
+		Organization: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Site.Organization", "models.Organization"),
+		},
 	}
 
 	_rack.Organization = rackBelongsToOrganization{
@@ -94,19 +65,12 @@ type rack struct {
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Name           field.String
-	AssetTag       field.String
 	SerialNumber   field.String
 	UHeight        field.Uint8
-	Height         field.Float32
-	Width          field.Float32
-	Depth          field.Float32
 	DescUnit       field.Bool
-	LocationId     field.String
 	SiteId         field.String
 	OrganizationId field.String
-	Location       rackBelongsToLocation
-
-	Site rackBelongsToSite
+	Site           rackBelongsToSite
 
 	Organization rackBelongsToOrganization
 
@@ -129,14 +93,9 @@ func (r *rack) updateTableName(table string) *rack {
 	r.CreatedAt = field.NewTime(table, "createdAt")
 	r.UpdatedAt = field.NewTime(table, "updatedAt")
 	r.Name = field.NewString(table, "name")
-	r.AssetTag = field.NewString(table, "assetTag")
 	r.SerialNumber = field.NewString(table, "serialNumber")
 	r.UHeight = field.NewUint8(table, "uHeight")
-	r.Height = field.NewFloat32(table, "height")
-	r.Width = field.NewFloat32(table, "width")
-	r.Depth = field.NewFloat32(table, "depth")
 	r.DescUnit = field.NewBool(table, "descUnit")
-	r.LocationId = field.NewString(table, "locationId")
 	r.SiteId = field.NewString(table, "siteId")
 	r.OrganizationId = field.NewString(table, "organizationId")
 
@@ -155,19 +114,14 @@ func (r *rack) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (r *rack) fillFieldMap() {
-	r.fieldMap = make(map[string]field.Expr, 17)
+	r.fieldMap = make(map[string]field.Expr, 11)
 	r.fieldMap["id"] = r.Id
 	r.fieldMap["createdAt"] = r.CreatedAt
 	r.fieldMap["updatedAt"] = r.UpdatedAt
 	r.fieldMap["name"] = r.Name
-	r.fieldMap["assetTag"] = r.AssetTag
 	r.fieldMap["serialNumber"] = r.SerialNumber
 	r.fieldMap["uHeight"] = r.UHeight
-	r.fieldMap["height"] = r.Height
-	r.fieldMap["width"] = r.Width
-	r.fieldMap["depth"] = r.Depth
 	r.fieldMap["descUnit"] = r.DescUnit
-	r.fieldMap["locationId"] = r.LocationId
 	r.fieldMap["siteId"] = r.SiteId
 	r.fieldMap["organizationId"] = r.OrganizationId
 
@@ -183,94 +137,14 @@ func (r rack) replaceDB(db *gorm.DB) rack {
 	return r
 }
 
-type rackBelongsToLocation struct {
-	db *gorm.DB
-
-	field.RelationField
-
-	Parent struct {
-		field.RelationField
-	}
-	Site struct {
-		field.RelationField
-		Organization struct {
-			field.RelationField
-		}
-	}
-	Organization struct {
-		field.RelationField
-	}
-}
-
-func (a rackBelongsToLocation) Where(conds ...field.Expr) *rackBelongsToLocation {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a rackBelongsToLocation) WithContext(ctx context.Context) *rackBelongsToLocation {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a rackBelongsToLocation) Session(session *gorm.Session) *rackBelongsToLocation {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a rackBelongsToLocation) Model(m *models.Rack) *rackBelongsToLocationTx {
-	return &rackBelongsToLocationTx{a.db.Model(m).Association(a.Name())}
-}
-
-type rackBelongsToLocationTx struct{ tx *gorm.Association }
-
-func (a rackBelongsToLocationTx) Find() (result *models.Location, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a rackBelongsToLocationTx) Append(values ...*models.Location) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a rackBelongsToLocationTx) Replace(values ...*models.Location) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a rackBelongsToLocationTx) Delete(values ...*models.Location) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a rackBelongsToLocationTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a rackBelongsToLocationTx) Count() int64 {
-	return a.tx.Count()
-}
-
 type rackBelongsToSite struct {
 	db *gorm.DB
 
 	field.RelationField
+
+	Organization struct {
+		field.RelationField
+	}
 }
 
 func (a rackBelongsToSite) Where(conds ...field.Expr) *rackBelongsToSite {

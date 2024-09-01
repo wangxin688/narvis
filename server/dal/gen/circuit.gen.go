@@ -33,53 +33,34 @@ func newCircuit(db *gorm.DB, opts ...gen.DOOption) circuit {
 	_circuit.CId = field.NewString(tableName, "cId")
 	_circuit.Status = field.NewString(tableName, "status")
 	_circuit.CircuitType = field.NewString(tableName, "circuitType")
-	_circuit.BandWidth = field.NewUint32(tableName, "bandWidth")
-	_circuit.IpAddress = field.NewString(tableName, "ipAddress")
+	_circuit.RxBandWidth = field.NewUint32(tableName, "rxBandWidth")
+	_circuit.TxBandWidth = field.NewUint32(tableName, "txBandWidth")
+	_circuit.Ipv4Address = field.NewString(tableName, "ipv4Address")
+	_circuit.Ipv6Address = field.NewString(tableName, "ipv6Address")
 	_circuit.Description = field.NewString(tableName, "description")
-	_circuit.ProviderId = field.NewString(tableName, "providerId")
-	_circuit.ASiteId = field.NewString(tableName, "aSiteId")
-	_circuit.ADeviceId = field.NewString(tableName, "aDeviceId")
-	_circuit.AInterfaceId = field.NewString(tableName, "aInterfaceId")
-	_circuit.ZSiteId = field.NewString(tableName, "zSiteId")
-	_circuit.ZDeviceId = field.NewString(tableName, "zDeviceId")
-	_circuit.ZInterfaceId = field.NewString(tableName, "zInterfaceId")
+	_circuit.Provider = field.NewString(tableName, "provider")
+	_circuit.SiteId = field.NewString(tableName, "siteId")
+	_circuit.DeviceId = field.NewString(tableName, "deviceId")
+	_circuit.InterfaceId = field.NewString(tableName, "interfaceId")
 	_circuit.MonitorId = field.NewString(tableName, "monitorId")
 	_circuit.OrganizationId = field.NewString(tableName, "organizationId")
-	_circuit.Provider = circuitBelongsToProvider{
+	_circuit.Site = circuitBelongsToSite{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("Provider", "models.Provider"),
-	}
-
-	_circuit.ASite = circuitBelongsToASite{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("ASite", "models.Site"),
+		RelationField: field.NewRelation("Site", "models.Site"),
 		Organization: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("ASite.Organization", "models.Organization"),
+			RelationField: field.NewRelation("Site.Organization", "models.Organization"),
 		},
 	}
 
-	_circuit.ADevice = circuitBelongsToADevice{
+	_circuit.Device = circuitBelongsToDevice{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("ADevice", "models.Device"),
+		RelationField: field.NewRelation("Device", "models.Device"),
 		Rack: struct {
 			field.RelationField
-			Location struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-				}
-				Organization struct {
-					field.RelationField
-				}
-			}
 			Site struct {
 				field.RelationField
 			}
@@ -87,101 +68,49 @@ func newCircuit(db *gorm.DB, opts ...gen.DOOption) circuit {
 				field.RelationField
 			}
 		}{
-			RelationField: field.NewRelation("ADevice.Rack", "models.Rack"),
-			Location: struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Site struct {
-					field.RelationField
-				}
-				Organization struct {
-					field.RelationField
-				}
-			}{
-				RelationField: field.NewRelation("ADevice.Rack.Location", "models.Location"),
-				Parent: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("ADevice.Rack.Location.Parent", "models.Location"),
-				},
-				Site: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("ADevice.Rack.Location.Site", "models.Site"),
-				},
-				Organization: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("ADevice.Rack.Location.Organization", "models.Organization"),
-				},
-			},
+			RelationField: field.NewRelation("Device.Rack", "models.Rack"),
 			Site: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("ADevice.Rack.Site", "models.Site"),
+				RelationField: field.NewRelation("Device.Rack.Site", "models.Site"),
 			},
 			Organization: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("ADevice.Rack.Organization", "models.Organization"),
+				RelationField: field.NewRelation("Device.Rack.Organization", "models.Organization"),
 			},
 		},
 		Template: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("ADevice.Template", "models.Template"),
-		},
-		Location: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("ADevice.Location", "models.Location"),
+			RelationField: field.NewRelation("Device.Template", "models.Template"),
 		},
 		Site: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("ADevice.Site", "models.Site"),
+			RelationField: field.NewRelation("Device.Site", "models.Site"),
 		},
 		Organization: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("ADevice.Organization", "models.Organization"),
+			RelationField: field.NewRelation("Device.Organization", "models.Organization"),
 		},
 	}
 
-	_circuit.AInterface = circuitBelongsToAInterface{
+	_circuit.DeviceInterface = circuitBelongsToDeviceInterface{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("AInterface", "models.DeviceInterface"),
+		RelationField: field.NewRelation("DeviceInterface", "models.DeviceInterface"),
 		Device: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("AInterface.Device", "models.Device"),
+			RelationField: field.NewRelation("DeviceInterface.Device", "models.Device"),
 		},
 		Site: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("AInterface.Site", "models.Site"),
+			RelationField: field.NewRelation("DeviceInterface.Site", "models.Site"),
 		},
-	}
-
-	_circuit.ZSite = circuitBelongsToZSite{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("ZSite", "models.Site"),
-	}
-
-	_circuit.ZDevice = circuitBelongsToZDevice{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("ZDevice", "models.Device"),
-	}
-
-	_circuit.ZInterface = circuitBelongsToZInterface{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("ZInterface", "models.DeviceInterface"),
 	}
 
 	_circuit.Organization = circuitBelongsToOrganization{
@@ -206,31 +135,22 @@ type circuit struct {
 	CId            field.String
 	Status         field.String
 	CircuitType    field.String
-	BandWidth      field.Uint32
-	IpAddress      field.String
+	RxBandWidth    field.Uint32
+	TxBandWidth    field.Uint32
+	Ipv4Address    field.String
+	Ipv6Address    field.String
 	Description    field.String
-	ProviderId     field.String
-	ASiteId        field.String
-	ADeviceId      field.String
-	AInterfaceId   field.String
-	ZSiteId        field.String
-	ZDeviceId      field.String
-	ZInterfaceId   field.String
+	Provider       field.String
+	SiteId         field.String
+	DeviceId       field.String
+	InterfaceId    field.String
 	MonitorId      field.String
 	OrganizationId field.String
-	Provider       circuitBelongsToProvider
+	Site           circuitBelongsToSite
 
-	ASite circuitBelongsToASite
+	Device circuitBelongsToDevice
 
-	ADevice circuitBelongsToADevice
-
-	AInterface circuitBelongsToAInterface
-
-	ZSite circuitBelongsToZSite
-
-	ZDevice circuitBelongsToZDevice
-
-	ZInterface circuitBelongsToZInterface
+	DeviceInterface circuitBelongsToDeviceInterface
 
 	Organization circuitBelongsToOrganization
 
@@ -256,16 +176,15 @@ func (c *circuit) updateTableName(table string) *circuit {
 	c.CId = field.NewString(table, "cId")
 	c.Status = field.NewString(table, "status")
 	c.CircuitType = field.NewString(table, "circuitType")
-	c.BandWidth = field.NewUint32(table, "bandWidth")
-	c.IpAddress = field.NewString(table, "ipAddress")
+	c.RxBandWidth = field.NewUint32(table, "rxBandWidth")
+	c.TxBandWidth = field.NewUint32(table, "txBandWidth")
+	c.Ipv4Address = field.NewString(table, "ipv4Address")
+	c.Ipv6Address = field.NewString(table, "ipv6Address")
 	c.Description = field.NewString(table, "description")
-	c.ProviderId = field.NewString(table, "providerId")
-	c.ASiteId = field.NewString(table, "aSiteId")
-	c.ADeviceId = field.NewString(table, "aDeviceId")
-	c.AInterfaceId = field.NewString(table, "aInterfaceId")
-	c.ZSiteId = field.NewString(table, "zSiteId")
-	c.ZDeviceId = field.NewString(table, "zDeviceId")
-	c.ZInterfaceId = field.NewString(table, "zInterfaceId")
+	c.Provider = field.NewString(table, "provider")
+	c.SiteId = field.NewString(table, "siteId")
+	c.DeviceId = field.NewString(table, "deviceId")
+	c.InterfaceId = field.NewString(table, "interfaceId")
 	c.MonitorId = field.NewString(table, "monitorId")
 	c.OrganizationId = field.NewString(table, "organizationId")
 
@@ -284,7 +203,7 @@ func (c *circuit) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *circuit) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 27)
+	c.fieldMap = make(map[string]field.Expr, 22)
 	c.fieldMap["id"] = c.Id
 	c.fieldMap["createdAt"] = c.CreatedAt
 	c.fieldMap["updatedAt"] = c.UpdatedAt
@@ -292,16 +211,15 @@ func (c *circuit) fillFieldMap() {
 	c.fieldMap["cId"] = c.CId
 	c.fieldMap["status"] = c.Status
 	c.fieldMap["circuitType"] = c.CircuitType
-	c.fieldMap["bandWidth"] = c.BandWidth
-	c.fieldMap["ipAddress"] = c.IpAddress
+	c.fieldMap["rxBandWidth"] = c.RxBandWidth
+	c.fieldMap["txBandWidth"] = c.TxBandWidth
+	c.fieldMap["ipv4Address"] = c.Ipv4Address
+	c.fieldMap["ipv6Address"] = c.Ipv6Address
 	c.fieldMap["description"] = c.Description
-	c.fieldMap["providerId"] = c.ProviderId
-	c.fieldMap["aSiteId"] = c.ASiteId
-	c.fieldMap["aDeviceId"] = c.ADeviceId
-	c.fieldMap["aInterfaceId"] = c.AInterfaceId
-	c.fieldMap["zSiteId"] = c.ZSiteId
-	c.fieldMap["zDeviceId"] = c.ZDeviceId
-	c.fieldMap["zInterfaceId"] = c.ZInterfaceId
+	c.fieldMap["provider"] = c.Provider
+	c.fieldMap["siteId"] = c.SiteId
+	c.fieldMap["deviceId"] = c.DeviceId
+	c.fieldMap["interfaceId"] = c.InterfaceId
 	c.fieldMap["monitorId"] = c.MonitorId
 	c.fieldMap["organizationId"] = c.OrganizationId
 
@@ -317,78 +235,7 @@ func (c circuit) replaceDB(db *gorm.DB) circuit {
 	return c
 }
 
-type circuitBelongsToProvider struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a circuitBelongsToProvider) Where(conds ...field.Expr) *circuitBelongsToProvider {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a circuitBelongsToProvider) WithContext(ctx context.Context) *circuitBelongsToProvider {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a circuitBelongsToProvider) Session(session *gorm.Session) *circuitBelongsToProvider {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a circuitBelongsToProvider) Model(m *models.Circuit) *circuitBelongsToProviderTx {
-	return &circuitBelongsToProviderTx{a.db.Model(m).Association(a.Name())}
-}
-
-type circuitBelongsToProviderTx struct{ tx *gorm.Association }
-
-func (a circuitBelongsToProviderTx) Find() (result *models.Provider, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a circuitBelongsToProviderTx) Append(values ...*models.Provider) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a circuitBelongsToProviderTx) Replace(values ...*models.Provider) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a circuitBelongsToProviderTx) Delete(values ...*models.Provider) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a circuitBelongsToProviderTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a circuitBelongsToProviderTx) Count() int64 {
-	return a.tx.Count()
-}
-
-type circuitBelongsToASite struct {
+type circuitBelongsToSite struct {
 	db *gorm.DB
 
 	field.RelationField
@@ -398,7 +245,7 @@ type circuitBelongsToASite struct {
 	}
 }
 
-func (a circuitBelongsToASite) Where(conds ...field.Expr) *circuitBelongsToASite {
+func (a circuitBelongsToSite) Where(conds ...field.Expr) *circuitBelongsToSite {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -411,27 +258,27 @@ func (a circuitBelongsToASite) Where(conds ...field.Expr) *circuitBelongsToASite
 	return &a
 }
 
-func (a circuitBelongsToASite) WithContext(ctx context.Context) *circuitBelongsToASite {
+func (a circuitBelongsToSite) WithContext(ctx context.Context) *circuitBelongsToSite {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a circuitBelongsToASite) Session(session *gorm.Session) *circuitBelongsToASite {
+func (a circuitBelongsToSite) Session(session *gorm.Session) *circuitBelongsToSite {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a circuitBelongsToASite) Model(m *models.Circuit) *circuitBelongsToASiteTx {
-	return &circuitBelongsToASiteTx{a.db.Model(m).Association(a.Name())}
+func (a circuitBelongsToSite) Model(m *models.Circuit) *circuitBelongsToSiteTx {
+	return &circuitBelongsToSiteTx{a.db.Model(m).Association(a.Name())}
 }
 
-type circuitBelongsToASiteTx struct{ tx *gorm.Association }
+type circuitBelongsToSiteTx struct{ tx *gorm.Association }
 
-func (a circuitBelongsToASiteTx) Find() (result *models.Site, err error) {
+func (a circuitBelongsToSiteTx) Find() (result *models.Site, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a circuitBelongsToASiteTx) Append(values ...*models.Site) (err error) {
+func (a circuitBelongsToSiteTx) Append(values ...*models.Site) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -439,7 +286,7 @@ func (a circuitBelongsToASiteTx) Append(values ...*models.Site) (err error) {
 	return a.tx.Append(targetValues...)
 }
 
-func (a circuitBelongsToASiteTx) Replace(values ...*models.Site) (err error) {
+func (a circuitBelongsToSiteTx) Replace(values ...*models.Site) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -447,7 +294,7 @@ func (a circuitBelongsToASiteTx) Replace(values ...*models.Site) (err error) {
 	return a.tx.Replace(targetValues...)
 }
 
-func (a circuitBelongsToASiteTx) Delete(values ...*models.Site) (err error) {
+func (a circuitBelongsToSiteTx) Delete(values ...*models.Site) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -455,33 +302,21 @@ func (a circuitBelongsToASiteTx) Delete(values ...*models.Site) (err error) {
 	return a.tx.Delete(targetValues...)
 }
 
-func (a circuitBelongsToASiteTx) Clear() error {
+func (a circuitBelongsToSiteTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a circuitBelongsToASiteTx) Count() int64 {
+func (a circuitBelongsToSiteTx) Count() int64 {
 	return a.tx.Count()
 }
 
-type circuitBelongsToADevice struct {
+type circuitBelongsToDevice struct {
 	db *gorm.DB
 
 	field.RelationField
 
 	Rack struct {
 		field.RelationField
-		Location struct {
-			field.RelationField
-			Parent struct {
-				field.RelationField
-			}
-			Site struct {
-				field.RelationField
-			}
-			Organization struct {
-				field.RelationField
-			}
-		}
 		Site struct {
 			field.RelationField
 		}
@@ -492,9 +327,6 @@ type circuitBelongsToADevice struct {
 	Template struct {
 		field.RelationField
 	}
-	Location struct {
-		field.RelationField
-	}
 	Site struct {
 		field.RelationField
 	}
@@ -503,7 +335,7 @@ type circuitBelongsToADevice struct {
 	}
 }
 
-func (a circuitBelongsToADevice) Where(conds ...field.Expr) *circuitBelongsToADevice {
+func (a circuitBelongsToDevice) Where(conds ...field.Expr) *circuitBelongsToDevice {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -516,27 +348,27 @@ func (a circuitBelongsToADevice) Where(conds ...field.Expr) *circuitBelongsToADe
 	return &a
 }
 
-func (a circuitBelongsToADevice) WithContext(ctx context.Context) *circuitBelongsToADevice {
+func (a circuitBelongsToDevice) WithContext(ctx context.Context) *circuitBelongsToDevice {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a circuitBelongsToADevice) Session(session *gorm.Session) *circuitBelongsToADevice {
+func (a circuitBelongsToDevice) Session(session *gorm.Session) *circuitBelongsToDevice {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a circuitBelongsToADevice) Model(m *models.Circuit) *circuitBelongsToADeviceTx {
-	return &circuitBelongsToADeviceTx{a.db.Model(m).Association(a.Name())}
+func (a circuitBelongsToDevice) Model(m *models.Circuit) *circuitBelongsToDeviceTx {
+	return &circuitBelongsToDeviceTx{a.db.Model(m).Association(a.Name())}
 }
 
-type circuitBelongsToADeviceTx struct{ tx *gorm.Association }
+type circuitBelongsToDeviceTx struct{ tx *gorm.Association }
 
-func (a circuitBelongsToADeviceTx) Find() (result *models.Device, err error) {
+func (a circuitBelongsToDeviceTx) Find() (result *models.Device, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a circuitBelongsToADeviceTx) Append(values ...*models.Device) (err error) {
+func (a circuitBelongsToDeviceTx) Append(values ...*models.Device) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -544,7 +376,7 @@ func (a circuitBelongsToADeviceTx) Append(values ...*models.Device) (err error) 
 	return a.tx.Append(targetValues...)
 }
 
-func (a circuitBelongsToADeviceTx) Replace(values ...*models.Device) (err error) {
+func (a circuitBelongsToDeviceTx) Replace(values ...*models.Device) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -552,7 +384,7 @@ func (a circuitBelongsToADeviceTx) Replace(values ...*models.Device) (err error)
 	return a.tx.Replace(targetValues...)
 }
 
-func (a circuitBelongsToADeviceTx) Delete(values ...*models.Device) (err error) {
+func (a circuitBelongsToDeviceTx) Delete(values ...*models.Device) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -560,15 +392,15 @@ func (a circuitBelongsToADeviceTx) Delete(values ...*models.Device) (err error) 
 	return a.tx.Delete(targetValues...)
 }
 
-func (a circuitBelongsToADeviceTx) Clear() error {
+func (a circuitBelongsToDeviceTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a circuitBelongsToADeviceTx) Count() int64 {
+func (a circuitBelongsToDeviceTx) Count() int64 {
 	return a.tx.Count()
 }
 
-type circuitBelongsToAInterface struct {
+type circuitBelongsToDeviceInterface struct {
 	db *gorm.DB
 
 	field.RelationField
@@ -581,7 +413,7 @@ type circuitBelongsToAInterface struct {
 	}
 }
 
-func (a circuitBelongsToAInterface) Where(conds ...field.Expr) *circuitBelongsToAInterface {
+func (a circuitBelongsToDeviceInterface) Where(conds ...field.Expr) *circuitBelongsToDeviceInterface {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -594,27 +426,27 @@ func (a circuitBelongsToAInterface) Where(conds ...field.Expr) *circuitBelongsTo
 	return &a
 }
 
-func (a circuitBelongsToAInterface) WithContext(ctx context.Context) *circuitBelongsToAInterface {
+func (a circuitBelongsToDeviceInterface) WithContext(ctx context.Context) *circuitBelongsToDeviceInterface {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a circuitBelongsToAInterface) Session(session *gorm.Session) *circuitBelongsToAInterface {
+func (a circuitBelongsToDeviceInterface) Session(session *gorm.Session) *circuitBelongsToDeviceInterface {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a circuitBelongsToAInterface) Model(m *models.Circuit) *circuitBelongsToAInterfaceTx {
-	return &circuitBelongsToAInterfaceTx{a.db.Model(m).Association(a.Name())}
+func (a circuitBelongsToDeviceInterface) Model(m *models.Circuit) *circuitBelongsToDeviceInterfaceTx {
+	return &circuitBelongsToDeviceInterfaceTx{a.db.Model(m).Association(a.Name())}
 }
 
-type circuitBelongsToAInterfaceTx struct{ tx *gorm.Association }
+type circuitBelongsToDeviceInterfaceTx struct{ tx *gorm.Association }
 
-func (a circuitBelongsToAInterfaceTx) Find() (result *models.DeviceInterface, err error) {
+func (a circuitBelongsToDeviceInterfaceTx) Find() (result *models.DeviceInterface, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a circuitBelongsToAInterfaceTx) Append(values ...*models.DeviceInterface) (err error) {
+func (a circuitBelongsToDeviceInterfaceTx) Append(values ...*models.DeviceInterface) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -622,7 +454,7 @@ func (a circuitBelongsToAInterfaceTx) Append(values ...*models.DeviceInterface) 
 	return a.tx.Append(targetValues...)
 }
 
-func (a circuitBelongsToAInterfaceTx) Replace(values ...*models.DeviceInterface) (err error) {
+func (a circuitBelongsToDeviceInterfaceTx) Replace(values ...*models.DeviceInterface) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -630,7 +462,7 @@ func (a circuitBelongsToAInterfaceTx) Replace(values ...*models.DeviceInterface)
 	return a.tx.Replace(targetValues...)
 }
 
-func (a circuitBelongsToAInterfaceTx) Delete(values ...*models.DeviceInterface) (err error) {
+func (a circuitBelongsToDeviceInterfaceTx) Delete(values ...*models.DeviceInterface) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -638,224 +470,11 @@ func (a circuitBelongsToAInterfaceTx) Delete(values ...*models.DeviceInterface) 
 	return a.tx.Delete(targetValues...)
 }
 
-func (a circuitBelongsToAInterfaceTx) Clear() error {
+func (a circuitBelongsToDeviceInterfaceTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a circuitBelongsToAInterfaceTx) Count() int64 {
-	return a.tx.Count()
-}
-
-type circuitBelongsToZSite struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a circuitBelongsToZSite) Where(conds ...field.Expr) *circuitBelongsToZSite {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a circuitBelongsToZSite) WithContext(ctx context.Context) *circuitBelongsToZSite {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a circuitBelongsToZSite) Session(session *gorm.Session) *circuitBelongsToZSite {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a circuitBelongsToZSite) Model(m *models.Circuit) *circuitBelongsToZSiteTx {
-	return &circuitBelongsToZSiteTx{a.db.Model(m).Association(a.Name())}
-}
-
-type circuitBelongsToZSiteTx struct{ tx *gorm.Association }
-
-func (a circuitBelongsToZSiteTx) Find() (result *models.Site, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a circuitBelongsToZSiteTx) Append(values ...*models.Site) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a circuitBelongsToZSiteTx) Replace(values ...*models.Site) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a circuitBelongsToZSiteTx) Delete(values ...*models.Site) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a circuitBelongsToZSiteTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a circuitBelongsToZSiteTx) Count() int64 {
-	return a.tx.Count()
-}
-
-type circuitBelongsToZDevice struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a circuitBelongsToZDevice) Where(conds ...field.Expr) *circuitBelongsToZDevice {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a circuitBelongsToZDevice) WithContext(ctx context.Context) *circuitBelongsToZDevice {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a circuitBelongsToZDevice) Session(session *gorm.Session) *circuitBelongsToZDevice {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a circuitBelongsToZDevice) Model(m *models.Circuit) *circuitBelongsToZDeviceTx {
-	return &circuitBelongsToZDeviceTx{a.db.Model(m).Association(a.Name())}
-}
-
-type circuitBelongsToZDeviceTx struct{ tx *gorm.Association }
-
-func (a circuitBelongsToZDeviceTx) Find() (result *models.Device, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a circuitBelongsToZDeviceTx) Append(values ...*models.Device) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a circuitBelongsToZDeviceTx) Replace(values ...*models.Device) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a circuitBelongsToZDeviceTx) Delete(values ...*models.Device) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a circuitBelongsToZDeviceTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a circuitBelongsToZDeviceTx) Count() int64 {
-	return a.tx.Count()
-}
-
-type circuitBelongsToZInterface struct {
-	db *gorm.DB
-
-	field.RelationField
-}
-
-func (a circuitBelongsToZInterface) Where(conds ...field.Expr) *circuitBelongsToZInterface {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a circuitBelongsToZInterface) WithContext(ctx context.Context) *circuitBelongsToZInterface {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a circuitBelongsToZInterface) Session(session *gorm.Session) *circuitBelongsToZInterface {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a circuitBelongsToZInterface) Model(m *models.Circuit) *circuitBelongsToZInterfaceTx {
-	return &circuitBelongsToZInterfaceTx{a.db.Model(m).Association(a.Name())}
-}
-
-type circuitBelongsToZInterfaceTx struct{ tx *gorm.Association }
-
-func (a circuitBelongsToZInterfaceTx) Find() (result *models.DeviceInterface, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a circuitBelongsToZInterfaceTx) Append(values ...*models.DeviceInterface) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a circuitBelongsToZInterfaceTx) Replace(values ...*models.DeviceInterface) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a circuitBelongsToZInterfaceTx) Delete(values ...*models.DeviceInterface) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a circuitBelongsToZInterfaceTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a circuitBelongsToZInterfaceTx) Count() int64 {
+func (a circuitBelongsToDeviceInterfaceTx) Count() int64 {
 	return a.tx.Count()
 }
 

@@ -7,29 +7,31 @@ import (
 )
 
 type CircuitCreate struct {
-	Name         string  `json:"name" binding:"required"`
-	CId          string  `json:"cid" binding:"required"`
-	Status       string  `json:"status" binding:"required,oneof: Active Inactive"`
-	CircuitType  string  `json:"circuitType" binding:"required,oneof: Internet, Intranet"`
-	BandWidth    uint32  `json:"bandWidth" binding:"required,gt=1, lt=800000"`
-	IpAddress    *string `json:"ipAddress" binding:"ip_addr"`
-	Description  *string `json:"description" binding:"omitempty"`
-	ProviderId   string  `json:"providerId" binding:"required,uuid"`
-	AInterfaceId string  `json:"aInterfaceId" binding:"required,uuid"`
-	ZInterfaceId *string `json:"zInterfaceId" binding:"required,uuid"`
+	Name        string  `json:"name" binding:"required"`
+	CId         string  `json:"cid" binding:"required"`
+	Status      string  `json:"status" binding:"required,oneof: Active Inactive"`
+	CircuitType string  `json:"circuitType" binding:"required,oneof: Internet, MPLS, IEPL, DPLC, DarkFiber, ADSL"`
+	RxBandWidth uint32  `json:"rxBandWidth" binding:"required,gt=1, lt=800000"`
+	TxBandWidth uint32  `json:"txBandWidth" binding:"required,gt=1, lt=800000"`
+	Ipv4Address *string `json:"ipv4Address" binding:"ipv4"`
+	Ipv6Address *string `json:"ipv6Address" binding:"ipv6"`
+	Description *string `json:"description" binding:"omitempty"`
+	Provider    string  `json:"provider" binding:"required"`
+	InterfaceId string  `json:"interfaceId" binding:"required,uuid"`
 }
 
 type CircuitUpdate struct {
-	Name         *string `json:"name" binding:"omitempty"`
-	CId          *string `json:"cid" binding:"omitempty"`
-	Status       *string `json:"status" binding:"omitempty,oneof: Active Inactive"`
-	CircuitType  *string `json:"circuitType" binding:"omitempty,oneof: Internet, Intranet"`
-	BandWidth    *uint32 `json:"bandWidth" binding:"omitempty,gt=1, lt=800000"`
-	IpAddress    *string `json:"ipAddress" binding:"omitempty,ip_addr"`
-	Description  *string `json:"description" binding:"omitempty"`
-	ProviderId   *string `json:"providerId" binding:"omitempty,uuid"`
-	AInterfaceId *string `json:"aInterfaceId" binding:"omitempty,uuid"`
-	ZInterfaceId *string `json:"zInterfaceId" binding:"omitempty,uuid"`
+	Name        *string `json:"name" binding:"omitempty"`
+	CId         *string `json:"cid" binding:"omitempty"`
+	Status      *string `json:"status" binding:"omitempty,oneof: Active Inactive"`
+	CircuitType *string `json:"circuitType" binding:"omitempty,oneof: Internet, Intranet"`
+	RxBandWidth *uint32 `json:"rxBandWidth" binding:"omitempty,gt=1, lt=800000"`
+	TxBandWidth *uint32 `json:"txBandWidth" binding:"omitempty,gt=1, lt=800000"`
+	Ipv4Address *string `json:"ipv4Address" binding:"omitempty,ipv4"`
+	Ipv6Address *string `json:"ipv6Address" binding:"omitempty,ipv6"`
+	Description *string `json:"description" binding:"omitempty"`
+	Provider    *string `json:"provider" binding:"omitempty"`
+	InterfaceId *string `json:"interfaceId" binding:"omitempty,uuid"`
 }
 
 type CircuitQuery struct {
@@ -37,10 +39,10 @@ type CircuitQuery struct {
 	Name        *[]string `form:"name" binding:"omitempty"`
 	CId         *[]string `form:"cid" binding:"omitempty"`
 	Status      *string   `form:"status" binding:"omitempty,oneof: Active Inactive"`
-	BandWidth   *uint32   `form:"bandWidth" binding:"omitempty"`
-	IpAddress   *string   `form:"ipAddress" binding:"omitempty,ip_addr"`
-	CircuitType *string   `form:"circuitType" binding:"omitempty,oneof: Internet, Intranet"`
-	ProviderId  *[]string `form:"providerId" binding:"omitempty,list_uuid"`
+	Ipv4Address *string   `form:"ipv4Address" binding:"omitempty,ipv4"`
+	Ipv6Address *string   `form:"ipv6Address" binding:"omitempty,ipv6"`
+	CircuitType *string   `form:"circuitType" binding:"omitempty,oneof: Internet, MPLS, IEPL, DPLC, DarkFiber, ADSL"`
+	Provider    *[]string `form:"provider" binding:"omitempty"`
 	SiteId      *[]string `form:"siteId" binding:"omitempty,list_uuid"`
 	DeviceId    *[]string `form:"deviceId" binding:"omitempty,list_uuid"`
 	InterfaceId *[]string `form:"interfaceId" binding:"omitempty,list_uuid"`
@@ -48,18 +50,20 @@ type CircuitQuery struct {
 }
 
 type Circuit struct {
-	Id          string        `json:"id"`
-	CreatedAt   time.Time     `json:"createdAt"`
-	UpdatedAt   time.Time     `json:"updatedAt"`
-	Name        string        `json:"name"`
-	CId         string        `json:"cid"`
-	Status      string        `json:"status"`
-	CircuitType string        `json:"circuitType"`
-	BandWidth   uint32        `json:"bandWidth"`
-	IpAddress   *string       `json:"ipAddress"`
-	Description *string       `json:"description"`
-	MonitorId   *string       `json:"monitorId"`
-	Provider    ProviderShort `json:"provider"`
+	Id          string    `json:"id"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	Name        string    `json:"name"`
+	CId         string    `json:"cid"`
+	Status      string    `json:"status"`
+	CircuitType string    `json:"circuitType"`
+	RxBandWidth uint32    `json:"rxBandWidth"`
+	TxBandWidth uint32    `json:"txBandWidth"`
+	Ipv4Address *string   `json:"ipv4Address"`
+	Ipv6Address *string   `json:"ipv6Address"`
+	Description *string   `json:"description"`
+	MonitorId   *string   `json:"monitorId"`
+	Provider    string    `json:"provider"`
 	// ASite ds.SiteShort `json:"a_site"`
 	// ADevice ds.DeviceShort `json:"a_device"`
 	// AInterface ds.InterfaceShort `json:"a_interface"`

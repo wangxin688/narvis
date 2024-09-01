@@ -23,24 +23,20 @@ var (
 	AlertGroup         *alertGroup
 	ApLLDPNeighbor     *apLLDPNeighbor
 	AuditLog           *auditLog
-	Block              *block
 	Circuit            *circuit
 	CliCredential      *cliCredential
 	Device             *device
 	DeviceConfig       *deviceConfig
 	DeviceInterface    *deviceInterface
 	DeviceStack        *deviceStack
-	Group              *group
 	IpAddress          *ipAddress
 	LLDPNeighbor       *lLDPNeighbor
-	Location           *location
 	MacAddress         *macAddress
 	Maintenance        *maintenance
 	Menu               *menu
 	Organization       *organization
 	Permission         *permission
 	Prefix             *prefix
-	Provider           *provider
 	Proxy              *proxy
 	Rack               *rack
 	RestconfCredential *restconfCredential
@@ -63,24 +59,20 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	AlertGroup = &Q.AlertGroup
 	ApLLDPNeighbor = &Q.ApLLDPNeighbor
 	AuditLog = &Q.AuditLog
-	Block = &Q.Block
 	Circuit = &Q.Circuit
 	CliCredential = &Q.CliCredential
 	Device = &Q.Device
 	DeviceConfig = &Q.DeviceConfig
 	DeviceInterface = &Q.DeviceInterface
 	DeviceStack = &Q.DeviceStack
-	Group = &Q.Group
 	IpAddress = &Q.IpAddress
 	LLDPNeighbor = &Q.LLDPNeighbor
-	Location = &Q.Location
 	MacAddress = &Q.MacAddress
 	Maintenance = &Q.Maintenance
 	Menu = &Q.Menu
 	Organization = &Q.Organization
 	Permission = &Q.Permission
 	Prefix = &Q.Prefix
-	Provider = &Q.Provider
 	Proxy = &Q.Proxy
 	Rack = &Q.Rack
 	RestconfCredential = &Q.RestconfCredential
@@ -104,24 +96,20 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		AlertGroup:         newAlertGroup(db, opts...),
 		ApLLDPNeighbor:     newApLLDPNeighbor(db, opts...),
 		AuditLog:           newAuditLog(db, opts...),
-		Block:              newBlock(db, opts...),
 		Circuit:            newCircuit(db, opts...),
 		CliCredential:      newCliCredential(db, opts...),
 		Device:             newDevice(db, opts...),
 		DeviceConfig:       newDeviceConfig(db, opts...),
 		DeviceInterface:    newDeviceInterface(db, opts...),
 		DeviceStack:        newDeviceStack(db, opts...),
-		Group:              newGroup(db, opts...),
 		IpAddress:          newIpAddress(db, opts...),
 		LLDPNeighbor:       newLLDPNeighbor(db, opts...),
-		Location:           newLocation(db, opts...),
 		MacAddress:         newMacAddress(db, opts...),
 		Maintenance:        newMaintenance(db, opts...),
 		Menu:               newMenu(db, opts...),
 		Organization:       newOrganization(db, opts...),
 		Permission:         newPermission(db, opts...),
 		Prefix:             newPrefix(db, opts...),
-		Provider:           newProvider(db, opts...),
 		Proxy:              newProxy(db, opts...),
 		Rack:               newRack(db, opts...),
 		RestconfCredential: newRestconfCredential(db, opts...),
@@ -146,24 +134,20 @@ type Query struct {
 	AlertGroup         alertGroup
 	ApLLDPNeighbor     apLLDPNeighbor
 	AuditLog           auditLog
-	Block              block
 	Circuit            circuit
 	CliCredential      cliCredential
 	Device             device
 	DeviceConfig       deviceConfig
 	DeviceInterface    deviceInterface
 	DeviceStack        deviceStack
-	Group              group
 	IpAddress          ipAddress
 	LLDPNeighbor       lLDPNeighbor
-	Location           location
 	MacAddress         macAddress
 	Maintenance        maintenance
 	Menu               menu
 	Organization       organization
 	Permission         permission
 	Prefix             prefix
-	Provider           provider
 	Proxy              proxy
 	Rack               rack
 	RestconfCredential restconfCredential
@@ -189,24 +173,20 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		AlertGroup:         q.AlertGroup.clone(db),
 		ApLLDPNeighbor:     q.ApLLDPNeighbor.clone(db),
 		AuditLog:           q.AuditLog.clone(db),
-		Block:              q.Block.clone(db),
 		Circuit:            q.Circuit.clone(db),
 		CliCredential:      q.CliCredential.clone(db),
 		Device:             q.Device.clone(db),
 		DeviceConfig:       q.DeviceConfig.clone(db),
 		DeviceInterface:    q.DeviceInterface.clone(db),
 		DeviceStack:        q.DeviceStack.clone(db),
-		Group:              q.Group.clone(db),
 		IpAddress:          q.IpAddress.clone(db),
 		LLDPNeighbor:       q.LLDPNeighbor.clone(db),
-		Location:           q.Location.clone(db),
 		MacAddress:         q.MacAddress.clone(db),
 		Maintenance:        q.Maintenance.clone(db),
 		Menu:               q.Menu.clone(db),
 		Organization:       q.Organization.clone(db),
 		Permission:         q.Permission.clone(db),
 		Prefix:             q.Prefix.clone(db),
-		Provider:           q.Provider.clone(db),
 		Proxy:              q.Proxy.clone(db),
 		Rack:               q.Rack.clone(db),
 		RestconfCredential: q.RestconfCredential.clone(db),
@@ -239,24 +219,20 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		AlertGroup:         q.AlertGroup.replaceDB(db),
 		ApLLDPNeighbor:     q.ApLLDPNeighbor.replaceDB(db),
 		AuditLog:           q.AuditLog.replaceDB(db),
-		Block:              q.Block.replaceDB(db),
 		Circuit:            q.Circuit.replaceDB(db),
 		CliCredential:      q.CliCredential.replaceDB(db),
 		Device:             q.Device.replaceDB(db),
 		DeviceConfig:       q.DeviceConfig.replaceDB(db),
 		DeviceInterface:    q.DeviceInterface.replaceDB(db),
 		DeviceStack:        q.DeviceStack.replaceDB(db),
-		Group:              q.Group.replaceDB(db),
 		IpAddress:          q.IpAddress.replaceDB(db),
 		LLDPNeighbor:       q.LLDPNeighbor.replaceDB(db),
-		Location:           q.Location.replaceDB(db),
 		MacAddress:         q.MacAddress.replaceDB(db),
 		Maintenance:        q.Maintenance.replaceDB(db),
 		Menu:               q.Menu.replaceDB(db),
 		Organization:       q.Organization.replaceDB(db),
 		Permission:         q.Permission.replaceDB(db),
 		Prefix:             q.Prefix.replaceDB(db),
-		Provider:           q.Provider.replaceDB(db),
 		Proxy:              q.Proxy.replaceDB(db),
 		Rack:               q.Rack.replaceDB(db),
 		RestconfCredential: q.RestconfCredential.replaceDB(db),
@@ -279,24 +255,20 @@ type queryCtx struct {
 	AlertGroup         IAlertGroupDo
 	ApLLDPNeighbor     IApLLDPNeighborDo
 	AuditLog           IAuditLogDo
-	Block              IBlockDo
 	Circuit            ICircuitDo
 	CliCredential      ICliCredentialDo
 	Device             IDeviceDo
 	DeviceConfig       IDeviceConfigDo
 	DeviceInterface    IDeviceInterfaceDo
 	DeviceStack        IDeviceStackDo
-	Group              IGroupDo
 	IpAddress          IIpAddressDo
 	LLDPNeighbor       ILLDPNeighborDo
-	Location           ILocationDo
 	MacAddress         IMacAddressDo
 	Maintenance        IMaintenanceDo
 	Menu               IMenuDo
 	Organization       IOrganizationDo
 	Permission         IPermissionDo
 	Prefix             IPrefixDo
-	Provider           IProviderDo
 	Proxy              IProxyDo
 	Rack               IRackDo
 	RestconfCredential IRestconfCredentialDo
@@ -319,24 +291,20 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		AlertGroup:         q.AlertGroup.WithContext(ctx),
 		ApLLDPNeighbor:     q.ApLLDPNeighbor.WithContext(ctx),
 		AuditLog:           q.AuditLog.WithContext(ctx),
-		Block:              q.Block.WithContext(ctx),
 		Circuit:            q.Circuit.WithContext(ctx),
 		CliCredential:      q.CliCredential.WithContext(ctx),
 		Device:             q.Device.WithContext(ctx),
 		DeviceConfig:       q.DeviceConfig.WithContext(ctx),
 		DeviceInterface:    q.DeviceInterface.WithContext(ctx),
 		DeviceStack:        q.DeviceStack.WithContext(ctx),
-		Group:              q.Group.WithContext(ctx),
 		IpAddress:          q.IpAddress.WithContext(ctx),
 		LLDPNeighbor:       q.LLDPNeighbor.WithContext(ctx),
-		Location:           q.Location.WithContext(ctx),
 		MacAddress:         q.MacAddress.WithContext(ctx),
 		Maintenance:        q.Maintenance.WithContext(ctx),
 		Menu:               q.Menu.WithContext(ctx),
 		Organization:       q.Organization.WithContext(ctx),
 		Permission:         q.Permission.WithContext(ctx),
 		Prefix:             q.Prefix.WithContext(ctx),
-		Provider:           q.Provider.WithContext(ctx),
 		Proxy:              q.Proxy.WithContext(ctx),
 		Rack:               q.Rack.WithContext(ctx),
 		RestconfCredential: q.RestconfCredential.WithContext(ctx),

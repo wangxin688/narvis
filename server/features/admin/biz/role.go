@@ -16,19 +16,6 @@ func NewRoleService() *RoleService {
 	return &RoleService{}
 }
 
-func (r *RoleService) CreateAdminRole(organizationId string) (string, error) {
-	role := &models.Role{
-		Name:           constants.ReserveAdminRoleName,
-		Description:    &constants.ReserveAdminRoleDescription,
-		OrganizationId: organizationId,
-	}
-	err := gen.Role.Create(role)
-	if err != nil {
-		return "", err
-	}
-	return role.Id, nil
-}
-
 // use raw sql for performance
 // add redis cache if needed in the future
 func CheckRolePathPermission(user *models.User, path string) bool {
