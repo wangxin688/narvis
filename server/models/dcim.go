@@ -29,8 +29,8 @@ type Site struct {
 	Status         string       `gorm:"column:status;not null;default:Active"` // Active, Inactive
 	Region         string       `gorm:"column:region;not null"`
 	TimeZone       string       `gorm:"column:timeZone;not null"`
-	Latitude       string       `gorm:"column:latitude;not null"`
-	Longitude      string       `gorm:"column:longitude;not null"`
+	Latitude       float32      `gorm:"column:latitude;not null"`
+	Longitude      float32      `gorm:"column:longitude;not null"`
 	Address        string       `gorm:"column:address;not null"`
 	Description    *string      `gorm:"column:description;default:null"`
 	MonitorId      *string      `gorm:"column:monitorId;default:null;unique"`
