@@ -36,29 +36,29 @@ type UserQuery struct {
 }
 
 type User struct {
-	Id        string     `json:"id"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	Username  string     `json:"username"`
-	Email     string     `json:"email"`
-	Status    string     `json:"status"`
-	Avatar    *string    `json:"avatar"`
-	AuthType  uint8      `json:"authType"`
-	Role      RoleShort  `json:"role"`
+	Id        string    `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	Status    string    `json:"status"`
+	Avatar    *string   `json:"avatar"`
+	AuthType  uint8     `json:"authType"`
+	Role      RoleShort `json:"role"`
 }
 
 type UserList []*User
 
 type UserMe struct {
-	Id        string     `json:"id"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	Username  string     `json:"username"`
-	Email     string     `json:"email"`
-	Status    string     `json:"status"`
-	Avatar    *string    `json:"avatar"`
-	AuthType  uint8      `json:"authType"`
-	Role      RoleShort  `json:"role"`
+	Id        string    `json:"id"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	Status    string    `json:"status"`
+	Avatar    *string   `json:"avatar"`
+	AuthType  uint8     `json:"authType"`
+	Role      RoleShort `json:"role"`
 	// Menus     MenuList   `json:"menus"`
 }
 

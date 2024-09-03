@@ -15,8 +15,8 @@ const (
 )
 
 type PageInfo struct {
-	Page     *int    `form:"page,default=0" binding:"omitempty,gte=1"`
-	PageSize *int    `form:"pageSize,default=10" binding:"omitempty,gte=1,lte=1000"`
+	Page     *int    `form:"page" binding:"omitempty,gte=1"`
+	PageSize *int    `form:"pageSize" binding:"omitempty,gte=1,lte=1000"`
 	Keyword  *string `form:"keyword" binding:"omitempty" `
 	Order    *string `form:"order,default=desc" binding:"omitempty,oneof=asc desc"`
 	OrderBy  *string `form:"orderBy,default=createdAt" binding:"omitempty"`

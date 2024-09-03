@@ -26,7 +26,7 @@ func (r *RestConfCredentialService) CreateCredential(credential *schemas.Restcon
 
 	cred := &models.RestconfCredential{
 		OrganizationId: global.OrganizationId.Get(),
-		DeviceId:       &credential.DeviceId,
+		DeviceId:       credential.DeviceId,
 		Username:       credential.Username,
 		Password:       credential.Password,
 	}

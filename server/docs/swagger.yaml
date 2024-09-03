@@ -1,10 +1,113 @@
 definitions:
   schemas.AuthConfig:
     properties:
-      client_id:
+      clientId:
         type: string
-      client_secret:
+      clientSecret:
         type: string
+    type: object
+  schemas.Circuit:
+    properties:
+      cid:
+        type: string
+      circuitType:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      ipv4Address:
+        type: string
+      ipv6Address:
+        type: string
+      monitorId:
+        type: string
+      name:
+        type: string
+      provider:
+        type: string
+      rxBandWidth:
+        type: integer
+      status:
+        type: string
+      txBandWidth:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  schemas.CircuitCreate:
+    properties:
+      cid:
+        type: string
+      circuitType:
+        type: string
+      description:
+        type: string
+      interfaceId:
+        type: string
+      ipv4Address:
+        type: string
+      ipv6Address:
+        type: string
+      name:
+        type: string
+      provider:
+        type: string
+      rxBandWidth:
+        type: integer
+      status:
+        type: string
+      txBandWidth:
+        type: integer
+    required:
+    - cid
+    - circuitType
+    - interfaceId
+    - name
+    - provider
+    - rxBandWidth
+    - status
+    - txBandWidth
+    type: object
+  schemas.CircuitShort:
+    properties:
+      RxBandWidth:
+        type: integer
+      TxBandWidth:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      provider:
+        type: string
+    type: object
+  schemas.CircuitUpdate:
+    properties:
+      cid:
+        type: string
+      circuitType:
+        type: string
+      description:
+        type: string
+      interfaceId:
+        type: string
+      ipv4Address:
+        type: string
+      ipv6Address:
+        type: string
+      name:
+        type: string
+      provider:
+        type: string
+      rxBandWidth:
+        type: integer
+      status:
+        type: string
+      txBandWidth:
+        type: integer
     type: object
   schemas.DeviceRole:
     properties:
@@ -12,63 +115,12 @@ definitions:
         type: string
       description:
         $ref: '#/definitions/schemas.I18n'
-      device_role:
+      deviceRole:
         type: string
-      product_family:
+      productFamily:
         type: string
       weight:
         type: integer
-    type: object
-  schemas.ErrorResponse:
-    properties:
-      code:
-        type: integer
-      data: {}
-      message:
-        type: string
-    type: object
-  schemas.Group:
-    properties:
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      role:
-        $ref: '#/definitions/schemas.RoleShort'
-      updated_at:
-        type: string
-    type: object
-  schemas.GroupCreate:
-    properties:
-      description:
-        type: string
-      name:
-        type: string
-      role_id:
-        type: string
-    required:
-    - name
-    - role_id
-    type: object
-  schemas.GroupShort:
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-    type: object
-  schemas.GroupUpdate:
-    properties:
-      description:
-        type: string
-      name:
-        type: string
-      role_id:
-        type: string
     type: object
   schemas.I18n:
     properties:
@@ -77,7 +129,7 @@ definitions:
       zh:
         type: string
     type: object
-  schemas.IDResponse:
+  schemas.IdResponse:
     properties:
       id:
         type: string
@@ -94,7 +146,7 @@ definitions:
         items:
           $ref: '#/definitions/schemas.Menu'
         type: array
-      created_at:
+      createdAt:
         type: string
       id:
         type: string
@@ -102,13 +154,13 @@ definitions:
         $ref: '#/definitions/schemas.Meta'
       name:
         type: string
-      parent_id:
+      parentId:
         type: string
       path:
         type: string
       redirect:
         type: string
-      updated_at:
+      updatedAt:
         type: string
     type: object
   schemas.Meta:
@@ -150,9 +202,9 @@ definitions:
     type: object
   schemas.Oauth2PasswordRequest:
     properties:
-      domain_name:
+      domainName:
         type: string
-      enterprise_code:
+      enterpriseCode:
         type: string
       password:
         type: string
@@ -166,41 +218,79 @@ definitions:
     properties:
       active:
         type: boolean
-      auth_config:
+      authConfig:
         $ref: '#/definitions/schemas.AuthConfig'
-      auth_type:
+      authType:
         description: '0: local 1: slack 2: google 3: teams 4: github'
         maximum: 4
         minimum: 0
         type: integer
-      created_at:
+      createdAt:
         type: string
-      domain_name:
+      domainName:
         type: string
-      enterprise_code:
+      enterpriseCode:
         type: string
       id:
         type: string
-      license_count:
+      licenseCount:
         maximum: 10000
         minimum: 0
         type: integer
       name:
         type: string
-      updated_at:
+      updatedAt:
         type: string
     required:
     - active
-    - auth_type
-    - domain_name
-    - enterprise_code
+    - authType
+    - domainName
+    - enterpriseCode
     - id
-    - license_count
+    - licenseCount
     - name
+    type: object
+  schemas.Rack:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      serialNumber:
+        type: string
+      siteId:
+        type: string
+      uHeight:
+        type: integer
+    type: object
+  schemas.RackCreate:
+    properties:
+      name:
+        type: string
+      serialNumber:
+        type: string
+      siteId:
+        type: string
+      uHeight:
+        description: default 42
+        maximum: 50
+        type: integer
+    required:
+    - name
+    type: object
+  schemas.RackUpdate:
+    properties:
+      name:
+        type: string
+      serialNumber:
+        type: string
+      uHeight:
+        maximum: 50
+        type: integer
     type: object
   schemas.Role:
     properties:
-      created_at:
+      createdAt:
         type: string
       description:
         type: string
@@ -208,7 +298,7 @@ definitions:
         type: string
       name:
         type: string
-      updated_at:
+      updatedAt:
         type: string
     type: object
   schemas.RoleCreate:
@@ -227,7 +317,7 @@ definitions:
     type: object
   schemas.RoleDetail:
     properties:
-      created_at:
+      createdAt:
         type: string
       description:
         type: string
@@ -239,7 +329,7 @@ definitions:
         type: array
       name:
         type: string
-      updated_at:
+      updatedAt:
         type: string
     type: object
   schemas.RoleShort:
@@ -260,6 +350,128 @@ definitions:
       name:
         type: string
     type: object
+  schemas.Site:
+    properties:
+      address:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      region:
+        type: string
+      siteCode:
+        type: string
+      status:
+        type: string
+      timeZone:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  schemas.SiteCreate:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      region:
+        type: string
+      siteCode:
+        type: string
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
+      timeZone:
+        type: string
+    required:
+    - address
+    - latitude
+    - longitude
+    - name
+    - region
+    - siteCode
+    - status
+    - timeZone
+    type: object
+  schemas.SiteDetail:
+    properties:
+      address:
+        type: string
+      apCount:
+        type: integer
+      circuit:
+        items:
+          $ref: '#/definitions/schemas.CircuitShort'
+        type: array
+      circuitCount:
+        type: integer
+      createdAt:
+        type: string
+      description:
+        type: string
+      gatewayCount:
+        type: integer
+      id:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      rackCount:
+        type: integer
+      region:
+        type: string
+      siteCode:
+        type: string
+      status:
+        type: string
+      switchCount:
+        type: integer
+      timeZone:
+        type: string
+      updatedAt:
+        type: string
+      vlanCount:
+        type: integer
+    type: object
+  schemas.SiteUpdate:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      region:
+        type: string
+      siteCode:
+        type: string
+      timeZone:
+        type: string
+    type: object
   schemas.Transition:
     properties:
       enterTransition:
@@ -271,30 +483,28 @@ definitions:
     type: object
   schemas.User:
     properties:
-      auth_type:
+      authType:
         type: integer
       avatar:
         type: string
-      created_at:
+      createdAt:
         type: string
       email:
         type: string
-      group:
-        $ref: '#/definitions/schemas.GroupShort'
       id:
         type: string
       role:
         $ref: '#/definitions/schemas.RoleShort'
       status:
         type: string
-      updated_at:
+      updatedAt:
         type: string
       username:
         type: string
     type: object
   schemas.UserCreate:
     properties:
-      auth_type:
+      authType:
         maximum: 4
         minimum: 0
         type: integer
@@ -302,11 +512,9 @@ definitions:
         type: string
       email:
         type: string
-      group_id:
-        type: string
       password:
         type: string
-      role_id:
+      roleId:
         type: string
       status:
         enum:
@@ -316,9 +524,8 @@ definitions:
       username:
         type: string
     required:
-    - auth_type
-    - group_id
-    - role_id
+    - authType
+    - roleId
     - status
     - username
     type: object
@@ -328,11 +535,9 @@ definitions:
         type: string
       email:
         type: string
-      group_id:
-        type: string
       password:
         type: string
-      role_id:
+      roleId:
         type: string
       status:
         enum:
@@ -367,166 +572,6 @@ info:
   title: Narvis API
   version: "1.0"
 paths:
-  /admin/groups:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - collectionFormat: csv
-        in: query
-        items:
-          type: string
-        name: id
-        type: array
-      - in: query
-        name: keyword
-        type: string
-      - collectionFormat: csv
-        in: query
-        items:
-          type: string
-        name: name
-        type: array
-      - enum:
-        - asc
-        - desc
-        in: query
-        name: order
-        type: string
-      - in: query
-        name: order_by
-        type: string
-      - in: query
-        minimum: 1
-        name: page
-        type: integer
-      - in: query
-        maximum: 1000
-        minimum: 1
-        name: page_size
-        type: integer
-      - collectionFormat: csv
-        in: query
-        items:
-          type: string
-        name: role_id
-        type: array
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/schemas.ListResponse'
-            - properties:
-                results:
-                  items:
-                    $ref: '#/definitions/schemas.Group'
-                  type: array
-              type: object
-      security:
-      - BearerAuth: []
-      summary: List Groups
-      tags:
-      - Admin
-    post:
-      consumes:
-      - application/json
-      description: Create User Group
-      parameters:
-      - description: group
-        in: body
-        name: group
-        required: true
-        schema:
-          $ref: '#/definitions/schemas.GroupCreate'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemas.IDResponse'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/schemas.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Create Group
-      tags:
-      - Admin
-  /admin/groups/{id}:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: group id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemas.IDResponse'
-      security:
-      - BearerAuth: []
-      summary: Delete Group
-      tags:
-      - Admin
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: group id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemas.Group'
-      security:
-      - BearerAuth: []
-      summary: Get Group
-      tags:
-      - Admin
-    put:
-      consumes:
-      - application/json
-      parameters:
-      - description: group id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: group
-        in: body
-        name: group
-        required: true
-        schema:
-          $ref: '#/definitions/schemas.GroupUpdate'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemas.IDResponse'
-      security:
-      - BearerAuth: []
-      summary: Update Group
-      tags:
-      - Admin
   /admin/roles:
     get:
       consumes:
@@ -555,7 +600,7 @@ paths:
         name: order
         type: string
       - in: query
-        name: order_by
+        name: orderBy
         type: string
       - in: query
         minimum: 1
@@ -564,7 +609,7 @@ paths:
       - in: query
         maximum: 1000
         minimum: 1
-        name: page_size
+        name: pageSize
         type: integer
       produces:
       - application/json
@@ -580,6 +625,8 @@ paths:
                     $ref: '#/definitions/schemas.Role'
                   type: array
               type: object
+      security:
+      - BearerAuth: []
       summary: List roles
       tags:
       - Admin
@@ -601,6 +648,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemas.Role'
+      security:
+      - BearerAuth: []
       summary: Create role
       tags:
       - Admin
@@ -622,6 +671,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemas.Role'
+      security:
+      - BearerAuth: []
       summary: Delete role
       tags:
       - Admin
@@ -642,6 +693,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemas.RoleDetail'
+      security:
+      - BearerAuth: []
       summary: Get role
       tags:
       - Admin
@@ -668,6 +721,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/schemas.Role'
+      security:
+      - BearerAuth: []
       summary: Update role
       tags:
       - Admin
@@ -679,19 +734,13 @@ paths:
       - in: query
         maximum: 4
         minimum: 0
-        name: auth_type
+        name: authType
         type: integer
       - collectionFormat: csv
         in: query
         items:
           type: string
         name: email
-        type: array
-      - collectionFormat: csv
-        in: query
-        items:
-          type: string
-        name: group_id
         type: array
       - collectionFormat: csv
         in: query
@@ -709,7 +758,7 @@ paths:
         name: order
         type: string
       - in: query
-        name: order_by
+        name: orderBy
         type: string
       - in: query
         minimum: 1
@@ -718,13 +767,13 @@ paths:
       - in: query
         maximum: 1000
         minimum: 1
-        name: page_size
+        name: pageSize
         type: integer
       - collectionFormat: csv
         in: query
         items:
           type: string
-        name: role_id
+        name: roleId
         type: array
       - enum:
         - Active
@@ -774,7 +823,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schemas.IDResponse'
+            $ref: '#/definitions/schemas.IdResponse'
       security:
       - BearerAuth: []
       summary: Create new user
@@ -796,7 +845,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schemas.IDResponse'
+            $ref: '#/definitions/schemas.IdResponse'
       security:
       - BearerAuth: []
       summary: Delete user
@@ -844,12 +893,547 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schemas.IDResponse'
+            $ref: '#/definitions/schemas.IdResponse'
       security:
       - BearerAuth: []
       summary: Update user
       tags:
       - Admin
+  /infra/circuit:
+    post:
+      consumes:
+      - application/json
+      description: Create new circuit
+      parameters:
+      - description: Circuit
+        in: body
+        name: circuit
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.CircuitCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new circuit
+      tags:
+      - Infra
+  /infra/circuit/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: circuitId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: Get circuit
+      parameters:
+      - description: circuitId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Circuit'
+      security:
+      - BearerAuth: []
+      summary: Get circuit
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Update circuit
+      parameters:
+      - description: circuitId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Circuit
+        in: body
+        name: circuit
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.CircuitUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update circuit
+      tags:
+      - Infra
+  /infra/circuits:
+    get:
+      description: List circuits
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: cid
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: circuitType
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: deviceId
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: interfaceId
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: ipv4Address
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: ipv6Address
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: monitorId
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: name
+        type: array
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: provider
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: siteId
+        type: array
+      - in: query
+        name: status
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/schemas.Circuit'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List circuits
+      tags:
+      - Infra
+  /infra/racks:
+    get:
+      consumes:
+      - application/json
+      description: List racks
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: id
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: name
+        type: array
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: serialNumber
+        type: array
+      - in: query
+        name: siteId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.Rack'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List racks
+      tags:
+      - Infra
+    post:
+      consumes:
+      - application/json
+      description: Create new rack
+      parameters:
+      - description: rack
+        in: body
+        name: rack
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.RackCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new rack
+      tags:
+      - Infra
+  /infra/racks/{rackId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete rack
+      parameters:
+      - description: rackId
+        in: path
+        name: rackId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete rack
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: Get rack
+      parameters:
+      - description: rackId
+        in: path
+        name: rackId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Rack'
+      security:
+      - BearerAuth: []
+      summary: Get rack
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Update rack
+      parameters:
+      - description: rackId
+        in: path
+        name: rackId
+        required: true
+        type: string
+      - description: rack
+        in: body
+        name: rack
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.RackUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update rack
+      tags:
+      - Infra
+  /infra/sites:
+    get:
+      consumes:
+      - application/json
+      description: List sites
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: id
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: name
+        type: array
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: region
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: siteCode
+        type: array
+      - enum:
+        - Active
+        - Inactive
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.Site'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List sites
+      tags:
+      - Infra
+    post:
+      consumes:
+      - application/json
+      description: Create new site
+      parameters:
+      - description: site
+        in: body
+        name: site
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.SiteCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new site
+      tags:
+      - Infra
+  /infra/sites/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete site
+      parameters:
+      - description: site id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete site
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: Get site
+      parameters:
+      - description: site id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.SiteDetail'
+      security:
+      - BearerAuth: []
+      summary: Get site
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Update site
+      parameters:
+      - description: site id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: site
+        in: body
+        name: site
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.SiteUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update site
+      tags:
+      - Infra
   /intend/device-roles:
     get:
       parameters:

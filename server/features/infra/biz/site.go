@@ -16,15 +16,16 @@ func NewSiteService() *SiteService {
 
 func (s *SiteService) Create(site schemas.SiteCreate) (string, error) {
 	newSite := &models.Site{
-		Name:        site.Name,
-		SiteCode:    site.SiteCode,
-		Status:      site.Status,
-		Region:      site.Region,
-		TimeZone:    site.TimeZone,
-		Latitude:    site.Latitude,
-		Longitude:   site.Longitude,
-		Address:     site.Address,
-		Description: site.Description,
+		Name:           site.Name,
+		SiteCode:       site.SiteCode,
+		Status:         site.Status,
+		Region:         site.Region,
+		TimeZone:       site.TimeZone,
+		Latitude:       site.Latitude,
+		Longitude:      site.Longitude,
+		Address:        site.Address,
+		Description:    site.Description,
+		OrganizationId: global.OrganizationId.Get(),
 	}
 	err := gen.Site.Create(newSite)
 	if err != nil {
@@ -76,7 +77,7 @@ func (s *SiteService) Delete(Id string) error {
 
 func (s *SiteService) GetById(Id string) (schemas.Site, error) {
 
-	site, err := gen.Site.Select(gen.Site.Id.Eq(Id), gen.Site.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	site, err := gen.Site.Where(gen.Site.Id.Eq(Id), gen.Site.OrganizationId.Eq(global.OrganizationId.Get())).First()
 	if err != nil {
 		return schemas.Site{}, err
 	}
@@ -125,6 +126,10 @@ func (s *SiteService) GetSiteDetail(siteId string) (*schemas.SiteDetail, error) 
 	if err != nil {
 		return &schemas.SiteDetail{}, err
 	}
+	siteCircuits, err := s.GetCircuitBySites([]string{siteId})
+	if err != nil {
+		return &schemas.SiteDetail{}, err
+	}
 	return &schemas.SiteDetail{
 		Site:         site,
 		SwitchCount:  switchCount,
@@ -133,6 +138,7 @@ func (s *SiteService) GetSiteDetail(siteId string) (*schemas.SiteDetail, error) 
 		CircuitCount: circuitCount,
 		VlanCount:    vlanCount,
 		GatewayCount: gatewayCount,
+		Circuit:      (*siteCircuits)[siteId],
 	}, nil
 }
 
@@ -192,11 +198,8 @@ func (s *SiteService) GetList(params *schemas.SiteQuery) (int64, *schemas.SiteLi
 	}
 
 	count, err := stmt.Count()
-	if err != nil {
+	if err != nil || count < 0 {
 		return 0, nil, err
-	}
-	if count <= 0 {
-		return 0, nil, nil
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())
 	stmt.UnderlyingDB().Scopes(params.LimitOffset())
@@ -204,27 +207,51 @@ func (s *SiteService) GetList(params *schemas.SiteQuery) (int64, *schemas.SiteLi
 	if err != nil {
 		return 0, nil, err
 	}
+	siteIds := make([]string, 0)
+	for _, site := range sites {
+		siteIds = append(siteIds, site.Id)
+	}
+	deviceCount, err := s.GetDeviceApTotalBySites(siteIds)
+	if err != nil {
+		return 0, nil, err
+	}
+	circuits, err := s.GetCircuitBySites(siteIds)
+	if err != nil {
+		return 0, nil, err
+	}
+
 	var res schemas.SiteList
 	for _, site := range sites {
-		res = append(res, schemas.Site{
-			Id:          site.Id,
-			CreatedAt:   site.CreatedAt,
-			UpdatedAt:   site.UpdatedAt,
-			Name:        site.Name,
-			SiteCode:    site.SiteCode,
-			Status:      site.Status,
-			Region:      site.Region,
-			TimeZone:    site.TimeZone,
-			Latitude:    site.Latitude,
-			Longitude:   site.Longitude,
-			Address:     site.Address,
-			Description: site.Description,
+		res = append(res, schemas.SiteResponse{
+			Site: schemas.Site{
+				Id:          site.Id,
+				CreatedAt:   site.CreatedAt,
+				UpdatedAt:   site.UpdatedAt,
+				Name:        site.Name,
+				SiteCode:    site.SiteCode,
+				Status:      site.Status,
+				Region:      site.Region,
+				TimeZone:    site.TimeZone,
+				Latitude:    site.Latitude,
+				Longitude:   site.Longitude,
+				Address:     site.Address,
+				Description: site.Description,
+			},
+			DeviceCount: (*deviceCount)[site.Id],
+			Circuit:     (*circuits)[site.Id],
 		})
 	}
 	return count, &res, nil
 }
 
-func (s *SiteService) GetCircuitBySites(sites []string) (*map[string]*schemas.CircuitShort, error) {
+func (s *SiteService) GetCircuitBySites(sites []string) (*map[string][]*schemas.CircuitShort, error) {
+	// allocate memory first incase json Unmarshal nil slice to nil value
+	results := make(map[string][]*schemas.CircuitShort)
+	for _, siteId := range sites {
+		if _, ok := results[siteId]; !ok {
+			results[siteId] = make([]*schemas.CircuitShort, 0)
+		}
+	}
 	circuits, err := gen.Circuit.Select(
 		gen.Circuit.Id,
 		gen.Circuit.Name,
@@ -238,15 +265,14 @@ func (s *SiteService) GetCircuitBySites(sites []string) (*map[string]*schemas.Ci
 	if err != nil {
 		return nil, err
 	}
-	results := make(map[string]*schemas.CircuitShort)
 	for _, circuit := range circuits {
-		results[circuit.Id] = &schemas.CircuitShort{
+		results[circuit.SiteId] = append(results[circuit.SiteId], &schemas.CircuitShort{
 			Id:          circuit.Id,
 			Name:        circuit.Name,
 			Provider:    circuit.Provider,
 			RxBandWidth: circuit.RxBandWidth,
 			TxBandWidth: circuit.TxBandWidth,
-		}
+		})
 	}
 	return &results, nil
 }
@@ -265,6 +291,43 @@ func (s *SiteService) GetDeviceCountBySites(sites []string) (*map[string]int64, 
 	res := make(map[string]int64)
 	for _, result := range results {
 		res[result.SiteId] = result.Count
+	}
+	return &res, nil
+}
+
+func (s *SiteService) GetApCountBySites(sites []string) (*map[string]int64, error) {
+	var results []struct {
+		SiteId string
+		Count  int64
+	}
+	err := gen.AP.Select(gen.AP.SiteId, gen.AP.Id.Count().As("count")).
+		Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.SiteId.In(sites...)).
+		Group(gen.AP.SiteId).Scan(&results)
+	if err != nil {
+		return nil, err
+	}
+	res := make(map[string]int64)
+	for _, result := range results {
+		res[result.SiteId] = result.Count
+	}
+	return &res, nil
+}
+
+func (s *SiteService) GetDeviceApTotalBySites(sites []string) (*map[string]int64, error) {
+	deviceCount, err := s.GetDeviceCountBySites(sites)
+	if err != nil {
+		return nil, err
+	}
+	apCount, err := s.GetApCountBySites(sites)
+	if err != nil {
+		return nil, err
+	}
+	res := make(map[string]int64)
+	for siteId, count := range *deviceCount {
+		res[siteId] = count
+	}
+	for siteId, count := range *apCount {
+		res[siteId] += count
 	}
 	return &res, nil
 }

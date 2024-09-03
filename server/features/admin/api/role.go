@@ -11,9 +11,10 @@ import (
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
+// @Tags Admin
 // @Summary Create role
 // @Description create role
-// @Tags Admin
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param role body schemas.RoleCreate true "role"
@@ -38,9 +39,10 @@ func createRole(c *gin.Context) {
 	c.JSON(http.StatusOK, newRole)
 }
 
+// @Tags Admin
 // @Summary Get role
 // @Description get role
-// @Tags Admin
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param id path string true "role id"
@@ -64,9 +66,10 @@ func getRole(c *gin.Context) {
 	c.JSON(http.StatusOK, role)
 }
 
+// @Tags Admin
 // @Summary List roles
 // @Description list roles
-// @Tags Admin
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param object query schemas.RoleQuery false "query roles"
@@ -93,9 +96,10 @@ func listRoles(c *gin.Context) {
 	})
 }
 
+// @Tags Admin
 // @Summary Update role
 // @Description update role
-// @Tags Admin
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param id path string true "role id"
@@ -124,9 +128,10 @@ func updateRole(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: roleId})
 }
 
+// @Tags Admin
 // @Summary Delete role
 // @Description delete role
-// @Tags Admin
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param id path string true "role id"

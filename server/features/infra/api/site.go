@@ -104,7 +104,7 @@ func listSites(c *gin.Context) {
 // @Param id path string true "site id"
 // @Param site body schemas.SiteUpdate true "site"
 // @Success 200 {object} ts.IdResponse
-// @Router /infra/sites/{id} [patch]
+// @Router /infra/sites/{id} [put]
 func updateSite(c *gin.Context) {
 	var site schemas.SiteUpdate
 	var err error

@@ -97,10 +97,6 @@ func (d *Dispatcher) getFactory(platformType platform.Platform, snmpConfig facto
 		snmpDriver, err = driver.NewCiscoNexusOSDriver(snmpConfig)
 	case platform.Huawei:
 		snmpDriver, err = driver.NewHuaweiDriver(snmpConfig)
-	case platform.HuaweiVrp:
-		snmpDriver, err = driver.NewHuaweiVrpDriver(snmpConfig)
-	case platform.HuaweiVrpV8:
-		snmpDriver, err = driver.NewHuaweiVrpV8Driver(snmpConfig)
 	case platform.Aruba:
 		snmpDriver, err = driver.NewArubaDriver(snmpConfig)
 	case platform.ArubaOSSwitch:

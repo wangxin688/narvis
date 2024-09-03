@@ -28,5 +28,4 @@ func GetPlatforms(query *schemas.PlatformQuery) (int64, []string) {
 		listString = helpers.FuzzySearchList(listString, *query.Keyword, true)
 	}
 	return int64(len(listString)), listString
-
 }

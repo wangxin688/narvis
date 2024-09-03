@@ -3,6 +3,7 @@ package biz
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
+	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools/errors"
@@ -62,7 +63,8 @@ func (r *RackService) validateUpdateRack(rackId string, uHeight uint8) error {
 	}
 	for _, device := range rackDevices {
 		if device.RackPosition != nil {
-			for _, position := range *device.RackPosition {
+			devicePositions, _ := infra_utils.ParseUint8s(*device.RackPosition) // comma separated string to uint8 slice, and trust db data is correct
+			for _, position := range devicePositions {
 				if position > uHeight {
 					return errors.NewError(errors.CodeUpdateRackFailed, errors.MsgUpdateRackFailed)
 				}
@@ -106,7 +108,7 @@ func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *schemas.Rack
 		stmt = stmt.Where(gen.Rack.SerialNumber.In(*params.SerialNumber...))
 	}
 	count, err := stmt.Count()
-	if err != nil || count <= 0 {
+	if err != nil || count < 0 {
 		return 0, nil, err
 	}
 	if params.Keyword != nil {

@@ -11,7 +11,8 @@ type DeviceCreate struct {
 	ManagementIp string  `json:"managementIp" binding:"required,ip_addr"`
 	Status       string  `json:"status" binding:"required,oneof=Active Inactive"`
 	DeviceRole   string  `json:"deviceRole" binding:"required"`
-	DeviceType   string  `json:"deviceType" binding:"required"`
+	DeviceModel  *string `json:"deviceModel" binding:"omitempty"`
+	Manufacturer *string `json:"manufacturer" binding:"omitempty"`
 	SerialNumber *string `json:"serialNumber" binding:"omitempty"`
 	Description  *string `json:"description" binding:"omitempty"`
 	OsVersion    *string `json:"osVersion" binding:"omitempty"`
@@ -26,7 +27,8 @@ type DeviceUpdate struct {
 	ManagementIp *string  `json:"managementIp" binding:"omitempty,ip_addr"`
 	Status       *string  `json:"status" binding:"omitempty,oneof=Active Inactive"`
 	DeviceRole   *string  `json:"deviceRole" binding:"omitempty"`
-	DeviceType   *string  `json:"deviceType" binding:"omitempty"`
+	DeviceModel  *string  `json:"deviceModel" binding:"omitempty"`
+	Manufacturer *string  `json:"manufacturer" binding:"omitempty"`
 	SerialNumber *string  `json:"serialNumber" binding:"omitempty"`
 	Description  *string  `json:"description" binding:"omitempty"`
 	OsVersion    *string  `json:"osVersion" binding:"omitempty"`
@@ -41,7 +43,7 @@ type DeviceQuery struct {
 	Name          *[]string `form:"name" binding:"omitempty"`
 	ManagementIp  *[]string `form:"managementIp" binding:"omitempty,list_ip"`
 	DeviceRole    *[]string `form:"deviceRole" binding:"omitempty"`
-	DeviceType    *[]string `form:"deviceType" binding:"omitempty"`
+	DeviceModel   *[]string `form:"deviceModel" binding:"omitempty"`
 	ProductFamily *string   `form:"productFamily" binding:"omitempty,oneof=Gateway Switching WlanAP"`
 	Manufacturer  *[]string `form:"manufacturer" binding:"omitempty"`
 	Status        *string   `form:"status" binding:"omitempty,oneof=Active Inactive"`

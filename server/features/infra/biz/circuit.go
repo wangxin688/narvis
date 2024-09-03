@@ -37,6 +37,7 @@ func (c *CircuitService) CreateCircuit(circuit *schemas.CircuitCreate) (string, 
 		Description: circuit.Description,
 		CircuitType: circuit.CircuitType,
 		Provider:    circuit.Provider,
+		OrganizationId: global.OrganizationId.Get(),
 	}
 	siteId, deviceId, err := c.GetDeviceSiteIdByInterfaceId(circuit.InterfaceId)
 	if err != nil {
@@ -127,4 +128,71 @@ func (c *CircuitService) DeleteCircuit(id string) error {
 		return err
 	}
 	return nil
+}
+
+func (c *CircuitService) ListCircuit(query *schemas.CircuitQuery) (int64, *schemas.CircuitList, error) {
+	stmt := gen.Circuit.Where(gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get()))
+	if query.Name != nil {
+		stmt = stmt.Where(gen.Circuit.Name.In(*query.Name...))
+	}
+	if query.Status != nil {
+		stmt = stmt.Where(gen.Circuit.Status.Eq(*query.Status))
+	}
+	if query.Provider != nil {
+		stmt = stmt.Where(gen.Circuit.Provider.In(*query.Provider...))
+	}
+	if query.CircuitType != nil {
+		stmt = stmt.Where(gen.Circuit.CircuitType.In(*query.CircuitType...))
+	}
+	if query.SiteId != nil {
+		stmt = stmt.Where(gen.Circuit.SiteId.In(*query.SiteId...))
+	}
+	if query.DeviceId != nil {
+		stmt = stmt.Where(gen.Circuit.DeviceId.In(*query.DeviceId...))
+	}
+	if query.InterfaceId != nil {
+		stmt = stmt.Where(gen.Circuit.InterfaceId.In(*query.InterfaceId...))
+	}
+	if query.Ipv4Address != nil {
+		stmt = stmt.Where(gen.Circuit.Ipv4Address.In(*query.Ipv4Address...))
+	}
+	if query.Ipv6Address != nil {
+		stmt = stmt.Where(gen.Circuit.Ipv6Address.In(*query.Ipv6Address...))
+	}
+	if query.Keyword != nil {
+		stmt.UnderlyingDB().Scopes(query.Search(models.CircuitSearchFields))
+	}
+
+	count, err := stmt.Count()
+	if err != nil || count < 0 {
+		return 0, nil, err
+	}
+
+	stmt.UnderlyingDB().Scopes(query.OrderByField())
+	stmt.UnderlyingDB().Scopes(query.LimitOffset())
+
+	list, err := stmt.Find()
+	if err != nil {
+		return 0, nil, err
+	}
+	var res schemas.CircuitList
+
+	for _, item := range list {
+		res = append(res, schemas.Circuit{
+			Id:          item.Id,
+			Name:        item.Name,
+			CId:         *item.CId,
+			Status:      item.Status,
+			RxBandWidth: item.RxBandWidth,
+			TxBandWidth: item.TxBandWidth,
+			Ipv4Address: item.Ipv4Address,
+			Ipv6Address: item.Ipv6Address,
+			Description: item.Description,
+			CircuitType: item.CircuitType,
+			Provider:    item.Provider,
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
+		})
+	}
+	return count, &res, nil
 }

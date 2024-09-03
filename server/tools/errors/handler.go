@@ -15,6 +15,7 @@ import (
 )
 
 var pgConflictRegexp = regexp.MustCompile(`\((.*?)\)=\((.*?)\)`)
+var pgViolateRegexp = regexp.MustCompile(`\(([^)]+)\)=\(([^)]+)\).*?\"([^"]+)\"`)
 
 type GenericError struct {
 	Code    ErrorCode
@@ -78,6 +79,17 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 			}
 
 			g.AbortWithStatusJSON(http.StatusConflict, NewError(CodeExist, MsgExist, pgError.TableName, fields, values))
+			return
+		}
+		if pgError.Code == "23503" {
+			var key, value, table string
+			matches := pgViolateRegexp.FindStringSubmatch(pgError.Detail)
+			if len(matches) >= 3 {
+				key = matches[1]
+				value = matches[2]
+				table = matches[3]
+			}
+			g.AbortWithStatusJSON(http.StatusNotFound, NewError(CodeNotFound, MsgNotFound, table, key, value))
 			return
 		}
 		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))

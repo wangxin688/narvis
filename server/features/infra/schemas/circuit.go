@@ -39,9 +39,9 @@ type CircuitQuery struct {
 	Name        *[]string `form:"name" binding:"omitempty"`
 	CId         *[]string `form:"cid" binding:"omitempty"`
 	Status      *string   `form:"status" binding:"omitempty,oneof: Active Inactive"`
-	Ipv4Address *string   `form:"ipv4Address" binding:"omitempty,ipv4"`
-	Ipv6Address *string   `form:"ipv6Address" binding:"omitempty,ipv6"`
-	CircuitType *string   `form:"circuitType" binding:"omitempty,oneof: Internet, MPLS, IEPL, DPLC, DarkFiber, ADSL"`
+	Ipv4Address *[]string   `form:"ipv4Address" binding:"omitempty,list_ip"`
+	Ipv6Address *[]string   `form:"ipv6Address" binding:"omitempty,list_ip"`
+	CircuitType *[]string `form:"circuitType" binding:"omitempty,oneof: Internet, MPLS, IEPL, DPLC, DarkFiber, ADSL"`
 	Provider    *[]string `form:"provider" binding:"omitempty"`
 	SiteId      *[]string `form:"siteId" binding:"omitempty,list_uuid"`
 	DeviceId    *[]string `form:"deviceId" binding:"omitempty,list_uuid"`

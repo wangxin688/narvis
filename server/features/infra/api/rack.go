@@ -11,9 +11,9 @@ import (
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
-// @Tags: Infra
-// @Summary: Create new rack
-// @Description: Create new rack
+// @Tags Infra
+// @Summary Create new rack
+// @Description Create new rack
 // @Security BearerAuth
 // @Accept json
 // @Produce json
@@ -38,9 +38,9 @@ func createRack(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newRack})
 }
 
-// @Tags: Infra
-// @Summary: Get rack
-// @Description: Get rack
+// @Tags Infra
+// @Summary Get rack
+// @Description Get rack
 // @Security BearerAuth
 // @Accept json
 // @Produce json
@@ -65,9 +65,9 @@ func getRack(c *gin.Context) {
 	c.JSON(http.StatusOK, rack)
 }
 
-// @Tags: Infra
-// @Summary: List racks
-// @Description: List racks
+// @Tags Infra
+// @Summary List racks
+// @Description List racks
 // @Security BearerAuth
 // @Accept json
 // @Produce json
@@ -93,4 +93,58 @@ func listRacks(c *gin.Context) {
 		Total:   count,
 		Results: list,
 	})
+}
+
+// @Tags Infra
+// @Summary Update rack
+// @Description Update rack
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param rackId path string true "rackId"
+// @Param rack body schemas.RackUpdate true "rack"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/racks/{rackId} [put]
+func updateRack(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	rackId := c.Param("rackId")
+	var rack schemas.RackUpdate
+	if err = c.ShouldBindJSON(&rack); err != nil {
+		return
+	}
+	if err = biz.NewRackService().UpdateRack(rackId, &rack); err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdResponse{Id: rackId})
+}
+
+// @Tags Infra
+// @Summary Delete rack
+// @Description Delete rack
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param rackId path string true "rackId"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/racks/{rackId} [delete]
+func deleteRack(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	rackId := c.Param("rackId")
+	if err = helpers.ValidateUuidString(rackId); err != nil {
+		return
+	}
+	if err = biz.NewRackService().DeleteRack(rackId); err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdResponse{Id: rackId})
 }

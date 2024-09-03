@@ -77,6 +77,8 @@ const (
 	MsgGlobalCredentialMoreThanOne  ErrorMsg  = "global CLI credential already created more than one"
 	CodeUpdateRackFailed            ErrorCode = 500002
 	MsgUpdateRackFailed             ErrorMsg  = "update rack failed, uHeight should be greater than the devices been occupied"
+	CodeRackPositionInconsecutive   ErrorCode = 500003
+	MsgRackPositionInconsecutive    ErrorMsg  = "rack position is not consecutive"
 )
 
 // ipam error codes (600000 - 700000)

@@ -21,17 +21,27 @@ func NewUserService() *UserService {
 
 // when new organization created, create a new admin user
 func (u *UserService) CreateAdminUser(enterpriseCode string, orgId string, password string) (*schemas.User, error) {
+	newAdminRole := models.Role{
+		Name:           constants.ReserveAdminRoleName,
+		Description:    &constants.ReserveAdminRoleDescription,
+		OrganizationId: orgId,
+	}
+	err := gen.Role.Create(&newAdminRole)
+	if err != nil {
+		return nil, err
+	}
 	newUser := &models.User{
-		Username: "Administrator",
-		Email:    "admin@" + enterpriseCode + ".com",
-		Password: security.GetPasswordHash(password),
-		Role: models.Role{
-			Name:           constants.ReserveAdminRoleName,
-			Description:    &constants.ReserveAdminRoleDescription,
-			OrganizationId: orgId,
-		},
+		Username:       "Administrator",
+		Email:          "admin@" + enterpriseCode + ".com",
+		Password:       security.GetPasswordHash(password),
+		RoleId:         newAdminRole.Id,
 		AuthType:       uint8(constants.LocalTenantAuthType),
 		OrganizationId: orgId,
+	}
+
+	err = gen.User.Create(newUser)
+	if err != nil {
+		return nil, err
 	}
 
 	user := schemas.User{
@@ -150,11 +160,8 @@ func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.User
 		stmt.UnderlyingDB().Scopes(params.Search(models.UserSearchFields))
 	}
 	count, err := stmt.Count()
-	if err != nil {
+	if err != nil || count < 0 {
 		return 0, nil, err
-	}
-	if count <= 0 {
-		return 0, nil, nil
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())
 	stmt.UnderlyingDB().Scopes(params.LimitOffset())

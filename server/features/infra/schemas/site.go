@@ -53,17 +53,24 @@ type Site struct {
 	Description *string   `json:"description"`
 }
 
-type SiteDetail struct {
+type SiteResponse struct {
 	Site
-	SwitchCount  int64 `json:"switchCount"`
-	ApCount      int64 `json:"apCount"`
-	RackCount    int64 `json:"rackCount"`
-	CircuitCount int64 `json:"circuitCount"`
-	VlanCount    int64 `json:"vlanCount"`
-	GatewayCount int64 `json:"gatewayCount"`
+	DeviceCount int64           `json:"deviceCount"`
+	Circuit     []*CircuitShort `json:"circuit"`
 }
 
-type SiteList []Site
+type SiteDetail struct {
+	Site
+	SwitchCount  int64           `json:"switchCount"`
+	ApCount      int64           `json:"apCount"`
+	RackCount    int64           `json:"rackCount"`
+	CircuitCount int64           `json:"circuitCount"`
+	VlanCount    int64           `json:"vlanCount"`
+	GatewayCount int64           `json:"gatewayCount"`
+	Circuit      []*CircuitShort `json:"circuit"`
+}
+
+type SiteList []SiteResponse
 
 type SiteShort struct {
 	Id       string `json:"id"`

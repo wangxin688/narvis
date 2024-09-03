@@ -51,11 +51,8 @@ func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *schemas.Role
 	}
 
 	count, err := stmt.Count()
-	if err != nil {
+	if err != nil || count < 0 {
 		return 0, nil, err
-	}
-	if count <= 0 {
-		return 0, nil, nil
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())
 	stmt.UnderlyingDB().Scopes(params.LimitOffset())

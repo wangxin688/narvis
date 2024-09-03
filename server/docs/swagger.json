@@ -10,267 +10,13 @@
         "version": "1.0"
     },
     "paths": {
-        "/admin/groups": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "List Groups",
-                "parameters": [
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "name": "id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "asc",
-                            "desc"
-                        ],
-                        "type": "string",
-                        "name": "order",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "order_by",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "maximum": 1000,
-                        "minimum": 1,
-                        "type": "integer",
-                        "name": "page_size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "name": "role_id",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/schemas.ListResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "results": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/schemas.Group"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Create User Group",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Create Group",
-                "parameters": [
-                    {
-                        "description": "group",
-                        "name": "group",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/schemas.GroupCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.IDResponse"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/groups/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Get Group",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "group id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.Group"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Update Group",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "group id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "group",
-                        "name": "group",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/schemas.GroupUpdate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.IDResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Delete Group",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "group id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.IDResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/admin/roles": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "list roles",
                 "consumes": [
                     "application/json"
@@ -317,7 +63,7 @@
                     },
                     {
                         "type": "string",
-                        "name": "order_by",
+                        "name": "orderBy",
                         "in": "query"
                     },
                     {
@@ -330,7 +76,7 @@
                         "maximum": 1000,
                         "minimum": 1,
                         "type": "integer",
-                        "name": "page_size",
+                        "name": "pageSize",
                         "in": "query"
                     }
                 ],
@@ -359,6 +105,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "create role",
                 "consumes": [
                     "application/json"
@@ -393,6 +144,11 @@
         },
         "/admin/roles/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "get role",
                 "consumes": [
                     "application/json"
@@ -423,6 +179,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "delete role",
                 "consumes": [
                     "application/json"
@@ -453,6 +214,11 @@
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "update role",
                 "consumes": [
                     "application/json"
@@ -514,7 +280,7 @@
                         "maximum": 4,
                         "minimum": 0,
                         "type": "integer",
-                        "name": "auth_type",
+                        "name": "authType",
                         "in": "query"
                     },
                     {
@@ -524,15 +290,6 @@
                         },
                         "collectionFormat": "csv",
                         "name": "email",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "name": "group_id",
                         "in": "query"
                     },
                     {
@@ -560,7 +317,7 @@
                     },
                     {
                         "type": "string",
-                        "name": "order_by",
+                        "name": "orderBy",
                         "in": "query"
                     },
                     {
@@ -573,7 +330,7 @@
                         "maximum": 1000,
                         "minimum": 1,
                         "type": "integer",
-                        "name": "page_size",
+                        "name": "pageSize",
                         "in": "query"
                     },
                     {
@@ -582,7 +339,7 @@
                             "type": "string"
                         },
                         "collectionFormat": "csv",
-                        "name": "role_id",
+                        "name": "roleId",
                         "in": "query"
                     },
                     {
@@ -660,7 +417,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schemas.IDResponse"
+                            "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
                 }
@@ -730,7 +487,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schemas.IDResponse"
+                            "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
                 }
@@ -773,7 +530,863 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schemas.IDResponse"
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/circuit": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new circuit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Create new circuit",
+                "parameters": [
+                    {
+                        "description": "Circuit",
+                        "name": "circuit",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CircuitCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/circuit/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get circuit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get circuit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "circuitId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Circuit"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update circuit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Update circuit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "circuitId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Circuit",
+                        "name": "circuit",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CircuitUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "circuitId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/circuits": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List circuits",
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "List circuits",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "cid",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "circuitType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "deviceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "interfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "ipv4Address",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "ipv6Address",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "monitorId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "provider",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "siteId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/schemas.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/schemas.Circuit"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/racks": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List racks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "List racks",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "serialNumber",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "siteId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/schemas.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/schemas.Rack"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new rack",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Create new rack",
+                "parameters": [
+                    {
+                        "description": "rack",
+                        "name": "rack",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.RackCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/racks/{rackId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get rack",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get rack",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "rackId",
+                        "name": "rackId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Rack"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update rack",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Update rack",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "rackId",
+                        "name": "rackId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "rack",
+                        "name": "rack",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.RackUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete rack",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Delete rack",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "rackId",
+                        "name": "rackId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/sites": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List sites",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "List sites",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "region",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "siteCode",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Active",
+                            "Inactive"
+                        ],
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/schemas.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/schemas.Site"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Create new site",
+                "parameters": [
+                    {
+                        "description": "site",
+                        "name": "site",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SiteCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/sites/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "site id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SiteDetail"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Update site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "site id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "site",
+                        "name": "site",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SiteUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete site",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Delete site",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "site id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
                 }
@@ -992,11 +1605,164 @@
         "schemas.AuthConfig": {
             "type": "object",
             "properties": {
-                "client_id": {
+                "clientId": {
                     "type": "string"
                 },
-                "client_secret": {
+                "clientSecret": {
                     "type": "string"
+                }
+            }
+        },
+        "schemas.Circuit": {
+            "type": "object",
+            "properties": {
+                "cid": {
+                    "type": "string"
+                },
+                "circuitType": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "ipv4Address": {
+                    "type": "string"
+                },
+                "ipv6Address": {
+                    "type": "string"
+                },
+                "monitorId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "rxBandWidth": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "txBandWidth": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.CircuitCreate": {
+            "type": "object",
+            "required": [
+                "cid",
+                "circuitType",
+                "interfaceId",
+                "name",
+                "provider",
+                "rxBandWidth",
+                "status",
+                "txBandWidth"
+            ],
+            "properties": {
+                "cid": {
+                    "type": "string"
+                },
+                "circuitType": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "interfaceId": {
+                    "type": "string"
+                },
+                "ipv4Address": {
+                    "type": "string"
+                },
+                "ipv6Address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "rxBandWidth": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "txBandWidth": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schemas.CircuitShort": {
+            "type": "object",
+            "properties": {
+                "RxBandWidth": {
+                    "type": "integer"
+                },
+                "TxBandWidth": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.CircuitUpdate": {
+            "type": "object",
+            "properties": {
+                "cid": {
+                    "type": "string"
+                },
+                "circuitType": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "interfaceId": {
+                    "type": "string"
+                },
+                "ipv4Address": {
+                    "type": "string"
+                },
+                "ipv6Address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "rxBandWidth": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "txBandWidth": {
+                    "type": "integer"
                 }
             }
         },
@@ -1009,92 +1775,14 @@
                 "description": {
                     "$ref": "#/definitions/schemas.I18n"
                 },
-                "device_role": {
+                "deviceRole": {
                     "type": "string"
                 },
-                "product_family": {
+                "productFamily": {
                     "type": "string"
                 },
                 "weight": {
                     "type": "integer"
-                }
-            }
-        },
-        "schemas.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {},
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "schemas.Group": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/schemas.RoleShort"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "schemas.GroupCreate": {
-            "type": "object",
-            "required": [
-                "name",
-                "role_id"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "role_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "schemas.GroupShort": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "schemas.GroupUpdate": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "role_id": {
-                    "type": "string"
                 }
             }
         },
@@ -1109,7 +1797,7 @@
                 }
             }
         },
-        "schemas.IDResponse": {
+        "schemas.IdResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -1135,7 +1823,7 @@
                         "$ref": "#/definitions/schemas.Menu"
                     }
                 },
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "id": {
@@ -1147,7 +1835,7 @@
                 "name": {
                     "type": "string"
                 },
-                "parent_id": {
+                "parentId": {
                     "type": "string"
                 },
                 "path": {
@@ -1156,7 +1844,7 @@
                 "redirect": {
                     "type": "string"
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -1224,10 +1912,10 @@
                 "username"
             ],
             "properties": {
-                "domain_name": {
+                "domainName": {
                     "type": "string"
                 },
-                "enterprise_code": {
+                "enterpriseCode": {
                     "type": "string"
                 },
                 "password": {
@@ -1242,39 +1930,39 @@
             "type": "object",
             "required": [
                 "active",
-                "auth_type",
-                "domain_name",
-                "enterprise_code",
+                "authType",
+                "domainName",
+                "enterpriseCode",
                 "id",
-                "license_count",
+                "licenseCount",
                 "name"
             ],
             "properties": {
                 "active": {
                     "type": "boolean"
                 },
-                "auth_config": {
+                "authConfig": {
                     "$ref": "#/definitions/schemas.AuthConfig"
                 },
-                "auth_type": {
+                "authType": {
                     "description": "0: local 1: slack 2: google 3: teams 4: github",
                     "type": "integer",
                     "maximum": 4,
                     "minimum": 0
                 },
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
-                "domain_name": {
+                "domainName": {
                     "type": "string"
                 },
-                "enterprise_code": {
+                "enterpriseCode": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "license_count": {
+                "licenseCount": {
                     "type": "integer",
                     "maximum": 10000,
                     "minimum": 0
@@ -1282,15 +1970,72 @@
                 "name": {
                     "type": "string"
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "schemas.Rack": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "uHeight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schemas.RackCreate": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "uHeight": {
+                    "description": "default 42",
+                    "type": "integer",
+                    "maximum": 50
+                }
+            }
+        },
+        "schemas.RackUpdate": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "uHeight": {
+                    "type": "integer",
+                    "maximum": 50
                 }
             }
         },
         "schemas.Role": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "description": {
@@ -1302,7 +2047,7 @@
                 "name": {
                     "type": "string"
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -1331,7 +2076,7 @@
         "schemas.RoleDetail": {
             "type": "object",
             "properties": {
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "description": {
@@ -1349,7 +2094,7 @@
                 "name": {
                     "type": "string"
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -1382,6 +2127,187 @@
                 }
             }
         },
+        "schemas.Site": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "siteCode": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timeZone": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.SiteCreate": {
+            "type": "object",
+            "required": [
+                "address",
+                "latitude",
+                "longitude",
+                "name",
+                "region",
+                "siteCode",
+                "status",
+                "timeZone"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "siteCode": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
+                },
+                "timeZone": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.SiteDetail": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "apCount": {
+                    "type": "integer"
+                },
+                "circuit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.CircuitShort"
+                    }
+                },
+                "circuitCount": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "gatewayCount": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rackCount": {
+                    "type": "integer"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "siteCode": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "switchCount": {
+                    "type": "integer"
+                },
+                "timeZone": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "vlanCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schemas.SiteUpdate": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "siteCode": {
+                    "type": "string"
+                },
+                "timeZone": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.Transition": {
             "type": "object",
             "properties": {
@@ -1399,20 +2325,17 @@
         "schemas.User": {
             "type": "object",
             "properties": {
-                "auth_type": {
+                "authType": {
                     "type": "integer"
                 },
                 "avatar": {
                     "type": "string"
                 },
-                "created_at": {
+                "createdAt": {
                     "type": "string"
                 },
                 "email": {
                     "type": "string"
-                },
-                "group": {
-                    "$ref": "#/definitions/schemas.GroupShort"
                 },
                 "id": {
                     "type": "string"
@@ -1423,7 +2346,7 @@
                 "status": {
                     "type": "string"
                 },
-                "updated_at": {
+                "updatedAt": {
                     "type": "string"
                 },
                 "username": {
@@ -1434,14 +2357,13 @@
         "schemas.UserCreate": {
             "type": "object",
             "required": [
-                "auth_type",
-                "group_id",
-                "role_id",
+                "authType",
+                "roleId",
                 "status",
                 "username"
             ],
             "properties": {
-                "auth_type": {
+                "authType": {
                     "type": "integer",
                     "maximum": 4,
                     "minimum": 0
@@ -1452,13 +2374,10 @@
                 "email": {
                     "type": "string"
                 },
-                "group_id": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string"
                 },
-                "role_id": {
+                "roleId": {
                     "type": "string"
                 },
                 "status": {
@@ -1482,13 +2401,10 @@
                 "email": {
                     "type": "string"
                 },
-                "group_id": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string"
                 },
-                "role_id": {
+                "roleId": {
                     "type": "string"
                 },
                 "status": {
