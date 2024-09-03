@@ -17,7 +17,7 @@ func RegisterCustomValidator() {
 	if err := v.RegisterValidation("list_uuid", ListUuidValidator); err != nil {
 		panic(err)
 	}
-	if err := v.RegisterValidation("list_ip_address", ListIpAddressValidator); err != nil {
+	if err := v.RegisterValidation("list_ip", ListIpAddressValidator); err != nil {
 		panic(err)
 	}
 	if err := v.RegisterValidation("list_cidr", ListCidrValidator); err != nil {

@@ -130,3 +130,13 @@ func GetSwitchDeviceRole() *[]DeviceRoleEnum {
 	}
 	return &result
 }
+
+func GetGatewayRole() *[]DeviceRoleEnum {
+	result := make([]DeviceRoleEnum, 0)
+	for k, v := range getDeviceRoleMeta() {
+		if v.ProductFamily == Gateway {
+			result = append(result, k)
+		}
+	}
+	return &result
+}

@@ -68,13 +68,15 @@ const (
 
 // intend error codes (400000 - 500000)
 
-// dcim error codes (500000 - 600000)
+// infra error codes (500000 - 600000)
 
 const (
 	CodeCredentialDeviceIdMissing   ErrorCode = 500000
 	MsgCredentialDeviceIdMissing    ErrorMsg  = "credential device Id missing, global credential is already created"
 	CodeGlobalCredentialMoreThanOne ErrorCode = 500001
 	MsgGlobalCredentialMoreThanOne  ErrorMsg  = "global CLI credential already created more than one"
+	CodeUpdateRackFailed            ErrorCode = 500002
+	MsgUpdateRackFailed             ErrorMsg  = "update rack failed, uHeight should be greater than the devices been occupied"
 )
 
 // ipam error codes (600000 - 700000)

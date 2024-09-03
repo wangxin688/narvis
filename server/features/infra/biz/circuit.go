@@ -2,7 +2,7 @@ package biz
 
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
-	schemas "github.com/wangxin688/narvis/server/features/circuit/scheams"
+	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 )
@@ -97,13 +97,9 @@ func (c *CircuitService) UpdateCircuit(circuitId string, circuit *schemas.Circui
 func (c *CircuitService) GetCircuitById(id string) (*schemas.Circuit, error) {
 	circuit, err := gen.Circuit.
 		Where(gen.Circuit.Id.Eq(id), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).
-		Preload(gen.Circuit.Provider).
-		Preload(gen.Circuit.ASite).
-		Preload(gen.Circuit.ADevice).
-		Preload(gen.Circuit.AInterface).
-		Preload(gen.Circuit.ZSite).
-		Preload(gen.Circuit.ZDevice).
-		Preload(gen.Circuit.ZInterface).
+		Preload(gen.Circuit.Site).
+		Preload(gen.Circuit.Device).
+		Preload(gen.Circuit.DeviceInterface).
 		First()
 	if err != nil {
 		return nil, err
@@ -111,7 +107,7 @@ func (c *CircuitService) GetCircuitById(id string) (*schemas.Circuit, error) {
 	return &schemas.Circuit{
 		Id:          circuit.Id,
 		Name:        circuit.Name,
-		CId:         circuit.CId,
+		CId:         *circuit.CId,
 		Status:      circuit.Status,
 		RxBandWidth: circuit.RxBandWidth,
 		TxBandWidth: circuit.TxBandWidth,

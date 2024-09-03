@@ -8,7 +8,7 @@ import (
 
 type CircuitCreate struct {
 	Name        string  `json:"name" binding:"required"`
-	CId         string  `json:"cid" binding:"required"`
+	CId         *string `json:"cid" binding:"required"`
 	Status      string  `json:"status" binding:"required,oneof: Active Inactive"`
 	CircuitType string  `json:"circuitType" binding:"required,oneof: Internet, MPLS, IEPL, DPLC, DarkFiber, ADSL"`
 	RxBandWidth uint32  `json:"rxBandWidth" binding:"required,gt=1, lt=800000"`
@@ -75,9 +75,11 @@ type Circuit struct {
 type CircuitList []Circuit
 
 type CircuitShort struct {
-	Id        string `json:"id"`
-	Name      string `json:"name"`
-	BandWidth uint32 `json:"bandWidth"`
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Provider    string `json:"provider"`
+	RxBandWidth uint32 `json:"RxBandWidth"`
+	TxBandWidth uint32 `json:"TxBandWidth"`
 }
 
 type CircuitShortList []CircuitShort

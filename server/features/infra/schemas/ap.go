@@ -14,6 +14,8 @@ type AP struct {
 	UpdatedAt    time.Time     `json:"updatedAt"`
 	Name         string        `json:"name"`
 	Status       string        `json:"status"`
+	OperStatus   string        `json:"operStatus"`
+	HealthStatus string        `json:"healthStatus"`
 	MacAddress   *string       `json:"macAddress"`
 	SerialNumber *string       `json:"serialNumber"`
 	ManagementIP string        `json:"managementIp"`

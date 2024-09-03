@@ -297,8 +297,8 @@ func (sd *SnmpDiscovery) LldpNeighbors() (lldp []*LldpNeighbor, errors []string)
 		lldp = append(lldp, &LldpNeighbor{
 			LocalChassisId:  localChassisId,
 			LocalHostname:   hostname,
-			LocalIfName:     IndexIfName[i],
-			LocalIfDescr:    IndexIfDescr[i],
+			LocalIfName:     IndexIfName["."+i],
+			LocalIfDescr:    IndexIfDescr["."+i],
 			RemoteChassisId: v,
 			RemoteHostname:  IndexRemoteHostname[i],
 			RemoteIfName:    IndexRemoteIfName[i],

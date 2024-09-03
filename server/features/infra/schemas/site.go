@@ -53,6 +53,16 @@ type Site struct {
 	Description *string   `json:"description"`
 }
 
+type SiteDetail struct {
+	Site
+	SwitchCount  int64 `json:"switchCount"`
+	ApCount      int64 `json:"apCount"`
+	RackCount    int64 `json:"rackCount"`
+	CircuitCount int64 `json:"circuitCount"`
+	VlanCount    int64 `json:"vlanCount"`
+	GatewayCount int64 `json:"gatewayCount"`
+}
+
 type SiteList []Site
 
 type SiteShort struct {

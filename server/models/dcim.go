@@ -7,19 +7,20 @@ import (
 var SiteSearchFields = []string{"name", "siteCode", "address"}
 var DeviceSearchFields = []string{"name", "managementIp", "chassisId", "serialNumber", "assetTag"}
 var APSearchFields = []string{"name", "macAddress", "serialNumber", "managementIp"}
+var RackSearchFields = []string{"name", "serialNumber"}
 
-var SiteTableName = "dcim_site"
-var RackTableName = "dcim_rack"
-var DeviceTableName = "dcim_device"
-var APTableName = "dcim_ap"
-var DeviceInterfaceTableName = "dcim_interface"
-var LLDPNeighborTableName = "dcim_lldp_neighbor"
-var ApLLDPNeighborTableName = "dcim_ap_lldp_neighbor"
-var DeviceStackTableName = "dcim_device_stack"
-var DeviceConfigTableName = "dcim_device_config"
-var CliCredentialTableName = "dcim_cli_credential"
-var SnmpV2CredentialTableName = "dcim_snmp_v2_credential"
-var RestconfCredentialTableName = "dcim_restconf_credential"
+var SiteTableName = "infra_site"
+var RackTableName = "infra_rack"
+var DeviceTableName = "infra_device"
+var APTableName = "infra_ap"
+var DeviceInterfaceTableName = "infra_interface"
+var LLDPNeighborTableName = "infra_lldp_neighbor"
+var ApLLDPNeighborTableName = "infra_ap_lldp_neighbor"
+var DeviceStackTableName = "infra_device_stack"
+var DeviceConfigTableName = "infra_device_config"
+var CliCredentialTableName = "infra_cli_credential"
+var SnmpV2CredentialTableName = "infra_snmp_v2_credential"
+var RestconfCredentialTableName = "infra_restconf_credential"
 var MacAddressTableName = "mac_address"
 
 type Site struct {
@@ -61,31 +62,31 @@ func (Rack) TableName() string {
 type Device struct {
 	BaseDbModel
 
-	Name           string                       `gorm:"column:name;not null"`
-	ManagementIp   string                       `gorm:"column:managementIp;uniqueIndex:idx_management_ip_organization_id;not null;index"`
-	Status         string                       `gorm:"column:status;default:Active"`
-	Platform       string                       `gorm:"column:platform;default:Unknown"`
-	ProductFamily  string                       `gorm:"column:productFamily;default:Unknown"`
-	DeviceModel    string                       `gorm:"column:deviceModel;default:Unknown"`
-	Manufacturer   string                       `gorm:"column:manufacturer;default:Unknown"`
-	DeviceRole     string                       `gorm:"column:deviceRole;default:Unknown"`
-	Floor          *string                      `gorm:"column:floor;default:null"`
-	IsRegistered   bool                         `gorm:"column:isRegistered;type:bool;default:false"`
-	ChassisId      *string                      `gorm:"column:chassisId;uniqueIndex:idx_chassis_id_organization_id;default:null;index"`
-	SerialNumber   *string                      `gorm:"column:serialNumber;uniqueIndex:idx_serial_number_organization_id"`
-	Description    *string                      `gorm:"column:description;default:null"`
-	OsVersion      *string                      `gorm:"column:osVersion;default:null"`
-	OsPatch        *string                      `gorm:"column:osPatch;default:null"`
-	RackId         *string                      `gorm:"column:rackId;type:uuid;default:null"`
-	Rack           Rack                         `gorm:"constraint:Ondelete:SET NULL"`
-	RackPosition   *datatypes.JSONSlice[string] `gorm:"column:rackPosition;type:json;default:null"`
-	MonitorId      *string                      `gorm:"column:monitorId;default:null;unique"`
-	TemplateId     *string                      `gorm:"column:templateId;type:uuid;default:null"`
-	Template       Template                     `gorm:"constraint:Ondelete:SET NULL"`
-	SiteId         string                       `gorm:"column:siteId;type:uuid;index;not null"`
-	Site           Site                         `gorm:"constraint:Ondelete:RESTRICT"`
-	OrganizationId string                       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_management_ip_organization_id;uniqueIndex:idx_serial_number_organization_id;uniqueIndex:idx_chassis_id_organization_id;index"`
-	Organization   Organization                 `gorm:"constraint:Ondelete:CASCADE"`
+	Name           string                      `gorm:"column:name;not null"`
+	ManagementIp   string                      `gorm:"column:managementIp;uniqueIndex:idx_management_ip_organization_id;not null;index"`
+	Status         string                      `gorm:"column:status;default:Active"`
+	Platform       string                      `gorm:"column:platform;default:Unknown"`
+	ProductFamily  string                      `gorm:"column:productFamily;default:Unknown"`
+	DeviceModel    string                      `gorm:"column:deviceModel;default:Unknown"`
+	Manufacturer   string                      `gorm:"column:manufacturer;default:Unknown"`
+	DeviceRole     string                      `gorm:"column:deviceRole;default:Unknown"`
+	Floor          *string                     `gorm:"column:floor;default:null"`
+	IsRegistered   bool                        `gorm:"column:isRegistered;type:bool;default:false"`
+	ChassisId      *string                     `gorm:"column:chassisId;uniqueIndex:idx_chassis_id_organization_id;default:null;index"`
+	SerialNumber   *string                     `gorm:"column:serialNumber;uniqueIndex:idx_serial_number_organization_id"`
+	Description    *string                     `gorm:"column:description;default:null"`
+	OsVersion      *string                     `gorm:"column:osVersion;default:null"`
+	OsPatch        *string                     `gorm:"column:osPatch;default:null"`
+	RackId         *string                     `gorm:"column:rackId;type:uuid;default:null"`
+	Rack           Rack                        `gorm:"constraint:Ondelete:SET NULL"`
+	RackPosition   *datatypes.JSONSlice[uint8] `gorm:"column:rackPosition;type:json;default:null"`
+	MonitorId      *string                     `gorm:"column:monitorId;default:null;unique"`
+	TemplateId     *string                     `gorm:"column:templateId;type:uuid;default:null"`
+	Template       Template                    `gorm:"constraint:Ondelete:SET NULL"`
+	SiteId         string                      `gorm:"column:siteId;type:uuid;index;not null"`
+	Site           Site                        `gorm:"constraint:Ondelete:RESTRICT"`
+	OrganizationId string                      `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_management_ip_organization_id;uniqueIndex:idx_serial_number_organization_id;uniqueIndex:idx_chassis_id_organization_id;index"`
+	Organization   Organization                `gorm:"constraint:Ondelete:CASCADE"`
 }
 
 func (Device) TableName() string {
@@ -99,7 +100,7 @@ type DeviceInterface struct {
 	IfDescr       string  `gorm:"column:ifDescr;default:null"`
 	IfSpeed       uint64  `gorm:"column:ifSpeed;default:1000"`
 	IfType        uint64  `gorm:"column:ifType;default:1"`
-	IfMtu         uint64  `gorm:"column:mtu;default:1500"`
+	IfMtu         uint64  `gorm:"column:ifMtu;default:1500"`
 	IfAdminStatus uint64  `gorm:"column:ifAdminStatus;default:1"`
 	IfOperStatus  uint64  `gorm:"column:ifOperStatus;default:1"`
 	IfLastChange  uint64  `gorm:"column:ifLastChange;default:0"`
@@ -251,6 +252,7 @@ type AP struct {
 	DeviceRole     string                            `gorm:"column:deviceRole;default:WlanAP"`
 	OsVersion      *string                           `gorm:"column:osVersion;default:null"`
 	GroupName      *string                           `gorm:"column:groupName;default:null"`
+	IsRegistered   bool                              `gorm:"column:isRegistered;type:bool;default:false"`
 	Coordinate     *datatypes.JSONType[ApCoordinate] `gorm:"column:coordinate;type:json;default:null"`
 	ActiveWacId    *string                           `gorm:"column:activeWacId;type:uuid;default:null"`
 	ActiveWac      Device                            `gorm:"constraint:Ondelete:SET NULL"`

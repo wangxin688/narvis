@@ -34,8 +34,8 @@ func newSite(db *gorm.DB, opts ...gen.DOOption) site {
 	_site.Status = field.NewString(tableName, "status")
 	_site.Region = field.NewString(tableName, "region")
 	_site.TimeZone = field.NewString(tableName, "timeZone")
-	_site.Latitude = field.NewString(tableName, "latitude")
-	_site.Longitude = field.NewString(tableName, "longitude")
+	_site.Latitude = field.NewFloat32(tableName, "latitude")
+	_site.Longitude = field.NewFloat32(tableName, "longitude")
 	_site.Address = field.NewString(tableName, "address")
 	_site.Description = field.NewString(tableName, "description")
 	_site.MonitorId = field.NewString(tableName, "monitorId")
@@ -63,8 +63,8 @@ type site struct {
 	Status         field.String
 	Region         field.String
 	TimeZone       field.String
-	Latitude       field.String
-	Longitude      field.String
+	Latitude       field.Float32
+	Longitude      field.Float32
 	Address        field.String
 	Description    field.String
 	MonitorId      field.String
@@ -94,8 +94,8 @@ func (s *site) updateTableName(table string) *site {
 	s.Status = field.NewString(table, "status")
 	s.Region = field.NewString(table, "region")
 	s.TimeZone = field.NewString(table, "timeZone")
-	s.Latitude = field.NewString(table, "latitude")
-	s.Longitude = field.NewString(table, "longitude")
+	s.Latitude = field.NewFloat32(table, "latitude")
+	s.Longitude = field.NewFloat32(table, "longitude")
 	s.Address = field.NewString(table, "address")
 	s.Description = field.NewString(table, "description")
 	s.MonitorId = field.NewString(table, "monitorId")

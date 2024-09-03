@@ -39,6 +39,7 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 	_aP.DeviceRole = field.NewString(tableName, "deviceRole")
 	_aP.OsVersion = field.NewString(tableName, "osVersion")
 	_aP.GroupName = field.NewString(tableName, "groupName")
+	_aP.IsRegistered = field.NewBool(tableName, "isRegistered")
 	_aP.Coordinate = field.NewField(tableName, "coordinate")
 	_aP.ActiveWacId = field.NewString(tableName, "activeWacId")
 	_aP.Floor = field.NewString(tableName, "floor")
@@ -131,6 +132,7 @@ type aP struct {
 	DeviceRole     field.String
 	OsVersion      field.String
 	GroupName      field.String
+	IsRegistered   field.Bool
 	Coordinate     field.Field
 	ActiveWacId    field.String
 	Floor          field.String
@@ -170,6 +172,7 @@ func (a *aP) updateTableName(table string) *aP {
 	a.DeviceRole = field.NewString(table, "deviceRole")
 	a.OsVersion = field.NewString(table, "osVersion")
 	a.GroupName = field.NewString(table, "groupName")
+	a.IsRegistered = field.NewBool(table, "isRegistered")
 	a.Coordinate = field.NewField(table, "coordinate")
 	a.ActiveWacId = field.NewString(table, "activeWacId")
 	a.Floor = field.NewString(table, "floor")
@@ -191,7 +194,7 @@ func (a *aP) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *aP) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 21)
+	a.fieldMap = make(map[string]field.Expr, 22)
 	a.fieldMap["id"] = a.Id
 	a.fieldMap["createdAt"] = a.CreatedAt
 	a.fieldMap["updatedAt"] = a.UpdatedAt
@@ -205,6 +208,7 @@ func (a *aP) fillFieldMap() {
 	a.fieldMap["deviceRole"] = a.DeviceRole
 	a.fieldMap["osVersion"] = a.OsVersion
 	a.fieldMap["groupName"] = a.GroupName
+	a.fieldMap["isRegistered"] = a.IsRegistered
 	a.fieldMap["coordinate"] = a.Coordinate
 	a.fieldMap["activeWacId"] = a.ActiveWacId
 	a.fieldMap["floor"] = a.Floor

@@ -34,7 +34,7 @@ func newDeviceInterface(db *gorm.DB, opts ...gen.DOOption) deviceInterface {
 	_deviceInterface.IfDescr = field.NewString(tableName, "ifDescr")
 	_deviceInterface.IfSpeed = field.NewUint64(tableName, "ifSpeed")
 	_deviceInterface.IfType = field.NewUint64(tableName, "ifType")
-	_deviceInterface.IfMtu = field.NewUint64(tableName, "mtu")
+	_deviceInterface.IfMtu = field.NewUint64(tableName, "ifMtu")
 	_deviceInterface.IfAdminStatus = field.NewUint64(tableName, "ifAdminStatus")
 	_deviceInterface.IfOperStatus = field.NewUint64(tableName, "ifOperStatus")
 	_deviceInterface.IfLastChange = field.NewUint64(tableName, "ifLastChange")
@@ -155,7 +155,7 @@ func (d *deviceInterface) updateTableName(table string) *deviceInterface {
 	d.IfDescr = field.NewString(table, "ifDescr")
 	d.IfSpeed = field.NewUint64(table, "ifSpeed")
 	d.IfType = field.NewUint64(table, "ifType")
-	d.IfMtu = field.NewUint64(table, "mtu")
+	d.IfMtu = field.NewUint64(table, "ifMtu")
 	d.IfAdminStatus = field.NewUint64(table, "ifAdminStatus")
 	d.IfOperStatus = field.NewUint64(table, "ifOperStatus")
 	d.IfLastChange = field.NewUint64(table, "ifLastChange")
@@ -189,7 +189,7 @@ func (d *deviceInterface) fillFieldMap() {
 	d.fieldMap["ifDescr"] = d.IfDescr
 	d.fieldMap["ifSpeed"] = d.IfSpeed
 	d.fieldMap["ifType"] = d.IfType
-	d.fieldMap["mtu"] = d.IfMtu
+	d.fieldMap["ifMtu"] = d.IfMtu
 	d.fieldMap["ifAdminStatus"] = d.IfAdminStatus
 	d.fieldMap["ifOperStatus"] = d.IfOperStatus
 	d.fieldMap["ifLastChange"] = d.IfLastChange

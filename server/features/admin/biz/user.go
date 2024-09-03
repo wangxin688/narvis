@@ -156,9 +156,7 @@ func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.User
 	if count <= 0 {
 		return 0, nil, nil
 	}
-	if params.OrderBy != nil {
-		stmt.UnderlyingDB().Scopes(params.OrderByField())
-	}
+	stmt.UnderlyingDB().Scopes(params.OrderByField())
 	stmt.UnderlyingDB().Scopes(params.LimitOffset())
 
 	users, err := stmt.Preload(gen.User.Role).Find()

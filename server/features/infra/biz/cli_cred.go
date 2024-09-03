@@ -5,7 +5,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/server/dal/gen"
-	"github.com/wangxin688/narvis/server/features/dcim/schemas"
+	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	te "github.com/wangxin688/narvis/server/tools/errors"
@@ -185,4 +185,3 @@ func (s *CliCredentialService) GetCredentialByDeviceIds(deviceIds []string) (map
 	}
 	return results, nil
 }
-
