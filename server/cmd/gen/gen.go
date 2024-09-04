@@ -57,7 +57,6 @@ func main() {
 		&models.Circuit{},
 		&models.Prefix{},
 		&models.IpAddress{},
-		&models.Vlan{},
 		&models.AlertGroup{},
 		&models.Alert{},
 		&models.AlertActionLog{},
