@@ -1,6 +1,10 @@
 package schemas
 
-import "time"
+import (
+	"time"
+
+	"github.com/wangxin688/narvis/server/tools/schemas"
+)
 
 type ApCoordinate struct {
 	X float32 `json:"x"`
@@ -9,7 +13,7 @@ type ApCoordinate struct {
 }
 
 type AP struct {
-	Id           int           `json:"id"`
+	Id           string        `json:"id"`
 	CreatedAt    time.Time     `json:"createdAt"`
 	UpdatedAt    time.Time     `json:"updatedAt"`
 	Name         string        `json:"name"`
@@ -18,23 +22,36 @@ type AP struct {
 	HealthStatus string        `json:"healthStatus"`
 	MacAddress   *string       `json:"macAddress"`
 	SerialNumber *string       `json:"serialNumber"`
-	ManagementIP string        `json:"managementIp"`
+	ManagementIp string        `json:"managementIp"`
 	DeviceModel  string        `json:"deviceType"`
 	Manufacturer string        `json:"manufacturer"`
 	DeviceRole   string        `json:"deviceRole"`
-	Version      *string       `json:"version"`
+	OsVersion      *string       `json:"osVersion"`
+	Floor        *string       `json:"floor"`
 	GroupName    *string       `json:"groupName"`
 	Coordinate   *ApCoordinate `json:"coordinate"`
-	ActiveWac    DeviceShort   `json:"activeWac"`
-	Site         SiteShort     `json:"site"`
+	ActiveWacId  *string       `json:"activeWacId"`
+	SiteId       string        `json:"siteId"`
 }
 
 type APList []AP
 
 type APShort struct {
-	Id           int    `json:"id"`
+	Id           string `json:"id"`
 	Name         string `json:"name"`
 	ManagementIP string `json:"managementIp"`
 }
 
 type APShortList []APShort
+
+type ApQuery struct {
+	schemas.PageInfo
+	Name         *[]string `form:"name" binding:"omitempty"`
+	ManagementIp *[]string `form:"managementIp" binding:"omitempty,list_ip"`
+	DeviceModel  *[]string `form:"deviceType" binding:"omitempty"`
+	Manufacturer *[]string `form:"manufacturer" binding:"omitempty"`
+	Floor        *string   `form:"location" binding:"omitempty"`
+	Status       *string   `form:"status" binding:"omitempty,oneof=Active Inactive"`
+	SiteId       *string   `form:"siteId" binding:"omitempty,uuid"`
+	SerialNumber *string   `form:"serialNumber" binding:"omitempty"`
+}

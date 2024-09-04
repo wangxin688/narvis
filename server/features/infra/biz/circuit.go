@@ -1,4 +1,4 @@
-package biz
+package infra_biz
 
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"

@@ -39,7 +39,7 @@ func newDeviceInterface(db *gorm.DB, opts ...gen.DOOption) deviceInterface {
 	_deviceInterface.IfOperStatus = field.NewUint64(tableName, "ifOperStatus")
 	_deviceInterface.IfLastChange = field.NewUint64(tableName, "ifLastChange")
 	_deviceInterface.IfHighSpeed = field.NewUint64(tableName, "ifHighSpeed")
-	_deviceInterface.IfPhyAddr = field.NewString(tableName, "ifPhyAddr")
+	_deviceInterface.IfPhysAddr = field.NewString(tableName, "ifPhysAddr")
 	_deviceInterface.IfIpAddress = field.NewString(tableName, "ifIpAddress")
 	_deviceInterface.DeviceId = field.NewString(tableName, "deviceId")
 	_deviceInterface.SiteId = field.NewString(tableName, "siteId")
@@ -124,7 +124,7 @@ type deviceInterface struct {
 	IfOperStatus  field.Uint64
 	IfLastChange  field.Uint64
 	IfHighSpeed   field.Uint64
-	IfPhyAddr     field.String
+	IfPhysAddr    field.String
 	IfIpAddress   field.String
 	DeviceId      field.String
 	SiteId        field.String
@@ -160,7 +160,7 @@ func (d *deviceInterface) updateTableName(table string) *deviceInterface {
 	d.IfOperStatus = field.NewUint64(table, "ifOperStatus")
 	d.IfLastChange = field.NewUint64(table, "ifLastChange")
 	d.IfHighSpeed = field.NewUint64(table, "ifHighSpeed")
-	d.IfPhyAddr = field.NewString(table, "ifPhyAddr")
+	d.IfPhysAddr = field.NewString(table, "ifPhysAddr")
 	d.IfIpAddress = field.NewString(table, "ifIpAddress")
 	d.DeviceId = field.NewString(table, "deviceId")
 	d.SiteId = field.NewString(table, "siteId")
@@ -194,7 +194,7 @@ func (d *deviceInterface) fillFieldMap() {
 	d.fieldMap["ifOperStatus"] = d.IfOperStatus
 	d.fieldMap["ifLastChange"] = d.IfLastChange
 	d.fieldMap["ifHighSpeed"] = d.IfHighSpeed
-	d.fieldMap["ifPhyAddr"] = d.IfPhyAddr
+	d.fieldMap["ifPhysAddr"] = d.IfPhysAddr
 	d.fieldMap["ifIpAddress"] = d.IfIpAddress
 	d.fieldMap["deviceId"] = d.DeviceId
 	d.fieldMap["siteId"] = d.SiteId

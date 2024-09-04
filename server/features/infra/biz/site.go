@@ -1,4 +1,4 @@
-package biz
+package infra_biz
 
 import (
 	"github.com/wangxin688/narvis/intend/devicerole"
@@ -164,7 +164,8 @@ func (s *SiteService) GetCircuitCount(siteId string) (int64, error) {
 }
 
 func (s *SiteService) GetVlanCount(siteId string) (int64, error) {
-	return gen.Vlan.Where(gen.Vlan.SiteId.Eq(siteId), gen.Vlan.OrganizationId.Eq(global.OrganizationId.Get())).Count()
+	// return gen.Vlan.Where(gen.Vlan.SiteId.Eq(siteId), gen.Vlan.OrganizationId.Eq(global.OrganizationId.Get())).Count()
+	return 0, nil
 }
 
 func (s *SiteService) GetGatewayCount(siteId string) (int64, error) {

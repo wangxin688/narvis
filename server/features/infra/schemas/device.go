@@ -50,7 +50,7 @@ type DeviceQuery struct {
 	SiteId        *string   `form:"siteId" binding:"omitempty,uuid"`
 	RackId        *string   `form:"rackId" binding:"omitempty,uuid"`
 	Floor         *string   `form:"location" binding:"omitempty"`
-	SerialNumber  *[]string `form:"serialNumber" binding:"omitempty"`
+	SerialNumber  *string `form:"serialNumber" binding:"omitempty"`
 }
 
 type DeviceShort struct {
@@ -75,6 +75,7 @@ type Device struct {
 	HealthStatus  string    `json:"healthStatus"`
 	SerialNumber  *string   `json:"serialNumber"`
 	Description   *string   `json:"description"`
+	Manufacturer  string    `json:"manufacturer"`
 	DeviceModel   string    `json:"deviceModel"`
 	DeviceRole    string    `json:"deviceRole"`
 	Floor         *string   `json:"location"`
@@ -82,10 +83,10 @@ type Device struct {
 	OsVersion     *string   `json:"osVersion"`
 	OsPatch       *string   `json:"osPatch"`
 	RackId        *string   `json:"rackId"`
-	PackPosition  *[]uint8  `json:"packPosition"`
+	RackPosition  *[]uint8  `json:"rackPosition"`
 	MonitorId     *string   `json:"monitorId"`
 	TemplateId    *string   `json:"templateId"`
 	SiteId        string    `json:"siteId"`
 }
 
-type DeviceList []Device
+

@@ -45,7 +45,7 @@ func newDevice(db *gorm.DB, opts ...gen.DOOption) device {
 	_device.OsVersion = field.NewString(tableName, "osVersion")
 	_device.OsPatch = field.NewString(tableName, "osPatch")
 	_device.RackId = field.NewString(tableName, "rackId")
-	_device.RackPosition = field.NewField(tableName, "rackPosition")
+	_device.RackPosition = field.NewString(tableName, "rackPosition")
 	_device.MonitorId = field.NewString(tableName, "monitorId")
 	_device.TemplateId = field.NewString(tableName, "templateId")
 	_device.SiteId = field.NewString(tableName, "siteId")
@@ -120,7 +120,7 @@ type device struct {
 	OsVersion      field.String
 	OsPatch        field.String
 	RackId         field.String
-	RackPosition   field.Field
+	RackPosition   field.String
 	MonitorId      field.String
 	TemplateId     field.String
 	SiteId         field.String
@@ -167,7 +167,7 @@ func (d *device) updateTableName(table string) *device {
 	d.OsVersion = field.NewString(table, "osVersion")
 	d.OsPatch = field.NewString(table, "osPatch")
 	d.RackId = field.NewString(table, "rackId")
-	d.RackPosition = field.NewField(table, "rackPosition")
+	d.RackPosition = field.NewString(table, "rackPosition")
 	d.MonitorId = field.NewString(table, "monitorId")
 	d.TemplateId = field.NewString(table, "templateId")
 	d.SiteId = field.NewString(table, "siteId")

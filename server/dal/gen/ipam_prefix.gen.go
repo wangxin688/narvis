@@ -32,37 +32,19 @@ func newPrefix(db *gorm.DB, opts ...gen.DOOption) prefix {
 	_prefix.Range = field.NewString(tableName, "range")
 	_prefix.Version = field.NewString(tableName, "version")
 	_prefix.Type = field.NewString(tableName, "type")
-	_prefix.VlanId = field.NewString(tableName, "VlanId")
+	_prefix.VlanId = field.NewUint32(tableName, "vlanId")
+	_prefix.VlanName = field.NewString(tableName, "vlanName")
 	_prefix.SiteId = field.NewString(tableName, "siteId")
 	_prefix.OrganizationId = field.NewString(tableName, "organizationId")
-	_prefix.Vlan = prefixBelongsToVlan{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("Vlan", "models.Vlan"),
-		Site: struct {
-			field.RelationField
-			Organization struct {
-				field.RelationField
-			}
-		}{
-			RelationField: field.NewRelation("Vlan.Site", "models.Site"),
-			Organization: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Vlan.Site.Organization", "models.Organization"),
-			},
-		},
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Vlan.Organization", "models.Organization"),
-		},
-	}
-
 	_prefix.Site = prefixBelongsToSite{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Site", "models.Site"),
+		Organization: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Site.Organization", "models.Organization"),
+		},
 	}
 
 	_prefix.Organization = prefixBelongsToOrganization{
@@ -86,12 +68,11 @@ type prefix struct {
 	Range          field.String
 	Version        field.String
 	Type           field.String
-	VlanId         field.String
+	VlanId         field.Uint32
+	VlanName       field.String
 	SiteId         field.String
 	OrganizationId field.String
-	Vlan           prefixBelongsToVlan
-
-	Site prefixBelongsToSite
+	Site           prefixBelongsToSite
 
 	Organization prefixBelongsToOrganization
 
@@ -116,7 +97,8 @@ func (p *prefix) updateTableName(table string) *prefix {
 	p.Range = field.NewString(table, "range")
 	p.Version = field.NewString(table, "version")
 	p.Type = field.NewString(table, "type")
-	p.VlanId = field.NewString(table, "VlanId")
+	p.VlanId = field.NewUint32(table, "vlanId")
+	p.VlanName = field.NewString(table, "vlanName")
 	p.SiteId = field.NewString(table, "siteId")
 	p.OrganizationId = field.NewString(table, "organizationId")
 
@@ -142,7 +124,8 @@ func (p *prefix) fillFieldMap() {
 	p.fieldMap["range"] = p.Range
 	p.fieldMap["version"] = p.Version
 	p.fieldMap["type"] = p.Type
-	p.fieldMap["VlanId"] = p.VlanId
+	p.fieldMap["vlanId"] = p.VlanId
+	p.fieldMap["vlanName"] = p.VlanName
 	p.fieldMap["siteId"] = p.SiteId
 	p.fieldMap["organizationId"] = p.OrganizationId
 
@@ -158,91 +141,14 @@ func (p prefix) replaceDB(db *gorm.DB) prefix {
 	return p
 }
 
-type prefixBelongsToVlan struct {
-	db *gorm.DB
-
-	field.RelationField
-
-	Site struct {
-		field.RelationField
-		Organization struct {
-			field.RelationField
-		}
-	}
-	Organization struct {
-		field.RelationField
-	}
-}
-
-func (a prefixBelongsToVlan) Where(conds ...field.Expr) *prefixBelongsToVlan {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a prefixBelongsToVlan) WithContext(ctx context.Context) *prefixBelongsToVlan {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a prefixBelongsToVlan) Session(session *gorm.Session) *prefixBelongsToVlan {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a prefixBelongsToVlan) Model(m *models.Prefix) *prefixBelongsToVlanTx {
-	return &prefixBelongsToVlanTx{a.db.Model(m).Association(a.Name())}
-}
-
-type prefixBelongsToVlanTx struct{ tx *gorm.Association }
-
-func (a prefixBelongsToVlanTx) Find() (result *models.Vlan, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a prefixBelongsToVlanTx) Append(values ...*models.Vlan) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a prefixBelongsToVlanTx) Replace(values ...*models.Vlan) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a prefixBelongsToVlanTx) Delete(values ...*models.Vlan) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a prefixBelongsToVlanTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a prefixBelongsToVlanTx) Count() int64 {
-	return a.tx.Count()
-}
-
 type prefixBelongsToSite struct {
 	db *gorm.DB
 
 	field.RelationField
+
+	Organization struct {
+		field.RelationField
+	}
 }
 
 func (a prefixBelongsToSite) Where(conds ...field.Expr) *prefixBelongsToSite {

@@ -48,7 +48,6 @@ var (
 	SubscriptionRecord *subscriptionRecord
 	Template           *template
 	User               *user
-	Vlan               *vlan
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
@@ -84,7 +83,6 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	SubscriptionRecord = &Q.SubscriptionRecord
 	Template = &Q.Template
 	User = &Q.User
-	Vlan = &Q.Vlan
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
@@ -121,7 +119,6 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		SubscriptionRecord: newSubscriptionRecord(db, opts...),
 		Template:           newTemplate(db, opts...),
 		User:               newUser(db, opts...),
-		Vlan:               newVlan(db, opts...),
 	}
 }
 
@@ -159,7 +156,6 @@ type Query struct {
 	SubscriptionRecord subscriptionRecord
 	Template           template
 	User               user
-	Vlan               vlan
 }
 
 func (q *Query) Available() bool { return q.db != nil }
@@ -198,7 +194,6 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		SubscriptionRecord: q.SubscriptionRecord.clone(db),
 		Template:           q.Template.clone(db),
 		User:               q.User.clone(db),
-		Vlan:               q.Vlan.clone(db),
 	}
 }
 
@@ -244,7 +239,6 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		SubscriptionRecord: q.SubscriptionRecord.replaceDB(db),
 		Template:           q.Template.replaceDB(db),
 		User:               q.User.replaceDB(db),
-		Vlan:               q.Vlan.replaceDB(db),
 	}
 }
 
@@ -280,7 +274,6 @@ type queryCtx struct {
 	SubscriptionRecord ISubscriptionRecordDo
 	Template           ITemplateDo
 	User               IUserDo
-	Vlan               IVlanDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
@@ -316,7 +309,6 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		SubscriptionRecord: q.SubscriptionRecord.WithContext(ctx),
 		Template:           q.Template.WithContext(ctx),
 		User:               q.User.WithContext(ctx),
-		Vlan:               q.Vlan.WithContext(ctx),
 	}
 }
 

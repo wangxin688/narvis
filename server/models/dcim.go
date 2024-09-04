@@ -105,7 +105,7 @@ type DeviceInterface struct {
 	IfOperStatus  uint64  `gorm:"column:ifOperStatus;default:1"`
 	IfLastChange  uint64  `gorm:"column:ifLastChange;default:0"`
 	IfHighSpeed   uint64  `gorm:"column:ifHighSpeed;default:1000"`
-	IfPhyAddr     *string `gorm:"column:ifPhyAddr;default:null"`
+	IfPhysAddr    *string `gorm:"column:ifPhysAddr;default:null"`
 	IfIpAddress   *string `gorm:"column:ifIpAddress;default:null"`
 	DeviceId      string  `gorm:"column:deviceId;type:uuid;index;uniqueIndex:idx_if_name_device_id;uniqueIndex:idx_if_index_device_id"`
 	Device        Device  `gorm:"constraint:Ondelete:CASCADE"`

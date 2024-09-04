@@ -1,4 +1,4 @@
-package biz
+package infra_biz
 
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
@@ -132,4 +132,24 @@ func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *schemas.Rack
 		})
 	}
 	return count, &list, nil
+}
+
+func (r *RackService) ValidateDeviceCreateRackReservation(rackId string, uHeight uint8, positions []uint8) bool {
+	devices, err := gen.Device.Select(gen.Device.RackPosition).Where(gen.Device.RackId.Eq(rackId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+	if err != nil {
+		return false
+	}
+	if len(devices) == 0 && len(positions) <= int(uHeight) {
+		return true
+	}
+	usedPositions := make([]uint8, 0)
+	for _, device := range devices {
+		if device.RackPosition != nil {
+			ps, _ := infra_utils.ParseUint8s(*device.RackPosition)
+			usedPositions = append(usedPositions, ps...)
+		}
+	}
+	// check if all positions are available
+
+	return true
 }

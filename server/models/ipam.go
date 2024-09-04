@@ -1,12 +1,10 @@
 package models
 
 var IpSearchFields = []string{"address"}
-var PrefixSearchFields = []string{"prefix"}
-var VlanSearchFields = []string{"name", "vid"}
+var PrefixSearchFields = []string{"prefix", "vlanName"}
 
 var PrefixTableName = "ipam_prefix"
 var IpAddressTableName = "ipam_ip_address"
-var VlanTableName = "ipam_vlan"
 
 type Prefix struct {
 	BaseDbModel
@@ -14,8 +12,8 @@ type Prefix struct {
 	Range          string       `gorm:"column:range;type:cidr;index;not null"`
 	Version        string       `gorm:"column:version;not null"`     // IPv4 or IPv6
 	Type           string       `gorm:"column:type;default:Dynamic"` // Dynamic or Static
-	VlanId         *string      `gorm:"column:VlanId;type:uuid;default:null"`
-	Vlan           Vlan         `gorm:"constraint:Ondelete:SET NULL"`
+	VlanId         *uint32      `gorm:"column:vlanId;default:null"`
+	VlanName       *string      `gorm:"column:vlanName;default:null"`
 	SiteId         *string      `gorm:"column:siteId;type:uuid;index"`
 	Site           Site         `gorm:"constraint:Ondelete:SET NULL"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
@@ -34,7 +32,7 @@ type IpAddress struct {
 
 	Address        string       `gorm:"column:address;type:inet;not null;uniqueIndex:idx_address_site_id;index"`
 	Status         string       `gorm:"column:status;default:Active"` // Active or Reserved
-	MacAddress     string       `gorm:"column:macAddress;type:macaddr;default:null"`
+	MacAddress     *string      `gorm:"column:macAddress;type:macaddr"`
 	Description    *string      `gorm:"column:description;default:null"`
 	SiteId         string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_address_site_id;index"`
 	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
@@ -44,20 +42,4 @@ type IpAddress struct {
 
 func (IpAddress) TableName() string {
 	return IpAddressTableName
-}
-
-type Vlan struct {
-	BaseDbModel
-	Name           string       `gorm:"column:name;not null"`
-	Vid            uint32       `gorm:"column:vid;not null;uniqueIndex:idx_vid_site_id"` // 1-4094 and vxlan range
-	Description    *string      `gorm:"column:description;default:null"`
-	Status         string       `gorm:"column:status;default:Active"`
-	SiteId         string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_vid_site_id;index"`
-	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
-	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
-}
-
-func (Vlan) TableName() string {
-	return VlanTableName
 }

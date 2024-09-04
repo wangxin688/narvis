@@ -544,6 +544,183 @@ const docTemplate = `{
                 }
             }
         },
+        "/infra/aps": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List aps",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "List aps",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "deviceType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "location",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "managementIp",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "manufacturer",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "serialNumber",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "siteId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Active",
+                            "Inactive"
+                        ],
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/schemas.ListResponse"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "results": {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/definitions/schemas.AP"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/aps/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get ap",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get ap",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.AP"
+                        }
+                    }
+                }
+            }
+        },
         "/infra/circuit": {
             "post": {
                 "security": [
@@ -863,6 +1040,369 @@ const docTemplate = `{
                 }
             }
         },
+        "/infra/devices": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List devices",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "List devices",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "deviceModel",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "deviceRole",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "location",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "managementIp",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "manufacturer",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Gateway",
+                            "Switching",
+                            "WlanAP"
+                        ],
+                        "type": "string",
+                        "name": "productFamily",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "rackId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "serialNumber",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "siteId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Active",
+                            "Inactive"
+                        ],
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/schemas.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/schemas.Device"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create device",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Create device",
+                "parameters": [
+                    {
+                        "description": "device",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.DeviceCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/devices/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get device",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get device",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Device"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update device",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Update device",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "device",
+                        "name": "device",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.DeviceUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete device",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Delete device",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/devices/{id}/interfaces": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get device interfaces",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get device interfaces",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/schemas.DeviceInterface"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/infra/racks": {
             "get": {
                 "security": [
@@ -1009,7 +1549,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/infra/racks/{rackId}": {
+        "/infra/racks/{id}": {
             "get": {
                 "security": [
                     {
@@ -1610,6 +2150,82 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "schemas.AP": {
+            "type": "object",
+            "properties": {
+                "activeWacId": {
+                    "type": "string"
+                },
+                "coordinate": {
+                    "$ref": "#/definitions/schemas.ApCoordinate"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deviceRole": {
+                    "type": "string"
+                },
+                "deviceType": {
+                    "type": "string"
+                },
+                "floor": {
+                    "type": "string"
+                },
+                "groupName": {
+                    "type": "string"
+                },
+                "healthStatus": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "macAddress": {
+                    "type": "string"
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operStatus": {
+                    "type": "string"
+                },
+                "osVersion": {
+                    "type": "string"
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.ApCoordinate": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                },
+                "z": {
+                    "type": "number"
+                }
+            }
+        },
         "schemas.AuthConfig": {
             "type": "object",
             "properties": {
@@ -1774,6 +2390,194 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.Device": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "deviceModel": {
+                    "type": "string"
+                },
+                "deviceRole": {
+                    "type": "string"
+                },
+                "healthStatus": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isRegistered": {
+                    "type": "boolean"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "monitorId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operStatus": {
+                    "type": "string"
+                },
+                "osPatch": {
+                    "type": "string"
+                },
+                "osVersion": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string"
+                },
+                "productFamily": {
+                    "type": "string"
+                },
+                "rackId": {
+                    "type": "string"
+                },
+                "rackPosition": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "templateId": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.DeviceCreate": {
+            "type": "object",
+            "required": [
+                "deviceRole",
+                "managementIp",
+                "name",
+                "siteId",
+                "status"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "deviceModel": {
+                    "type": "string"
+                },
+                "deviceRole": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "osVersion": {
+                    "type": "string"
+                },
+                "rackId": {
+                    "type": "string"
+                },
+                "rackPosition": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
+                }
+            }
+        },
+        "schemas.DeviceInterface": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "ifAdminStatus": {
+                    "type": "integer"
+                },
+                "ifDescr": {
+                    "type": "string"
+                },
+                "ifHighSpeed": {
+                    "type": "integer"
+                },
+                "ifIndex": {
+                    "type": "integer"
+                },
+                "ifIpAddress": {
+                    "type": "string"
+                },
+                "ifLastChange": {
+                    "type": "integer"
+                },
+                "ifMtu": {
+                    "type": "integer"
+                },
+                "ifName": {
+                    "type": "string"
+                },
+                "ifOperStatus": {
+                    "type": "integer"
+                },
+                "ifPhysAddr": {
+                    "type": "string"
+                },
+                "ifSpeed": {
+                    "type": "integer"
+                },
+                "ifType": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.DeviceRole": {
             "type": "object",
             "properties": {
@@ -1791,6 +2595,54 @@ const docTemplate = `{
                 },
                 "weight": {
                     "type": "integer"
+                }
+            }
+        },
+        "schemas.DeviceUpdate": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "deviceModel": {
+                    "type": "string"
+                },
+                "deviceRole": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "osVersion": {
+                    "type": "string"
+                },
+                "rackId": {
+                    "type": "string"
+                },
+                "rackPosition": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
                 }
             }
         },

@@ -32,7 +32,6 @@ func Migrate(db *gorm.DB) error {
 		&models.Circuit{},
 		&models.Prefix{},
 		&models.IpAddress{},
-		&models.Vlan{},
 		&models.AlertGroup{},
 		&models.Alert{},
 		&models.AlertActionLog{},

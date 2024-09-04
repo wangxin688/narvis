@@ -1,4 +1,4 @@
-package biz
+package infra_biz
 
 import (
 	"errors"

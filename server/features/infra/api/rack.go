@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/features/infra/biz"
+	biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
@@ -46,7 +46,7 @@ func createRack(c *gin.Context) {
 // @Produce json
 // @Param rackId path string true "rackId"
 // @Success 200 {object} schemas.Rack
-// @Router /infra/racks/{rackId} [get]
+// @Router /infra/racks/{id} [get]
 func getRack(c *gin.Context) {
 	var err error
 	defer func() {
@@ -72,7 +72,7 @@ func getRack(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param object query schemas.RackQuery false "query racks"
-// @Success 200 {object} schemas.ListResponse{results=[]schemas.Rack}
+// @Success 200 {object} ts.ListResponse{results=[]schemas.Rack}
 // @Router /infra/racks [get]
 func listRacks(c *gin.Context) {
 	var err error
@@ -104,7 +104,7 @@ func listRacks(c *gin.Context) {
 // @Param rackId path string true "rackId"
 // @Param rack body schemas.RackUpdate true "rack"
 // @Success 200 {object} ts.IdResponse
-// @Router /infra/racks/{rackId} [put]
+// @Router /infra/racks/{id} [put]
 func updateRack(c *gin.Context) {
 	var err error
 	defer func() {
@@ -131,7 +131,7 @@ func updateRack(c *gin.Context) {
 // @Produce json
 // @Param rackId path string true "rackId"
 // @Success 200 {object} ts.IdResponse
-// @Router /infra/racks/{rackId} [delete]
+// @Router /infra/racks/{id} [delete]
 func deleteRack(c *gin.Context) {
 	var err error
 	defer func() {

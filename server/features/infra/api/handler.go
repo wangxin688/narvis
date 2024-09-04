@@ -23,6 +23,16 @@ func RegisterInfraRoutes(e *gin.Engine) {
 		router.PUT("/racks/:id", updateRack)
 		router.DELETE("/racks/:id", deleteRack)
 
+		router.POST("/devices", createDevice)
+		router.GET("/devices", listDevices)
+		router.GET("/devices/:id", getDevice)
+		router.PUT("/devices/:id", updateDevice)
+		router.DELETE("/devices/:id", deleteDevice)
+		router.GET("/devices/:id/interfaces", getDeviceInterfaces)
+
+		router.GET("/aps/:id", getAp)
+		router.GET("/aps", listAp)
+
 		router.POST("/circuits", createCircuit)
 		router.GET("/circuits", listCircuit)
 		router.GET("/circuits/:id", getCircuit)

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/features/infra/biz"
+	biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"

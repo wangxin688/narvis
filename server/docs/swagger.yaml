@@ -1,4 +1,54 @@
 definitions:
+  schemas.AP:
+    properties:
+      activeWacId:
+        type: string
+      coordinate:
+        $ref: '#/definitions/schemas.ApCoordinate'
+      createdAt:
+        type: string
+      deviceRole:
+        type: string
+      deviceType:
+        type: string
+      floor:
+        type: string
+      groupName:
+        type: string
+      healthStatus:
+        type: string
+      id:
+        type: string
+      macAddress:
+        type: string
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      name:
+        type: string
+      operStatus:
+        type: string
+      osVersion:
+        type: string
+      serialNumber:
+        type: string
+      siteId:
+        type: string
+      status:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  schemas.ApCoordinate:
+    properties:
+      x:
+        type: number
+      "y":
+        type: number
+      z:
+        type: number
+    type: object
   schemas.AuthConfig:
     properties:
       clientId:
@@ -109,6 +159,132 @@ definitions:
       txBandWidth:
         type: integer
     type: object
+  schemas.Device:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      deviceModel:
+        type: string
+      deviceRole:
+        type: string
+      healthStatus:
+        type: string
+      id:
+        type: string
+      isRegistered:
+        type: boolean
+      location:
+        type: string
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      monitorId:
+        type: string
+      name:
+        type: string
+      operStatus:
+        type: string
+      osPatch:
+        type: string
+      osVersion:
+        type: string
+      platform:
+        type: string
+      productFamily:
+        type: string
+      rackId:
+        type: string
+      rackPosition:
+        items:
+          type: integer
+        type: array
+      serialNumber:
+        type: string
+      siteId:
+        type: string
+      status:
+        type: string
+      templateId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  schemas.DeviceCreate:
+    properties:
+      description:
+        type: string
+      deviceModel:
+        type: string
+      deviceRole:
+        type: string
+      location:
+        type: string
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      name:
+        type: string
+      osVersion:
+        type: string
+      rackId:
+        type: string
+      rackPosition:
+        items:
+          type: integer
+        type: array
+      serialNumber:
+        type: string
+      siteId:
+        type: string
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
+    required:
+    - deviceRole
+    - managementIp
+    - name
+    - siteId
+    - status
+    type: object
+  schemas.DeviceInterface:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      ifAdminStatus:
+        type: integer
+      ifDescr:
+        type: string
+      ifHighSpeed:
+        type: integer
+      ifIndex:
+        type: integer
+      ifIpAddress:
+        type: string
+      ifLastChange:
+        type: integer
+      ifMtu:
+        type: integer
+      ifName:
+        type: string
+      ifOperStatus:
+        type: integer
+      ifPhysAddr:
+        type: string
+      ifSpeed:
+        type: integer
+      ifType:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
   schemas.DeviceRole:
     properties:
       abbreviation:
@@ -121,6 +297,38 @@ definitions:
         type: string
       weight:
         type: integer
+    type: object
+  schemas.DeviceUpdate:
+    properties:
+      description:
+        type: string
+      deviceModel:
+        type: string
+      deviceRole:
+        type: string
+      location:
+        type: string
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      name:
+        type: string
+      osVersion:
+        type: string
+      rackId:
+        type: string
+      rackPosition:
+        items:
+          type: integer
+        type: array
+      serialNumber:
+        type: string
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
     type: object
   schemas.I18n:
     properties:
@@ -899,6 +1107,116 @@ paths:
       summary: Update user
       tags:
       - Admin
+  /infra/aps:
+    get:
+      consumes:
+      - application/json
+      description: List aps
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: deviceType
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - in: query
+        name: location
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: managementIp
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: manufacturer
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: name
+        type: array
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - in: query
+        name: serialNumber
+        type: string
+      - in: query
+        name: siteId
+        type: string
+      - enum:
+        - Active
+        - Inactive
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/schemas.ListResponse'
+              - properties:
+                  results:
+                    items:
+                      $ref: '#/definitions/schemas.AP'
+                    type: array
+                type: object
+            type: array
+      security:
+      - BearerAuth: []
+      summary: List aps
+      tags:
+      - Infra
+  /infra/aps/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get ap
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.AP'
+      security:
+      - BearerAuth: []
+      summary: Get ap
+      tags:
+      - Infra
   /infra/circuit:
     post:
       consumes:
@@ -1099,6 +1417,234 @@ paths:
       summary: List circuits
       tags:
       - Infra
+  /infra/devices:
+    get:
+      consumes:
+      - application/json
+      description: List devices
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: deviceModel
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: deviceRole
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: id
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - in: query
+        name: location
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: managementIp
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: manufacturer
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: name
+        type: array
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - enum:
+        - Gateway
+        - Switching
+        - WlanAP
+        in: query
+        name: productFamily
+        type: string
+      - in: query
+        name: rackId
+        type: string
+      - in: query
+        name: serialNumber
+        type: string
+      - in: query
+        name: siteId
+        type: string
+      - enum:
+        - Active
+        - Inactive
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/schemas.Device'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List devices
+      tags:
+      - Infra
+    post:
+      consumes:
+      - application/json
+      description: Create device
+      parameters:
+      - description: device
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.DeviceCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create device
+      tags:
+      - Infra
+  /infra/devices/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete device
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete device
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: get device
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Device'
+      security:
+      - BearerAuth: []
+      summary: Get device
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Update device
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: device
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.DeviceUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update device
+      tags:
+      - Infra
+  /infra/devices/{id}/interfaces:
+    get:
+      consumes:
+      - application/json
+      description: Get device interfaces
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schemas.DeviceInterface'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get device interfaces
+      tags:
+      - Infra
   /infra/racks:
     get:
       consumes:
@@ -1189,7 +1735,7 @@ paths:
       summary: Create new rack
       tags:
       - Infra
-  /infra/racks/{rackId}:
+  /infra/racks/{id}:
     delete:
       consumes:
       - application/json
