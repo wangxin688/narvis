@@ -403,18 +403,29 @@ func (sd *SnmpDiscovery) MacAddressTable() (macTable *map[uint64][]string, error
 	return &_macTable, errors
 }
 
-func (sd *SnmpDiscovery) ArpTable() (arp *map[string]string, error error) {
-	arpTable, err := sd.Session.BulkWalkAll(IpNetToMediaPhysAddress)
-	if err != nil {
-		return nil, err
+func (sd *SnmpDiscovery) ArpTable() (arp *map[string]*ArpItem, errors []string) {
+	arpTable, errArpTable := sd.Session.BulkWalkAll(IpNetToMediaPhysAddress)
+	arpType, errArpType := sd.Session.BulkWalkAll(IpNetToMediaType)
+	if errArpTable != nil || errArpType != nil {
+		errors = append(errors, errArpType.Error())
+		errors = append(errors, errArpTable.Error())
+		return nil, errors
 	}
 	arpMap := extractMacAddress(IpNetToMediaPhysAddress, arpTable)
+	arpTypeMap := extractInteger(IpNetToMediaType, arpType)
 	_arp := lo.MapKeys(arpMap, func(_ string, x string) string {
 		splitData := strings.Split(x, ".")
 		x_last_4 := splitData[len(splitData)-4:]
 		return strings.Join(x_last_4, ".")
 	})
-	return &_arp, nil
+	results := make(map[string]*ArpItem)
+	for key, value := range _arp {
+		results[key] = &ArpItem{
+			MacAddress: value,
+			Type: arpTypeMap[key],
+		}
+	}
+	return &results, nil
 }
 
 func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
@@ -464,7 +475,7 @@ func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
 		response.Errors = append(response.Errors, macAddressError...)
 	}
 	if arpError != nil {
-		response.Errors = append(response.Errors, arpError.Error())
+		response.Errors = append(response.Errors, arpError...)
 	}
 	return response
 }

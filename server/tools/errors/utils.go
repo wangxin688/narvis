@@ -3,6 +3,8 @@ package errors
 import "strings"
 
 func removeOrgInError(fields, values string) (string, string) {
+	fields = strings.ReplaceAll(fields, "\"", "")
+	values = strings.ReplaceAll(values, "\"", "")
 	if strings.Contains(fields, "organizationId") {
 		tmpFields := strings.Split(strings.ReplaceAll(fields, " ", ""), ",")
 		tmpValues := strings.Split(strings.ReplaceAll(values, " ", ""), ",")

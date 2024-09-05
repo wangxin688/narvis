@@ -62,6 +62,11 @@ type Route struct{}
 
 type Prefix struct{}
 
+type ArpItem struct {
+	MacAddress string
+	Type uint64
+}
+
 type DiscoveryResponse struct {
 	Hostname        string               `json:"hostname"`
 	SysDescr        string               `json:"sysDescr"`
@@ -73,7 +78,7 @@ type DiscoveryResponse struct {
 	Stacks          []*Stack             `json:"stacks"`
 	Vlans           []*Vlan              `json:"vlans"`
 	MacAddressTable *map[uint64][]string `json:"macAddressTable"`
-	ArpTable        *map[string]string   `json:"arpTable"`
+	ArpTable        *map[string]*ArpItem   `json:"arpTable"`
 	Errors          []string             `json:"errors"`
 }
 

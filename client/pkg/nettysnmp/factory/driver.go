@@ -11,6 +11,6 @@ type SnmpDriver interface {
 	LldpNeighbors() (lldp []*LldpNeighbor, errors []string)
 	Entities() (entities []*Entity, errors []string)
 	MacAddressTable() (macTable *map[uint64][]string, errors []string)
-	ArpTable() (arp *map[string]string, error error)
+	ArpTable() (arp *map[string]*ArpItem, errors []string)
 	Discovery() *DiscoveryResponse
 }

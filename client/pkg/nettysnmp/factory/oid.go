@@ -69,3 +69,5 @@ var Dot1dTpFdbAddress = ".1.3.6.1.2.1.17.4.3.1.1"     // The MAC address of the 
 var Dot1dTpFdbPort = ".1.3.6.1.2.1.17.4.3.1.2"        // The port number of the FDB entry. int
 var Dot1dBasePortIfIndex = ".1.3.6.1.2.1.17.1.4.1.2"  // The ifIndex of the port. int
 var IpNetToMediaPhysAddress = ".1.3.6.1.2.1.4.22.1.2" // The MAC address of the port.
+var IpNetToMediaType = ".1.3.6.1.2.1.4.22.1.4" // 1: other(1), 2: invalid(2), 3: dynamic(3), 4: static(4)
+ 
