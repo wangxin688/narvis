@@ -72,7 +72,6 @@ type Circuit struct {
 	// ZInterface ds.InterfaceShort `json:"z_interface"`
 }
 
-type CircuitList []Circuit
 
 type CircuitShort struct {
 	Id          string `json:"id"`

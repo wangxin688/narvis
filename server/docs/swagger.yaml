@@ -458,6 +458,68 @@ definitions:
     - licenseCount
     - name
     type: object
+  schemas.Prefix:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      range:
+        type: string
+      siteId:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+      utilization:
+        type: number
+      version:
+        type: string
+      vlanId:
+        type: integer
+      vlanName:
+        type: string
+    type: object
+  schemas.PrefixCreate:
+    properties:
+      range:
+        type: string
+      siteId:
+        type: string
+      type:
+        enum:
+        - Dynamic
+        - Static
+        type: string
+      vlanId:
+        description: not support VxLAN now
+        maximum: 4094
+        type: integer
+      vlanName:
+        type: string
+    required:
+    - range
+    - siteId
+    - type
+    type: object
+  schemas.PrefixUpdate:
+    properties:
+      range:
+        type: string
+      siteId:
+        type: string
+      type:
+        enum:
+        - Dynamic
+        - Static
+        type: string
+      vlanId:
+        maximum: 4094
+        type: integer
+      vlanName:
+        type: string
+    type: object
   schemas.Rack:
     properties:
       id:
@@ -2061,6 +2123,176 @@ paths:
       summary: Get list of Platforms
       tags:
       - Intend
+  /ipam/prefixes:
+    get:
+      consumes:
+      - application/json
+      description: Get prefix list
+      parameters:
+      - in: query
+        name: keyword
+        type: string
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: range
+        type: array
+      - in: query
+        name: siteId
+        type: string
+      - enum:
+        - Dynamic
+        - Static
+        in: query
+        name: type
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: integer
+        maxItems: 4094
+        name: vlanId
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: vlanName
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/schemas.Prefix'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get prefix list
+      tags:
+      - IPAM
+    post:
+      consumes:
+      - application/json
+      description: Create prefix
+      parameters:
+      - description: Prefix
+        in: body
+        name: prefix
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.PrefixCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create prefix
+      tags:
+      - IPAM
+  /ipam/prefixes/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete prefix
+      parameters:
+      - description: prefixId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete prefix
+      tags:
+      - IPAM
+    get:
+      consumes:
+      - application/json
+      description: Get prefix
+      parameters:
+      - description: prefixId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Prefix'
+      security:
+      - BearerAuth: []
+      summary: Get prefix
+      tags:
+      - IPAM
+    put:
+      consumes:
+      - application/json
+      description: Update prefix
+      parameters:
+      - description: prefixId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Prefix
+        in: body
+        name: prefix
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.PrefixUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update prefix
+      tags:
+      - IPAM
   /login/password:
     post:
       parameters:

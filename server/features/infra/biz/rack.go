@@ -96,7 +96,8 @@ func (r *RackService) GetRackByID(rackID string) (*schemas.Rack, error) {
 	}, nil
 }
 
-func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *schemas.RackList, error) {
+func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *[]*schemas.Rack, error) {
+	res := make([]*schemas.Rack, 0)
 	stmt := gen.Rack.Where(gen.Rack.OrganizationId.Eq(global.OrganizationId.Get()))
 	if params.SiteId != nil {
 		stmt = stmt.Where(gen.Rack.SiteId.Eq(*params.SiteId))
@@ -109,7 +110,7 @@ func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *schemas.Rack
 	}
 	count, err := stmt.Count()
 	if err != nil || count < 0 {
-		return 0, nil, err
+		return 0, &res, err
 	}
 	if params.IsSearchable() {
 		keyword := "%" + *params.Keyword + "%"
@@ -120,15 +121,13 @@ func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *schemas.Rack
 		)
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())
-	stmt.UnderlyingDB().Scopes(params.LimitOffset())
+	stmt.UnderlyingDB().Scopes(params.Pagination())
 	racks, err := stmt.Find()
 	if err != nil {
-		nilResult := schemas.RackList{}
-		return 0, &nilResult, err
+		return 0, &res, err
 	}
-	var list schemas.RackList
 	for _, rack := range racks {
-		list = append(list, schemas.Rack{
+		res = append(res, &schemas.Rack{
 			Id:           rack.Id,
 			Name:         rack.Name,
 			SerialNumber: rack.SerialNumber,
@@ -136,7 +135,7 @@ func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *schemas.Rack
 			SiteId:       rack.SiteId,
 		})
 	}
-	return count, &list, nil
+	return count, &res, nil
 }
 
 func (r *RackService) ValidateDeviceCreateRackReservation(rackId string, uHeight uint8, positions []uint8) bool {

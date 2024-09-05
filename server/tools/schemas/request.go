@@ -20,7 +20,7 @@ type PageInfo struct {
 	OrderBy  *string `form:"orderBy,default=createdAt" binding:"omitempty"`
 }
 
-func (r *PageInfo) LimitOffset() func(db *gorm.DB) *gorm.DB {
+func (r *PageInfo) Pagination() func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if r.Page == nil || r.PageSize == nil {
 			return db.Offset(0).Limit(10)

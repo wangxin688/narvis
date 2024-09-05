@@ -47,7 +47,6 @@ type User struct {
 	Role      RoleShort `json:"role"`
 }
 
-type UserList []*User
 
 type UserMe struct {
 	Id        string    `json:"id"`

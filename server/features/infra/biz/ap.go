@@ -13,6 +13,7 @@ func NewApService() *ApService {
 }
 
 func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, error) {
+	res := make([]*schemas.AP, 0)
 	stmt := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()))
 	if query.Name != nil {
 		stmt = stmt.Where(gen.AP.Name.In(*query.Name...))
@@ -40,15 +41,14 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 
 	count, err := stmt.Count()
 	if err != nil || count < 0 {
-		return 0, nil, err
+		return 0, &res, err
 	}
 	stmt.UnderlyingDB().Scopes(query.OrderByField())
-	stmt.UnderlyingDB().Scopes(query.LimitOffset())
+	stmt.UnderlyingDB().Scopes(query.Pagination())
 	aps, err := stmt.Find()
 	if err != nil {
-		return 0, nil, err
+		return 0, &res, err
 	}
-	var res []*schemas.AP
 	for _, ap := range aps {
 		res = append(res, &schemas.AP{
 			Id:           ap.Id,

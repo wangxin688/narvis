@@ -70,7 +70,6 @@ type SiteDetail struct {
 	Circuit      []*CircuitShort `json:"circuit"`
 }
 
-type SiteList []SiteResponse
 
 type SiteShort struct {
 	Id       string `json:"id"`

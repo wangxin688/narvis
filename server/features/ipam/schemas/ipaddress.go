@@ -1,6 +1,10 @@
 package schemas
 
-import "time"
+import (
+	"time"
+
+	"github.com/wangxin688/narvis/server/tools/schemas"
+)
 
 type IpAddress struct {
 	Id          string    `json:"id"`
@@ -18,7 +22,7 @@ type IpAddressCreate struct {
 	Address     string  `json:"address" binding:"required,ip_addr"`
 	Status      string  `json:"status" binding:"required,oneof=Active Reserved Inactive Gateway"`
 	MacAddress  *string `json:"macAddress" binding:"omitempty,mac"`
-	Type        string  `json:"type" binding:"required,oneof=Dynamic Static Gateway"`
+	Type        string  `json:"type" binding:"required,oneof=Dynamic Static Gateway Broadcast NetworkId"`
 	Description *string `json:"description"`
 	SiteId      string  `json:"siteId" binding:"required,uuid"`
 }
@@ -27,14 +31,15 @@ type IpAddressUpdate struct {
 	Address     *string `json:"address" binding:"omitempty,ip_addr"`
 	Status      *string `json:"status" binding:"omitempty,oneof=Active Reserved Inactive Gateway"`
 	MacAddress  *string `json:"macAddress" binding:"omitempty,mac"`
-	Type        *string `json:"type" binding:"omitempty,oneof=Dynamic Static Gateway"`
+	Type        *string `json:"type" binding:"omitempty,oneof=Dynamic Static Gateway Broadcast NetworkId"`
 	Description *string `json:"description" binding:"omitempty"`
 	SiteId      *string `json:"siteId" binding:"omitempty,uuid"`
 }
 
 type IpAddressQuery struct {
+	schemas.PageInfo
 	Address *[]string `json:"address" binding:"omitempty,ip_addr"`
-	Status  *[]string `json:"status" binding:"omitempty"` // Active, Reserved, Inactive, Gateway
+	Status  *[]string `json:"status" binding:"omitempty"` // Active, Reserved, Inactive, Gateway 
 	Type    *[]string `json:"type" binding:"omitempty"`   // Dynamic, Static, Gateway
 	Range   *string   `json:"range" binding:"omitempty,ip_range,cidr"`
 	SiteId  *string   `json:"siteId" binding:"omitempty,uuid"`

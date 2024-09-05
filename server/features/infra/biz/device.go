@@ -137,8 +137,8 @@ func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
 }
 
 func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*schemas.Device, error) {
+	res := make([]*schemas.Device, 0)
 	stmt := gen.Device.Where(gen.Device.OrganizationId.Eq(global.OrganizationId.Get()))
-
 	if query.Name != nil {
 		stmt = stmt.Where(gen.Device.Name.In(*query.Name...))
 	}
@@ -188,16 +188,15 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 
 	count, err := stmt.Count()
 	if err != nil && count < 0 {
-		return 0, nil, err
+		return 0, &res, err
 	}
 	stmt.UnderlyingDB().Scopes(query.OrderByField())
-	stmt.UnderlyingDB().Scopes(query.LimitOffset())
+	stmt.UnderlyingDB().Scopes(query.Pagination())
 	list, err := stmt.Find()
 	if err != nil {
-		return 0, nil, err
+		return 0, &res, err
 	}
 
-	res := make([]*schemas.Device, 0)
 	for _, item := range list {
 		res = append(res, &schemas.Device{
 			Id:            item.Id,

@@ -14,7 +14,7 @@ type Prefix struct {
 	Type           string       `gorm:"column:type;default:Dynamic"` // Dynamic or Static
 	VlanId         *uint32      `gorm:"column:vlanId;default:null"`
 	VlanName       *string      `gorm:"column:vlanName;default:null"`
-	SiteId         *string      `gorm:"column:siteId;type:uuid;index"`
+	SiteId         string      `gorm:"column:siteId;type:uuid;index"`
 	Site           Site         `gorm:"constraint:Ondelete:SET NULL"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
@@ -34,6 +34,7 @@ type IpAddress struct {
 	Status         string       `gorm:"column:status;default:Active"` // Active or Reserved
 	MacAddress     *string      `gorm:"column:macAddress;type:macaddr"`
 	Description    *string      `gorm:"column:description;default:null"`
+	Type           string       `gorm:"column:type;default:Dynamic"` // Dynamic or Static or Gateway or Broadcast or NetworkId
 	SiteId         string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_address_site_id;index"`
 	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`

@@ -33,6 +33,7 @@ func newIpAddress(db *gorm.DB, opts ...gen.DOOption) ipAddress {
 	_ipAddress.Status = field.NewString(tableName, "status")
 	_ipAddress.MacAddress = field.NewString(tableName, "macAddress")
 	_ipAddress.Description = field.NewString(tableName, "description")
+	_ipAddress.Type = field.NewString(tableName, "type")
 	_ipAddress.SiteId = field.NewString(tableName, "siteId")
 	_ipAddress.OrganizationId = field.NewString(tableName, "organizationId")
 	_ipAddress.Site = ipAddressBelongsToSite{
@@ -68,6 +69,7 @@ type ipAddress struct {
 	Status         field.String
 	MacAddress     field.String
 	Description    field.String
+	Type           field.String
 	SiteId         field.String
 	OrganizationId field.String
 	Site           ipAddressBelongsToSite
@@ -96,6 +98,7 @@ func (i *ipAddress) updateTableName(table string) *ipAddress {
 	i.Status = field.NewString(table, "status")
 	i.MacAddress = field.NewString(table, "macAddress")
 	i.Description = field.NewString(table, "description")
+	i.Type = field.NewString(table, "type")
 	i.SiteId = field.NewString(table, "siteId")
 	i.OrganizationId = field.NewString(table, "organizationId")
 
@@ -114,7 +117,7 @@ func (i *ipAddress) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (i *ipAddress) fillFieldMap() {
-	i.fieldMap = make(map[string]field.Expr, 11)
+	i.fieldMap = make(map[string]field.Expr, 12)
 	i.fieldMap["id"] = i.Id
 	i.fieldMap["createdAt"] = i.CreatedAt
 	i.fieldMap["updatedAt"] = i.UpdatedAt
@@ -122,6 +125,7 @@ func (i *ipAddress) fillFieldMap() {
 	i.fieldMap["status"] = i.Status
 	i.fieldMap["macAddress"] = i.MacAddress
 	i.fieldMap["description"] = i.Description
+	i.fieldMap["type"] = i.Type
 	i.fieldMap["siteId"] = i.SiteId
 	i.fieldMap["organizationId"] = i.OrganizationId
 

@@ -177,7 +177,8 @@ func (s *SiteService) GetGatewayCount(siteId string) (int64, error) {
 	return gen.Device.Where(gen.Device.DeviceRole.In(gatewayDeviceRoles...), gen.Device.SiteId.Eq(siteId)).Count()
 }
 
-func (s *SiteService) GetList(params *schemas.SiteQuery) (int64, *schemas.SiteList, error) {
+func (s *SiteService) GetList(params *schemas.SiteQuery) (int64, *[]*schemas.SiteResponse, error) {
+	res := make([]*schemas.SiteResponse, 0)
 	stmt := gen.Site.Where(gen.Site.OrganizationId.Eq(global.OrganizationId.Get()))
 	if params.Id != nil {
 		stmt = stmt.Where(gen.Site.Id.In(*params.Id...))
@@ -206,13 +207,13 @@ func (s *SiteService) GetList(params *schemas.SiteQuery) (int64, *schemas.SiteLi
 	}
 	count, err := stmt.Count()
 	if err != nil || count < 0 {
-		return 0, nil, err
+		return 0, &res, err
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())
-	stmt.UnderlyingDB().Scopes(params.LimitOffset())
+	stmt.UnderlyingDB().Scopes(params.Pagination())
 	sites, err := stmt.Find()
 	if err != nil {
-		return 0, nil, err
+		return 0, &res, err
 	}
 	siteIds := make([]string, 0)
 	for _, site := range sites {
@@ -227,9 +228,8 @@ func (s *SiteService) GetList(params *schemas.SiteQuery) (int64, *schemas.SiteLi
 		return 0, nil, err
 	}
 
-	var res schemas.SiteList
 	for _, site := range sites {
-		res = append(res, schemas.SiteResponse{
+		res = append(res, &schemas.SiteResponse{
 			Site: schemas.Site{
 				Id:          site.Id,
 				CreatedAt:   site.CreatedAt,

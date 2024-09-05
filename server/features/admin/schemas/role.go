@@ -41,11 +41,8 @@ type Role struct {
 	Description *string   `json:"description"`
 }
 
-type RoleList []Role
-
 type RoleShort struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
 
-type RoleShorts []RoleShort

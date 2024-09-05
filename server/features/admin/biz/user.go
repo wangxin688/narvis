@@ -134,7 +134,8 @@ func (u *UserService) DeleteUser(ctx context.Context, userId string) error {
 	return nil
 }
 
-func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.UserList, error) {
+func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *[]*schemas.User, error) {
+	res := make([]*schemas.User, 0)
 	orgId := global.OrganizationId.Get()
 	stmt := gen.User.Where(gen.User.OrganizationId.Eq(orgId))
 	if params.Id != nil {
@@ -162,18 +163,17 @@ func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.User
 	}
 	count, err := stmt.Count()
 	if err != nil || count < 0 {
-		return 0, nil, err
+		return 0, &res, err
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())
-	stmt.UnderlyingDB().Scopes(params.LimitOffset())
+	stmt.UnderlyingDB().Scopes(params.Pagination())
 
 	users, err := stmt.Preload(gen.User.Role).Find()
 	if err != nil {
-		return 0, nil, err
+		return 0, &res, err
 	}
-	var userList schemas.UserList
 	for _, user := range users {
-		userList = append(userList, &schemas.User{
+		res = append(res, &schemas.User{
 			Username: user.Username,
 			Email:    user.Email,
 			AuthType: user.AuthType,
@@ -186,7 +186,7 @@ func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.User
 			UpdatedAt: user.UpdatedAt,
 		})
 	}
-	return count, &userList, nil
+	return count, &res, nil
 
 }
 

@@ -130,7 +130,8 @@ func (c *CircuitService) DeleteCircuit(id string) error {
 	return nil
 }
 
-func (c *CircuitService) ListCircuit(query *schemas.CircuitQuery) (int64, *schemas.CircuitList, error) {
+func (c *CircuitService) ListCircuit(query *schemas.CircuitQuery) (int64, *[]*schemas.Circuit, error) {
+	res := make([]*schemas.Circuit, 0)
 	stmt := gen.Circuit.Where(gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get()))
 	if query.Name != nil {
 		stmt = stmt.Where(gen.Circuit.Name.In(*query.Name...))
@@ -168,20 +169,18 @@ func (c *CircuitService) ListCircuit(query *schemas.CircuitQuery) (int64, *schem
 
 	count, err := stmt.Count()
 	if err != nil || count < 0 {
-		return 0, nil, err
+		return 0, &res, err
 	}
 
 	stmt.UnderlyingDB().Scopes(query.OrderByField())
-	stmt.UnderlyingDB().Scopes(query.LimitOffset())
+	stmt.UnderlyingDB().Scopes(query.Pagination())
 
 	list, err := stmt.Find()
 	if err != nil {
-		return 0, nil, err
+		return 0, &res, err
 	}
-	var res schemas.CircuitList
-
 	for _, item := range list {
-		res = append(res, schemas.Circuit{
+		res = append(res, &schemas.Circuit{
 			Id:          item.Id,
 			Name:        item.Name,
 			CId:         *item.CId,

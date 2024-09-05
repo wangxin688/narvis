@@ -37,7 +37,8 @@ func CheckRolePathPermission(user *models.User, path string) bool {
 	return result != ""
 }
 
-func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *schemas.RoleList, error) {
+func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *[]*schemas.Role, error) {
+	res := make([]*schemas.Role, 0)
 	stmt := gen.Role.Where(gen.Role.OrganizationId.Eq(global.OrganizationId.Get()))
 	if params.Id != nil {
 		stmt = stmt.Where(gen.Role.Id.In(*params.Id...))
@@ -54,17 +55,16 @@ func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *schemas.Role
 	}
 	count, err := stmt.Count()
 	if err != nil || count < 0 {
-		return 0, nil, err
+		return 0, &res, err
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())
-	stmt.UnderlyingDB().Scopes(params.LimitOffset())
+	stmt.UnderlyingDB().Scopes(params.Pagination())
 	roles, err := stmt.Find()
 	if err != nil {
-		return 0, nil, err
+		return 0, &res, err
 	}
-	var res schemas.RoleList
 	for _, role := range roles {
-		res = append(res, schemas.Role{
+		res = append(res, &schemas.Role{
 			Id:          role.Id,
 			Name:        role.Name,
 			Description: role.Description,

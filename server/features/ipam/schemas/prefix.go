@@ -1,15 +1,18 @@
 package schemas
 
+import "github.com/wangxin688/narvis/server/tools/schemas"
+
 type Prefix struct {
-	Id        string  `json:"id"`
-	CreatedAt string  `json:"createdAt"`
-	UpdatedAt string  `json:"updatedAt"`
-	Range     string  `json:"range"`
-	Version   string  `json:"version"`
-	VlanId    *uint32 `json:"vlanId"`
-	VlanName  *string `json:"vlanName"`
-	Type      string  `json:"type"`
-	SiteId    string  `json:"siteId"`
+	Id          string  `json:"id"`
+	CreatedAt   string  `json:"createdAt"`
+	UpdatedAt   string  `json:"updatedAt"`
+	Range       string  `json:"range"`
+	Version     string  `json:"version"`
+	VlanId      *uint32 `json:"vlanId"`
+	VlanName    *string `json:"vlanName"`
+	Type        string  `json:"type"`
+	SiteId      string  `json:"siteId"`
+	Utilization float32 `json:"utilization"`
 }
 
 type PrefixCreate struct {
@@ -25,13 +28,14 @@ type PrefixUpdate struct {
 	VlanId   *uint32 `json:"vlanId" binding:"omitempty,gt=1,lte=4094"`
 	VlanName *string `json:"vlanName" binding:"omitempty"`
 	Type     *string `json:"type" binding:"omitempty,oneof=Dynamic Static"`
-	SiteId   string  `json:"siteId" binding:"omitempty,uuid"`
+	SiteId   *string `json:"siteId" binding:"omitempty,uuid"`
 }
 
 type PrefixQuery struct {
-	SiteId   string    `json:"siteId" binding:"omitempty,uuid"`
+	schemas.PageInfo
+	SiteId   *string   `json:"siteId" binding:"omitempty,uuid"`
 	Range    *[]string `json:"range" binding:"omitempty,list_cidr"`
-	Type     string    `json:"type" binding:"omitempty,oneof=Dynamic Static"`
+	Type     *string   `json:"type" binding:"omitempty,oneof=Dynamic Static"`
 	VlanId   *[]uint32 `json:"vlanId" binding:"omitempty,list_gte=1,lte=4094"`
 	VlanName *[]string `json:"vlanName" binding:"omitempty,list"`
 }
