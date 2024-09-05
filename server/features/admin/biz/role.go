@@ -46,10 +46,12 @@ func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *schemas.Role
 		stmt = stmt.Where(gen.Role.Name.In(*params.Name...))
 	}
 
-	if params.Keyword != nil {
-		stmt.UnderlyingDB().Scopes(params.Search(models.RoleSearchFields))
+	if params.IsSearchable() {
+		searchString := "%" + *params.Keyword + "%"
+		stmt = stmt.Where(
+			gen.Role.Name.Like(searchString),
+		).Or(gen.Role.Description.Like(searchString))
 	}
-
 	count, err := stmt.Count()
 	if err != nil || count < 0 {
 		return 0, nil, err

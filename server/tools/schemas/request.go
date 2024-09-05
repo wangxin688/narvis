@@ -1,8 +1,6 @@
 package schemas
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -47,14 +45,6 @@ func (r *PageInfo) OrderByField() func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func (r *PageInfo) Search(searchField []string) func(db *gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		if r.Keyword == nil {
-			return db
-		}
-		for _, field := range searchField {
-			db = db.Where(fmt.Sprintf("%s like ?", field), fmt.Sprintf("%%%s%%", *r.Keyword))
-		}
-		return db
-	}
+func (r *PageInfo) IsSearchable() bool {
+	return r.Keyword != nil && *r.Keyword != ""
 }

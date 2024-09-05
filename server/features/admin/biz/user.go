@@ -156,8 +156,9 @@ func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *schemas.User
 		stmt = stmt.Where(gen.User.AuthType.Eq(*params.AuthType))
 	}
 
-	if params.Keyword != nil {
-		stmt.UnderlyingDB().Scopes(params.Search(models.UserSearchFields))
+	if params.IsSearchable() {
+		searchString := "%" + *params.Keyword + "%"
+		stmt = stmt.Where(gen.User.Username.Like(searchString)).Or(gen.User.Email.Like(searchString))
 	}
 	count, err := stmt.Count()
 	if err != nil || count < 0 {

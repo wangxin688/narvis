@@ -4,8 +4,8 @@ import (
 	"gorm.io/datatypes"
 )
 
-var SiteSearchFields = []string{"name", "siteCode", "address"}
-var DeviceSearchFields = []string{"name", "managementIp", "chassisId", "serialNumber", "assetTag"}
+var SiteSearchFields = []string{"name", "siteCode", "address", "region"}
+var DeviceSearchFields = []string{"name", "managementIp", "chassisId", "serialNumber"}
 var APSearchFields = []string{"name", "macAddress", "serialNumber", "managementIp"}
 var RackSearchFields = []string{"name", "serialNumber"}
 

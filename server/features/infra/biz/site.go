@@ -194,10 +194,16 @@ func (s *SiteService) GetList(params *schemas.SiteQuery) (int64, *schemas.SiteLi
 	if params.Region != nil {
 		stmt = stmt.Where(gen.Site.Region.In(*params.Region...))
 	}
-	if params.Keyword != nil {
-		stmt.UnderlyingDB().Scopes(params.Search(models.SiteSearchFields))
+	if params.IsSearchable() {
+		keyword := "%" + *params.Keyword + "%"
+		stmt = stmt.Where(gen.Site.Name.Like(keyword)).Or(
+			gen.Site.SiteCode.Like(keyword),
+		).Or(
+			gen.Site.Region.Like(keyword),
+		).Or(
+			gen.Site.Address.Like(keyword),
+		)
 	}
-
 	count, err := stmt.Count()
 	if err != nil || count < 0 {
 		return 0, nil, err

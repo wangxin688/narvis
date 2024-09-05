@@ -173,8 +173,17 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 	if query.SerialNumber != nil {
 		stmt = stmt.Where(gen.Device.SerialNumber.Eq(*query.SerialNumber))
 	}
-	if query.Keyword != nil {
-		stmt.UnderlyingDB().Scopes(query.Search(models.DeviceSearchFields))
+	if query.IsSearchable() {
+		keyword := "%" + *query.Keyword + "%"
+		stmt = stmt.Where(
+			gen.Device.Name.Like(keyword),
+		).Or(
+			gen.Device.ChassisId.Like(keyword),
+		).Or(
+			gen.Device.SerialNumber.Like(keyword),
+		).Or(
+			gen.Device.ManagementIp.Like(keyword),
+		)
 	}
 
 	count, err := stmt.Count()

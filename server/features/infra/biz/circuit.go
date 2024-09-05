@@ -28,15 +28,15 @@ func (c *CircuitService) GetDeviceSiteIdByInterfaceId(interfaceId string) (devic
 
 func (c *CircuitService) CreateCircuit(circuit *schemas.CircuitCreate) (string, error) {
 	newCircuit := &models.Circuit{
-		Name:        circuit.Name,
-		CId:         circuit.CId,
-		Status:      circuit.Status,
-		RxBandWidth: circuit.RxBandWidth,
-		TxBandWidth: circuit.TxBandWidth,
-		Ipv4Address: circuit.Ipv4Address,
-		Description: circuit.Description,
-		CircuitType: circuit.CircuitType,
-		Provider:    circuit.Provider,
+		Name:           circuit.Name,
+		CId:            circuit.CId,
+		Status:         circuit.Status,
+		RxBandWidth:    circuit.RxBandWidth,
+		TxBandWidth:    circuit.TxBandWidth,
+		Ipv4Address:    circuit.Ipv4Address,
+		Description:    circuit.Description,
+		CircuitType:    circuit.CircuitType,
+		Provider:       circuit.Provider,
 		OrganizationId: global.OrganizationId.Get(),
 	}
 	siteId, deviceId, err := c.GetDeviceSiteIdByInterfaceId(circuit.InterfaceId)
@@ -159,8 +159,11 @@ func (c *CircuitService) ListCircuit(query *schemas.CircuitQuery) (int64, *schem
 	if query.Ipv6Address != nil {
 		stmt = stmt.Where(gen.Circuit.Ipv6Address.In(*query.Ipv6Address...))
 	}
-	if query.Keyword != nil {
-		stmt.UnderlyingDB().Scopes(query.Search(models.CircuitSearchFields))
+	if query.IsSearchable() {
+		keyword := "%" + *query.Keyword + "%"
+		stmt = stmt.Where(gen.Circuit.Name.Like(keyword)).Or(
+			gen.Circuit.Ipv4Address.Like(keyword)).Or(
+			gen.Circuit.Ipv6Address.Like(keyword))
 	}
 
 	count, err := stmt.Count()

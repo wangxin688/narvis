@@ -111,8 +111,13 @@ func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *schemas.Rack
 	if err != nil || count < 0 {
 		return 0, nil, err
 	}
-	if params.Keyword != nil {
-		stmt.UnderlyingDB().Scopes(params.Search(models.RackSearchFields))
+	if params.IsSearchable() {
+		keyword := "%" + *params.Keyword + "%"
+		stmt = stmt.Where(
+			gen.Rack.Name.Like(keyword),
+		).Or(
+			gen.Rack.SerialNumber.Like(keyword),
+		)
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())
 	stmt.UnderlyingDB().Scopes(params.LimitOffset())

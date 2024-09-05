@@ -4,7 +4,6 @@ import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global"
-	"github.com/wangxin688/narvis/server/models"
 )
 
 type ApService struct{}
@@ -33,8 +32,10 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 	if query.SerialNumber != nil {
 		stmt = stmt.Where(gen.AP.SerialNumber.Eq(*query.SerialNumber))
 	}
-	if query.Keyword != nil {
-		stmt.UnderlyingDB().Scopes(query.Search(models.APSearchFields))
+	if query.IsSearchable() {
+		searchString := "%" + *query.Keyword + "%"
+		stmt = stmt.Where(gen.AP.Name.Like(searchString)).Or(gen.AP.ManagementIp.Like(searchString))
+
 	}
 
 	count, err := stmt.Count()

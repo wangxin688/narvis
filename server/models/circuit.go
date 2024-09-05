@@ -1,6 +1,6 @@
 package models
 
-var CircuitSearchFields = []string{"name", "ip_address"}
+var CircuitSearchFields = []string{"name", "Ipv4Address", "Ipv6Address"}
 
 var CircuitTableName = "circuit"
 var ProviderTableName = "provider"
