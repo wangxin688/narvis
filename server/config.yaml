@@ -60,17 +60,17 @@ sentry:
 env: dev
 
 zbx:
-  url: "http://127.0.0.1:8010"
+  url: "http://127.0.0.1:8088"
   username: narvis
-  password: narvis-admin
+  password: 50a8c8858b1ddca756db990053830303
   token: token
 
 vtm:
-  url: "http://127.0.0.1:8010"
+  url: "http://127.0.0.1:8428"
   username: narvis
-  password: narvis-admin
+  password: 2cf1876faac490e320c1c39698b01a34
 
 atm:
   url: "http://127.0.0.1:9093"
   username: narvis
-  password: narvis-admin
+  password: df22af3b501608cd63616d86b0ac1d77

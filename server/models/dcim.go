@@ -99,10 +99,10 @@ type DeviceInterface struct {
 	IfIndex       uint64  `gorm:"column:ifIndex;uniqueIndex:idx_if_index_device_id;not null"`
 	IfDescr       string  `gorm:"column:ifDescr;default:null"`
 	IfSpeed       uint64  `gorm:"column:ifSpeed;default:1000"`
-	IfType        uint64  `gorm:"column:ifType;default:1"`
+	IfType        string  `gorm:"column:ifType;default:ethernetCsmacd"`
 	IfMtu         uint64  `gorm:"column:ifMtu;default:1500"`
-	IfAdminStatus uint64  `gorm:"column:ifAdminStatus;default:1"`
-	IfOperStatus  uint64  `gorm:"column:ifOperStatus;default:1"`
+	IfAdminStatus string  `gorm:"column:ifAdminStatus;default:down"`
+	IfOperStatus  string  `gorm:"column:ifOperStatus;default:down"`
 	IfLastChange  uint64  `gorm:"column:ifLastChange;default:0"`
 	IfHighSpeed   uint64  `gorm:"column:ifHighSpeed;default:1000"`
 	IfPhysAddr    *string `gorm:"column:ifPhysAddr;default:null"`

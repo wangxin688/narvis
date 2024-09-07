@@ -33,10 +33,10 @@ func newDeviceInterface(db *gorm.DB, opts ...gen.DOOption) deviceInterface {
 	_deviceInterface.IfIndex = field.NewUint64(tableName, "ifIndex")
 	_deviceInterface.IfDescr = field.NewString(tableName, "ifDescr")
 	_deviceInterface.IfSpeed = field.NewUint64(tableName, "ifSpeed")
-	_deviceInterface.IfType = field.NewUint64(tableName, "ifType")
+	_deviceInterface.IfType = field.NewString(tableName, "ifType")
 	_deviceInterface.IfMtu = field.NewUint64(tableName, "ifMtu")
-	_deviceInterface.IfAdminStatus = field.NewUint64(tableName, "ifAdminStatus")
-	_deviceInterface.IfOperStatus = field.NewUint64(tableName, "ifOperStatus")
+	_deviceInterface.IfAdminStatus = field.NewString(tableName, "ifAdminStatus")
+	_deviceInterface.IfOperStatus = field.NewString(tableName, "ifOperStatus")
 	_deviceInterface.IfLastChange = field.NewUint64(tableName, "ifLastChange")
 	_deviceInterface.IfHighSpeed = field.NewUint64(tableName, "ifHighSpeed")
 	_deviceInterface.IfPhysAddr = field.NewString(tableName, "ifPhysAddr")
@@ -118,10 +118,10 @@ type deviceInterface struct {
 	IfIndex       field.Uint64
 	IfDescr       field.String
 	IfSpeed       field.Uint64
-	IfType        field.Uint64
+	IfType        field.String
 	IfMtu         field.Uint64
-	IfAdminStatus field.Uint64
-	IfOperStatus  field.Uint64
+	IfAdminStatus field.String
+	IfOperStatus  field.String
 	IfLastChange  field.Uint64
 	IfHighSpeed   field.Uint64
 	IfPhysAddr    field.String
@@ -154,10 +154,10 @@ func (d *deviceInterface) updateTableName(table string) *deviceInterface {
 	d.IfIndex = field.NewUint64(table, "ifIndex")
 	d.IfDescr = field.NewString(table, "ifDescr")
 	d.IfSpeed = field.NewUint64(table, "ifSpeed")
-	d.IfType = field.NewUint64(table, "ifType")
+	d.IfType = field.NewString(table, "ifType")
 	d.IfMtu = field.NewUint64(table, "ifMtu")
-	d.IfAdminStatus = field.NewUint64(table, "ifAdminStatus")
-	d.IfOperStatus = field.NewUint64(table, "ifOperStatus")
+	d.IfAdminStatus = field.NewString(table, "ifAdminStatus")
+	d.IfOperStatus = field.NewString(table, "ifOperStatus")
 	d.IfLastChange = field.NewUint64(table, "ifLastChange")
 	d.IfHighSpeed = field.NewUint64(table, "ifHighSpeed")
 	d.IfPhysAddr = field.NewString(table, "ifPhysAddr")

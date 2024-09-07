@@ -134,14 +134,14 @@ func (p *PrefixService) CalPrefixUsage(prefix []string) (map[string]float32, err
 		-- 计算CIDR范围内的IP总数。使用pg_catalog.broadcast() 获取CIDR的广播地址，减去网络地址
 		CASE 
 			WHEN family(p.range) = 4 THEN 
-				(2 ^ (32 - masklen(p.range))) - 2  -- IPv4的总IP数，减去网络地址和广播地址
+				(2 ^ (32 - masklen(p.range)))  -- IPv4的总IP数
 			WHEN family(p.range) = 6 THEN 
-				(2 ^ (128 - masklen(p.range)))     -- IPv6不需要减去地址
+				(2 ^ (128 - masklen(p.range)))     -- IPv6总地址
 		END AS total_ips,
 		-- 计算利用率
 		CASE 
 			WHEN family(p.range) = 4 THEN 
-				ROUND((COUNT(ipa.ip)::decimal / ((2 ^ (32 - masklen(p.range))) - 2)) * 100, 2)
+				ROUND((COUNT(ipa.ip)::decimal / ((2 ^ (32 - masklen(p.range))))) * 100, 2)
 			WHEN family(p.range) = 6 THEN 
 				ROUND((COUNT(ipa.ip)::decimal / (2 ^ (128 - masklen(p.range))) * 100), 2)
 		END AS utilization_percentage
