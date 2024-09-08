@@ -9,6 +9,7 @@ import (
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	te "github.com/wangxin688/narvis/server/tools/errors"
+	ts "github.com/wangxin688/narvis/server/tools/schemas"
 	"gorm.io/gorm"
 )
 
@@ -53,40 +54,43 @@ func (s *SnmpCredentialService) validateCreateSnmpCredential(snmp *schemas.SnmpV
 	return nil
 }
 
-func (s *SnmpCredentialService) UpdateSnmpCredential(credId string, snmp *schemas.SnmpV2CredentialUpdate) error {
+func (s *SnmpCredentialService) UpdateSnmpCredential(credId string, snmp *schemas.SnmpV2CredentialUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
 	dbCred, err := gen.SnmpV2Credential.Where(
 		gen.SnmpV2Credential.OrganizationId.Eq(global.OrganizationId.Get()),
 		gen.SnmpV2Credential.Id.Eq(credId),
 	).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if dbCred == nil {
-		return te.NewError(te.CodeNotFound, te.MsgNotFound, gen.SnmpV2Credential.TableName(), "id", credId)
-	}
-	updateFields := make(map[string]any)
+	updateFields := make(map[string]*ts.OrmDiff)
 
-	if snmp.Community != nil {
-		updateFields["community"] = *snmp.Community
+	if snmp.Community != nil && dbCred.Community != *snmp.Community {
+		updateFields["community"] = &ts.OrmDiff{Before: dbCred.Community, After: *snmp.Community}
+		dbCred.Community = *snmp.Community
 	}
-	if snmp.Port != nil {
-		updateFields["port"] = *snmp.Port
+	if snmp.Port != nil && dbCred.Port != *snmp.Port {
+		updateFields["port"] = &ts.OrmDiff{Before: dbCred.Port, After: *snmp.Port}
+		dbCred.Port = *snmp.Port
 	}
-	if snmp.Timeout != nil {
-		updateFields["timeout"] = *snmp.Timeout
+	if snmp.Timeout != nil && dbCred.Timeout != *snmp.Timeout {
+		updateFields["timeout"] = &ts.OrmDiff{Before: dbCred.Timeout, After: *snmp.Timeout}
+		dbCred.Timeout = *snmp.Timeout
 	}
-	if snmp.MaxRepetitions != nil {
-		updateFields["max_repetitions"] = *snmp.MaxRepetitions
+	if snmp.MaxRepetitions != nil && dbCred.MaxRepetitions != *snmp.MaxRepetitions {
+		updateFields["max_repetitions"] = &ts.OrmDiff{Before: dbCred.MaxRepetitions, After: *snmp.MaxRepetitions}
+		dbCred.MaxRepetitions = *snmp.MaxRepetitions
 	}
 	if len(updateFields) == 0 {
-		return nil
+		return nil, nil
 	}
-	_, err = gen.SnmpV2Credential.Where(gen.SnmpV2Credential.Id.Eq(credId)).Updates(updateFields)
+	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue[credId] = updateFields
+	global.OrmDiff.Set(diffValue)
+	err = gen.SnmpV2Credential.UnderlyingDB().Save(dbCred).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
-
+	return diffValue, nil
 }
 
 func (s *SnmpCredentialService) GetCredentialByOrgId(orgId string) (*models.SnmpV2Credential, error) {
@@ -101,10 +105,15 @@ func (s *SnmpCredentialService) GetCredentialByOrgId(orgId string) (*models.Snmp
 }
 
 func (s *SnmpCredentialService) DeleteCredential(credId string) error {
-	_, err := gen.SnmpV2Credential.Where(
+	dbCred, err := gen.SnmpV2Credential.Where(
 		gen.SnmpV2Credential.OrganizationId.Eq(global.OrganizationId.Get()),
 		gen.SnmpV2Credential.Id.Eq(credId),
-	).Delete()
+	).First()
+	if err != nil {
+		return err
+	}
+
+	_, err = gen.SnmpV2Credential.Delete(dbCred)
 	if err != nil {
 		return err
 	}

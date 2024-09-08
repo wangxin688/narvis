@@ -7,6 +7,7 @@ import (
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools/errors"
+	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
 type RackService struct{}
@@ -35,22 +36,38 @@ func (r *RackService) CreateRack(rack *schemas.RackCreate) (string, error) {
 	return newRack.Id, nil
 }
 
-func (r *RackService) UpdateRack(rackId string, rack *schemas.RackUpdate) error {
-	updateFields := make(map[string]any)
-	if rack.Name != nil {
-		updateFields["name"] = rack.Name
+func (r *RackService) UpdateRack(rackId string, rack *schemas.RackUpdate) (err error) {
+	dbRack, err := gen.Rack.Where(gen.Rack.Id.Eq(rackId), gen.Rack.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	if err != nil {
+		return err
 	}
-	if rack.SerialNumber != nil {
-		updateFields["serialNumber"] = rack.SerialNumber
+	updateFields := make(map[string]*ts.OrmDiff)
+	if rack.Name != nil && *rack.Name != dbRack.Name {
+		updateFields["name"] = &ts.OrmDiff{Before: dbRack.Name, After: *rack.Name}
+		dbRack.Name = *rack.Name
 	}
-	if rack.UHeight != nil {
+	if rack.SerialNumber != nil && *rack.SerialNumber != *dbRack.SerialNumber {
+		updateFields["serialNumber"] = &ts.OrmDiff{Before: *dbRack.SerialNumber, After: *rack.SerialNumber}
+		dbRack.SerialNumber = rack.SerialNumber
+	}
+	if rack.UHeight != nil && *rack.UHeight != dbRack.UHeight {
 		if err := r.validateUpdateRack(rackId, *rack.UHeight); err != nil {
 			return err
 		}
-		updateFields["uHeight"] = rack.UHeight
+		updateFields["uHeight"] = &ts.OrmDiff{Before: dbRack.UHeight, After: *rack.UHeight}
+		dbRack.UHeight = *rack.UHeight
 	}
-	_, err := gen.Rack.Select(gen.Rack.Id.Eq(rackId), gen.Rack.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
-	return err
+	if len(updateFields) == 0 {
+		return nil
+	}
+	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue[rackId] = updateFields
+	global.OrmDiff.Set(diffValue)
+	err = gen.Rack.UnderlyingDB().Save(dbRack).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *RackService) validateUpdateRack(rackId string, uHeight uint8) error {

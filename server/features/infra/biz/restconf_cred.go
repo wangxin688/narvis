@@ -9,6 +9,7 @@ import (
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	te "github.com/wangxin688/narvis/server/tools/errors"
+	ts "github.com/wangxin688/narvis/server/tools/schemas"
 	"gorm.io/gorm"
 )
 
@@ -50,33 +51,38 @@ func (r *RestConfCredentialService) validateCreateCredential(credential *schemas
 	return nil
 }
 
-func (r *RestConfCredentialService) UpdateCredential(credId string, credential *schemas.RestconfCredentialUpdate) error {
+func (r *RestConfCredentialService) UpdateCredential(credId string, credential *schemas.RestconfCredentialUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
 	dbCred, err := gen.RestconfCredential.Where(
 		gen.RestconfCredential.OrganizationId.Eq(global.OrganizationId.Get()),
 		gen.RestconfCredential.Id.Eq(credId),
 	).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if dbCred == nil {
-		return te.NewError(te.CodeNotFound, te.MsgNotFound, gen.RestconfCredential.TableName(), "id", credId)
+	updateFields := make(map[string]*ts.OrmDiff)
+	if credential.Url != nil && *credential.Url != dbCred.Url {
+		updateFields["url"] = &ts.OrmDiff{Before: dbCred.Url, After: *credential.Url}
+		dbCred.Url = *credential.Url
 	}
-
-	updateFields := make(map[string]any)
-	if credential.Url != nil {
-		updateFields["url"] = *credential.Url
+	if credential.Username != nil && *credential.Username != dbCred.Username {
+		updateFields["username"] = &ts.OrmDiff{Before: dbCred.Username, After: *credential.Username}
+		dbCred.Username = *credential.Username
 	}
-	if credential.Username != nil {
-		updateFields["username"] = *credential.Username
+	if credential.Password != nil && *credential.Password != dbCred.Password {
+		updateFields["password"] = &ts.OrmDiff{Before: dbCred.Password, After: *credential.Password}
+		dbCred.Password = *credential.Password
 	}
-	if credential.Password != nil {
-		updateFields["password"] = *credential.Password
+	if len(updateFields) == 0 {
+		return nil, nil
 	}
-	_, err = gen.RestconfCredential.Where(gen.RestconfCredential.Id.Eq(credId)).Updates(updateFields)
+	diff = make(map[string]map[string]*ts.OrmDiff)
+	diff[credId] = updateFields
+	global.OrmDiff.Set(diff)
+	err = gen.RestconfCredential.UnderlyingDB().Save(dbCred).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return diff, nil
 }
 
 func (r *RestConfCredentialService) GetCredentialByOrgId(id string) (*models.RestconfCredential, error) {

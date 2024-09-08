@@ -5,6 +5,7 @@ import (
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
 type CircuitService struct{}
@@ -53,46 +54,68 @@ func (c *CircuitService) CreateCircuit(circuit *schemas.CircuitCreate) (string, 
 	return newCircuit.Id, nil
 }
 
-func (c *CircuitService) UpdateCircuit(circuitId string, circuit *schemas.CircuitUpdate) error {
-	updateFields := make(map[string]any)
-	if circuit.Name != nil {
-		updateFields["name"] = *circuit.Name
-	}
-	if circuit.CId != nil {
-		updateFields["cid"] = *circuit.CId
-	}
-	if circuit.Status != nil {
-		updateFields["status"] = *circuit.Status
-	}
-	if circuit.CircuitType != nil {
-		updateFields["circuitType"] = *circuit.CircuitType
-	}
-	if circuit.RxBandWidth != nil {
-		updateFields["rxBandWidth"] = *circuit.RxBandWidth
-	}
-	if circuit.TxBandWidth != nil {
-		updateFields["txBandWidth"] = *circuit.TxBandWidth
-	}
-	if circuit.Ipv4Address != nil {
-		updateFields["ipv4Address"] = *circuit.Ipv4Address
-	}
-	if circuit.Ipv6Address != nil {
-		updateFields["ipv6Address"] = *circuit.Ipv6Address
-	}
-	if circuit.Description != nil {
-		updateFields["description"] = *circuit.Description
-	}
-	if circuit.Provider != nil {
-		updateFields["provider"] = *circuit.Provider
-	}
-	if circuit.InterfaceId != nil {
-		updateFields["InterfaceId"] = *circuit.InterfaceId
-	}
-	_, err := gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
+func (c *CircuitService) UpdateCircuit(circuitId string, circuit *schemas.CircuitUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
+	dbCircuit, err := gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	updateFields := make(map[string]*ts.OrmDiff)
+	if circuit.Name != nil && *circuit.Name != dbCircuit.Name {
+		updateFields["name"] = &ts.OrmDiff{Before: dbCircuit.Name, After: *circuit.Name}
+		dbCircuit.Name = *circuit.Name
+	}
+	if circuit.CId != nil && *circuit.CId != *dbCircuit.CId {
+		updateFields["cid"] = &ts.OrmDiff{Before: *dbCircuit.CId, After: *circuit.CId}
+		dbCircuit.CId = circuit.CId
+	}
+	if circuit.Status != nil && *circuit.Status != dbCircuit.Status {
+		updateFields["status"] = &ts.OrmDiff{Before: dbCircuit.Status, After: *circuit.Status}
+		dbCircuit.Status = *circuit.Status
+	}
+	if circuit.CircuitType != nil && *circuit.CircuitType != dbCircuit.CircuitType {
+		updateFields["circuitType"] = &ts.OrmDiff{Before: dbCircuit.CircuitType, After: *circuit.CircuitType}
+		dbCircuit.CircuitType = *circuit.CircuitType
+	}
+	if circuit.RxBandWidth != nil && *circuit.RxBandWidth != dbCircuit.RxBandWidth {
+		updateFields["rxBandWidth"] = &ts.OrmDiff{Before: dbCircuit.RxBandWidth, After: *circuit.RxBandWidth}
+		dbCircuit.RxBandWidth = *circuit.RxBandWidth
+	}
+	if circuit.TxBandWidth != nil && *circuit.TxBandWidth != dbCircuit.TxBandWidth {
+		updateFields["txBandWidth"] = &ts.OrmDiff{Before: dbCircuit.TxBandWidth, After: *circuit.TxBandWidth}
+		dbCircuit.TxBandWidth = *circuit.TxBandWidth
+	}
+	if circuit.Ipv4Address != nil && *circuit.Ipv4Address != *dbCircuit.Ipv4Address {
+		updateFields["ipv4Address"] = &ts.OrmDiff{Before: *dbCircuit.Ipv4Address, After: *circuit.Ipv4Address}
+		dbCircuit.Ipv4Address = circuit.Ipv4Address
+	}
+	if circuit.Ipv6Address != nil && *circuit.Ipv6Address != *dbCircuit.Ipv6Address {
+		updateFields["ipv6Address"] = &ts.OrmDiff{Before: *dbCircuit.Ipv6Address, After: *circuit.Ipv6Address}
+		dbCircuit.Ipv6Address = circuit.Ipv6Address
+	}
+	if circuit.Description != nil && *circuit.Description != *dbCircuit.Description {
+		updateFields["description"] = &ts.OrmDiff{Before: dbCircuit.Description, After: *circuit.Description}
+		dbCircuit.Description = circuit.Description
+	}
+	if circuit.Provider != nil && *circuit.Provider != dbCircuit.Provider {
+		updateFields["provider"] = &ts.OrmDiff{Before: dbCircuit.Provider, After: *circuit.Provider}
+		dbCircuit.Provider = *circuit.Provider
+	}
+	if circuit.InterfaceId != nil && *circuit.InterfaceId != dbCircuit.InterfaceId {
+		updateFields["InterfaceId"] = &ts.OrmDiff{Before: dbCircuit.InterfaceId, After: *circuit.InterfaceId}
+		dbCircuit.InterfaceId = *circuit.InterfaceId
+	}
+
+	if len(updateFields) == 0 {
+		return nil, nil
+	}
+	err = gen.Circuit.UnderlyingDB().Save(dbCircuit).Error
+	if err != nil {
+		return nil, err
+	}
+	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue[circuitId] = updateFields
+	global.OrmDiff.Set(diffValue)
+	return diffValue, nil
 }
 
 func (c *CircuitService) GetCircuitById(id string) (*schemas.Circuit, error) {
@@ -122,12 +145,16 @@ func (c *CircuitService) GetCircuitById(id string) (*schemas.Circuit, error) {
 	}, nil
 }
 
-func (c *CircuitService) DeleteCircuit(id string) error {
-	_, err := gen.Circuit.Where(gen.Circuit.Id.Eq(id), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+func (c *CircuitService) DeleteCircuit(id string) (*models.Circuit, error) {
+	dbCircuit, err := gen.Circuit.Where(gen.Circuit.Id.Eq(id), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	_, err = gen.Circuit.Delete(dbCircuit)
+	if err != nil {
+		return nil, err
+	}
+	return dbCircuit, nil
 }
 
 func (c *CircuitService) ListCircuit(query *schemas.CircuitQuery) (int64, *[]*schemas.Circuit, error) {

@@ -117,7 +117,8 @@ func updateRack(c *gin.Context) {
 	if err = c.ShouldBindJSON(&rack); err != nil {
 		return
 	}
-	if err = biz.NewRackService().UpdateRack(rackId, &rack); err != nil {
+	err = biz.NewRackService().UpdateRack(rackId, &rack)
+	if err != nil {
 		return
 	}
 	c.JSON(http.StatusOK, ts.IdResponse{Id: rackId})

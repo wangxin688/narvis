@@ -21,8 +21,7 @@ var zbxInstance *Zbx
 
 type Zbx struct {
 	*req.Client
-	id    uint64
-	token string
+	id uint64
 }
 
 type ErrorMessage struct {
@@ -63,9 +62,6 @@ func NewZbxClient() *Zbx {
 func (zbx *Zbx) Rpc(request *zs.ZbxRequest) (rsp *zs.ZbxResponse, err error) {
 	if zbx == nil {
 		return nil, fmt.Errorf("zbx client is nil")
-	}
-	if zbx.token == "" {
-		return nil, fmt.Errorf("token is nil")
 	}
 	request.ID = atomic.AddUint64(&requestID, 1)
 	request.JsonRpc = "2.0"
@@ -140,7 +136,7 @@ func (z *Zbx) HostGroupGet(params *zs.HostGroupGet) (res []zs.HostGroup, err err
 	json.Unmarshal([]byte(rsp.Result), &res)
 	return
 }
-func (z *Zbx) HostCreate(params *zs.HostGet) (res string, err error) {
+func (z *Zbx) HostCreate(params *zs.HostCreate) (res string, err error) {
 	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "host.create",

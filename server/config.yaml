@@ -1,5 +1,6 @@
 jwt:
-  secret_key: '26c78673faa8bbad298ad025e09a4e61'
+  secret_key: '9fdee1b8a3f18b7f86673938beec96e6'
+  public_auth_key: ""
   algorithm: 'HS256'
   access_token_expired_minutes: 1440
   refresh_token_expired_minutes: 10080
@@ -61,9 +62,7 @@ env: dev
 
 zbx:
   url: "http://127.0.0.1:8088"
-  username: narvis
-  password: 50a8c8858b1ddca756db990053830303
-  token: token
+  token: f9454ee305be33d134c68054ef96ec8ec010e472aa94663a8f186e5a585dfd05
 
 vtm:
   url: "http://127.0.0.1:8428"

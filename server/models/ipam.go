@@ -15,7 +15,7 @@ type Prefix struct {
 	VlanId         *uint32      `gorm:"column:vlanId;default:null"`
 	VlanName       *string      `gorm:"column:vlanName;default:null"`
 	SiteId         string       `gorm:"column:siteId;type:uuid;index"`
-	Site           Site         `gorm:"constraint:Ondelete:SET NULL"`
+	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 	// TODO: Add utilization

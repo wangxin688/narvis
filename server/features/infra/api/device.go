@@ -61,7 +61,8 @@ func updateDevice(c *gin.Context) {
 	if err = c.ShouldBindJSON(&device); err != nil {
 		return
 	}
-	if err = infra_biz.NewDeviceService().UpdateDevice(c, deviceId, &device); err != nil {
+	_, err = infra_biz.NewDeviceService().UpdateDevice(c, deviceId, &device)
+	if err != nil {
 		return
 	}
 	c.JSON(http.StatusOK, ts.IdResponse{Id: deviceId})
@@ -114,7 +115,7 @@ func deleteDevice(c *gin.Context) {
 	if err = helpers.ValidateUuidString(deviceId); err != nil {
 		return
 	}
-	err = infra_biz.NewDeviceService().DeleteDevice(deviceId)
+	_, err = infra_biz.NewDeviceService().DeleteDevice(deviceId)
 	if err != nil {
 		return
 	}

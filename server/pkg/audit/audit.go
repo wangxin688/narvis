@@ -15,6 +15,9 @@ const AuditCreateAction = "Create"
 const AuditUpdateAction = "Update"
 const AuditDeleteAction = "Delete"
 
+// AuditLogMixin provides audit log for create, update, delete
+// must notice that update and delete should load object from db first and change/delete action will be recorded.
+// otherwise, it will not be recorded
 type AuditLogMixin struct {
 	auditTableMap map[string]struct{}
 }
@@ -36,7 +39,7 @@ func (a *AuditLogMixin) AuditTableRegister(tableName []string) *AuditLogMixin {
 }
 
 func (a *AuditLogMixin) afterCreate(tx *gorm.DB) {
-	if !a.enableAuditing(tx) || tx.RowsAffected == 0 {
+	if !a.enableAuditing(tx) || tx.RowsAffected <= 0 {
 		return
 	}
 	target, err := getDBObjectBeforeOperation(tx)
@@ -47,7 +50,7 @@ func (a *AuditLogMixin) afterCreate(tx *gorm.DB) {
 }
 
 func (a *AuditLogMixin) afterUpdate(tx *gorm.DB) {
-	if !a.enableAuditing(tx) || tx.RowsAffected == 0 {
+	if !a.enableAuditing(tx) || tx.RowsAffected <= 0 {
 		return
 	}
 	target, err := getDBObjectBeforeOperation(tx)
@@ -58,8 +61,8 @@ func (a *AuditLogMixin) afterUpdate(tx *gorm.DB) {
 
 }
 
-func (a *AuditLogMixin) beforeDelete(tx *gorm.DB) {
-	if !a.enableAuditing(tx) || tx.RowsAffected == 0 {
+func (a *AuditLogMixin) afterDelete(tx *gorm.DB) {
+	if !a.enableAuditing(tx) || tx.RowsAffected <= 0 {
 		return
 	}
 	target, err := getDBObjectBeforeOperation(tx)
@@ -69,18 +72,55 @@ func (a *AuditLogMixin) beforeDelete(tx *gorm.DB) {
 	a.createAuditLog(tx, target, AuditDeleteAction)
 }
 
-func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target map[string]any, action string) {
+func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action string) {
 	requestId := global.XRequestId.Get()
-	userId := global.UserId.Get()
-	auditLog := &models.AuditLog{
-		ObjectType:     tx.Statement.Schema.Table,
-		ObjectId:       getKeyFromMap("Id", target),
-		RequestId:      &requestId,
-		UserId:         &userId,
-		Action:         action,
-		Data:           prepareData(target),
-		OrganizationId: global.OrganizationId.Get(),
+	if requestId == "" {
+		return
 	}
+	userId := global.UserId.Get()
+	var auditLogs = make([]*models.AuditLog, 0)
+	for pkId, data := range target.data {
+		if pkId == "" {
+			continue
+		}
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			core.Logger.Error("AuditLog.createAuditLog json marshal error", zap.Error(err))
+			continue
+		}
+		if action != AuditUpdateAction {
+			auditLogs = append(auditLogs, &models.AuditLog{
+				ObjectType:     tx.Statement.Schema.Table,
+				ObjectId:       pkId,
+				RequestId:      &requestId,
+				UserId:         &userId,
+				Action:         action,
+				Data:           jsonData,
+				OrganizationId: global.OrganizationId.Get(),
+			})
+		} else {
+			diff := global.OrmDiff.Get()[pkId]
+			jsonDiff, err := json.Marshal(diff)
+			if err != nil {
+				core.Logger.Error("AuditLog.createAuditLog json marshal error", zap.Error(err))
+				continue
+			}
+			auditLogs = append(auditLogs, &models.AuditLog{
+				ObjectType:     tx.Statement.Schema.Table,
+				ObjectId:       pkId,
+				RequestId:      &requestId,
+				UserId:         &userId,
+				Action:         action,
+				Data:           jsonData,
+				Diff:           jsonDiff,
+				OrganizationId: global.OrganizationId.Get(),
+			})
+		}
+	}
+	if len(auditLogs) == 0 {
+		return
+	}
+	auditLog := auditLogs
 	if err := tx.Session(&gorm.Session{SkipHooks: true, NewDB: true}).Create(auditLog).Error; err != nil {
 		core.Logger.Error("AuditLog.createAuditLog commit create audit log error", zap.Error(err))
 	}
@@ -100,37 +140,36 @@ func (a *AuditLogMixin) enableAuditing(tx *gorm.DB) bool {
 	return true
 }
 
-func getDBObjectBeforeOperation(tx *gorm.DB) (map[string]any, error) {
+func getDBObjectBeforeOperation(tx *gorm.DB) (*snapshot, error) {
 	if tx.DryRun || tx.Error != nil {
 		return nil, nil
 	}
-	objMap := make(map[string]any)
-	objType := reflect.TypeOf(tx.Statement.ReflectValue.Interface())
-	target := reflect.New(objType).Interface()
-
-	primaryKeyValue := getPkKeyValue(tx.Statement.ReflectValue)
-	if primaryKeyValue == "" {
-		return nil, nil
+	var targetObj interface{}
+	if getItemType(tx.Statement.ReflectValue.Type()) == tx.Statement.Schema.ModelType {
+		targetObj = tx.Statement.ReflectValue.Interface()
+	} else {
+		primaryKeyValue := getPkKeyValue(tx.Statement.ReflectValue)
+		if len(primaryKeyValue) == 0 {
+			return nil, nil
+		}
+		target := reflect.New(reflect.SliceOf(tx.Statement.Schema.ModelType)).Interface()
+		targetObj = target
+		if err := tx.Session(&gorm.Session{}).Table(tx.Statement.Schema.Table).Where("id IN ?", primaryKeyValue).Find(target).Error; err != nil {
+			core.Logger.Error("AuditLog.getDBObjectBeforeOperation get target error", zap.Error(err))
+			return nil, err
+		}
 	}
-
-	if err := tx.Session(&gorm.Session{}).Table(tx.Statement.Schema.Table).Where("id = ?", primaryKeyValue).Find(target).Error; err != nil {
-		core.Logger.Error("AuditLog.getDBObjectBeforeOperation get target error", zap.Error(err))
-		return nil, err
-	}
-	jsonBytes, err := json.Marshal(target)
+	s, err := getSnapshot(targetObj, tx.Statement.Schema.Fields)
 	if err != nil {
-		core.Logger.Error("AuditLog.getDBObjectBeforeOperation json.Marshal error", zap.Error(err))
+		core.Logger.Error("AuditLog.getDBObjectBeforeOperation get snapshot error", zap.Error(err))
 		return nil, err
 	}
-	if err := json.Unmarshal(jsonBytes, &objMap); err != nil {
-		core.Logger.Error("AuditLog.getDBObjectBeforeOperation json.Unmarshal error", zap.Error(err))
-		return nil, err
-	}
-	return objMap, nil
+	return s, nil
+
 }
 
 func (a *AuditLogMixin) RegisterCallbacks(tx *gorm.DB) {
 	tx.Callback().Create().After("gorm:create").Register("audit:after_create", a.afterCreate)
 	tx.Callback().Update().After("gorm:update").Register("audit:after_update", a.afterUpdate)
-	tx.Callback().Delete().Before("gorm:delete").Register("audit:before_delete", a.beforeDelete)
+	tx.Callback().Delete().After("gorm:delete").Register("audit:after_delete", a.afterDelete)
 }

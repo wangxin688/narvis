@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	biz "github.com/wangxin688/narvis/server/features/infra/biz"
+	"github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
@@ -35,6 +36,9 @@ func createSite(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	helpers.BackgroundTask(func() {
+		hooks.SiteHookCreate(newSite)
+	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newSite})
 }
 
@@ -120,10 +124,13 @@ func updateSite(c *gin.Context) {
 	if err = c.ShouldBindJSON(&site); err != nil {
 		return
 	}
-	err = biz.NewSiteService().Update(siteId, &site)
+	diff, err := biz.NewSiteService().Update(siteId, &site)
 	if err != nil {
 		return
 	}
+	helpers.BackgroundTask(func() {
+		hooks.SiteHookUpdate(siteId, diff[siteId])
+	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: siteId})
 }
 
@@ -147,9 +154,12 @@ func deleteSite(c *gin.Context) {
 	if err := helpers.ValidateUuidString(siteId); err != nil {
 		return
 	}
-	err = biz.NewSiteService().Delete(siteId)
+	site, err := biz.NewSiteService().Delete(siteId)
 	if err != nil {
 		return
 	}
+	helpers.BackgroundTask(func() {
+		hooks.SiteHookDelete(site)
+	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: siteId})
 }

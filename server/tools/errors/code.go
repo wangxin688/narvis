@@ -21,6 +21,7 @@ const (
 	CodeUnauthorized                 ErrorCode = 4010
 	CodeBadRequest                   ErrorCode = 400
 	CodeTooManyRequests              ErrorCode = 429
+	CodeDeleteRestriction            ErrorCode = 10000
 )
 
 const (
@@ -37,6 +38,7 @@ const (
 	MsgUnauthorized                 ErrorMsg = "unauthorized access, no privilege to access the resource"
 	MsgBadRequest                   ErrorMsg = "bad request, check the request parameters or request body"
 	MsgTooManyRequests              ErrorMsg = "too many requests"
+	MsgDeleteRestriction            ErrorMsg = "delete restriction, %s is still associated, please delete %s belongs to it first"
 )
 
 // Business error codes

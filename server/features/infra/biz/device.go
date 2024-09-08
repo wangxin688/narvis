@@ -8,6 +8,7 @@ import (
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools/helpers"
+	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
 type DeviceService struct{}
@@ -44,61 +45,85 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 	return newDevice.Id, nil
 }
 
-func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *schemas.DeviceUpdate) error {
-	updateFields := make(map[string]any)
-	if device.Name != nil {
-		updateFields["name"] = *device.Name
+func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *schemas.DeviceUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
+	dbDevice, err := gen.Device.Where(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	if err != nil {
+		return nil, err
 	}
-	if device.Status != nil {
-		updateFields["status"] = *device.Status
+	updateFields := make(map[string]*ts.OrmDiff)
+	if device.Name != nil && *device.Name != dbDevice.Name {
+		updateFields["name"] = &ts.OrmDiff{Before: dbDevice.Name, After: *device.Name}
+		dbDevice.Name = *device.Name
 	}
-	if device.ManagementIp != nil {
-		updateFields["management_ip"] = *device.ManagementIp
+	if device.Status != nil && *device.Status != dbDevice.Status {
+		updateFields["status"] = &ts.OrmDiff{Before: dbDevice.Status, After: *device.Status}
+		dbDevice.Status = *device.Status
 	}
-	if device.DeviceModel != nil {
-		updateFields["device_model"] = *device.DeviceModel
+	if device.ManagementIp != nil && *device.ManagementIp != dbDevice.ManagementIp {
+		updateFields["management_ip"] = &ts.OrmDiff{Before: dbDevice.ManagementIp, After: *device.ManagementIp}
+		dbDevice.ManagementIp = *device.ManagementIp
 	}
-	if device.Manufacturer != nil {
-		updateFields["manufacturer"] = *device.Manufacturer
+	if device.DeviceModel != nil && *device.DeviceModel != dbDevice.DeviceModel {
+		updateFields["device_model"] = &ts.OrmDiff{Before: dbDevice.DeviceModel, After: *device.DeviceModel}
+		dbDevice.DeviceModel = *device.DeviceModel
 	}
-	if device.DeviceRole != nil {
-		updateFields["device_role"] = *device.DeviceRole
+	if device.Manufacturer != nil && *device.Manufacturer != dbDevice.Manufacturer {
+		updateFields["manufacturer"] = &ts.OrmDiff{Before: dbDevice.Manufacturer, After: *device.Manufacturer}
+		dbDevice.Manufacturer = *device.Manufacturer
 	}
-	if device.Floor != nil {
-		updateFields["floor"] = *device.Floor
+	if device.DeviceRole != nil && *device.DeviceRole != dbDevice.DeviceRole {
+		updateFields["device_role"] = &ts.OrmDiff{Before: dbDevice.DeviceRole, After: *device.DeviceRole}
+		dbDevice.DeviceRole = *device.DeviceRole
 	}
-	if device.Description != nil {
-		updateFields["description"] = *device.Description
+	if device.Floor != nil && *device.Floor != *dbDevice.Floor {
+		updateFields["floor"] = &ts.OrmDiff{Before: dbDevice.Floor, After: *device.Floor}
+		dbDevice.Floor = device.Floor
 	}
-	if device.OsVersion != nil {
-		updateFields["os_version"] = *device.OsVersion
+	if device.Description != nil && *device.Description != *dbDevice.Description {
+		updateFields["description"] = &ts.OrmDiff{Before: dbDevice.Description, After: *device.Description}
+		dbDevice.Description = device.Description
 	}
-	if helpers.HasParams(g, "rackId") {
-		updateFields["rack_id"] = *device.RackId
+	if device.OsVersion != nil && *device.OsVersion != *dbDevice.OsVersion {
+		updateFields["os_version"] = &ts.OrmDiff{Before: dbDevice.OsVersion, After: *device.OsVersion}
+		dbDevice.OsVersion = device.OsVersion
+	}
+	if helpers.HasParams(g, "rackId") && device.RackId != dbDevice.RackId {
+		updateFields["rack_id"] = &ts.OrmDiff{Before: dbDevice.RackId, After: *device.RackId}
+		dbDevice.RackId = device.RackId
 	}
 	if helpers.HasParams(g, "rackPosition") {
 		position, err := infra_utils.SliceUint8ToString(*device.RackPosition)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		updateFields["rack_position"] = position
+		if position != *dbDevice.RackPosition {
+			updateFields["rack_position"] = &ts.OrmDiff{Before: dbDevice.RackPosition, After: position}
+			dbDevice.RackPosition = &position
+		}
 	}
 	if len(updateFields) == 0 {
-		return nil
+		return nil, nil
 	}
-	_, err := gen.Device.Select(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
+	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue[deviceId] = updateFields
+	global.OrmDiff.Set(diffValue)
+	err = gen.Device.UnderlyingDB().Save(dbDevice).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return diffValue, nil
 }
 
-func (d *DeviceService) DeleteDevice(deviceId string) error {
-	_, err := gen.Device.Select(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+func (d *DeviceService) DeleteDevice(deviceId string) (*models.Device, error) {
+	dbDevice, err := gen.Device.Where(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	_, err = gen.Device.Delete(dbDevice)
+	if err != nil {
+		return nil, err
+	}
+	return dbDevice, nil
 }
 
 func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {

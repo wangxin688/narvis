@@ -34,6 +34,7 @@ func newAuditLog(db *gorm.DB, opts ...gen.DOOption) auditLog {
 	_auditLog.UserId = field.NewString(tableName, "userId")
 	_auditLog.Action = field.NewString(tableName, "action")
 	_auditLog.Data = field.NewField(tableName, "data")
+	_auditLog.Diff = field.NewField(tableName, "diff")
 	_auditLog.OrganizationId = field.NewString(tableName, "organizationId")
 
 	_auditLog.fillFieldMap()
@@ -53,6 +54,7 @@ type auditLog struct {
 	UserId         field.String
 	Action         field.String
 	Data           field.Field
+	Diff           field.Field
 	OrganizationId field.String
 
 	fieldMap map[string]field.Expr
@@ -78,6 +80,7 @@ func (a *auditLog) updateTableName(table string) *auditLog {
 	a.UserId = field.NewString(table, "userId")
 	a.Action = field.NewString(table, "action")
 	a.Data = field.NewField(table, "data")
+	a.Diff = field.NewField(table, "diff")
 	a.OrganizationId = field.NewString(table, "organizationId")
 
 	a.fillFieldMap()
@@ -95,7 +98,7 @@ func (a *auditLog) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *auditLog) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 9)
+	a.fieldMap = make(map[string]field.Expr, 10)
 	a.fieldMap["id"] = a.Id
 	a.fieldMap["createdAt"] = a.CreatedAt
 	a.fieldMap["objectId"] = a.ObjectId
@@ -104,6 +107,7 @@ func (a *auditLog) fillFieldMap() {
 	a.fieldMap["userId"] = a.UserId
 	a.fieldMap["action"] = a.Action
 	a.fieldMap["data"] = a.Data
+	a.fieldMap["diff"] = a.Diff
 	a.fieldMap["organizationId"] = a.OrganizationId
 }
 

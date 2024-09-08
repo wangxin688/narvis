@@ -30,6 +30,7 @@ func newIpAddress(db *gorm.DB, opts ...gen.DOOption) ipAddress {
 	_ipAddress.CreatedAt = field.NewTime(tableName, "createdAt")
 	_ipAddress.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_ipAddress.Address = field.NewString(tableName, "address")
+	_ipAddress.Network = field.NewString(tableName, "network")
 	_ipAddress.Status = field.NewString(tableName, "status")
 	_ipAddress.MacAddress = field.NewString(tableName, "macAddress")
 	_ipAddress.Description = field.NewString(tableName, "description")
@@ -66,6 +67,7 @@ type ipAddress struct {
 	CreatedAt      field.Time
 	UpdatedAt      field.Time
 	Address        field.String
+	Network        field.String
 	Status         field.String
 	MacAddress     field.String
 	Description    field.String
@@ -95,6 +97,7 @@ func (i *ipAddress) updateTableName(table string) *ipAddress {
 	i.CreatedAt = field.NewTime(table, "createdAt")
 	i.UpdatedAt = field.NewTime(table, "updatedAt")
 	i.Address = field.NewString(table, "address")
+	i.Network = field.NewString(table, "network")
 	i.Status = field.NewString(table, "status")
 	i.MacAddress = field.NewString(table, "macAddress")
 	i.Description = field.NewString(table, "description")
@@ -117,11 +120,12 @@ func (i *ipAddress) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (i *ipAddress) fillFieldMap() {
-	i.fieldMap = make(map[string]field.Expr, 12)
+	i.fieldMap = make(map[string]field.Expr, 13)
 	i.fieldMap["id"] = i.Id
 	i.fieldMap["createdAt"] = i.CreatedAt
 	i.fieldMap["updatedAt"] = i.UpdatedAt
 	i.fieldMap["address"] = i.Address
+	i.fieldMap["network"] = i.Network
 	i.fieldMap["status"] = i.Status
 	i.fieldMap["macAddress"] = i.MacAddress
 	i.fieldMap["description"] = i.Description

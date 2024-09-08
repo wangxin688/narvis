@@ -5,7 +5,12 @@ description = "navis admin server"
 authors = [
     { name = "jeffry", email = "182467653@qq.com" }
 ]
-dependencies = []
+dependencies = [
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.4.0",
+    "httpx>=0.27.2",
+    "cryptocode>=0.1",
+]
 readme = "README.md"
 requires-python = ">= 3.12"
 

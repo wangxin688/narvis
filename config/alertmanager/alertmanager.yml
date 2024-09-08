@@ -1,0 +1,55 @@
+global:
+  resolve_timeout: 30m
+  http_config:
+    follow_redirects: true
+  smtp_hello: localhost
+  smtp_require_tls: true
+  pagerduty_url: https://events.pagerduty.com/v2/enqueue
+  opsgenie_api_url: https://api.opsgenie.com/
+  wechat_api_url: https://qyapi.weixin.qq.com/cgi-bin/
+  victorops_api_url: https://alert.victorops.com/integrations/generic/20131114/alert/
+  telegram_api_url: https://api.telegram.org
+route:
+  receiver: none
+  continue: false
+  routes:
+  - receiver: narvis
+    group_by:
+    - alertName
+    - siteId
+    - organizationId
+    matchers:
+    - alertName=~"^.*$"
+    continue: false
+  group_wait: 30s
+  group_interval: 3m
+  repeat_interval: 15m
+inhibit_rules:
+- source_matchers:
+  - alertName="NodePingTimeout"
+  target_matchers:
+  - alertName=~"HighICMPPacketLoss|HighICMPLatency"
+  equal:
+  - host
+- source_matchers:
+  - alertName=~"HighICMPPacketLoss|HighICMPLatency|NodePingTimeout"
+  - deviceRole="coreSwitch"
+  target_matchers:
+  - alertName=~"HighICMPPacketLoss|HighICMPLatency|NodePingTimeout"
+  - deviceRole=~"^.*(Switch|WlanAC).*$"
+  equal:
+  - siteId
+
+receivers:
+- name: narvis
+  webhook_configs:
+  - send_resolved: true
+    http_config:
+      follow_redirects: true
+      authorization:
+        type: Bearer
+        credentials: HxfnBHPwfGg8wLogf7K8Ztx4pU/IxuoQolbV5A7/hPQ=*Cy2M0OkRIfcWtZbklIUB6w==*EUX2KjZj7/Xh61Xad2xi2g==*FSEWCETrw5M33DcDpCyWMw==
+    url: http://host.docker.internal:8080/api//alert/alert-groups
+    max_alerts: 0
+- name: none
+templates: []

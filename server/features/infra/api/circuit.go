@@ -117,7 +117,7 @@ func updateCircuit(c *gin.Context) {
 	if err = c.ShouldBindJSON(&circuit); err != nil {
 		return
 	}
-	err = biz.NewCircuitService().UpdateCircuit(id, &circuit)
+	_, err = biz.NewCircuitService().UpdateCircuit(id, &circuit)
 	if err != nil {
 		return
 	}
@@ -144,7 +144,7 @@ func deleteCircuit(c *gin.Context) {
 	if err = helpers.ValidateUuidString(id); err != nil {
 		return
 	}
-	err = biz.NewCircuitService().DeleteCircuit(id)
+	_, err = biz.NewCircuitService().DeleteCircuit(id)
 	if err != nil {
 		return
 	}

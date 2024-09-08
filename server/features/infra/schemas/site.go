@@ -21,6 +21,7 @@ type SiteCreate struct {
 type SiteUpdate struct {
 	Name        *string  `json:"name" binding:"omitempty"`
 	SiteCode    *string  `json:"siteCode" binding:"omitempty"`
+	Status      *string  `json:"status" binding:"omitempty,oneof=Active Inactive"`
 	Region      *string  `json:"region" binding:"omitempty"`
 	TimeZone    *string  `json:"timeZone" binding:"omitempty"`
 	Latitude    *float32 `json:"latitude" binding:"omitempty,latitude"`
@@ -69,7 +70,6 @@ type SiteDetail struct {
 	GatewayCount int64           `json:"gatewayCount"`
 	Circuit      []*CircuitShort `json:"circuit"`
 }
-
 
 type SiteShort struct {
 	Id       string `json:"id"`

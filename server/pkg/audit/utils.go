@@ -2,11 +2,19 @@ package audit
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 
+	"github.com/samber/lo"
 	"gorm.io/datatypes"
+	"gorm.io/gorm/schema"
 )
+
+type snapshot struct {
+	primaryKeyValues []string
+	data             map[string]any
+}
 
 func getItemType(v reflect.Type) reflect.Type {
 	switch v.Kind() {
@@ -17,16 +25,21 @@ func getItemType(v reflect.Type) reflect.Type {
 	}
 }
 
-func getPkKeyValue(v reflect.Value) string {
+func getPkKeyValue(v reflect.Value) []string {
 	for v.Kind() == reflect.Pointer {
 		v = reflect.Indirect(v)
 	}
-	var primaryKeyValues string
+
+	primaryKeyValues := make([]string, 0)
 	switch v.Kind() {
+	case reflect.Array, reflect.Slice:
+		for i := 0; i < v.Len(); i++ {
+			primaryKeyValues = append(primaryKeyValues, getPkKeyValue(v.Index(i))...)
+		}
 	case reflect.Struct:
-		primaryKeyValues = v.FieldByName("ID").String()
+		primaryKeyValues = append(primaryKeyValues, v.FieldByName("Id").String())
 	case reflect.Map:
-		primaryKeyValues = v.MapIndex(reflect.ValueOf("id")).String()
+		primaryKeyValues = append(primaryKeyValues, v.MapIndex(reflect.ValueOf("Id")).String())
 	}
 	return primaryKeyValues
 }
@@ -63,4 +76,37 @@ func getKeyFromMap(key string, m map[string]any) string {
 func prepareData(data map[string]any) datatypes.JSON {
 	dataByte, _ := json.Marshal(&data)
 	return dataByte
+}
+
+func getSnapshot(data any, fields []*schema.Field) (*snapshot, error) {
+	v := reflect.ValueOf(data)
+	for v.Kind() == reflect.Pointer {
+		v = reflect.Indirect(v)
+	}
+
+	if !lo.Contains([]reflect.Kind{reflect.Array, reflect.Slice}, v.Kind()) {
+		newV := reflect.New(reflect.SliceOf(v.Type())).Elem()
+		newV = reflect.Append(newV, v)
+		v = newV
+	}
+	s := &snapshot{data: make(map[string]any)}
+	for i := 0; i < v.Len(); i++ {
+		tmp := v.Index(i)
+		for tmp.Kind() == reflect.Pointer {
+			tmp = reflect.Indirect(tmp)
+		}
+		if tmp.Kind() != reflect.Struct {
+			return nil, errors.New(fmt.Sprintf("unsupported type: %v", tmp.Kind()))
+		}
+
+		id := tmp.FieldByName("Id").String()
+		s.primaryKeyValues = append(s.primaryKeyValues, id)
+		tmtData := make(map[string]any)
+		for _, field := range fields {
+			tmtData[field.Name] = tmp.FieldByName(field.Name).Interface()
+		}
+		s.data[id] = tmtData
+	}
+
+	return s, nil
 }

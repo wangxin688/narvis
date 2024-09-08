@@ -248,12 +248,12 @@ func (sd *SnmpDiscovery) Interfaces() (interfaces []*DeviceInterface, errors []s
 			IfIndex:       v,
 			IfName:        indexIfName[i],
 			IfDescr:       indexIfDesc[i],
-			IfType:        indexIfType[i],
+			IfType:        GetIfTypeValue(indexIfType[i]),
 			IfMtu:         indexIfMtu[i],
 			IfSpeed:       indexIfSpeed[i],
 			IfPhysAddr:    indexIfPhysAddr[i],
-			IfAdminStatus: indexIfAdminStatus[i],
-			IfOperStatus:  indexIfOperStatus[i],
+			IfAdminStatus: GetIfAdminStatusValue(indexIfAdminStatus[i]),
+			IfOperStatus:  GetIfOperStatusValue(indexIfOperStatus[i]),
 			IfLastChange:  indexIfLastChange[i],
 			IfHighSpeed:   indexIfHighSpeed[i],
 			IfIpAddress:   _ifAddrIndex,
@@ -342,7 +342,7 @@ func (sd *SnmpDiscovery) Entities() (entities []*Entity, errors []string) {
 	IndexEntityPhysicalSerialNum := extractString(EntPhysicalSerialNum, entityPhysicalSerialNum.Variables)
 	for i, v := range FilteredIndexEntPhysicalClass {
 		entities = append(entities, &Entity{
-			EntityPhysicalClass:       v,
+			EntityPhysicalClass:       GetEntPhysicalClassValue(v),
 			EntityPhysicalDescr:       IndexEntityPhysicalDescr[i],
 			EntityPhysicalName:        IndexEntityPhysicalName[i],
 			EntityPhysicalSoftwareRev: IndexEntityPhysicalSoftwareRev[i],
@@ -422,7 +422,7 @@ func (sd *SnmpDiscovery) ArpTable() (arp *map[string]*ArpItem, errors []string) 
 	for key, value := range _arp {
 		results[key] = &ArpItem{
 			MacAddress: value,
-			Type: arpTypeMap[key],
+			Type:       arpTypeMap[key],
 		}
 	}
 	return &results, nil

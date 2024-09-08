@@ -1,6 +1,10 @@
 package huawei
 
-import "github.com/wangxin688/narvis/client/pkg/nettyssh/driver"
+import (
+	"errors"
+
+	"github.com/wangxin688/narvis/client/pkg/nettyssh/driver"
+)
 
 type HuaweiVrp struct {
 	Driver   driver.IDriver
@@ -13,12 +17,12 @@ func (d *HuaweiVrp) Connect() error {
 	if err := d.Driver.Connect(); err != nil {
 		return err
 	}
-	prompt, err := d.Driver.FindDevicePrompt("\\[\\]>]", ">|]")
+	prompt, err := d.Driver.FindDevicePrompt("\r\n?(\\S+)[\\]>]", "[\\]|>]")
 	if err != nil {
 		return err
 	}
 	d.Prompt = prompt
-	return nil
+	return d.sessionPreparation()
 }
 func (d *HuaweiVrp) Disconnect() {
 	d.Driver.Disconnect()
@@ -35,15 +39,24 @@ func (d *HuaweiVrp) SendCommand(cmd string) (string, error) {
 }
 
 func (d *HuaweiVrp) SendConfigSet(commands []string) (string, error) {
+	result, _ := d.Driver.SendCommand("system-view", d.Prompt)
+	commands = append(commands, "quit")
+	out, err := d.Driver.SendCommandsSet(commands, d.Prompt)
 
-	result, err := d.Driver.SendCommandsSet(commands, d.Prompt)
-
+	result += out
 	return result, err
 }
 
 func (d *HuaweiVrp) sessionPreparation() error {
 	_, err := d.Driver.SendCommand("", d.Prompt)
+	if err != nil {
+		return err
+	}
+	_, err = d.Driver.SendCommand("screen-length 0 temporary", d.Prompt)
 
-	return err
+	if err != nil {
+		return errors.New("failed to disable pagination" + err.Error())
+	}
+	return nil
 
 }

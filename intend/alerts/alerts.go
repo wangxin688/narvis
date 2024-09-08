@@ -3,7 +3,6 @@ package alerts
 import (
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/common"
-	"github.com/wangxin688/narvis/intend/metrics"
 )
 
 type AlertNameEnum string
@@ -18,25 +17,25 @@ const (
 )
 
 const (
-	HighCpuUsage            AlertNameEnum = "high_cpu_usage"
-	HighMemoryUsage         AlertNameEnum = "high_memory_usage"
-	HighDiskUsage           AlertNameEnum = "high_disk_usage"
-	HighSystemLoad          AlertNameEnum = "high_system_load"
-	HighChannelUsage        AlertNameEnum = "high_channel_usage"
-	HighChannelInterference AlertNameEnum = "high_channel_interference"
-	HighChannelNoise        AlertNameEnum = "high_channel_noise"
-	HighClientNumber        AlertNameEnum = "high_client_number"
-	HighBandwidthUsage      AlertNameEnum = "high_bandwidth_usage"
-	HighErrorRate           AlertNameEnum = "high_error_rate"
-	HighICMPLatency         AlertNameEnum = "high_icmp_latency"
-	HighICMPPacketLoss      AlertNameEnum = "high_icmp_packet_loss"
-	HighTemperature         AlertNameEnum = "high_temperature"
-	AbnormalFanStatus       AlertNameEnum = "abnormal_fan_status"
-	AbnormalPowerStatus     AlertNameEnum = "abnormal_power_status"
-	InterfaceDown           AlertNameEnum = "interface_down"
-	SnmpAgentTimeout        AlertNameEnum = "snmp_agent_timeout"
-	NodePingTimeout         AlertNameEnum = "node_ping_timeout"
-	ApDown                  AlertNameEnum = "ap_down"
+	HighCpuUsage            AlertNameEnum = "HighCpuUsage"
+	HighMemoryUsage         AlertNameEnum = "HighMemoryUsage"
+	HighDiskUsage           AlertNameEnum = "HighDiskUsage"
+	HighSystemLoad          AlertNameEnum = "HighSystemLoad"
+	HighChannelUsage        AlertNameEnum = "HighChannelUsage"
+	HighChannelInterference AlertNameEnum = "HighChannelInterference"
+	HighChannelNoise        AlertNameEnum = "HighChannelNoise"
+	HighClientNumber        AlertNameEnum = "HighClientNumber"
+	HighBandwidthUsage      AlertNameEnum = "HighBandwidthUsage"
+	HighErrorRate           AlertNameEnum = "HighErrorRate"
+	HighICMPLatency         AlertNameEnum = "HighICMPLatency"
+	HighICMPPacketLoss      AlertNameEnum = "HighICMPPacketLoss"
+	HighTemperature         AlertNameEnum = "HighTemperature"
+	AbnormalFanStatus       AlertNameEnum = "AbnormalFanStatus"
+	AbnormalPowerStatus     AlertNameEnum = "AbnormalPowerStatus"
+	InterfaceDown           AlertNameEnum = "InterfaceDown"
+	SnmpAgentTimeout        AlertNameEnum = "SnmpAgentTimeout"
+	NodePingTimeout         AlertNameEnum = "NodePingTimeout"
+	ApDown                  AlertNameEnum = "ApDown"
 	Unknown                 AlertNameEnum = "unknown"
 )
 

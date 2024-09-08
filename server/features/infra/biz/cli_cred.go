@@ -9,6 +9,7 @@ import (
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	te "github.com/wangxin688/narvis/server/tools/errors"
+	ts "github.com/wangxin688/narvis/server/tools/schemas"
 	"gorm.io/gorm"
 )
 
@@ -49,26 +50,32 @@ func (s *CliCredentialService) validateCreateCredential(credential *schemas.CliC
 	return nil
 }
 
-func (s *CliCredentialService) UpdateCredential(credId string, credential *schemas.CliCredentialUpdate) error {
+func (s *CliCredentialService) UpdateCredential(credId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
 	dbCred, err := gen.CliCredential.Where(gen.CliCredential.Id.Eq(credId), gen.CliCredential.OrganizationId.Eq(global.OrganizationId.Get())).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	updateFields := make(map[string]any)
-	if dbCred == nil {
-		return te.NewError(te.CodeNotFound, te.MsgNotFound, gen.CliCredential.TableName(), "id", credId)
+	updateFields := make(map[string]*ts.OrmDiff)
+	if credential.Username != nil && *credential.Username != dbCred.Username {
+		updateFields["username"] = &ts.OrmDiff{Before: dbCred.Username, After: *credential.Username}
+		dbCred.Username = *credential.Username
 	}
-	if credential.Username != nil {
-		updateFields["username"] = *credential.Username
+	if credential.Password != nil && *credential.Password != dbCred.Password {
+		updateFields["password"] = &ts.OrmDiff{Before: dbCred.Password, After: *credential.Password}
+		dbCred.Password = *credential.Password
 	}
-	if credential.Password != nil {
-		updateFields["password"] = *credential.Password
+	if len(updateFields) == 0 {
+		return nil, nil
 	}
-	_, err = gen.CliCredential.Where(gen.CliCredential.Id.Eq(credId)).Updates(updateFields)
+
+	diff = make(map[string]map[string]*ts.OrmDiff)
+	diff["cliCredential"] = updateFields
+	global.OrmDiff.Set(diff)
+	err = gen.CliCredential.UnderlyingDB().Save(dbCred).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return diff, nil
 }
 
 func (s *CliCredentialService) GetCredentialByOrgId(orgId string) (*models.CliCredential, error) {
@@ -84,10 +91,14 @@ func (s *CliCredentialService) GetCredentialByOrgId(orgId string) (*models.CliCr
 }
 
 func (s *CliCredentialService) DeleteCredential(credId string) error {
-	_, err := gen.CliCredential.Where(
+	dbCred, err := gen.CliCredential.Where(
 		gen.CliCredential.Id.Eq(credId),
 		gen.CliCredential.OrganizationId.Eq(global.OrganizationId.Get()),
-	).Delete()
+	).First()
+	if err != nil {
+		return err
+	}
+	_, err = gen.CliCredential.Delete(dbCred)
 	if err != nil {
 		return err
 	}

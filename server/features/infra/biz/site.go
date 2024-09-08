@@ -6,6 +6,8 @@ import (
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	ts "github.com/wangxin688/narvis/server/tools/schemas"
+	"gorm.io/gorm"
 )
 
 type SiteService struct{}
@@ -34,45 +36,93 @@ func (s *SiteService) Create(site schemas.SiteCreate) (string, error) {
 	return newSite.Id, nil
 }
 
-func (s *SiteService) Update(Id string, site *schemas.SiteUpdate) error {
-	updateFields := make(map[string]any)
-	if site.Name != nil {
-		updateFields["name"] = site.Name
-	}
-	if site.SiteCode != nil {
-		updateFields["siteCode"] = site.SiteCode
-	}
-	if site.Region != nil {
-		updateFields["region"] = site.Region
-	}
-	if site.TimeZone != nil {
-		updateFields["timeZone"] = site.TimeZone
-	}
-	if site.Latitude != nil {
-		updateFields["latitude"] = site.Latitude
-	}
-	if site.Longitude != nil {
-		updateFields["longitude"] = site.Longitude
-	}
-	if site.Address != nil {
-		updateFields["address"] = site.Address
-	}
-	if site.Description != nil {
-		updateFields["description"] = site.Description
-	}
-	_, err := gen.Site.Select(gen.Site.Id.Eq(Id), gen.Site.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
+func (s *SiteService) Update(Id string, site *schemas.SiteUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
+	dbSite, err := gen.Site.Where(gen.Site.Id.Eq(Id), gen.Site.OrganizationId.Eq(global.OrganizationId.Get())).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	updateFields := make(map[string]*ts.OrmDiff)
+	if site.Name != nil && *site.Name != dbSite.Name {
+		updateFields["name"] = &ts.OrmDiff{Before: dbSite.Name, After: *site.Name}
+		dbSite.Name = *site.Name
+	}
+	if site.SiteCode != nil && *site.SiteCode != dbSite.SiteCode {
+		updateFields["siteCode"] = &ts.OrmDiff{Before: dbSite.SiteCode, After: *site.SiteCode}
+		dbSite.SiteCode = *site.SiteCode
+	}
+	if site.Region != nil && *site.Region != dbSite.Region {
+		updateFields["region"] = &ts.OrmDiff{Before: dbSite.Region, After: *site.Region}
+		dbSite.Region = *site.Region
+	}
+	if site.TimeZone != nil && *site.TimeZone != dbSite.TimeZone {
+		updateFields["timeZone"] = &ts.OrmDiff{Before: dbSite.TimeZone, After: *site.TimeZone}
+		dbSite.TimeZone = *site.TimeZone
+	}
+	if site.Latitude != nil && *site.Latitude != dbSite.Latitude {
+		updateFields["latitude"] = &ts.OrmDiff{Before: dbSite.Latitude, After: *site.Latitude}
+		dbSite.Latitude = *site.Latitude
+	}
+	if site.Longitude != nil && *site.Longitude != dbSite.Longitude {
+		updateFields["longitude"] = &ts.OrmDiff{Before: dbSite.Longitude, After: *site.Longitude}
+		dbSite.Longitude = *site.Longitude
+	}
+	if site.Address != nil && *site.Address != dbSite.Address {
+		updateFields["address"] = &ts.OrmDiff{Before: dbSite.Address, After: *site.Address}
+		dbSite.Address = *site.Address
+	}
+	if site.Description != nil && site.Description != dbSite.Description {
+		updateFields["description"] = &ts.OrmDiff{Before: dbSite.Description, After: *site.Description}
+		dbSite.Description = site.Description
+	}
+	if site.Status != nil && *site.Status != dbSite.Status {
+		updateFields["status"] = &ts.OrmDiff{Before: dbSite.Status, After: *site.Status}
+		dbSite.Status = *site.Status
+	}
+	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue[Id] = updateFields
+	global.OrmDiff.Set(diffValue)
+	if len(updateFields) == 0 {
+		return nil, nil
+	}
+	gen.Site.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
+		err := gen.Site.UnderlyingDB().Save(dbSite).Error
+		if err != nil {
+			return err
+		}
+		if site.Status != nil && *site.Status == "Inactive" {
+			_, err := gen.Device.Where(gen.Device.SiteId.Eq(Id), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).UpdateColumn(gen.Device.Status, "Inactive")
+			if err != nil {
+				return err
+			}
+			_, err = gen.AP.Where(gen.AP.SiteId.Eq(Id), gen.AP.OrganizationId.Eq(global.OrganizationId.Get())).UpdateColumn(gen.AP.Status, "Inactive")
+			if err != nil {
+				return err
+			}
+			_, err = gen.Circuit.Where(gen.Circuit.SiteId.Eq(Id), gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get())).UpdateColumn(gen.Circuit.Status, "Inactive")
+			if err != nil {
+				return err
+			}
+		}
+		_, err = gen.Site.Where(gen.Site.Id.Eq(Id), gen.Site.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return diffValue, nil
 }
 
-func (s *SiteService) Delete(Id string) error {
-	_, err := gen.Site.Select(gen.Site.Id.Eq(Id), gen.Site.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+func (s *SiteService) Delete(Id string) (*models.Site, error) {
+	site, err := gen.Site.Where(gen.Site.Id.Eq(Id), gen.Site.OrganizationId.Eq(global.OrganizationId.Get())).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	_, err = gen.Site.Delete(site)
+	if err != nil {
+		return nil, err
+	}
+	return site, nil
 }
 
 func (s *SiteService) GetById(Id string) (schemas.Site, error) {

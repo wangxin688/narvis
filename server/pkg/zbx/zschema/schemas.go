@@ -26,7 +26,7 @@ type ZbxResponse struct {
 }
 
 func (rsp *ZbxResponse) HasError() error {
-	if rsp.Error.Code != 0 {
+	if rsp.Error != nil && rsp.Error.Code != 0 {
 		return fmt.Errorf("request zbx system error: code:%d data %s, message: %s", rsp.Error.Code, rsp.Error.Data, rsp.Error.Message)
 	}
 	return nil
@@ -66,7 +66,7 @@ type HostGroupCreate struct {
 }
 
 type HostGroupCreateResult struct {
-	GroupIDs []string `json:"groupid"`
+	GroupIDs []string `json:"groupids"`
 }
 
 type HostGroupUpdate struct {
@@ -84,7 +84,7 @@ type HostGroupGet struct {
 }
 
 type HostGroupDeleteResult struct {
-	GroupIDs []string `json:"groupid"`
+	GroupIDs []string `json:"groupids"`
 }
 
 type Host struct {

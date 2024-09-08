@@ -51,12 +51,12 @@ func InitDB() error {
 		return err
 	}
 
-	registerAuditLogMixin()
+	registerAuditLogMixin(db)
 	DB = db
 	return nil
 }
 
-func registerAuditLogMixin() {
+func registerAuditLogMixin(db *gorm.DB) {
 
 	newAuditLogMixin := audit.NewAuditLogMixin()
 	registeredTables := []string{
@@ -71,5 +71,5 @@ func registerAuditLogMixin() {
 		models.PrefixTableName,
 	}
 	newAuditLogMixin.AuditTableRegister(registeredTables)
-
+	newAuditLogMixin.RegisterCallbacks(db)
 }

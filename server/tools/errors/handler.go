@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -12,6 +13,7 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/global"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 var pgConflictRegexp = regexp.MustCompile(`\((.*?)\)=\((.*?)\)`)
@@ -88,8 +90,18 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 				key = matches[1]
 				value = matches[2]
 				table = matches[3]
+				if strings.Contains(pgError.Message, "insert or update") {
+					g.AbortWithStatusJSON(http.StatusNotFound, NewError(CodeNotFound, MsgNotFound, table, key, value))
+					return
+				}
+				if strings.Contains(pgError.Message, "update or delete") {
+					g.AbortWithStatusJSON(http.StatusForbidden, NewError(CodeDeleteRestriction, MsgDeleteRestriction, table, table))
+					return
+				}
+				g.AbortWithStatusJSON(http.StatusUnprocessableEntity, NewError(CodeUnprocessableEntity, MsgUnprocessableEntity, pgError.Detail))
+				return
 			}
-			g.AbortWithStatusJSON(http.StatusNotFound, NewError(CodeNotFound, MsgNotFound, table, key, value))
+			g.AbortWithStatusJSON(http.StatusUnprocessableEntity, NewError(CodeUnprocessableEntity, MsgUnprocessableEntity, pgError.Detail))
 			return
 		}
 		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
@@ -101,6 +113,9 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 			return
 		}
 		g.AbortWithStatusJSON(http.StatusUnprocessableEntity, NewErrorWithData(CodeUnprocessableEntity, MsgUnprocessableEntity, e.Error()))
+		return
+	case errors.Is(e, gorm.ErrRecordNotFound):
+		g.AbortWithStatusJSON(http.StatusNotFound, NewError(CodeNotFound, "record not found"))
 		return
 	default:
 		core.Logger.Error("unknown error", zap.Error(e))

@@ -327,7 +327,7 @@ func GetIfOperStatusValue(ifOperStatus uint64) string {
 	return ifOperStatusValueMapping[ifOperStatus]
 }
 
-func GetentPhysicalClassValue(entPhysicalClass uint64) string {
+func GetEntPhysicalClassValue(entPhysicalClass uint64) string {
 	entPhysicalClassValueMapping := map[uint64]string{
 		1:  "other",
 		2:  "unknown",
