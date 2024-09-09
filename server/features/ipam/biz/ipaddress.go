@@ -21,6 +21,8 @@ func (i *IpAddressService) CreateIpAddress(ip *schemas.IpAddressCreate) (string,
 		Status:         ip.Status,
 		MacAddress:     ip.MacAddress,
 		Type:           ip.Type,
+		Vlan:           ip.Vlan,
+		Range:          ip.Range,
 		Description:    ip.Description,
 		SiteId:         ip.SiteId,
 	}
@@ -71,10 +73,26 @@ func (i *IpAddressService) ListIpAddresses(query *schemas.IpAddressQuery) (int64
 	if err != nil {
 		return 0, nil, err
 	}
-	stmt = stmt.Offset(query.Offset).Limit(query.Limit)
-	err = stmt.Find(&res)
+	stmt.UnderlyingDB().Scopes(query.OrderByField())
+	stmt.UnderlyingDB().Scopes(query.Pagination())
+	list, err := stmt.Find()
 	if err != nil {
-		return 0, nil, err
+		return 0, &res, err
+	}
+	for _, ip := range list {
+		res = append(res, &schemas.IpAddress{
+			Id:          ip.Id,
+			CreatedAt:   ip.CreatedAt,
+			UpdatedAt:   ip.UpdatedAt,
+			Address:     ip.Address,
+			Status:      ip.Status,
+			MacAddress:  ip.MacAddress,
+			Type:        ip.Type,
+			Vlan:        ip.Vlan,
+			Range:       ip.Range,
+			Description: ip.Description,
+			SiteId:      ip.SiteId,
+		})
 	}
 	return total, &res, nil
 

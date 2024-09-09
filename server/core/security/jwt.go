@@ -81,16 +81,15 @@ func VerifyAccessToken(tokenString string) (errors.ErrorCode, *Claims) {
 	}
 	claims, ok := token.Claims.(*Claims)
 	if !ok || !token.Valid {
-		return errors.CodeAccessTokenInvalid, nil
-	}
-	if claims.ExpiresAt < time.Now().Unix() {
-		return errors.CodeAccessTokenExpired, nil
-	}
-	if claims.IssuedAt > time.Now().Unix() {
-		return errors.CodeAccessTokenInvalid, nil
-	}
-	if claims.Refreshed {
-		return errors.CodeAccessTokenInvalidForRefresh, nil
+		if claims.ExpiresAt < time.Now().Unix() {
+			return errors.CodeAccessTokenExpired, nil
+		}
+		if claims.IssuedAt > time.Now().Unix() {
+			return errors.CodeAccessTokenInvalid, nil
+		}
+		if claims.Refreshed {
+			return errors.CodeAccessTokenInvalidForRefresh, nil
+		}
 	}
 	return errors.ErrorOk, claims
 }

@@ -20,7 +20,7 @@ func connectDb() *gorm.DB {
 		},
 	})
 	if err != nil {
-		core.Logger.Fatal("Failed to connect database", zap.Error(err))
+		core.Logger.Fatal("[infraConnectDb]: failed to connect database", zap.Error(err))
 	}
 	return db
 }

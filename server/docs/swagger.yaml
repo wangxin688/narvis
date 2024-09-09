@@ -259,7 +259,7 @@ definitions:
       id:
         type: string
       ifAdminStatus:
-        type: integer
+        type: string
       ifDescr:
         type: string
       ifHighSpeed:
@@ -275,13 +275,13 @@ definitions:
       ifName:
         type: string
       ifOperStatus:
-        type: integer
+        type: string
       ifPhysAddr:
         type: string
       ifSpeed:
         type: integer
       ifType:
-        type: integer
+        type: string
       updatedAt:
         type: string
     type: object
@@ -341,6 +341,96 @@ definitions:
     properties:
       id:
         type: string
+    type: object
+  schemas.IpAddress:
+    properties:
+      address:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      macAddress:
+        type: string
+      range:
+        type: string
+      siteId:
+        type: string
+      status:
+        description: Active, Reserved, Deprecated
+        type: string
+      type:
+        description: Dynamic, Static, Gateway, Broadcast, NetworkId
+        type: string
+      updatedAt:
+        type: string
+      vlan:
+        type: integer
+    type: object
+  schemas.IpAddressCreate:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      macAddress:
+        type: string
+      range:
+        type: string
+      siteId:
+        type: string
+      status:
+        enum:
+        - Active
+        - Reserved
+        - Deprecated
+        type: string
+      type:
+        enum:
+        - Dynamic
+        - Static
+        - Gateway
+        - Broadcast
+        - NetworkId
+        type: string
+      vlan:
+        type: integer
+    required:
+    - address
+    - siteId
+    - status
+    - type
+    type: object
+  schemas.IpAddressUpdate:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      macAddress:
+        type: string
+      range:
+        type: string
+      siteId:
+        type: string
+      status:
+        enum:
+        - Active
+        - Reserved
+        - Deprecated
+        type: string
+      type:
+        enum:
+        - Dynamic
+        - Static
+        - Gateway
+        - Broadcast
+        - NetworkId
+        type: string
+      vlan:
+        type: integer
     type: object
   schemas.ListResponse:
     properties:
@@ -739,6 +829,11 @@ definitions:
         type: string
       siteCode:
         type: string
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
       timeZone:
         type: string
     type: object
@@ -968,7 +1063,7 @@ paths:
       summary: Get role
       tags:
       - Admin
-    patch:
+    put:
       consumes:
       - application/json
       description: update role
@@ -1142,7 +1237,7 @@ paths:
       summary: Get user
       tags:
       - Admin
-    patch:
+    put:
       consumes:
       - application/json
       parameters:
@@ -2123,6 +2218,180 @@ paths:
       summary: Get list of Platforms
       tags:
       - Intend
+  /ipam/ip-addresses:
+    get:
+      consumes:
+      - application/json
+      description: Get ip address list
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: address
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - in: query
+        name: range
+        type: string
+      - in: query
+        name: siteId
+        type: string
+      - collectionFormat: csv
+        description: Active, Reserved, Deprecated
+        in: query
+        items:
+          type: string
+        name: status
+        type: array
+      - collectionFormat: csv
+        description: Dynamic, Static, Gateway, Broadcast, NetworkId
+        in: query
+        items:
+          type: string
+        name: type
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: integer
+        name: vlan
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/schemas.IpAddress'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get ip address list
+      tags:
+      - IPAM
+    post:
+      consumes:
+      - application/json
+      description: Create ip address
+      parameters:
+      - description: ip
+        in: body
+        name: ip
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.IpAddressCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create ip address
+      tags:
+      - IPAM
+  /ipam/ip-addresses/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete ip address
+      parameters:
+      - description: ipId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete ip address
+      tags:
+      - IPAM
+    get:
+      consumes:
+      - application/json
+      description: Get ip address
+      parameters:
+      - description: ipId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IpAddress'
+      security:
+      - BearerAuth: []
+      summary: Get ip address
+      tags:
+      - IPAM
+    put:
+      consumes:
+      - application/json
+      description: Update ip address
+      parameters:
+      - description: ipId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ip
+        in: body
+        name: ip
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.IpAddressUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IpAddress'
+      security:
+      - BearerAuth: []
+      summary: Update ip address
+      tags:
+      - IPAM
   /ipam/prefixes:
     get:
       consumes:

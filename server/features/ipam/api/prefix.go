@@ -117,7 +117,7 @@ func updatePrefix(c *gin.Context) {
 	if err = c.ShouldBindJSON(&prefix); err != nil {
 		return
 	}
-	err = biz.NewPrefixService().UpdatePrefix(prefixId, &prefix)
+	err = biz.NewPrefixService().UpdatePrefix(c, prefixId, &prefix)
 	if err != nil {
 		return
 	}

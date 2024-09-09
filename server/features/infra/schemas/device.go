@@ -44,7 +44,6 @@ type DeviceQuery struct {
 	ManagementIp  *[]string `form:"managementIp" binding:"omitempty,list_ip"`
 	DeviceRole    *[]string `form:"deviceRole" binding:"omitempty"`
 	DeviceModel   *[]string `form:"deviceModel" binding:"omitempty"`
-	ProductFamily *string   `form:"productFamily" binding:"omitempty,oneof=Gateway Switching WlanAP"`
 	Manufacturer  *[]string `form:"manufacturer" binding:"omitempty"`
 	Status        *string   `form:"status" binding:"omitempty,oneof=Active Inactive"`
 	SiteId        *string   `form:"siteId" binding:"omitempty,uuid"`
@@ -69,7 +68,6 @@ type Device struct {
 	Name          string    `json:"name"`
 	ManagementIp  string    `json:"managementIp"`
 	Platform      string    `json:"platform"`
-	ProductFamily string    `json:"productFamily"`
 	Status        string    `json:"status"`
 	OperStatus    string    `json:"operStatus"`
 	HealthStatus  string    `json:"healthStatus"`

@@ -3,10 +3,13 @@ package ipam_biz
 import (
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/ipam/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/tools/helpers"
+	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
 type PrefixService struct{}
@@ -32,29 +35,39 @@ func (p *PrefixService) CreatePrefix(prefix *schemas.PrefixCreate) (string, erro
 	return newPrefix.Id, nil
 }
 
-func (p *PrefixService) UpdatePrefix(id string, prefix *schemas.PrefixUpdate) error {
-	updateFields := make(map[string]any)
-
-	if prefix.Range != nil {
-		updateFields["range"] = *prefix.Range
+func (p *PrefixService) UpdatePrefix(g *gin.Context, id string, prefix *schemas.PrefixUpdate) error {
+	dbPrefix, err := gen.Prefix.Where(gen.Prefix.Id.Eq(id), gen.Prefix.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	if err != nil {
+		return err
 	}
-	if prefix.VlanId != nil {
-		updateFields["vlanId"] = *prefix.VlanId
+	updateFields := make(map[string]*ts.OrmDiff)
+	if prefix.Range != nil && *prefix.Range != dbPrefix.Range {
+		updateFields["range"] = &ts.OrmDiff{Before: dbPrefix.Range, After: *prefix.Range}
+		dbPrefix.Range = *prefix.Range
 	}
-	if prefix.VlanName != nil {
-		updateFields["vlanName"] = *prefix.VlanName
+	if prefix.VlanId != nil && *prefix.VlanId != *dbPrefix.VlanId {
+		updateFields["vlanId"] = &ts.OrmDiff{Before: dbPrefix.VlanId, After: *prefix.VlanId}
+		dbPrefix.VlanId = prefix.VlanId
 	}
-	if prefix.Type != nil {
-		updateFields["type"] = *prefix.Type
+	if prefix.VlanName != nil && *prefix.VlanName != *dbPrefix.VlanName {
+		updateFields["vlanName"] = &ts.OrmDiff{Before: dbPrefix.VlanName, After: *prefix.VlanName}
+		dbPrefix.VlanName = prefix.VlanName
 	}
-	if prefix.SiteId != nil {
-		updateFields["siteId"] = *prefix.SiteId
+	if prefix.Type != nil && *prefix.Type != dbPrefix.Type {
+		updateFields["type"] = &ts.OrmDiff{Before: dbPrefix.Type, After: *prefix.Type}
+		dbPrefix.Type = *prefix.Type
 	}
-
+	if helpers.HasParams(g, "SiteId") && *prefix.SiteId != dbPrefix.SiteId {
+		updateFields["siteId"] = &ts.OrmDiff{Before: dbPrefix.SiteId, After: *prefix.SiteId}
+		dbPrefix.SiteId = *prefix.SiteId
+	}
 	if len(updateFields) == 0 {
 		return nil
 	}
-	_, err := gen.Prefix.Where(gen.Prefix.Id.Eq(id), gen.Prefix.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
+	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue[id] = updateFields
+	global.OrmDiff.Set(diffValue)
+	err = gen.Prefix.UnderlyingDB().Save(dbPrefix).Error
 	return err
 }
 
@@ -164,4 +177,3 @@ func (p *PrefixService) CalPrefixUsage(prefix []string) (map[string]float32, err
 	}
 	return res, nil
 }
-

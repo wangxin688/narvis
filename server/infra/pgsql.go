@@ -30,24 +30,24 @@ func InitDB() error {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	}
 	if err != nil {
-		core.Logger.Fatal("Failed to connect database", zap.Error(err))
+		core.Logger.Fatal("[infraConnectDb]: failed to connect database", zap.Error(err))
 	}
 	sqlDB, err := db.DB()
 	if err != nil {
-		core.Logger.Fatal("Failed to connect database", zap.Error(err))
+		core.Logger.Fatal("[infraConnectDb]: failed to connect database", zap.Error(err))
 		return err
 	}
 	sqlDB.SetMaxIdleConns(core.Settings.Postgres.MaxIdleConns)
 	sqlDB.SetMaxOpenConns(core.Settings.Postgres.MaxOpenConns)
 	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
 	if err != nil {
-		core.Logger.Fatal("failed to create extension: %v", zap.Error(err))
+		core.Logger.Fatal("[infraConnectDb]: failed to create extension: %v", zap.Error(err))
 	}
 
 	// set db to global variable
 	err = migrations.Migrate(db)
 	if err != nil {
-		core.Logger.Fatal("Failed to migrate database", zap.Error(err))
+		core.Logger.Fatal("[infraConnectDb]: failed to migrate database", zap.Error(err))
 		return err
 	}
 

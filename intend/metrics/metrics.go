@@ -8,6 +8,7 @@ import (
 type MetricNameEnum string
 
 type ICMPMetrics MetricNameEnum
+type CircuitMetrics MetricNameEnum
 type InterfaceMetrics MetricNameEnum
 type SwitchingMetrics MetricNameEnum
 type RoutingMetrics MetricNameEnum
@@ -18,6 +19,20 @@ const (
 	ICMPPing         ICMPMetrics = "icmp_ping"
 	ICMPResponseTime ICMPMetrics = "icmp_response_time"
 	ICMPPacketLoss   ICMPMetrics = "icmp_packet_loss"
+)
+
+const (
+	CircuitPing         CircuitMetrics = "circuit_icmp_ping"
+	CircuitResponseTime CircuitMetrics = "circuit_icmp_response_time"
+	CircuitPacketLoss   CircuitMetrics = "circuit_icmp_packet_loss"
+	CircuitRxBytes      CircuitMetrics = "circuit_rx_bytes"
+	CircuitTxBytes      CircuitMetrics = "circuit_tx_bytes"
+	CircuitRxDiscards   CircuitMetrics = "circuit_rx_discards"
+	CircuitTxDiscards   CircuitMetrics = "circuit_tx_discards"
+	CircuitRxErrors     CircuitMetrics = "circuit_rx_errors"
+	CircuitTxErrors     CircuitMetrics = "circuit_tx_errors"
+	CircuitRxRate       CircuitMetrics = "circuit_rx_rate"
+	CircuitTxRate       CircuitMetrics = "circuit_tx_rate"
 )
 
 // tags: interface, description

@@ -55,7 +55,7 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 	switch {
 	case errors.As(e, &generalError):
 		if generalError == nil {
-			core.Logger.Error("unknown error", zap.Error(e))
+			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e))
 			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
@@ -67,7 +67,7 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 		return
 	case errors.As(e, &pgError):
 		if pgError == nil {
-			core.Logger.Error("unknown error", zap.Error(e))
+			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e))
 			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
@@ -108,7 +108,7 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 		return
 	case errors.As(e, &validationError):
 		if validationError == nil {
-			core.Logger.Error("unknown error", zap.Error(e))
+			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e))
 			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
@@ -118,7 +118,7 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 		g.AbortWithStatusJSON(http.StatusNotFound, NewError(CodeNotFound, "record not found"))
 		return
 	default:
-		core.Logger.Error("unknown error", zap.Error(e))
+		core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e))
 		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 		return
 	}

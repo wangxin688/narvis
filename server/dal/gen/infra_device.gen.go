@@ -33,7 +33,6 @@ func newDevice(db *gorm.DB, opts ...gen.DOOption) device {
 	_device.ManagementIp = field.NewString(tableName, "managementIp")
 	_device.Status = field.NewString(tableName, "status")
 	_device.Platform = field.NewString(tableName, "platform")
-	_device.ProductFamily = field.NewString(tableName, "productFamily")
 	_device.DeviceModel = field.NewString(tableName, "deviceModel")
 	_device.Manufacturer = field.NewString(tableName, "manufacturer")
 	_device.DeviceRole = field.NewString(tableName, "deviceRole")
@@ -108,7 +107,6 @@ type device struct {
 	ManagementIp   field.String
 	Status         field.String
 	Platform       field.String
-	ProductFamily  field.String
 	DeviceModel    field.String
 	Manufacturer   field.String
 	DeviceRole     field.String
@@ -155,7 +153,6 @@ func (d *device) updateTableName(table string) *device {
 	d.ManagementIp = field.NewString(table, "managementIp")
 	d.Status = field.NewString(table, "status")
 	d.Platform = field.NewString(table, "platform")
-	d.ProductFamily = field.NewString(table, "productFamily")
 	d.DeviceModel = field.NewString(table, "deviceModel")
 	d.Manufacturer = field.NewString(table, "manufacturer")
 	d.DeviceRole = field.NewString(table, "deviceRole")
@@ -188,7 +185,7 @@ func (d *device) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (d *device) fillFieldMap() {
-	d.fieldMap = make(map[string]field.Expr, 28)
+	d.fieldMap = make(map[string]field.Expr, 27)
 	d.fieldMap["id"] = d.Id
 	d.fieldMap["createdAt"] = d.CreatedAt
 	d.fieldMap["updatedAt"] = d.UpdatedAt
@@ -196,7 +193,6 @@ func (d *device) fillFieldMap() {
 	d.fieldMap["managementIp"] = d.ManagementIp
 	d.fieldMap["status"] = d.Status
 	d.fieldMap["platform"] = d.Platform
-	d.fieldMap["productFamily"] = d.ProductFamily
 	d.fieldMap["deviceModel"] = d.DeviceModel
 	d.fieldMap["manufacturer"] = d.Manufacturer
 	d.fieldMap["deviceRole"] = d.DeviceRole

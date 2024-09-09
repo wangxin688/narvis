@@ -26,7 +26,7 @@ func connectDb() *gorm.DB {
 	dsn := core.Settings.Postgres.BuildPgDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		core.Logger.Fatal("Failed to connect database", zap.Error(err))
+		core.Logger.Fatal("[bootstrap]: failed to connect database", zap.Error(err))
 	}
 	return db
 }
@@ -38,13 +38,13 @@ func InitOrganization() string {
 
 	org, err := gen.Organization.Where(gen.Organization.Name.Eq("NarvisDemo")).Find()
 	if err != nil {
-		core.Logger.Error("Failed to get organization", zap.Error(err))
+		core.Logger.Error("[bootstrap]: failed to get organization", zap.Error(err))
 		panic(err)
 	}
 
-	if org != nil && len(org) > 0 {
+	if len(org) > 0 {
 		global.OrganizationId.Set(org[0].Id)
-		core.Logger.Info("Organization already exists", zap.String("id", org[0].Id))
+		core.Logger.Info("[bootstrap]: organization already exists", zap.String("id", org[0].Id))
 		return org[0].Id
 	}
 
@@ -58,11 +58,11 @@ func InitOrganization() string {
 		AdminPassword:  "admin123456",
 	})
 	if err != nil {
-		core.Logger.Error("Failed to create organization", zap.Error(err))
+		core.Logger.Error("[bootstrap]: failed to create organization", zap.Error(err))
 		panic(err)
 	}
 	global.OrganizationId.Set(newOrg.Id)
-	core.Logger.Info("Organization created", zap.String("id", newOrg.Id))
+	core.Logger.Info("[bootstrap]: organization created", zap.String("id", newOrg.Id))
 	return newOrg.Id
 }
 
@@ -73,29 +73,29 @@ func InitMacAddress() {
 	core.SetUpConfig()
 	mac, err := gen.MacAddress.Count()
 	if err != nil {
-		core.Logger.Error("Failed to get mac address", zap.Error(err))
+		core.Logger.Error("[bootstrap]: failed to get mac address", zap.Error(err))
 		panic(err)
 	}
 	if mac >= 1 {
-		core.Logger.Info("Mac address already exists")
+		core.Logger.Info("[bootstrap]: mac address already exists")
 		return
 	}
 	macAddressFilePath := core.ProjectPath + "/cmd/bootstrap/appdata/mac_address.json"
 	file, err := os.Open(macAddressFilePath)
 	if err != nil {
-		core.Logger.Error("Failed to open mac address file", zap.Error(err))
+		core.Logger.Error("[bootstrap]: failed to open mac address file", zap.Error(err))
 		panic(err)
 	}
 	defer file.Close()
 	var macAddresses []*models.MacAddress
 	if err := json.NewDecoder(file).Decode(&macAddresses); err != nil {
-		core.Logger.Error("Failed to decode mac address file", zap.Error(err))
+		core.Logger.Error("[bootstrap]: failed to decode mac address file", zap.Error(err))
 		panic(err)
 	}
 	err = gen.MacAddress.CreateInBatches(macAddresses, 100)
 	if err != nil {
-		core.Logger.Error("Failed to create mac address", zap.Error(err))
+		core.Logger.Error("[bootstrap]: failed to create mac address", zap.Error(err))
 		panic(err)
 	}
-	core.Logger.Info("Mac address created")
+	core.Logger.Info("[bootstrap]: mac address created")
 }

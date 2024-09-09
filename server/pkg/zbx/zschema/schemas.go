@@ -99,10 +99,10 @@ type HostCreate struct {
 	Host        string          `json:"host"`
 	Interfaces  []HostInterface `json:"interfaces"`
 	Groups      []GroupID       `json:"groups"`
-	Tags        []Tag           `json:"tags"`
-	Macros      []Macro         `json:"macros"`
+	Tags        *[]Tag          `json:"tags,omitempty"`
+	Macros      *[]Macro        `json:"macros,omitempty"`
 	MonitoredBy uint8           `json:"monitored_by"` // 0:server 1:proxy 2:proxy_group
-	ProxyID     uint            `json:"proxyid"`
+	ProxyID     *string         `json:"proxyid,omitempty"`
 	Status      uint8           `json:"status"` // 0:enable 1:disabled
 	Templates   []TemplateID    `json:"templates"`
 }
@@ -124,7 +124,7 @@ type HostUpdate struct {
 	Host          *string                `json:"host,omitempty"`
 	Groups        *[]GroupID             `json:"groups,omitempty"`
 	Interface     *[]HostInterfaceUpdate `json:"interfaces,omitempty"`
-	TemplateClear *[]string              `json:"template_clear,omitempty"` // clear and replace templates
+	TemplateClear *[]TemplateID          `json:"template_clear,omitempty"` // clear and replace templates
 	Tags          *[]Tag                 `json:"tags,omitempty"`
 	Macros        *[]Macro               `json:"macros,omitempty"`
 	Status        *uint8                 `json:"status,omitempty"`
@@ -163,9 +163,10 @@ type HostInterfaceUpdate struct {
 }
 
 type Details struct {
-	Version   uint8  `json:"version"`
-	Community string `json:"community"`
-	Bulk      uint8  `json:"bulk"` // 0:no 1:yes
+	Version        uint8  `json:"version"`
+	Community      string `json:"community"`
+	Bulk           *uint8 `json:"bulk"`            // 0:no 1:yes
+	MaxRepetitions *uint8 `json:"max_repetitions"` // default 10
 }
 
 type TemplateCreate struct {

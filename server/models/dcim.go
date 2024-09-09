@@ -66,7 +66,6 @@ type Device struct {
 	ManagementIp   string       `gorm:"column:managementIp;uniqueIndex:idx_management_ip_organization_id;not null;index"`
 	Status         string       `gorm:"column:status;default:Active"`
 	Platform       string       `gorm:"column:platform;default:Unknown"`
-	ProductFamily  string       `gorm:"column:productFamily;default:Unknown"`
 	DeviceModel    string       `gorm:"column:deviceModel;default:Unknown"`
 	Manufacturer   string       `gorm:"column:manufacturer;default:Unknown"`
 	DeviceRole     string       `gorm:"column:deviceRole;default:Unknown"`

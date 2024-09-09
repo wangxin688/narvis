@@ -85,7 +85,7 @@ func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action str
 		}
 		jsonData, err := json.Marshal(data)
 		if err != nil {
-			core.Logger.Error("AuditLog.createAuditLog json marshal error", zap.Error(err))
+			core.Logger.Error("[createAuditLog]: json marshal error", zap.Error(err))
 			continue
 		}
 		if action != AuditUpdateAction {
@@ -102,7 +102,7 @@ func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action str
 			diff := global.OrmDiff.Get()[pkId]
 			jsonDiff, err := json.Marshal(diff)
 			if err != nil {
-				core.Logger.Error("AuditLog.createAuditLog json marshal error", zap.Error(err))
+				core.Logger.Error("[createAuditLog]: json marshal error", zap.Error(err))
 				continue
 			}
 			auditLogs = append(auditLogs, &models.AuditLog{
@@ -122,7 +122,7 @@ func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action str
 	}
 	auditLog := auditLogs
 	if err := tx.Session(&gorm.Session{SkipHooks: true, NewDB: true}).Create(auditLog).Error; err != nil {
-		core.Logger.Error("AuditLog.createAuditLog commit create audit log error", zap.Error(err))
+		core.Logger.Error("[createAuditLog]: commit create audit log error", zap.Error(err))
 	}
 
 }
@@ -155,13 +155,13 @@ func getDBObjectBeforeOperation(tx *gorm.DB) (*snapshot, error) {
 		target := reflect.New(reflect.SliceOf(tx.Statement.Schema.ModelType)).Interface()
 		targetObj = target
 		if err := tx.Session(&gorm.Session{}).Table(tx.Statement.Schema.Table).Where("id IN ?", primaryKeyValue).Find(target).Error; err != nil {
-			core.Logger.Error("AuditLog.getDBObjectBeforeOperation get target error", zap.Error(err))
+			core.Logger.Error("[createAuditLog]: get target error before operation", zap.Error(err))
 			return nil, err
 		}
 	}
 	s, err := getSnapshot(targetObj, tx.Statement.Schema.Fields)
 	if err != nil {
-		core.Logger.Error("AuditLog.getDBObjectBeforeOperation get snapshot error", zap.Error(err))
+		core.Logger.Error("[createAuditLog]: get snapshot error before operation", zap.Error(err))
 		return nil, err
 	}
 	return s, nil

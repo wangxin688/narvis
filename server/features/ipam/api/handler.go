@@ -17,5 +17,11 @@ func RegisterIpamRoutes(e *gin.Engine) {
 		router.GET("/prefixes/:id", getPrefix)
 		router.PUT("/prefixes/:id", updatePrefix)
 		router.DELETE("/prefixes/:id", deletePrefix)
+
+		router.GET("/ip-addresses", getIpAddressList)
+		router.POST("/ip-addresses", createIpAddress)
+		router.GET("/ip-addresses/:id", getIpAddress)
+		router.PUT("/ip-addresses/:id", updateIpAddress)
+		router.DELETE("/ip-addresses/:id", deleteIpAddress)
 	}
 }

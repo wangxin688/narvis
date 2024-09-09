@@ -138,7 +138,6 @@ func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
 		Name:          device.Name,
 		ManagementIp:  device.ManagementIp,
 		Platform:      device.Platform,
-		ProductFamily: device.ProductFamily,
 		Status:        device.Status,
 		OperStatus:    "",
 		DeviceModel:   device.DeviceModel,
@@ -167,31 +166,24 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 	if query.Name != nil {
 		stmt = stmt.Where(gen.Device.Name.In(*query.Name...))
 	}
-
 	if query.Status != nil {
 		stmt = stmt.Where(gen.Device.Status.Eq(*query.Status))
 	}
-
 	if query.SiteId != nil {
 		stmt = stmt.Where(gen.Device.SiteId.Eq(*query.SiteId))
 	}
-
 	if query.DeviceRole != nil {
 		stmt = stmt.Where(gen.Device.DeviceRole.In(*query.DeviceRole...))
 	}
-
 	if query.DeviceModel != nil {
 		stmt = stmt.Where(gen.Device.DeviceModel.In(*query.DeviceModel...))
 	}
-
 	if query.Manufacturer != nil {
 		stmt = stmt.Where(gen.Device.Manufacturer.In(*query.Manufacturer...))
 	}
-
 	if query.RackId != nil {
 		stmt = stmt.Where(gen.Device.RackId.Eq(*query.RackId))
 	}
-
 	if query.Floor != nil {
 		stmt = stmt.Where(gen.Device.Floor.Eq(*query.Floor))
 	}
@@ -230,7 +222,6 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 			Name:          item.Name,
 			ManagementIp:  item.ManagementIp,
 			Platform:      item.Platform,
-			ProductFamily: item.ProductFamily,
 			Status:        item.Status,
 			OperStatus:    "",
 			IsRegistered:  item.IsRegistered,

@@ -105,7 +105,7 @@ func listRoles(c *gin.Context) {
 // @Param id path string true "role id"
 // @Param role body schemas.RoleUpdate true "role"
 // @Success 200 {object} schemas.Role
-// @Router /admin/roles/{id} [patch]
+// @Router /admin/roles/{id} [put]
 func updateRole(c *gin.Context) {
 	var err error
 	defer func() {

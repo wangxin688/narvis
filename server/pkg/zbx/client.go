@@ -122,7 +122,7 @@ func (z *Zbx) HostGroupDelete(hostGroupIDs []string) (groupID []string, err erro
 	return hgr.GroupIDs, nil
 }
 
-func (z *Zbx) HostGroupGet(params *zs.HostGroupGet) (res []zs.HostGroup, err error) {
+func (z *Zbx) HostGroupGet(params *zs.HostGroupGet) (res []*zs.HostGroup, err error) {
 	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "hostgroup.get",
@@ -196,7 +196,7 @@ func (z *Zbx) HostDelete(hostIDs []string) (res []string, err error) {
 	return host.HostIDs, nil
 }
 
-func (z *Zbx) HostGet(params *zs.HostGet) (res []zs.Host, err error) {
+func (z *Zbx) HostGet(params *zs.HostGet) (res []*zs.Host, err error) {
 	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "host.get",
@@ -283,7 +283,7 @@ func (z *Zbx) ConfigurationImport(config string) (res bool, err error) {
 	return res, nil
 }
 
-func (z *Zbx) EventGet(params *zs.EventGet) (res []zs.Event, err error) {
+func (z *Zbx) EventGet(params *zs.EventGet) (res []*zs.Event, err error) {
 	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "event.get",

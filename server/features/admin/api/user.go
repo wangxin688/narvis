@@ -101,7 +101,7 @@ func listUsers(c *gin.Context) {
 // @Param id path string true "user id"
 // @Param user body schemas.UserUpdate true "user"
 // @Success 200 {object} ts.IdResponse
-// @Router /admin/users/{id} [patch]
+// @Router /admin/users/{id} [put]
 func updateUser(c *gin.Context) {
 	var err error
 	defer func() {

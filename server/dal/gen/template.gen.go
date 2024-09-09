@@ -30,7 +30,7 @@ func newTemplate(db *gorm.DB, opts ...gen.DOOption) template {
 	_template.CreatedAt = field.NewTime(tableName, "createdAt")
 	_template.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_template.Manufacturer = field.NewString(tableName, "manufacturer")
-	_template.ProductFamily = field.NewString(tableName, "productFamily")
+	_template.DeviceRole = field.NewString(tableName, "deviceRole")
 	_template.TemplateId = field.NewString(tableName, "templateId")
 
 	_template.fillFieldMap()
@@ -41,13 +41,13 @@ func newTemplate(db *gorm.DB, opts ...gen.DOOption) template {
 type template struct {
 	templateDo
 
-	ALL           field.Asterisk
-	Id            field.String
-	CreatedAt     field.Time
-	UpdatedAt     field.Time
-	Manufacturer  field.String
-	ProductFamily field.String
-	TemplateId    field.String
+	ALL          field.Asterisk
+	Id           field.String
+	CreatedAt    field.Time
+	UpdatedAt    field.Time
+	Manufacturer field.String
+	DeviceRole   field.String
+	TemplateId   field.String
 
 	fieldMap map[string]field.Expr
 }
@@ -68,7 +68,7 @@ func (t *template) updateTableName(table string) *template {
 	t.CreatedAt = field.NewTime(table, "createdAt")
 	t.UpdatedAt = field.NewTime(table, "updatedAt")
 	t.Manufacturer = field.NewString(table, "manufacturer")
-	t.ProductFamily = field.NewString(table, "productFamily")
+	t.DeviceRole = field.NewString(table, "deviceRole")
 	t.TemplateId = field.NewString(table, "templateId")
 
 	t.fillFieldMap()
@@ -91,7 +91,7 @@ func (t *template) fillFieldMap() {
 	t.fieldMap["createdAt"] = t.CreatedAt
 	t.fieldMap["updatedAt"] = t.UpdatedAt
 	t.fieldMap["manufacturer"] = t.Manufacturer
-	t.fieldMap["productFamily"] = t.ProductFamily
+	t.fieldMap["deviceRole"] = t.DeviceRole
 	t.fieldMap["templateId"] = t.TemplateId
 }
 

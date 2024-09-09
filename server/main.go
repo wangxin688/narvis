@@ -36,7 +36,7 @@ func main() {
 	helpers.RegisterCustomValidator()
 	middleware.RegisterOpenAPI(router)
 	if err := router.Run(":8080"); err != nil {
-		core.Logger.Fatal("Failed to run server", zap.Error(err))
+		core.Logger.Fatal("[mainStartHttpServer]: failed to run server", zap.Error(err))
 	}
 }
 
@@ -56,10 +56,10 @@ func initializeSentry() {
 			TracesSampleRate: core.Settings.Sentry.TraceSampleRate,
 			Release:          core.Settings.Sentry.Release,
 		}); err != nil {
-			core.Logger.Fatal("Failed to initialize Sentry", zap.Error(err))
+			core.Logger.Fatal("[mainStartHttpServer]: failed to initialize sentry", zap.Error(err))
 		}
 	} else {
-		core.Logger.Info("Sentry disabled because of environment", zap.String("environment", string(core.Environment)))
+		core.Logger.Info("[mainStartHttpServer]: sentry disabled because of environment", zap.String("environment", string(core.Environment)))
 	}
 }
 

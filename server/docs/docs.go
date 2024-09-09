@@ -186,42 +186,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "delete role",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Delete role",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "role id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.Role"
-                        }
-                    }
-                }
-            },
-            "patch": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -254,6 +219,41 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/schemas.RoleUpdate"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Role"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "delete role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Delete role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "role id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -466,41 +466,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Delete user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.IdResponse"
-                        }
-                    }
-                }
-            },
-            "patch": {
+            "put": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -532,6 +498,40 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/schemas.UserUpdate"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2089,6 +2089,284 @@ const docTemplate = `{
                 }
             }
         },
+        "/ipam/ip-addresses": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get ip address list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "IPAM"
+                ],
+                "summary": "Get ip address list",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "address",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "range",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "siteId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Active, Reserved, Deprecated",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Dynamic, Static, Gateway, Broadcast, NetworkId",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "vlan",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/schemas.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/schemas.IpAddress"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create ip address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "IPAM"
+                ],
+                "summary": "Create ip address",
+                "parameters": [
+                    {
+                        "description": "ip",
+                        "name": "ip",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IpAddressCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ipam/ip-addresses/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get ip address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "IPAM"
+                ],
+                "summary": "Get ip address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ipId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IpAddress"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update ip address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "IPAM"
+                ],
+                "summary": "Update ip address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ipId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "ip",
+                        "name": "ip",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IpAddressUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IpAddress"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete ip address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "IPAM"
+                ],
+                "summary": "Delete ip address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ipId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/ipam/prefixes": {
             "get": {
                 "security": [
@@ -2810,7 +3088,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "ifAdminStatus": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "ifDescr": {
                     "type": "string"
@@ -2834,7 +3112,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "ifOperStatus": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "ifPhysAddr": {
                     "type": "string"
@@ -2843,7 +3121,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "ifType": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -2934,6 +3212,134 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "string"
+                }
+            }
+        },
+        "schemas.IpAddress": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "macAddress": {
+                    "type": "string"
+                },
+                "range": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Active, Reserved, Deprecated",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Dynamic, Static, Gateway, Broadcast, NetworkId",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "vlan": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schemas.IpAddressCreate": {
+            "type": "object",
+            "required": [
+                "address",
+                "siteId",
+                "status",
+                "type"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "macAddress": {
+                    "type": "string"
+                },
+                "range": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Reserved",
+                        "Deprecated"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Dynamic",
+                        "Static",
+                        "Gateway",
+                        "Broadcast",
+                        "NetworkId"
+                    ]
+                },
+                "vlan": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schemas.IpAddressUpdate": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "macAddress": {
+                    "type": "string"
+                },
+                "range": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Reserved",
+                        "Deprecated"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Dynamic",
+                        "Static",
+                        "Gateway",
+                        "Broadcast",
+                        "NetworkId"
+                    ]
+                },
+                "vlan": {
+                    "type": "integer"
                 }
             }
         },
@@ -3525,6 +3931,13 @@ const docTemplate = `{
                 },
                 "siteCode": {
                     "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
                 },
                 "timeZone": {
                     "type": "string"
