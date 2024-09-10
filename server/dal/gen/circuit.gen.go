@@ -43,6 +43,7 @@ func newCircuit(db *gorm.DB, opts ...gen.DOOption) circuit {
 	_circuit.DeviceId = field.NewString(tableName, "deviceId")
 	_circuit.InterfaceId = field.NewString(tableName, "interfaceId")
 	_circuit.MonitorId = field.NewString(tableName, "monitorId")
+	_circuit.MonitorHostId = field.NewString(tableName, "monitorHostId")
 	_circuit.OrganizationId = field.NewString(tableName, "organizationId")
 	_circuit.Site = circuitBelongsToSite{
 		db: db.Session(&gorm.Session{}),
@@ -145,6 +146,7 @@ type circuit struct {
 	DeviceId       field.String
 	InterfaceId    field.String
 	MonitorId      field.String
+	MonitorHostId  field.String
 	OrganizationId field.String
 	Site           circuitBelongsToSite
 
@@ -186,6 +188,7 @@ func (c *circuit) updateTableName(table string) *circuit {
 	c.DeviceId = field.NewString(table, "deviceId")
 	c.InterfaceId = field.NewString(table, "interfaceId")
 	c.MonitorId = field.NewString(table, "monitorId")
+	c.MonitorHostId = field.NewString(table, "monitorHostId")
 	c.OrganizationId = field.NewString(table, "organizationId")
 
 	c.fillFieldMap()
@@ -203,7 +206,7 @@ func (c *circuit) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *circuit) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 22)
+	c.fieldMap = make(map[string]field.Expr, 23)
 	c.fieldMap["id"] = c.Id
 	c.fieldMap["createdAt"] = c.CreatedAt
 	c.fieldMap["updatedAt"] = c.UpdatedAt
@@ -221,6 +224,7 @@ func (c *circuit) fillFieldMap() {
 	c.fieldMap["deviceId"] = c.DeviceId
 	c.fieldMap["interfaceId"] = c.InterfaceId
 	c.fieldMap["monitorId"] = c.MonitorId
+	c.fieldMap["monitorHostId"] = c.MonitorHostId
 	c.fieldMap["organizationId"] = c.OrganizationId
 
 }

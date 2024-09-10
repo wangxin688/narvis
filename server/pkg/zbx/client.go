@@ -196,6 +196,36 @@ func (z *Zbx) HostDelete(hostIDs []string) (res []string, err error) {
 	return host.HostIDs, nil
 }
 
+func (z *Zbx) HostInterfaceGet(params *zs.HostInterfaceGet) (res []*zs.HostInterface, err error) {
+	req := &zs.ZbxRequest{
+		Params: params,
+		Method: "hostinterface.get",
+	}
+
+	rsp, err := z.Rpc(req)
+	if err != nil {
+		return nil, err
+	}
+	rsp.GetResult(&res)
+	json.Unmarshal([]byte(rsp.Result), &res)
+	return
+}
+
+func (z *Zbx) HostInterfaceReplaceHostInterfaces(params *zs.HostInterfaceReplace) (res []string, err error) {
+	req := &zs.ZbxRequest{
+		Params: params,
+		Method: "hostinterface.replacehostinterfaces",
+	}
+
+	rsp, err := z.Rpc(req)
+	if err != nil {
+		return []string{}, err
+	}
+	host := zs.HostInterfaceUpdateResult{}
+	rsp.GetResult(&host)
+	return host.InterfaceIds, nil
+}
+
 func (z *Zbx) HostGet(params *zs.HostGet) (res []*zs.Host, err error) {
 	req := &zs.ZbxRequest{
 		Params: params,
@@ -310,4 +340,19 @@ func (z *Zbx) EventAcknowledge(eventIDs []string) (res []string, err error) {
 	}
 	rsp.GetResult(&res)
 	return res, nil
+}
+
+func (z *Zbx) UserMacroCreateGlobal(params *zs.Macro) (res string, err error) {
+	req := &zs.ZbxRequest{
+		Params: params,
+		Method: "usermacro.createglobal",
+	}
+
+	rsp, err := z.Rpc(req)
+	if err != nil {
+		return "", err
+	}
+	result := zs.GlobalMacroCreateResult{}
+	rsp.GetResult(&result)
+	return result.GlobalMacroIDs[0], nil
 }

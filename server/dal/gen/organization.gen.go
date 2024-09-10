@@ -36,6 +36,8 @@ func newOrganization(db *gorm.DB, opts ...gen.DOOption) organization {
 	_organization.LicenseCount = field.NewUint32(tableName, "licenseCount")
 	_organization.AuthType = field.NewUint8(tableName, "authType")
 	_organization.AuthConfig = field.NewField(tableName, "authConfig")
+	_organization.MarkAsDeleted = field.NewBool(tableName, "markAsDeleted")
+	_organization.MarkAsDeletedAt = field.NewTime(tableName, "markAsDeletedAt")
 
 	_organization.fillFieldMap()
 
@@ -45,17 +47,19 @@ func newOrganization(db *gorm.DB, opts ...gen.DOOption) organization {
 type organization struct {
 	organizationDo
 
-	ALL            field.Asterisk
-	Id             field.String
-	CreatedAt      field.Time
-	UpdatedAt      field.Time
-	Name           field.String
-	EnterpriseCode field.String
-	DomainName     field.String
-	Active         field.Bool
-	LicenseCount   field.Uint32
-	AuthType       field.Uint8
-	AuthConfig     field.Field
+	ALL             field.Asterisk
+	Id              field.String
+	CreatedAt       field.Time
+	UpdatedAt       field.Time
+	Name            field.String
+	EnterpriseCode  field.String
+	DomainName      field.String
+	Active          field.Bool
+	LicenseCount    field.Uint32
+	AuthType        field.Uint8
+	AuthConfig      field.Field
+	MarkAsDeleted   field.Bool
+	MarkAsDeletedAt field.Time
 
 	fieldMap map[string]field.Expr
 }
@@ -82,6 +86,8 @@ func (o *organization) updateTableName(table string) *organization {
 	o.LicenseCount = field.NewUint32(table, "licenseCount")
 	o.AuthType = field.NewUint8(table, "authType")
 	o.AuthConfig = field.NewField(table, "authConfig")
+	o.MarkAsDeleted = field.NewBool(table, "markAsDeleted")
+	o.MarkAsDeletedAt = field.NewTime(table, "markAsDeletedAt")
 
 	o.fillFieldMap()
 
@@ -98,7 +104,7 @@ func (o *organization) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (o *organization) fillFieldMap() {
-	o.fieldMap = make(map[string]field.Expr, 10)
+	o.fieldMap = make(map[string]field.Expr, 12)
 	o.fieldMap["id"] = o.Id
 	o.fieldMap["createdAt"] = o.CreatedAt
 	o.fieldMap["updatedAt"] = o.UpdatedAt
@@ -109,6 +115,8 @@ func (o *organization) fillFieldMap() {
 	o.fieldMap["licenseCount"] = o.LicenseCount
 	o.fieldMap["authType"] = o.AuthType
 	o.fieldMap["authConfig"] = o.AuthConfig
+	o.fieldMap["markAsDeleted"] = o.MarkAsDeleted
+	o.fieldMap["markAsDeletedAt"] = o.MarkAsDeletedAt
 }
 
 func (o organization) clone(db *gorm.DB) organization {

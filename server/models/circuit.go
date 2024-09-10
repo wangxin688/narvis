@@ -25,6 +25,7 @@ type Circuit struct {
 	InterfaceId     string          `gorm:"column:interfaceId;type:uuid;not null"`
 	DeviceInterface DeviceInterface `gorm:"constraint:Ondelete:RESTRICT;foreignKey:interfaceId"`
 	MonitorId       *string         `gorm:"column:monitorId;default:null"`
+	MonitorHostId   *string         `gorm:"column:monitorHostId;default:null"`
 	OrganizationId  string          `gorm:"column:organizationId;uniqueIndex:idx_name_site_id;type:uuid;not null"`
 	Organization    Organization    `gorm:"constraint:Ondelete:CASCADE"`
 }

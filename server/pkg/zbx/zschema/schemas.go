@@ -46,6 +46,10 @@ type Macro struct {
 	Value string
 }
 
+type GlobalMacroCreateResult struct {
+	GlobalMacroIDs []string `json:"globalmacroids"`
+}
+
 type GroupID struct {
 	GroupID string `json:"groupid"`
 }
@@ -96,15 +100,15 @@ type Host struct {
 }
 
 type HostCreate struct {
-	Host        string          `json:"host"`
-	Interfaces  []HostInterface `json:"interfaces"`
-	Groups      []GroupID       `json:"groups"`
-	Tags        *[]Tag          `json:"tags,omitempty"`
-	Macros      *[]Macro        `json:"macros,omitempty"`
-	MonitoredBy uint8           `json:"monitored_by"` // 0:server 1:proxy 2:proxy_group
-	ProxyID     *string         `json:"proxyid,omitempty"`
-	Status      uint8           `json:"status"` // 0:enable 1:disabled
-	Templates   []TemplateID    `json:"templates"`
+	Host        string                `json:"host"`
+	Interfaces  []HostInterfaceCreate `json:"interfaces"`
+	Groups      []GroupID             `json:"groups"`
+	Tags        *[]Tag                `json:"tags,omitempty"`
+	Macros      *[]Macro              `json:"macros,omitempty"`
+	MonitoredBy uint8                 `json:"monitored_by"` // 0:server 1:proxy 2:proxy_group
+	ProxyID     *string               `json:"proxyid,omitempty"`
+	Status      uint8                 `json:"status"` // 0:enable 1:disabled
+	Templates   []TemplateID          `json:"templates"`
 }
 
 type HostCreateResult struct {
@@ -123,7 +127,7 @@ type HostUpdate struct {
 	HostID        string                 `json:"hostid"`
 	Host          *string                `json:"host,omitempty"`
 	Groups        *[]GroupID             `json:"groups,omitempty"`
-	Interface     *[]HostInterfaceUpdate `json:"interfaces,omitempty"`
+	Interfaces    *[]HostInterfaceUpdate `json:"interfaces,omitempty"`
 	TemplateClear *[]TemplateID          `json:"template_clear,omitempty"` // clear and replace templates
 	Tags          *[]Tag                 `json:"tags,omitempty"`
 	Macros        *[]Macro               `json:"macros,omitempty"`
@@ -146,7 +150,7 @@ type HostMassUpdate struct {
 	ProxyID *uint      `json:"proxyid,omitempty"`
 }
 
-type HostInterface struct {
+type HostInterfaceCreate struct {
 	Type    uint8   `json:"type"`  // 1:agent 2:snmp 3:ipmi 4:jmx
 	Main    uint8   `json:"main"`  // 0:no 1:yes
 	UseIp   uint8   `json:"useip"` // 0:use dns 1:use ip
@@ -155,11 +159,35 @@ type HostInterface struct {
 	Details Details `json:"details"`
 }
 
+type HostInterface struct {
+	InterfaceId string  `json:"interfaceid"`
+	HostId      string  `json:"hostid"`
+	Type        uint8   `json:"type"`  // 1:agent 2:snmp 3:ipmi 4:jmx
+	Main        uint8   `json:"main"`  // 0:no 1:yes
+	UseIp       uint8   `json:"useip"` // 0:use dns 1:use ip
+	IP          string  `json:"ip"`
+	Port        uint32  `json:"port"` // default agent 10050, snmp 161
+	Details     Details `json:"details"`
+}
+
+type HostInterfaceGet struct {
+	HostIDs []string `json:"hostids,omitempty"`
+}
+
 type HostInterfaceUpdate struct {
 	InterfaceID string   `json:"interfaceid"`
 	Ip          *string  `json:"ip,omitempty"`
 	Port        *uint32  `json:"port,omitempty"`
 	Details     *Details `json:"details,omitempty"`
+}
+
+type HostInterfaceReplace struct {
+	HostId     string                `json:"hostid"`
+	Interfaces []HostInterfaceCreate `json:"interfaces"`
+}
+
+type HostInterfaceUpdateResult struct {
+	InterfaceIds []string `json:"interfaceids"`
 }
 
 type Details struct {

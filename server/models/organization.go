@@ -16,13 +16,15 @@ type AuthConfig struct {
 
 type Organization struct {
 	BaseDbModel
-	Name           string                          `gorm:"column:name;not null"`
-	EnterpriseCode string                          `gorm:"column:enterpriseCode;unique"`
-	DomainName     string                          `gorm:"column:domainName;unique"`
-	Active         bool                            `gorm:"column:active;type:bool;default:true"`
-	LicenseCount   uint32                          `gorm:"column:licenseCount;type:int;default:0"`
-	AuthType       uint8                           `gorm:"column:authType;type:int;default:0"`
-	AuthConfig     *datatypes.JSONType[AuthConfig] `gorm:"column:authConfig;type:json;default:null"`
+	Name            string                          `gorm:"column:name;not null"`
+	EnterpriseCode  string                          `gorm:"column:enterpriseCode;unique;<-:create"` // enterprise code cannot be changed
+	DomainName      string                          `gorm:"column:domainName;unique"`
+	Active          bool                            `gorm:"column:active;type:bool;default:true"`
+	LicenseCount    uint32                          `gorm:"column:licenseCount;type:int;default:0"`
+	AuthType        uint8                           `gorm:"column:authType;type:int;default:0"`
+	AuthConfig      *datatypes.JSONType[AuthConfig] `gorm:"column:authConfig;type:json;default:null"`
+	MarkAsDeleted   bool                            `gorm:"column:markAsDeleted;type:bool;default:false"`
+	MarkAsDeletedAt *time.Time                      `gorm:"column:markAsDeletedAt;default:null"` // when the organization is marked as deleted after 1 months, it will be permanently deleted with all data
 }
 
 type Proxy struct {
