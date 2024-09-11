@@ -5,7 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	biz "github.com/wangxin688/narvis/server/features/infra/biz"
+	"github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
+	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -35,6 +37,9 @@ func createCircuit(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	tools.BackgroundTask(func() {
+		hooks.CircuitCreateHooks(id)
+	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
@@ -117,10 +122,13 @@ func updateCircuit(c *gin.Context) {
 	if err = c.ShouldBindJSON(&circuit); err != nil {
 		return
 	}
-	_, err = biz.NewCircuitService().UpdateCircuit(id, &circuit)
+	diff, err := biz.NewCircuitService().UpdateCircuit(id, &circuit)
 	if err != nil {
 		return
 	}
+	tools.BackgroundTask(func() {
+		hooks.CircuitUpdateHooks(id, diff[id])
+	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
@@ -144,9 +152,12 @@ func deleteCircuit(c *gin.Context) {
 	if err = helpers.ValidateUuidString(id); err != nil {
 		return
 	}
-	_, err = biz.NewCircuitService().DeleteCircuit(id)
+	circuit, err := biz.NewCircuitService().DeleteCircuit(id)
 	if err != nil {
 		return
 	}
+	tools.BackgroundTask(func() {
+		hooks.CircuitDeleteHooks(circuit)
+	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }

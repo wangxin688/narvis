@@ -25,29 +25,150 @@ func SnmpCredCreateHooks(credId string) {
 			Macro: getGlobalCommunityMacroName(cred.Organization.EnterpriseCode),
 			Value: cred.Community,
 		}
-		_, err := client.UserMacroCreateGlobal(&globalMacro)
+		umId, err := client.UserMacroCreateGlobal(&globalMacro)
 		if err != nil {
 			core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: create global macro failed with cred %s", credId), zap.Error(err))
 			return
 		}
 		core.Logger.Info(fmt.Sprintf("[snmpCredCreateHooks]: create global macro success with cred %s", credId))
+		gen.SnmpV2Credential.Where(gen.SnmpV2Credential.Id.Eq(credId)).UpdateColumn(gen.SnmpV2Credential.GlobalMacroId, umId)
 		return
 	}
 
-	// device, err := gen.Device.Where(gen.Device.Id.Eq(*cred.DeviceId)).First()
-	// if err != nil {
-	// 	core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: get device failed with cred %s", credId), zap.Error(err))
-	// 	return
-	// }
-	// globalCred, err := gen.SnmpV2Credential.Where(gen.SnmpV2Credential.DeviceId.IsNull()).First()
-	// if err != nil {
-	// 	core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: get global cred failed with cred %s", credId), zap.Error(err))
-	// 	return
-	// }
+	device, err := gen.Device.Where(gen.Device.Id.Eq(*cred.DeviceId), gen.Device.MonitorId.IsNotNull()).First()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: get device failed with cred %s", credId), zap.Error(err))
+		return
+	}
+	zbxInterfaces, err := client.HostInterfaceGet(&zschema.HostInterfaceGet{
+		HostIDs: []string{*device.MonitorId},
+	})
+	if err != nil || len(zbxInterfaces) <= 0 {
+		core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: failed to update delete due to get host interface failed for device %s", device.Id), zap.Error(err))
+		return
+	}
+	hostInterfaceId := zbxInterfaces[0].InterfaceId
+	hostInterfaces := make([]zschema.HostInterfaceUpdate, 0)
+	hostInterfaces = append(hostInterfaces, zschema.HostInterfaceUpdate{
+		InterfaceID: hostInterfaceId,
+		Details: &zschema.Details{
+			Community:      cred.Community,
+			MaxRepetitions: &cred.MaxRepetitions,
+		},
+	})
+	updateSchema := zschema.HostUpdate{HostID: *device.MonitorId}
+	updateSchema.Interfaces = &hostInterfaces
+	_, err = client.HostUpdate(&updateSchema)
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: update host failed for cred %s", credId), zap.Error(err))
+		return
+	}
+	core.Logger.Info(fmt.Sprintf("[snmpCredCreateHooks]: update host success for cred %s", credId))
+
 }
 
 func SnmpCredUpdateHooks(credId string, diff map[string]*ts.OrmDiff) {
+	if len(diff) == 0 {
+		core.Logger.Info("[snmpCredUpdateHooks]: no diff found for cred skip update ", zap.String("credId", credId))
+		return
+	}
+	cred, err := gen.SnmpV2Credential.Where(gen.SnmpV2Credential.Id.Eq(credId)).First()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[snmpCredUpdateHooks]: get snmp cred failed with cred %s", credId), zap.Error(err))
+		return
+	}
+	client := zbx.NewZbxClient()
+	if _community, ok := diff["community"]; ok {
+		community := _community.After.(string)
+		if cred.GlobalMacroId != nil && *cred.GlobalMacroId != "" {
+			updateSchema := zschema.GlobalMacroUpdate{
+				GlobalMacroId: *cred.GlobalMacroId,
+				Value:         community,
+			}
+			_, err = client.UserMacroUpdateGlobal(&updateSchema)
+			if err != nil {
+				core.Logger.Error(fmt.Sprintf("[snmpCredUpdateHooks]: update global macro failed with cred %s", credId), zap.Error(err))
+				return
+			}
+			core.Logger.Info(fmt.Sprintf("[snmpCredUpdateHooks]: update global macro success with cred %s", credId))
+			return
+		}
 
+		if cred.DeviceId == nil || *cred.DeviceId == "" {
+			device, err := gen.Device.Where(gen.Device.Id.Eq(*cred.DeviceId), gen.Device.MonitorId.IsNotNull()).First()
+			if err != nil {
+				core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: get device failed with cred %s", credId), zap.Error(err))
+				return
+			}
+			zbxInterfaces, err := client.HostInterfaceGet(&zschema.HostInterfaceGet{
+				HostIDs: []string{*device.MonitorId},
+			})
+			if err != nil || len(zbxInterfaces) <= 0 {
+				core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: failed to update delete due to get host interface failed for device %s", device.Id), zap.Error(err))
+				return
+			}
+			hostInterfaceId := zbxInterfaces[0].InterfaceId
+			hostInterfaces := make([]zschema.HostInterfaceUpdate, 0)
+			hostInterfaces = append(hostInterfaces, zschema.HostInterfaceUpdate{
+				InterfaceID: hostInterfaceId,
+				Details: &zschema.Details{
+					Community:      cred.Community,
+					MaxRepetitions: &cred.MaxRepetitions,
+				},
+			})
+			updateSchema := zschema.HostUpdate{HostID: *device.MonitorId}
+			updateSchema.Interfaces = &hostInterfaces
+			_, err = client.HostUpdate(&updateSchema)
+			if err != nil {
+				core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: update host failed for cred %s", credId), zap.Error(err))
+				return
+			}
+			core.Logger.Info(fmt.Sprintf("[snmpCredCreateHooks]: update host success for cred %s", credId))
+			return
+		}
+	}
 }
 
-func SnmpCredDeleteHooks(cred *models.SnmpV2Credential) {}
+
+// when delete host cred, use global cred as default
+// global cred will not be deleted
+func SnmpCredDeleteHooks(cred *models.SnmpV2Credential) {
+	globalCred, err := gen.SnmpV2Credential.Where(
+		gen.SnmpV2Credential.OrganizationId.Eq(cred.OrganizationId),
+		gen.SnmpV2Credential.DeviceId.IsNull()).First()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[snmpCredDeleteHooks]: get snmp global cred failed with cred %s", cred.Id), zap.Error(err))
+		return
+	}
+	device, err := gen.Device.Where(gen.Device.Id.Eq(*cred.DeviceId), gen.Device.MonitorId.IsNotNull()).First()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[snmpCredDeleteHooks]: get device failed with cred %s", cred.Id), zap.Error(err))
+		return
+	}
+
+	client := zbx.NewZbxClient()
+	zbxInterfaces, err := client.HostInterfaceGet(&zschema.HostInterfaceGet{
+		HostIDs: []string{*device.MonitorId},
+	})
+	if err != nil || len(zbxInterfaces) <= 0 {
+		core.Logger.Error(fmt.Sprintf("[snmpCredDeleteHooks]: failed to update delete due to get host interface failed for device %s", device.Id), zap.Error(err))
+		return
+	}
+	hostInterfaceId := zbxInterfaces[0].InterfaceId
+	hostInterfaces := make([]zschema.HostInterfaceUpdate, 0)
+	hostInterfaces = append(hostInterfaces, zschema.HostInterfaceUpdate{
+		InterfaceID: hostInterfaceId,
+		Details: &zschema.Details{
+			Community:      globalCred.Community,
+			MaxRepetitions: &globalCred.MaxRepetitions,
+		},
+	})
+	updateSchema := zschema.HostUpdate{HostID: *device.MonitorId}
+	updateSchema.Interfaces = &hostInterfaces
+	_, err = client.HostUpdate(&updateSchema)
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[snmpCredDeleteHooks]: update host failed for cred %s", cred.Id), zap.Error(err))
+		return
+	}
+	core.Logger.Info(fmt.Sprintf("[snmpCredDeleteHooks]: update host success for cred %s", cred.Id))
+}

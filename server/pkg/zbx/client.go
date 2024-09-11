@@ -356,3 +356,17 @@ func (z *Zbx) UserMacroCreateGlobal(params *zs.Macro) (res string, err error) {
 	rsp.GetResult(&result)
 	return result.GlobalMacroIDs[0], nil
 }
+
+func (z *Zbx) UserMacroUpdateGlobal(params *zs.GlobalMacroUpdate) (res string, err error) {
+	req := &zs.ZbxRequest{
+		Params: params,
+		Method: "usermacro.updateglobal",
+	}
+	rsp, err := z.Rpc(req)
+	if err != nil {
+		return "", err
+	}
+	result := zs.GlobalMacroCreateResult{}
+	rsp.GetResult(&result)
+	return result.GlobalMacroIDs[0], nil
+}

@@ -159,6 +159,43 @@ definitions:
       txBandWidth:
         type: integer
     type: object
+  schemas.CliCredential:
+    properties:
+      inheritFromOrg:
+        type: boolean
+      password:
+        type: string
+      port:
+        type: integer
+      username:
+        type: string
+    type: object
+  schemas.CliCredentialCreate:
+    properties:
+      password:
+        type: string
+      port:
+        description: default is 22
+        maximum: 65535
+        minimum: 1
+        type: integer
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  schemas.CliCredentialUpdate:
+    properties:
+      password:
+        type: string
+      port:
+        maximum: 65535
+        minimum: 1
+        type: integer
+      username:
+        type: string
+    type: object
   schemas.Device:
     properties:
       createdAt:
@@ -192,8 +229,6 @@ definitions:
       osVersion:
         type: string
       platform:
-        type: string
-      productFamily:
         type: string
       rackId:
         type: string
@@ -648,6 +683,39 @@ definitions:
         maximum: 50
         type: integer
     type: object
+  schemas.RestconfCredential:
+    properties:
+      inheritFromOrg:
+        type: boolean
+      password:
+        type: string
+      url:
+        type: string
+      username:
+        type: string
+    type: object
+  schemas.RestconfCredentialCreate:
+    properties:
+      password:
+        type: string
+      url:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - url
+    - username
+    type: object
+  schemas.RestconfCredentialUpdate:
+    properties:
+      password:
+        type: string
+      url:
+        type: string
+      username:
+        type: string
+    type: object
   schemas.Role:
     properties:
       createdAt:
@@ -836,6 +904,56 @@ definitions:
         type: string
       timeZone:
         type: string
+    type: object
+  schemas.SnmpV2Credential:
+    properties:
+      community:
+        type: string
+      inheritFromOrg:
+        type: boolean
+      maxRepetitions:
+        type: integer
+      port:
+        type: integer
+      timeout:
+        type: integer
+    type: object
+  schemas.SnmpV2CredentialCreate:
+    properties:
+      community:
+        type: string
+      maxRepetitions:
+        description: default is 50
+        maximum: 200
+        type: integer
+      port:
+        description: default is 161
+        maximum: 65535
+        minimum: 1
+        type: integer
+      timeout:
+        description: default is 5
+        maximum: 30
+        minimum: 1
+        type: integer
+    required:
+    - community
+    type: object
+  schemas.SnmpV2CredentialUpdate:
+    properties:
+      community:
+        type: string
+      maxRepetitions:
+        maximum: 200
+        type: integer
+      port:
+        maximum: 65535
+        minimum: 1
+        type: integer
+      timeout:
+        maximum: 30
+        minimum: 1
+        type: integer
     type: object
   schemas.Transition:
     properties:
@@ -1640,13 +1758,6 @@ paths:
         minimum: 1
         name: pageSize
         type: integer
-      - enum:
-        - Gateway
-        - Switching
-        - WlanAP
-        in: query
-        name: productFamily
-        type: string
       - in: query
         name: rackId
         type: string
@@ -1777,6 +1888,107 @@ paths:
       summary: Update device
       tags:
       - Infra
+  /infra/devices/{id}/cli:
+    delete:
+      consumes:
+      - application/json
+      description: Delete device cli credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete device cli credential
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: Get device cli credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.CliCredential'
+      security:
+      - BearerAuth: []
+      summary: Get device cli credential
+      tags:
+      - Infra
+    post:
+      consumes:
+      - application/json
+      description: Create device new cli credential
+      parameters:
+      - description: DeviceId
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.CliCredentialCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create device new cli credential
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Update device cli credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.CliCredentialUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update device cli credential
+      tags:
+      - Infra
   /infra/devices/{id}/interfaces:
     get:
       consumes:
@@ -1800,6 +2012,208 @@ paths:
       security:
       - BearerAuth: []
       summary: Get device interfaces
+      tags:
+      - Infra
+  /infra/devices/{id}/restconf:
+    delete:
+      consumes:
+      - application/json
+      description: Delete device restconf credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete device restconf credential
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: Get device restconf credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.RestconfCredential'
+      security:
+      - BearerAuth: []
+      summary: Get device restconf credential
+      tags:
+      - Infra
+    post:
+      consumes:
+      - application/json
+      description: Create new device restconf credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.RestconfCredentialCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new device restconf credential
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Update device restconf credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.RestconfCredentialUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update device restconf credential
+      tags:
+      - Infra
+  /infra/devices/{id}/snmpv2:
+    delete:
+      consumes:
+      - application/json
+      description: Delete device snmpV2 credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete device snmpV2 credential
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: Get device snmpV2 credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.SnmpV2Credential'
+      security:
+      - BearerAuth: []
+      summary: Get device snmpV2 credential
+      tags:
+      - Infra
+    post:
+      consumes:
+      - application/json
+      description: Create device new snmpV2 credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.SnmpV2CredentialCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new device snmpV2 credential
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Update device snmpV2 credential
+      parameters:
+      - description: deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.SnmpV2CredentialUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update device snmpV2 credential
       tags:
       - Infra
   /infra/racks:

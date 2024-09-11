@@ -19,15 +19,11 @@ func NewSnmpCredentialService() *SnmpCredentialService {
 	return &SnmpCredentialService{}
 }
 
-func (s *SnmpCredentialService) CreateSnmpCredential(snmp *schemas.SnmpV2CredentialCreate) (string, error) {
+func (s *SnmpCredentialService) CreateSnmpCredential(deviceId string, snmp *schemas.SnmpV2CredentialCreate) (string, error) {
 	snmp.SetDefaultValue()
-
-	if err := s.validateCreateSnmpCredential(snmp); err != nil {
-		return "", err
-	}
 	cred := &models.SnmpV2Credential{
 		OrganizationId: global.OrganizationId.Get(),
-		DeviceId:       snmp.DeviceId,
+		DeviceId:       &deviceId,
 		Community:      snmp.Community,
 		Port:           *snmp.Port,
 		Timeout:        *snmp.Timeout,
@@ -40,27 +36,27 @@ func (s *SnmpCredentialService) CreateSnmpCredential(snmp *schemas.SnmpV2Credent
 	return cred.Id, nil
 }
 
-func (s *SnmpCredentialService) validateCreateSnmpCredential(snmp *schemas.SnmpV2CredentialCreate) error {
+// func (s *SnmpCredentialService) validateCreateSnmpCredential(snmp *schemas.SnmpV2CredentialCreate) error {
 
-	if snmp.DeviceId == nil {
-		orgCred, err := s.GetCredentialByOrgId(global.OrganizationId.Get())
-		if err != nil {
-			return err
-		}
-		if orgCred != nil {
-			return te.NewError(te.CodeCredentialDeviceIdMissing, te.MsgCredentialDeviceIdMissing)
-		}
-	}
-	return nil
-}
+// 	if snmp.DeviceId == nil {
+// 		orgCred, err := s.GetCredentialByOrgId(global.OrganizationId.Get())
+// 		if err != nil {
+// 			return err
+// 		}
+// 		if orgCred != nil {
+// 			return te.NewError(te.CodeCredentialDeviceIdMissing, te.MsgCredentialDeviceIdMissing)
+// 		}
+// 	}
+// 	return nil
+// }
 
-func (s *SnmpCredentialService) UpdateSnmpCredential(credId string, snmp *schemas.SnmpV2CredentialUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
+func (s *SnmpCredentialService) UpdateSnmpCredential(deviceId string, snmp *schemas.SnmpV2CredentialUpdate) (credId string, diff map[string]map[string]*ts.OrmDiff, err error) {
 	dbCred, err := gen.SnmpV2Credential.Where(
 		gen.SnmpV2Credential.OrganizationId.Eq(global.OrganizationId.Get()),
-		gen.SnmpV2Credential.Id.Eq(credId),
+		gen.SnmpV2Credential.DeviceId.Eq(deviceId),
 	).First()
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	updateFields := make(map[string]*ts.OrmDiff)
 
@@ -81,16 +77,16 @@ func (s *SnmpCredentialService) UpdateSnmpCredential(credId string, snmp *schema
 		dbCred.MaxRepetitions = *snmp.MaxRepetitions
 	}
 	if len(updateFields) == 0 {
-		return nil, nil
+		return "", nil, nil
 	}
 	diffValue := make(map[string]map[string]*ts.OrmDiff)
-	diffValue[credId] = updateFields
+	diffValue[dbCred.Id] = updateFields
 	global.OrmDiff.Set(diffValue)
 	err = gen.SnmpV2Credential.UnderlyingDB().Save(dbCred).Error
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
-	return diffValue, nil
+	return dbCred.Id, diffValue, nil
 }
 
 func (s *SnmpCredentialService) GetCredentialByOrgId(orgId string) (*models.SnmpV2Credential, error) {
@@ -104,20 +100,19 @@ func (s *SnmpCredentialService) GetCredentialByOrgId(orgId string) (*models.Snmp
 	return cred, err
 }
 
-func (s *SnmpCredentialService) DeleteCredential(credId string) error {
+func (s *SnmpCredentialService) DeleteCredential(device_id string) (cred *models.SnmpV2Credential, err error) {
 	dbCred, err := gen.SnmpV2Credential.Where(
 		gen.SnmpV2Credential.OrganizationId.Eq(global.OrganizationId.Get()),
-		gen.SnmpV2Credential.Id.Eq(credId),
+		gen.SnmpV2Credential.DeviceId.Eq(device_id),
 	).First()
 	if err != nil {
-		return err
+		return nil, err
 	}
-
 	_, err = gen.SnmpV2Credential.Delete(dbCred)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return dbCred, nil
 }
 
 func (s *SnmpCredentialService) GetCredentialByDeviceId(deviceId string) (*schemas.SnmpV2Credential, error) {
@@ -140,6 +135,7 @@ func (s *SnmpCredentialService) GetCredentialByDeviceId(deviceId string) (*schem
 				MaxRepetitions: globalCred.MaxRepetitions,
 				Timeout:        globalCred.Timeout,
 				Port:           globalCred.Port,
+				InheritFromOrg: true,
 			}, nil
 		}
 		return nil, err
@@ -149,6 +145,7 @@ func (s *SnmpCredentialService) GetCredentialByDeviceId(deviceId string) (*schem
 		MaxRepetitions: cred.MaxRepetitions,
 		Timeout:        cred.Timeout,
 		Port:           cred.Port,
+		InheritFromOrg: false,
 	}, err
 }
 
@@ -174,6 +171,7 @@ func (s *SnmpCredentialService) GetCredentialByDeviceIds(deviceIds []string) (ma
 				MaxRepetitions: cred.MaxRepetitions,
 				Timeout:        cred.Timeout,
 				Port:           cred.Port,
+				InheritFromOrg: false,
 			}
 		}
 		return results, nil
@@ -189,6 +187,7 @@ func (s *SnmpCredentialService) GetCredentialByDeviceIds(deviceIds []string) (ma
 			MaxRepetitions: orgCred.MaxRepetitions,
 			Timeout:        orgCred.Timeout,
 			Port:           orgCred.Port,
+			InheritFromOrg: false,
 		}
 	}
 	var missing []string
@@ -204,6 +203,7 @@ func (s *SnmpCredentialService) GetCredentialByDeviceIds(deviceIds []string) (ma
 				MaxRepetitions: orgCred.MaxRepetitions,
 				Timeout:        orgCred.Timeout,
 				Port:           orgCred.Port,
+				InheritFromOrg: true,
 			}
 		}
 	}

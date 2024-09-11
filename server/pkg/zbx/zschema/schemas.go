@@ -50,6 +50,11 @@ type GlobalMacroCreateResult struct {
 	GlobalMacroIDs []string `json:"globalmacroids"`
 }
 
+type GlobalMacroUpdate struct {
+	GlobalMacroId string `json:"globalmacroid"`
+	Value         string `json:"value"`
+}
+
 type GroupID struct {
 	GroupID string `json:"groupid"`
 }

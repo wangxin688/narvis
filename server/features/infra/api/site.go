@@ -7,6 +7,7 @@ import (
 	biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
+	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -36,7 +37,7 @@ func createSite(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	helpers.BackgroundTask(func() {
+	tools.BackgroundTask(func() {
 		hooks.SiteHookCreate(newSite)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newSite})
@@ -128,7 +129,7 @@ func updateSite(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	helpers.BackgroundTask(func() {
+	tools.BackgroundTask(func() {
 		hooks.SiteHookUpdate(siteId, diff[siteId])
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: siteId})
@@ -158,7 +159,7 @@ func deleteSite(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	helpers.BackgroundTask(func() {
+	tools.BackgroundTask(func() {
 		hooks.SiteHookDelete(site)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: siteId})

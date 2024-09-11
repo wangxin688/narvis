@@ -210,6 +210,7 @@ type SnmpV2Credential struct {
 	Port           uint16       `gorm:"column:port;not null;default:161"`
 	DeviceId       *string      `gorm:"column:deviceId;type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
 	Device         Device       `gorm:"constraint:Ondelete:CASCADE"`
+	GlobalMacroId  *string      `gorm:"column:globalMacroId;default:null"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }

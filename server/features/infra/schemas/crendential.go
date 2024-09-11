@@ -4,7 +4,6 @@ type CliCredentialCreate struct {
 	Username string  `json:"username" binding:"required"`
 	Password string  `json:"password" binding:"required"`
 	Port     *uint16 `json:"port" binding:"omitempty,gte=1,lte=65535"` // default is 22
-	DeviceId *string `json:"deviceId" binding:"uuid"`                  // if deviceId is empty, treat as create credential for all devices, else create credential for specified device
 }
 
 type CliCredentialUpdate struct {
@@ -14,9 +13,10 @@ type CliCredentialUpdate struct {
 }
 
 type CliCredential struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Port     uint16 `json:"port"`
+	Username       string `json:"username"`
+	Password       string `json:"password"`
+	Port           uint16 `json:"port"`
+	InheritFromOrg bool   `json:"inheritFromOrg"`
 }
 
 type SnmpV2CredentialCreate struct {
@@ -24,7 +24,6 @@ type SnmpV2CredentialCreate struct {
 	MaxRepetitions *uint8  `json:"maxRepetitions" binding:"omitempty, gte=10,lte=200"` // default is 50
 	Timeout        *uint8  `json:"timeout" binding:"omitempty,gte=1,lte=30"`           // default is 5
 	Port           *uint16 `json:"port" binding:"omitempty,gte=1,lte=65535"`           // default is 161
-	DeviceId       *string `json:"deviceId" binding:"uuid"`                            // if deviceId is empty, treat as create credential for all devices, else create credential for specified device
 }
 
 func (d *SnmpV2CredentialCreate) SetDefaultValue() {
@@ -60,13 +59,13 @@ type SnmpV2Credential struct {
 	MaxRepetitions uint8  `json:"maxRepetitions"`
 	Timeout        uint8  `json:"timeout"`
 	Port           uint16 `json:"port"`
+	InheritFromOrg bool   `json:"inheritFromOrg"`
 }
 
 type RestconfCredentialCreate struct {
-	Url      string  `json:"url" binding:"required,http_url"`
-	Username string  `json:"username" binding:"required"`
-	Password string  `json:"password" binding:"required"`
-	DeviceId *string `json:"deviceId" binding:"uuid"`
+	Url      string `json:"url" binding:"required,http_url"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type RestconfCredentialUpdate struct {
@@ -76,7 +75,8 @@ type RestconfCredentialUpdate struct {
 }
 
 type RestconfCredential struct {
-	Url      string `json:"url"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Url            string `json:"url"`
+	Username       string `json:"username"`
+	Password       string `json:"password"`
+	InheritFromOrg bool   `json:"inheritFromOrg"`
 }

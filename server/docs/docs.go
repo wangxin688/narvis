@@ -1151,16 +1151,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            "Gateway",
-                            "Switching",
-                            "WlanAP"
-                        ],
-                        "type": "string",
-                        "name": "productFamily",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "name": "rackId",
                         "in": "query"
@@ -1363,6 +1353,166 @@ const docTemplate = `{
                 }
             }
         },
+        "/infra/devices/{id}/cli": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get device cli credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get device cli credential",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CliCredential"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update device cli credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Update device cli credential",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Credential",
+                        "name": "credential",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CliCredentialUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create device new cli credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Create device new cli credential",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "DeviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Credential",
+                        "name": "credential",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CliCredentialCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete device cli credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Delete device cli credential",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/infra/devices/{id}/interfaces": {
             "get": {
                 "security": [
@@ -1398,6 +1548,326 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/schemas.DeviceInterface"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/devices/{id}/restconf": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get device restconf credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get device restconf credential",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.RestconfCredential"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update device restconf credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Update device restconf credential",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Credential",
+                        "name": "credential",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.RestconfCredentialUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new device restconf credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Create new device restconf credential",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Credential",
+                        "name": "credential",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.RestconfCredentialCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete device restconf credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Delete device restconf credential",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/devices/{id}/snmpv2": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get device snmpV2 credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get device snmpV2 credential",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SnmpV2Credential"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update device snmpV2 credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Update device snmpV2 credential",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Credential",
+                        "name": "credential",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SnmpV2CredentialUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create device new snmpV2 credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Create new device snmpV2 credential",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Credential",
+                        "name": "credential",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SnmpV2CredentialCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete device snmpV2 credential",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Delete device snmpV2 credential",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
                 }
@@ -2940,6 +3410,60 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.CliCredential": {
+            "type": "object",
+            "properties": {
+                "inheritFromOrg": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.CliCredentialCreate": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "description": "default is 22",
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.CliCredentialUpdate": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.Device": {
             "type": "object",
             "properties": {
@@ -2989,9 +3513,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "platform": {
-                    "type": "string"
-                },
-                "productFamily": {
                     "type": "string"
                 },
                 "rackId": {
@@ -3661,6 +4182,56 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.RestconfCredential": {
+            "type": "object",
+            "properties": {
+                "inheritFromOrg": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.RestconfCredentialCreate": {
+            "type": "object",
+            "required": [
+                "password",
+                "url",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.RestconfCredentialUpdate": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.Role": {
             "type": "object",
             "properties": {
@@ -3941,6 +4512,76 @@ const docTemplate = `{
                 },
                 "timeZone": {
                     "type": "string"
+                }
+            }
+        },
+        "schemas.SnmpV2Credential": {
+            "type": "object",
+            "properties": {
+                "community": {
+                    "type": "string"
+                },
+                "inheritFromOrg": {
+                    "type": "boolean"
+                },
+                "maxRepetitions": {
+                    "type": "integer"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "timeout": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schemas.SnmpV2CredentialCreate": {
+            "type": "object",
+            "required": [
+                "community"
+            ],
+            "properties": {
+                "community": {
+                    "type": "string"
+                },
+                "maxRepetitions": {
+                    "description": "default is 50",
+                    "type": "integer",
+                    "maximum": 200
+                },
+                "port": {
+                    "description": "default is 161",
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1
+                },
+                "timeout": {
+                    "description": "default is 5",
+                    "type": "integer",
+                    "maximum": 30,
+                    "minimum": 1
+                }
+            }
+        },
+        "schemas.SnmpV2CredentialUpdate": {
+            "type": "object",
+            "properties": {
+                "community": {
+                    "type": "string"
+                },
+                "maxRepetitions": {
+                    "type": "integer",
+                    "maximum": 200
+                },
+                "port": {
+                    "type": "integer",
+                    "maximum": 65535,
+                    "minimum": 1
+                },
+                "timeout": {
+                    "type": "integer",
+                    "maximum": 30,
+                    "minimum": 1
                 }
             }
         },

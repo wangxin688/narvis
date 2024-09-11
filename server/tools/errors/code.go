@@ -81,6 +81,8 @@ const (
 	MsgUpdateRackFailed             ErrorMsg  = "update rack failed, uHeight should be greater than the devices been occupied"
 	CodeRackPositionInconsecutive   ErrorCode = 500003
 	MsgRackPositionInconsecutive    ErrorMsg  = "rack position is not consecutive"
+	CodeGlobalCredentialDeleteDeny  ErrorCode = 500004
+	MsgGlobalCredentialDeleteDeny   ErrorMsg  = "Organization-level credential is not allowed to be deleted"
 )
 
 // ipam error codes (600000 - 700000)

@@ -34,6 +34,7 @@ func newSnmpV2Credential(db *gorm.DB, opts ...gen.DOOption) snmpV2Credential {
 	_snmpV2Credential.Timeout = field.NewUint8(tableName, "timeout")
 	_snmpV2Credential.Port = field.NewUint16(tableName, "port")
 	_snmpV2Credential.DeviceId = field.NewString(tableName, "deviceId")
+	_snmpV2Credential.GlobalMacroId = field.NewString(tableName, "globalMacroId")
 	_snmpV2Credential.OrganizationId = field.NewString(tableName, "organizationId")
 	_snmpV2Credential.Device = snmpV2CredentialBelongsToDevice{
 		db: db.Session(&gorm.Session{}),
@@ -111,6 +112,7 @@ type snmpV2Credential struct {
 	Timeout        field.Uint8
 	Port           field.Uint16
 	DeviceId       field.String
+	GlobalMacroId  field.String
 	OrganizationId field.String
 	Device         snmpV2CredentialBelongsToDevice
 
@@ -139,6 +141,7 @@ func (s *snmpV2Credential) updateTableName(table string) *snmpV2Credential {
 	s.Timeout = field.NewUint8(table, "timeout")
 	s.Port = field.NewUint16(table, "port")
 	s.DeviceId = field.NewString(table, "deviceId")
+	s.GlobalMacroId = field.NewString(table, "globalMacroId")
 	s.OrganizationId = field.NewString(table, "organizationId")
 
 	s.fillFieldMap()
@@ -156,7 +159,7 @@ func (s *snmpV2Credential) GetFieldByName(fieldName string) (field.OrderExpr, bo
 }
 
 func (s *snmpV2Credential) fillFieldMap() {
-	s.fieldMap = make(map[string]field.Expr, 11)
+	s.fieldMap = make(map[string]field.Expr, 12)
 	s.fieldMap["id"] = s.Id
 	s.fieldMap["createdAt"] = s.CreatedAt
 	s.fieldMap["updatedAt"] = s.UpdatedAt
@@ -165,6 +168,7 @@ func (s *snmpV2Credential) fillFieldMap() {
 	s.fieldMap["timeout"] = s.Timeout
 	s.fieldMap["port"] = s.Port
 	s.fieldMap["deviceId"] = s.DeviceId
+	s.fieldMap["globalMacroId"] = s.GlobalMacroId
 	s.fieldMap["organizationId"] = s.OrganizationId
 
 }

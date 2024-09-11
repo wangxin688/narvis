@@ -30,6 +30,21 @@ func RegisterInfraRoutes(e *gin.Engine) {
 		router.DELETE("/devices/:id", deleteDevice)
 		router.GET("/devices/:id/interfaces", getDeviceInterfaces)
 
+		router.POST("/devices/:id/restconf", createRestconfCredential)
+		router.GET("/devices/:id/restconf", getRestconfCredential)
+		router.PUT("/devices/:id/restconf", updateRestconfCredential)
+		router.DELETE("/devices/:id/restconf", deleteRestconfCredential)
+
+		router.POST("/devices/:id/cli", createCliCredential)
+		router.GET("/devices/:id/cli", getCliCredential)
+		router.PUT("/devices/:id/cli", updateCliCredential)
+		router.DELETE("/devices/:id/cli", deleteCliCredential)
+
+		router.POST("/devices/:id/snmpv2", createSnmpV2Credential)
+		router.GET("/devices/:id/snmpv2", getSnmpV2Credential)
+		router.PUT("/devices/:id/snmpv2", updateSnmpV2Credential)
+		router.DELETE("/devices/:id/snmpv2", deleteSnmpV2Credential)
+
 		router.GET("/aps/:id", getAp)
 		router.GET("/aps", listAp)
 

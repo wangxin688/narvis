@@ -173,12 +173,7 @@ func CircuitUpdateHooks(circuitId string, diff map[string]*ts.OrmDiff) {
 	}
 }
 
-func CircuitDeleteHooks(circuitId string) {
-	circuit, err := gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId)).First()
-	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitDeleteHooks]: get circuit failed for circuit %s", circuitId), zap.Error(err))
-		return
-	}
+func CircuitDeleteHooks(circuit *models.Circuit) {
 	deleteHosts := make([]string, 0)
 	if circuit.MonitorId != nil && *circuit.MonitorId != "" {
 		deleteHosts = append(deleteHosts, *circuit.MonitorId)
@@ -187,12 +182,11 @@ func CircuitDeleteHooks(circuitId string) {
 		deleteHosts = append(deleteHosts, *circuit.MonitorHostId)
 	}
 	if len(deleteHosts) > 0 {
-		_, err = zbx.NewZbxClient().HostDelete([]string{*circuit.MonitorId, *circuit.MonitorHostId})
+		_, err := zbx.NewZbxClient().HostDelete([]string{*circuit.MonitorId, *circuit.MonitorHostId})
 		if err != nil {
-			core.Logger.Error(fmt.Sprintf("[circuitDeleteHooks]: delete host failed for circuit %s", circuitId), zap.Error(err))
+			core.Logger.Error(fmt.Sprintf("[circuitDeleteHooks]: delete host failed for circuit %s", circuit.Id), zap.Error(err))
 			return
 		}
 	}
-	core.Logger.Info(fmt.Sprintf("[circuitDeleteHooks]: delete host success for circuit %s", circuitId))
-	gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId)).Delete()
+	core.Logger.Info(fmt.Sprintf("[circuitDeleteHooks]: delete host success for circuit %s", circuit.Id))
 }

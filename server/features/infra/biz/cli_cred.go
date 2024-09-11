@@ -19,15 +19,10 @@ func NewCliCredentialService() *CliCredentialService {
 	return &CliCredentialService{}
 }
 
-func (s *CliCredentialService) CreateCredential(credential *schemas.CliCredentialCreate) (string, error) {
-
-	if err := s.validateCreateCredential(credential); err != nil {
-		return "", err
-	}
-
+func (s *CliCredentialService) CreateCredential(deviceId string, credential *schemas.CliCredentialCreate) (string, error) {
 	cred := &models.CliCredential{
 		OrganizationId: global.OrganizationId.Get(),
-		DeviceId:       credential.DeviceId,
+		DeviceId:       &deviceId,
 		Username:       credential.Username,
 		Password:       credential.Password,
 	}
@@ -37,21 +32,21 @@ func (s *CliCredentialService) CreateCredential(credential *schemas.CliCredentia
 	return cred.Id, nil
 }
 
-func (s *CliCredentialService) validateCreateCredential(credential *schemas.CliCredentialCreate) error {
-	if credential.DeviceId == nil {
-		orgCred, err := s.GetCredentialByOrgId(global.OrganizationId.Get())
-		if err != nil {
-			return err
-		}
-		if orgCred != nil {
-			return te.NewError(te.CodeCredentialDeviceIdMissing, te.MsgCredentialDeviceIdMissing)
-		}
-	}
-	return nil
-}
+// func (s *CliCredentialService) validateCreateCredential(credential *schemas.CliCredentialCreate) error {
+// 	if credential.DeviceId == nil {
+// 		orgCred, err := s.GetCredentialByOrgId(global.OrganizationId.Get())
+// 		if err != nil {
+// 			return err
+// 		}
+// 		if orgCred != nil {
+// 			return te.NewError(te.CodeCredentialDeviceIdMissing, te.MsgCredentialDeviceIdMissing)
+// 		}
+// 	}
+// 	return nil
+// }
 
-func (s *CliCredentialService) UpdateCredential(credId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
-	dbCred, err := gen.CliCredential.Where(gen.CliCredential.Id.Eq(credId), gen.CliCredential.OrganizationId.Eq(global.OrganizationId.Get())).First()
+func (s *CliCredentialService) UpdateCredential(deviceId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
+	dbCred, err := gen.CliCredential.Where(gen.CliCredential.DeviceId.Eq(deviceId), gen.CliCredential.OrganizationId.Eq(global.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +64,7 @@ func (s *CliCredentialService) UpdateCredential(credId string, credential *schem
 	}
 
 	diff = make(map[string]map[string]*ts.OrmDiff)
-	diff["cliCredential"] = updateFields
+	diff[dbCred.Id] = updateFields
 	global.OrmDiff.Set(diff)
 	err = gen.CliCredential.UnderlyingDB().Save(dbCred).Error
 	if err != nil {
@@ -90,9 +85,9 @@ func (s *CliCredentialService) GetCredentialByOrgId(orgId string) (*models.CliCr
 
 }
 
-func (s *CliCredentialService) DeleteCredential(credId string) error {
+func (s *CliCredentialService) DeleteCredential(deviceId string) error {
 	dbCred, err := gen.CliCredential.Where(
-		gen.CliCredential.Id.Eq(credId),
+		gen.CliCredential.Id.Eq(deviceId),
 		gen.CliCredential.OrganizationId.Eq(global.OrganizationId.Get()),
 	).First()
 	if err != nil {
@@ -122,18 +117,20 @@ func (s *CliCredentialService) GetCredentialByDeviceId(deviceId string) (*schema
 				return nil, te.NewError(te.CodeNotFound, te.MsgNotFound, gen.CliCredential.TableName(), "deviceId", deviceId)
 			}
 			return &schemas.CliCredential{
-				Username: globalCred.Username,
-				Password: globalCred.Password,
-				Port:     globalCred.Port,
+				Username:       globalCred.Username,
+				Password:       globalCred.Password,
+				Port:           globalCred.Port,
+				InheritFromOrg: true,
 			}, nil
 		}
 		return nil, err
 	}
 
 	return &schemas.CliCredential{
-		Username: cred.Username,
-		Password: cred.Password,
-		Port:     cred.Port,
+		Username:       cred.Username,
+		Password:       cred.Password,
+		Port:           cred.Port,
+		InheritFromOrg: false,
 	}, nil
 }
 
@@ -154,9 +151,10 @@ func (s *CliCredentialService) GetCredentialByDeviceIds(deviceIds []string) (map
 		results := make(map[string]*schemas.CliCredential)
 		for _, cred := range creds {
 			results[*cred.DeviceId] = &schemas.CliCredential{
-				Username: cred.Username,
-				Password: cred.Password,
-				Port:     cred.Port,
+				Username:       cred.Username,
+				Password:       cred.Password,
+				Port:           cred.Port,
+				InheritFromOrg: false,
 			}
 		}
 		return results, nil
@@ -172,9 +170,10 @@ func (s *CliCredentialService) GetCredentialByDeviceIds(deviceIds []string) (map
 	results := make(map[string]*schemas.CliCredential)
 	for _, cred := range creds {
 		results[*cred.DeviceId] = &schemas.CliCredential{
-			Username: cred.Username,
-			Password: cred.Password,
-			Port:     cred.Port,
+			Username:       cred.Username,
+			Password:       cred.Password,
+			Port:           cred.Port,
+			InheritFromOrg: false,
 		}
 	}
 	var missing []string
@@ -188,9 +187,10 @@ func (s *CliCredentialService) GetCredentialByDeviceIds(deviceIds []string) (map
 	if len(missing) > 0 {
 		for _, deviceId := range missing {
 			results[deviceId] = &schemas.CliCredential{
-				Username: orgCred.Username,
-				Password: orgCred.Password,
-				Port:     orgCred.Port,
+				Username:       orgCred.Username,
+				Password:       orgCred.Password,
+				Port:           orgCred.Port,
+				InheritFromOrg: true,
 			}
 		}
 	}
