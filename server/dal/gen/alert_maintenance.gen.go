@@ -202,9 +202,6 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 		},
 		Ap: struct {
 			field.RelationField
-			ActiveWac struct {
-				field.RelationField
-			}
 			Site struct {
 				field.RelationField
 			}
@@ -213,11 +210,6 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 			}
 		}{
 			RelationField: field.NewRelation("Alert.Ap", "models.AP"),
-			ActiveWac: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Alert.Ap.ActiveWac", "models.Device"),
-			},
 			Site: struct {
 				field.RelationField
 			}{
@@ -473,9 +465,6 @@ type maintenanceHasManyAlert struct {
 	}
 	Ap struct {
 		field.RelationField
-		ActiveWac struct {
-			field.RelationField
-		}
 		Site struct {
 			field.RelationField
 		}

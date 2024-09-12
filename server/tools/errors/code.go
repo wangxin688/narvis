@@ -92,3 +92,15 @@ const (
 // monitor error codes (800000 - 900000)
 
 // alert error codes (900000 - 1000000)
+const (
+	CodeAlertStartTimeInFuture ErrorCode = 900000
+	MsgAlertStartTimeInFuture  ErrorMsg  = "alert start time should not be in the future"
+	CodeAlertNameNotDefined    ErrorCode = 900001
+	MsgAlertNameNotDefined     ErrorMsg  = "alert name: %s not defined"
+	CodeAlertHostIdInvalid     ErrorCode = 900002
+	MsgAlertHostIdInvalid      ErrorMsg  = "alert hostId: %s invalid"
+	CodeApNameTagMissing       ErrorCode = 900003
+	MsgApNameTagMissing        ErrorMsg  = "alert apName tag missing in metrics system"
+	CodeInterfaceTagMissing    ErrorCode = 900004
+	MsgInterfaceTagMissing     ErrorMsg  = "alert interface tag missing in metrics system"
+)

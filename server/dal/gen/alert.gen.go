@@ -33,7 +33,7 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 	_alert.Acknowledged = field.NewBool(tableName, "acknowledged")
 	_alert.Suppressed = field.NewBool(tableName, "suppressed")
 	_alert.Inhibited = field.NewBool(tableName, "inhibited")
-	_alert.Severity = field.NewUint8(tableName, "severity")
+	_alert.Severity = field.NewString(tableName, "severity")
 	_alert.AlertName = field.NewString(tableName, "alertName")
 	_alert.Labels = field.NewField(tableName, "labels")
 	_alert.EventId = field.NewString(tableName, "eventId")
@@ -43,6 +43,7 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 	_alert.DeviceId = field.NewString(tableName, "deviceId")
 	_alert.ApId = field.NewString(tableName, "apId")
 	_alert.CircuitId = field.NewString(tableName, "circuitId")
+	_alert.DeviceRole = field.NewString(tableName, "deviceRole")
 	_alert.DeviceInterfaceId = field.NewString(tableName, "deviceInterfaceId")
 	_alert.MaintenanceId = field.NewString(tableName, "maintenanceId")
 	_alert.OrganizationId = field.NewString(tableName, "organizationId")
@@ -171,11 +172,6 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Ap", "models.AP"),
-		ActiveWac: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Ap.ActiveWac", "models.Device"),
-		},
 		Site: struct {
 			field.RelationField
 		}{
@@ -338,7 +334,7 @@ type alert struct {
 	Acknowledged      field.Bool
 	Suppressed        field.Bool
 	Inhibited         field.Bool
-	Severity          field.Uint8
+	Severity          field.String
 	AlertName         field.String
 	Labels            field.Field
 	EventId           field.String
@@ -348,6 +344,7 @@ type alert struct {
 	DeviceId          field.String
 	ApId              field.String
 	CircuitId         field.String
+	DeviceRole        field.String
 	DeviceInterfaceId field.String
 	MaintenanceId     field.String
 	OrganizationId    field.String
@@ -389,7 +386,7 @@ func (a *alert) updateTableName(table string) *alert {
 	a.Acknowledged = field.NewBool(table, "acknowledged")
 	a.Suppressed = field.NewBool(table, "suppressed")
 	a.Inhibited = field.NewBool(table, "inhibited")
-	a.Severity = field.NewUint8(table, "severity")
+	a.Severity = field.NewString(table, "severity")
 	a.AlertName = field.NewString(table, "alertName")
 	a.Labels = field.NewField(table, "labels")
 	a.EventId = field.NewString(table, "eventId")
@@ -399,6 +396,7 @@ func (a *alert) updateTableName(table string) *alert {
 	a.DeviceId = field.NewString(table, "deviceId")
 	a.ApId = field.NewString(table, "apId")
 	a.CircuitId = field.NewString(table, "circuitId")
+	a.DeviceRole = field.NewString(table, "deviceRole")
 	a.DeviceInterfaceId = field.NewString(table, "deviceInterfaceId")
 	a.MaintenanceId = field.NewString(table, "maintenanceId")
 	a.OrganizationId = field.NewString(table, "organizationId")
@@ -418,7 +416,7 @@ func (a *alert) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *alert) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 28)
+	a.fieldMap = make(map[string]field.Expr, 29)
 	a.fieldMap["Id"] = a.Id
 	a.fieldMap["status"] = a.Status
 	a.fieldMap["startedAt"] = a.StartedAt
@@ -436,6 +434,7 @@ func (a *alert) fillFieldMap() {
 	a.fieldMap["deviceId"] = a.DeviceId
 	a.fieldMap["apId"] = a.ApId
 	a.fieldMap["circuitId"] = a.CircuitId
+	a.fieldMap["deviceRole"] = a.DeviceRole
 	a.fieldMap["deviceInterfaceId"] = a.DeviceInterfaceId
 	a.fieldMap["maintenanceId"] = a.MaintenanceId
 	a.fieldMap["organizationId"] = a.OrganizationId
@@ -715,9 +714,6 @@ type alertBelongsToAp struct {
 
 	field.RelationField
 
-	ActiveWac struct {
-		field.RelationField
-	}
 	Site struct {
 		field.RelationField
 	}

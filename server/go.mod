@@ -11,6 +11,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/imroc/req/v3 v3.43.7
 	github.com/jackc/pgx/v5 v5.5.5
+	github.com/lib/pq v1.10.9
 	github.com/samber/lo v1.47.0
 	github.com/spf13/viper v1.19.0
 	github.com/swaggo/files v1.0.1

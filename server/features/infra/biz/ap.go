@@ -71,8 +71,8 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 				Y: ap.Coordinate.Data().Y,
 				Z: ap.Coordinate.Data().Z,
 			},
-			ActiveWacId: ap.ActiveWacId,
-			SiteId:      ap.SiteId,
+			WlanACIpAddress: (*[]string)(ap.WlanACIpAddress),
+			SiteId:          ap.SiteId,
 		})
 	}
 	return count, &res, nil
@@ -107,7 +107,7 @@ func (s *ApService) GetById(id string) (*schemas.AP, error) {
 			Y: ap.Coordinate.Data().Y,
 			Z: ap.Coordinate.Data().Z,
 		},
-		ActiveWacId: ap.ActiveWacId,
-		SiteId:      ap.SiteId,
+		WlanACIpAddress: (*[]string)(ap.WlanACIpAddress),
+		SiteId:          ap.SiteId,
 	}, nil
 }

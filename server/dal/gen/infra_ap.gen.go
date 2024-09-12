@@ -41,67 +41,19 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 	_aP.GroupName = field.NewString(tableName, "groupName")
 	_aP.IsRegistered = field.NewBool(tableName, "isRegistered")
 	_aP.Coordinate = field.NewField(tableName, "coordinate")
-	_aP.ActiveWacId = field.NewString(tableName, "activeWacId")
+	_aP.WlanACIpAddress = field.NewField(tableName, "wlanACIpAddress")
 	_aP.Floor = field.NewString(tableName, "floor")
 	_aP.SiteId = field.NewString(tableName, "siteId")
 	_aP.OrganizationId = field.NewString(tableName, "organizationId")
-	_aP.ActiveWac = aPBelongsToActiveWac{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("ActiveWac", "models.Device"),
-		Rack: struct {
-			field.RelationField
-			Site struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-			}
-			Organization struct {
-				field.RelationField
-			}
-		}{
-			RelationField: field.NewRelation("ActiveWac.Rack", "models.Rack"),
-			Site: struct {
-				field.RelationField
-				Organization struct {
-					field.RelationField
-				}
-			}{
-				RelationField: field.NewRelation("ActiveWac.Rack.Site", "models.Site"),
-				Organization: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("ActiveWac.Rack.Site.Organization", "models.Organization"),
-				},
-			},
-			Organization: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("ActiveWac.Rack.Organization", "models.Organization"),
-			},
-		},
-		Template: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("ActiveWac.Template", "models.Template"),
-		},
-		Site: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("ActiveWac.Site", "models.Site"),
-		},
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("ActiveWac.Organization", "models.Organization"),
-		},
-	}
-
 	_aP.Site = aPBelongsToSite{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Site", "models.Site"),
+		Organization: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Site.Organization", "models.Organization"),
+		},
 	}
 
 	_aP.Organization = aPBelongsToOrganization{
@@ -118,29 +70,27 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 type aP struct {
 	aPDo
 
-	ALL            field.Asterisk
-	Id             field.String
-	CreatedAt      field.Time
-	UpdatedAt      field.Time
-	Name           field.String
-	Status         field.String
-	MacAddress     field.String
-	SerialNumber   field.String
-	ManagementIp   field.String
-	DeviceModel    field.String
-	Manufacturer   field.String
-	DeviceRole     field.String
-	OsVersion      field.String
-	GroupName      field.String
-	IsRegistered   field.Bool
-	Coordinate     field.Field
-	ActiveWacId    field.String
-	Floor          field.String
-	SiteId         field.String
-	OrganizationId field.String
-	ActiveWac      aPBelongsToActiveWac
-
-	Site aPBelongsToSite
+	ALL             field.Asterisk
+	Id              field.String
+	CreatedAt       field.Time
+	UpdatedAt       field.Time
+	Name            field.String
+	Status          field.String
+	MacAddress      field.String
+	SerialNumber    field.String
+	ManagementIp    field.String
+	DeviceModel     field.String
+	Manufacturer    field.String
+	DeviceRole      field.String
+	OsVersion       field.String
+	GroupName       field.String
+	IsRegistered    field.Bool
+	Coordinate      field.Field
+	WlanACIpAddress field.Field
+	Floor           field.String
+	SiteId          field.String
+	OrganizationId  field.String
+	Site            aPBelongsToSite
 
 	Organization aPBelongsToOrganization
 
@@ -174,7 +124,7 @@ func (a *aP) updateTableName(table string) *aP {
 	a.GroupName = field.NewString(table, "groupName")
 	a.IsRegistered = field.NewBool(table, "isRegistered")
 	a.Coordinate = field.NewField(table, "coordinate")
-	a.ActiveWacId = field.NewString(table, "activeWacId")
+	a.WlanACIpAddress = field.NewField(table, "wlanACIpAddress")
 	a.Floor = field.NewString(table, "floor")
 	a.SiteId = field.NewString(table, "siteId")
 	a.OrganizationId = field.NewString(table, "organizationId")
@@ -194,7 +144,7 @@ func (a *aP) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *aP) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 22)
+	a.fieldMap = make(map[string]field.Expr, 21)
 	a.fieldMap["id"] = a.Id
 	a.fieldMap["createdAt"] = a.CreatedAt
 	a.fieldMap["updatedAt"] = a.UpdatedAt
@@ -210,7 +160,7 @@ func (a *aP) fillFieldMap() {
 	a.fieldMap["groupName"] = a.GroupName
 	a.fieldMap["isRegistered"] = a.IsRegistered
 	a.fieldMap["coordinate"] = a.Coordinate
-	a.fieldMap["activeWacId"] = a.ActiveWacId
+	a.fieldMap["wlanACIpAddress"] = a.WlanACIpAddress
 	a.fieldMap["floor"] = a.Floor
 	a.fieldMap["siteId"] = a.SiteId
 	a.fieldMap["organizationId"] = a.OrganizationId
@@ -227,103 +177,14 @@ func (a aP) replaceDB(db *gorm.DB) aP {
 	return a
 }
 
-type aPBelongsToActiveWac struct {
-	db *gorm.DB
-
-	field.RelationField
-
-	Rack struct {
-		field.RelationField
-		Site struct {
-			field.RelationField
-			Organization struct {
-				field.RelationField
-			}
-		}
-		Organization struct {
-			field.RelationField
-		}
-	}
-	Template struct {
-		field.RelationField
-	}
-	Site struct {
-		field.RelationField
-	}
-	Organization struct {
-		field.RelationField
-	}
-}
-
-func (a aPBelongsToActiveWac) Where(conds ...field.Expr) *aPBelongsToActiveWac {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a aPBelongsToActiveWac) WithContext(ctx context.Context) *aPBelongsToActiveWac {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a aPBelongsToActiveWac) Session(session *gorm.Session) *aPBelongsToActiveWac {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a aPBelongsToActiveWac) Model(m *models.AP) *aPBelongsToActiveWacTx {
-	return &aPBelongsToActiveWacTx{a.db.Model(m).Association(a.Name())}
-}
-
-type aPBelongsToActiveWacTx struct{ tx *gorm.Association }
-
-func (a aPBelongsToActiveWacTx) Find() (result *models.Device, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a aPBelongsToActiveWacTx) Append(values ...*models.Device) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a aPBelongsToActiveWacTx) Replace(values ...*models.Device) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a aPBelongsToActiveWacTx) Delete(values ...*models.Device) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a aPBelongsToActiveWacTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a aPBelongsToActiveWacTx) Count() int64 {
-	return a.tx.Count()
-}
-
 type aPBelongsToSite struct {
 	db *gorm.DB
 
 	field.RelationField
+
+	Organization struct {
+		field.RelationField
+	}
 }
 
 func (a aPBelongsToSite) Where(conds ...field.Expr) *aPBelongsToSite {

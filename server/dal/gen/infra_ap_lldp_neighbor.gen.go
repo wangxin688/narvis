@@ -93,11 +93,6 @@ func newApLLDPNeighbor(db *gorm.DB, opts ...gen.DOOption) apLLDPNeighbor {
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("RemoteAp", "models.AP"),
-		ActiveWac: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("RemoteAp.ActiveWac", "models.Device"),
-		},
 		Site: struct {
 			field.RelationField
 		}{
@@ -312,9 +307,6 @@ type apLLDPNeighborBelongsToRemoteAp struct {
 
 	field.RelationField
 
-	ActiveWac struct {
-		field.RelationField
-	}
 	Site struct {
 		field.RelationField
 	}

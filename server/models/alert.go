@@ -32,13 +32,13 @@ type ChannelConfig struct {
 
 type Alert struct {
 	Id                string                     `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Status            uint8                      `gorm:"column:status;type:smallint;default:0"` // 0: firing 1: resolved
+	Status            uint8                      `gorm:"column:status;type:smallint;default:0;index"` // 0: firing 1: resolved
 	StartedAt         time.Time                  `gorm:"column:startedAt;autoCreateTime;not null"`
 	ResolvedAt        *time.Time                 `gorm:"column:resolvedAt;default:null"`
 	Acknowledged      bool                       `gorm:"column:acknowledged;default:false"`
 	Suppressed        bool                       `gorm:"column:suppressed;default:false"`
 	Inhibited         bool                       `gorm:"column:inhibited;default:true"`
-	Severity          uint8                      `gorm:"column:severity;default:0"` // P1 P2 P3 P4
+	Severity          string                     `gorm:"column:severity;default:P4"` // P1 P2 P3 P4
 	Duration          *string                    `gorm:"-"`
 	AlertName         string                     `gorm:"column:alertName;not null;index"`
 	Labels            datatypes.JSONSlice[Label] `gorm:"column:labels;type:json;default:null"`
@@ -54,6 +54,7 @@ type Alert struct {
 	Ap                AP                         `gorm:"constraint:Ondelete:CASCADE"`
 	CircuitId         *string                    `gorm:"column:circuitId;type:uuid;index"`
 	Circuit           Circuit                    `gorm:"constraint:Ondelete:CASCADE"`
+	DeviceRole        *string                    `gorm:"column:deviceRole;default:null"`
 	DeviceInterfaceId *string                    `gorm:"column:deviceInterfaceId;type:uuid;index"`
 	DeviceInterface   DeviceInterface            `gorm:"constraint:Ondelete:SET NULL"`
 	MaintenanceId     *string                    `gorm:"column:maintenanceId;type:uuid;default:null"`

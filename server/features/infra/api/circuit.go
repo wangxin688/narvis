@@ -161,3 +161,5 @@ func deleteCircuit(c *gin.Context) {
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
+
+

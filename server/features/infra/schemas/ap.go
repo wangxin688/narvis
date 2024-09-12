@@ -13,25 +13,25 @@ type ApCoordinate struct {
 }
 
 type AP struct {
-	Id           string        `json:"id"`
-	CreatedAt    time.Time     `json:"createdAt"`
-	UpdatedAt    time.Time     `json:"updatedAt"`
-	Name         string        `json:"name"`
-	Status       string        `json:"status"`
-	OperStatus   string        `json:"operStatus"`
-	HealthStatus string        `json:"healthStatus"`
-	MacAddress   *string       `json:"macAddress"`
-	SerialNumber *string       `json:"serialNumber"`
-	ManagementIp string        `json:"managementIp"`
-	DeviceModel  string        `json:"deviceType"`
-	Manufacturer string        `json:"manufacturer"`
-	DeviceRole   string        `json:"deviceRole"`
-	OsVersion      *string       `json:"osVersion"`
-	Floor        *string       `json:"floor"`
-	GroupName    *string       `json:"groupName"`
-	Coordinate   *ApCoordinate `json:"coordinate"`
-	ActiveWacId  *string       `json:"activeWacId"`
-	SiteId       string        `json:"siteId"`
+	Id              string        `json:"id"`
+	CreatedAt       time.Time     `json:"createdAt"`
+	UpdatedAt       time.Time     `json:"updatedAt"`
+	Name            string        `json:"name"`
+	Status          string        `json:"status"`
+	OperStatus      string        `json:"operStatus"`
+	HealthStatus    string        `json:"healthStatus"`
+	MacAddress      *string       `json:"macAddress"`
+	SerialNumber    *string       `json:"serialNumber"`
+	ManagementIp    string        `json:"managementIp"`
+	DeviceModel     string        `json:"deviceType"`
+	Manufacturer    string        `json:"manufacturer"`
+	DeviceRole      string        `json:"deviceRole"`
+	OsVersion       *string       `json:"osVersion"`
+	Floor           *string       `json:"floor"`
+	GroupName       *string       `json:"groupName"`
+	Coordinate      *ApCoordinate `json:"coordinate"`
+	WlanACIpAddress *[]string     `json:"wlanACIpAddress"`
+	SiteId          string        `json:"siteId"`
 }
 
 type APList []AP

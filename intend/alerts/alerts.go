@@ -255,3 +255,46 @@ func GetAlertName(alertName string) AlertName {
 
 	return getAlertNameMeta()[Unknown]
 }
+
+func GetAlertEnumNames() []AlertNameEnum {
+	return []AlertNameEnum{
+		HighCpuUsage,
+		HighMemoryUsage,
+		HighDiskUsage,
+		HighSystemLoad,
+		HighChannelUsage,
+		HighChannelInterference,
+		HighChannelNoise,
+		HighClientNumber,
+		HighBandwidthUsage,
+		HighErrorRate,
+		HighICMPLatency,
+		HighICMPPacketLoss,
+		HighTemperature,
+		AbnormalFanStatus,
+		AbnormalPowerStatus,
+		InterfaceDown,
+		SnmpAgentTimeout,
+		NodePingTimeout,
+		ApDown,
+		Unknown,
+	}
+}
+
+func GetInterfaceAlertEnumNames() []AlertNameEnum {
+	return []AlertNameEnum{
+		InterfaceDown,
+		HighBandwidthUsage,
+		HighErrorRate,
+	}
+}
+
+func GetApAlertEnumNames() []AlertNameEnum {
+	return []AlertNameEnum{
+		ApDown,
+		HighChannelUsage,
+		HighChannelInterference,
+		HighChannelNoise,
+		HighClientNumber,
+	}
+}
