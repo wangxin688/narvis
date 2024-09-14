@@ -1,11 +1,25 @@
 package driver
 
-import "github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+import (
+	"strconv"
+	"strings"
+
+	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+)
+
+const hwL2VlanDescr = ".1.3.6.1.4.1.2011.5.25.42.3.1.1.1.1.2"
+const hwL2VlanIfIndex = ".1.3.6.1.4.1.2011.5.25.42.3.1.1.1.1.6"
+
+const hwWlanApMac = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.1"
+const hwWlanApIpAddress = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.13"
+const hwWlanApName = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.4"
+const hwWlanAPGroup = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.5"
+const hwWlanApTypeInfo = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.3"
+const hwWlanApSn = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.2"
 
 type HuaweiDriver struct {
 	factory.SnmpDiscovery
 }
-
 
 func NewHuaweiDriver(sc factory.SnmpConfig) (*HuaweiDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
@@ -19,3 +33,86 @@ func NewHuaweiDriver(sc factory.SnmpConfig) (*HuaweiDriver, error) {
 	}, nil
 }
 
+func (hd *HuaweiDriver) Vlans() (vlan []*factory.VlanItem, errors []string) {
+	l2Vlan, err := hd.Session.BulkWalkAll(hwL2VlanDescr)
+	l2VlanIfIndex, errIfIndex := hd.Session.BulkWalkAll(hwL2VlanIfIndex)
+	if err != nil || errIfIndex != nil {
+		errors = append(errors, err.Error())
+		errors = append(errors, errIfIndex.Error())
+	}
+	indexL2Vlan := factory.ExtractString(hwL2VlanDescr, l2Vlan)
+	indexVlanIndex := factory.ExtractInteger(hwL2VlanIfIndex, l2VlanIfIndex)
+
+	for i, v := range indexL2Vlan {
+		vlanIdString := strings.TrimPrefix(v, ".")
+		vlanId, _ := strconv.Atoi(vlanIdString)
+		_vlan := &factory.VlanItem{
+			VlanId:   uint32(vlanId),
+			VlanName: v,
+			IfIndex:  indexVlanIndex[i],
+		}
+		vlan = append(vlan, _vlan)
+	}
+
+	return vlan, errors
+}
+
+func (hd *HuaweiDriver) Discovery() *factory.DiscoveryResponse {
+	sysDescr, sysError := hd.SysDescr()
+	sysUpTime, sysUpTimeError := hd.SysUpTime()
+	sysName, sysNameError := hd.SysName()
+	chassisId, chassisIdError := hd.ChassisId()
+	interfaces, interfacesError := hd.Interfaces()
+	entities, entitiesError := hd.Entities()
+	lldp, lldpError := hd.LldpNeighbors()
+	macAddress, macAddressError := hd.MacAddressTable()
+	arp, arpError := hd.ArpTable()
+	arp = factory.EnrichArpInfo(arp, interfaces)
+	vlan, VlanError := hd.Vlans()
+	vlan = factory.EnrichVlanInfo(vlan, interfaces)
+	macAddress_ := factory.EnrichMacAddress(macAddress, interfaces, lldp, arp)
+
+	response := &factory.DiscoveryResponse{
+		SysDescr:        sysDescr,
+		Uptime:          sysUpTime,
+		Hostname:        sysName,
+		ChassisId:       chassisId,
+		Interfaces:      interfaces,
+		LldpNeighbors:   lldp,
+		Entities:        entities,
+		MacAddressTable: macAddress_,
+		ArpTable:        arp,
+		Vlans:           vlan,
+	}
+	if sysError != nil {
+		response.Errors = append(response.Errors, sysError.Error())
+	}
+	if sysUpTimeError != nil {
+		response.Errors = append(response.Errors, sysUpTimeError.Error())
+	}
+	if sysNameError != nil {
+		response.Errors = append(response.Errors, sysNameError.Error())
+	}
+	if chassisIdError != nil {
+		response.Errors = append(response.Errors, chassisIdError.Error())
+	}
+	if interfacesError != nil {
+		response.Errors = append(response.Errors, interfacesError...)
+	}
+	if entitiesError != nil {
+		response.Errors = append(response.Errors, entitiesError...)
+	}
+	if lldpError != nil {
+		response.Errors = append(response.Errors, lldpError...)
+	}
+	if macAddressError != nil {
+		response.Errors = append(response.Errors, macAddressError...)
+	}
+	if arpError != nil {
+		response.Errors = append(response.Errors, arpError...)
+	}
+	if VlanError != nil {
+		response.Errors = append(response.Errors, VlanError...)
+	}
+	return response
+}

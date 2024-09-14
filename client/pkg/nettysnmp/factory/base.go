@@ -222,24 +222,24 @@ func (sd *SnmpDiscovery) Interfaces() (interfaces []*DeviceInterface, errors []s
 		errors = append(errors, errIfAddrIndex.Error())
 		errors = append(errors, errIfAddrNetMask.Error())
 	}
-	indexIfIndex := extractInteger(IfIndex, ifIndex)
-	indexIfName := extractString(IfDescr, ifName)
-	indexIfDesc := extractString(IfAlias, ifDesc)
-	indexIfMtu := extractInteger(IfMtu, ifMtu)
-	indexIfSpeed := extractInteger(IfHighSpeed, ifSpeed)
-	indexIfHighSpeed := extractInteger(IfHighSpeed, ifHighSpeed)
-	indexIfPhysAddr := extractMacAddress(IfPhysAddr, ifPhysAddr)
-	indexIfType := extractInteger(IfType, ifType)
-	indexIfAdminStatus := extractInteger(IfAdminStatus, ifAdminStatus)
-	indexIfOperStatus := extractInteger(IfOperStatus, ifOperStatus)
-	indexIfLastChange := extractInteger(IfLastChange, ifLastChange)
+	indexIfIndex := ExtractInteger(IfIndex, ifIndex)
+	indexIfName := ExtractString(IfDescr, ifName)
+	indexIfDesc := ExtractString(IfAlias, ifDesc)
+	indexIfMtu := ExtractInteger(IfMtu, ifMtu)
+	indexIfSpeed := ExtractInteger(IfHighSpeed, ifSpeed)
+	indexIfHighSpeed := ExtractInteger(IfHighSpeed, ifHighSpeed)
+	indexIfPhysAddr := ExtractMacAddress(IfPhysAddr, ifPhysAddr)
+	indexIfType := ExtractInteger(IfType, ifType)
+	indexIfAdminStatus := ExtractInteger(IfAdminStatus, ifAdminStatus)
+	indexIfOperStatus := ExtractInteger(IfOperStatus, ifOperStatus)
+	indexIfLastChange := ExtractInteger(IfLastChange, ifLastChange)
 	indexIfAddrIndex := extractIfIndex(IfAdEntIfIndex, ifAddrIndex)
-	indexIfAddrNetMask := extractString(IfAdEntNetMask, ifAddrNetMask)
+	indexIfAddrNetMask := ExtractString(IfAdEntNetMask, ifAddrNetMask)
 	for i, v := range indexIfIndex {
 		var _ifAddrIndex string
 		itemIfAddrIndex := indexIfAddrIndex[i]
 		itemIfAddrNetMask := indexIfAddrNetMask[itemIfAddrIndex]
-		if indexIfAddrIndex[i] == "" || indexIfAddrNetMask[i] == "" {
+		if itemIfAddrIndex == "" || itemIfAddrNetMask == "" {
 			_ifAddrIndex = ""
 		} else {
 			_ifAddrIndex = strings.TrimPrefix(indexIfAddrIndex[i], ".") + "/" + strconv.Itoa(netmaskToLength(itemIfAddrNetMask))
@@ -286,12 +286,12 @@ func (sd *SnmpDiscovery) LldpNeighbors() (lldp []*LldpNeighbor, errors []string)
 		errors = append(errors, errRemIfName.Error())
 		errors = append(errors, errRemIfDescr.Error())
 	}
-	IndexIfName := extractString(LldpLocPortId, localIfName)
-	IndexIfDescr := extractString(LldpLocPortDesc, localIfDescr)
-	IndexRemChassisId := extractMacAddressWithShift(LldpRemChassisId, -2, remoteChassisId)
-	IndexRemoteHostname := extractStringWithShift(LldpRemSysName, -2, remoteHostname)
-	IndexRemoteIfName := extractStringWithShift(LldpRemPortId, -2, remoteIfName)
-	IndexRemoteIfDescr := extractStringWithShift(LldpRemPortDesc, -2, remoteIfDescr)
+	IndexIfName := ExtractString(LldpLocPortId, localIfName)
+	IndexIfDescr := ExtractString(LldpLocPortDesc, localIfDescr)
+	IndexRemChassisId := ExtractMacAddressWithShift(LldpRemChassisId, -2, remoteChassisId)
+	IndexRemoteHostname := ExtractStringWithShift(LldpRemSysName, -2, remoteHostname)
+	IndexRemoteIfName := ExtractStringWithShift(LldpRemPortId, -2, remoteIfName)
+	IndexRemoteIfDescr := ExtractStringWithShift(LldpRemPortDesc, -2, remoteIfDescr)
 
 	for i, v := range IndexRemChassisId {
 		lldp = append(lldp, &LldpNeighbor{
@@ -318,7 +318,7 @@ func (sd *SnmpDiscovery) Entities() (entities []*Entity, errors []string) {
 		}
 		return nil, errors
 	}
-	IndexEntPhysicalClass := extractInteger(EntPhysicalClass, entPhysicalClass)
+	IndexEntPhysicalClass := ExtractInteger(EntPhysicalClass, entPhysicalClass)
 	FilteredIndexEntPhysicalClass := lo.PickByValues(IndexEntPhysicalClass, []uint64{3})
 	chassidIndex := lo.Keys(FilteredIndexEntPhysicalClass)
 	if len(chassidIndex) == 0 {
@@ -336,10 +336,10 @@ func (sd *SnmpDiscovery) Entities() (entities []*Entity, errors []string) {
 		errors = append(errors, errEntityPhysicalSoftwareRev.Error())
 		errors = append(errors, errEntityPhysicalSerialNum.Error())
 	}
-	IndexEntityPhysicalDescr := extractString(EntPhysicalDescr, entityPhysicalDescr.Variables)
-	IndexEntityPhysicalName := extractString(EntPhysicalName, entityPhysicalName.Variables)
-	IndexEntityPhysicalSoftwareRev := extractString(EntPhysicalSoftwareRev, entityPhysicalSoftwareRev.Variables)
-	IndexEntityPhysicalSerialNum := extractString(EntPhysicalSerialNum, entityPhysicalSerialNum.Variables)
+	IndexEntityPhysicalDescr := ExtractString(EntPhysicalDescr, entityPhysicalDescr.Variables)
+	IndexEntityPhysicalName := ExtractString(EntPhysicalName, entityPhysicalName.Variables)
+	IndexEntityPhysicalSoftwareRev := ExtractString(EntPhysicalSoftwareRev, entityPhysicalSoftwareRev.Variables)
+	IndexEntityPhysicalSerialNum := ExtractString(EntPhysicalSerialNum, entityPhysicalSerialNum.Variables)
 	for i, v := range FilteredIndexEntPhysicalClass {
 		entities = append(entities, &Entity{
 			EntityPhysicalClass:       GetEntPhysicalClassValue(v),
@@ -364,11 +364,11 @@ func (sd *SnmpDiscovery) MacAddressTable() (macTable *map[uint64][]string, error
 		errors = append(errors, errDot1dTpFdbPort.Error())
 	}
 
-	_IndexDot1dBasePortIfIndex := extractInteger(Dot1dBasePortIfIndex, dot1dBasePortIndex)
+	_IndexDot1dBasePortIfIndex := ExtractInteger(Dot1dBasePortIfIndex, dot1dBasePortIndex)
 	IndexDot1dBasePortIfIndex := lo.MapValues(_IndexDot1dBasePortIfIndex, func(x uint64, _ string) string {
 		return strconv.FormatUint(x, 10)
 	})
-	IndexDot1dBasePortIfIndex["0"] = "0"
+	IndexDot1dBasePortIfIndex[".0"] = "0"
 	indexDot1dTpFdbAddress := make(map[string]string)
 	for _, v := range dot1dTpFdbAddress {
 		splitValue := strings.Split(v.Name, ".")
@@ -385,13 +385,14 @@ func (sd *SnmpDiscovery) MacAddressTable() (macTable *map[uint64][]string, error
 	}
 
 	result := make(map[string][]string)
-	for p := range IndexDot1dBasePortIfIndex {
-		result[p] = make([]string, 0)
+	for _, v := range IndexDot1dBasePortIfIndex {
+		result[v] = make([]string, 0)
 	}
 
 	for portIndex, macAddress := range indexDot1dTpFdbAddress {
 		if _, ok := indexDot1dTpFdbPort[portIndex]; ok {
-			result[IndexDot1dBasePortIfIndex["."+indexDot1dTpFdbPort[portIndex]]] = append(result[portIndex], macAddress)
+			ifIndex := IndexDot1dBasePortIfIndex["."+indexDot1dTpFdbPort[portIndex]]
+			result[ifIndex] = append(result[ifIndex], macAddress)
 		}
 	}
 
@@ -403,7 +404,7 @@ func (sd *SnmpDiscovery) MacAddressTable() (macTable *map[uint64][]string, error
 	return &_macTable, errors
 }
 
-func (sd *SnmpDiscovery) ArpTable() (arp *map[string]*ArpItem, errors []string) {
+func (sd *SnmpDiscovery) ArpTable() (arp []*ArpItem, errors []string) {
 	arpTable, errArpTable := sd.Session.BulkWalkAll(IpNetToMediaPhysAddress)
 	arpType, errArpType := sd.Session.BulkWalkAll(IpNetToMediaType)
 	if errArpTable != nil || errArpType != nil {
@@ -411,21 +412,29 @@ func (sd *SnmpDiscovery) ArpTable() (arp *map[string]*ArpItem, errors []string) 
 		errors = append(errors, errArpTable.Error())
 		return nil, errors
 	}
-	arpMap := extractMacAddress(IpNetToMediaPhysAddress, arpTable)
-	arpTypeMap := extractInteger(IpNetToMediaType, arpType)
-	_arp := lo.MapKeys(arpMap, func(_ string, x string) string {
-		splitData := strings.Split(x, ".")
-		x_last_4 := splitData[len(splitData)-4:]
-		return strings.Join(x_last_4, ".")
-	})
-	results := make(map[string]*ArpItem)
-	for key, value := range _arp {
-		results[key] = &ArpItem{
+	arpMap := ExtractMacAddress(IpNetToMediaPhysAddress, arpTable)
+	arpTypeMap := ExtractInteger(IpNetToMediaType, arpType)
+	results := make([]*ArpItem, 0)
+	for key, value := range arpMap {
+		ifIndex, address := getIfIndexAndAddress(key)
+		results = append(results, &ArpItem{
+			IpAddress:  address,
 			MacAddress: value,
-			Type:       arpTypeMap[key],
-		}
+			Type:       GetArpTypeValue(arpTypeMap[key]),
+			IfIndex:    ifIndex,
+		})
 	}
-	return &results, nil
+	return results, nil
+}
+
+func (sd *SnmpDiscovery) Vlans() (vlan []*VlanItem, errors []string) {
+	results := make([]*VlanItem, 0)
+	return results, nil
+}
+
+func (sd *SnmpDiscovery) ScanAp() (ap []*ApItem, errors []string) {
+	results := make([]*ApItem, 0)
+	return results, nil
 }
 
 func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
@@ -438,6 +447,10 @@ func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
 	lldp, lldpError := sd.LldpNeighbors()
 	macAddress, macAddressError := sd.MacAddressTable()
 	arp, arpError := sd.ArpTable()
+	arp = EnrichArpInfo(arp, interfaces)
+	vlan, VlanError := sd.Vlans()
+	vlan = EnrichVlanInfo(vlan, interfaces)
+	macAddress_ := EnrichMacAddress(macAddress, interfaces, lldp, arp)
 
 	response := &DiscoveryResponse{
 		SysDescr:        sysDescr,
@@ -447,8 +460,9 @@ func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
 		Interfaces:      interfaces,
 		LldpNeighbors:   lldp,
 		Entities:        entities,
-		MacAddressTable: macAddress,
+		MacAddressTable: macAddress_,
 		ArpTable:        arp,
+		Vlans:           vlan,
 	}
 	if sysError != nil {
 		response.Errors = append(response.Errors, sysError.Error())
@@ -476,6 +490,9 @@ func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
 	}
 	if arpError != nil {
 		response.Errors = append(response.Errors, arpError...)
+	}
+	if VlanError != nil {
+		response.Errors = append(response.Errors, VlanError...)
 	}
 	return response
 }

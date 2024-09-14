@@ -344,3 +344,13 @@ func GetEntPhysicalClassValue(entPhysicalClass uint64) string {
 	}
 	return entPhysicalClassValueMapping[entPhysicalClass]
 }
+
+func GetArpTypeValue(arpType uint64) string {
+	IpNetToMediaTypeValueMapping := map[uint64]string{
+		1: "other",
+		2: "invalid",
+		3: "dynamic",
+		4: "static",
+	}
+	return IpNetToMediaTypeValueMapping[arpType]
+}

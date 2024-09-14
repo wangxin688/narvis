@@ -147,14 +147,14 @@ func (d *Dispatcher) getFactory(platformType platform.Platform, snmpConfig facto
 }
 
 func (d *Dispatcher) SnmpReachable(session *gosnmp.GoSNMP) bool {
-	result, err := session.GetNext([]string{".1"})
+	result, err := session.GetNext([]string{factory.SysName})
 	if err != nil {
 		return false
 	}
 	return len(result.Variables) > 0
 }
 
-// linux need privilege for udp 
+// linux need privilege for udp
 func (d *Dispatcher) IcmpReachable(address string) bool {
 	pinger, err := ping.NewPinger(address)
 	if err != nil {

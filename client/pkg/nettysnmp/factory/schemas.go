@@ -56,30 +56,58 @@ type Stack struct {
 	MacAddress string `json:"macAddress"`
 }
 
-type Vlan struct{}
+type VlanItem struct {
+	VlanId   uint32 `json:"vlanId"`
+	VlanName string `json:"vlanName"`
+	IfIndex  uint64 `json:"ifIndex"`
+	Range    string `json:"range"`
+	Gateway  string `json:"gateway"`
+}
 
 type Route struct{}
 
 type Prefix struct{}
 
 type ArpItem struct {
-	MacAddress string
-	Type uint64
+	IpAddress  string `json:"ipAddress"`
+	MacAddress string `json:"macAddress"`
+	Type       string `json:"type"`
+	IfIndex    uint64 `json:"ifIndex"`
+	VlanId     uint32 `json:"vlanId"`
+	Range      string `json:"range"`
+}
+type MacAddressItem struct {
+	MacAddress string `json:"name"`
+	IfIndex    uint64 `json:"ifIndex"`
+	IfName     string `json:"ifName"`
+	IfDescr    string `json:"ifDescr"`
+	IpAddress  string `json:"ipAddress"`
+	VlanId     uint32 `json:"vlanId"`
+}
+
+type ApItem struct {
+	Name         string `json:"name"`
+	OperStatus   string `json:"operStatus"`
+	MacAddress   string `json:"macAddress"`
+	SerialNumber string `json:"serialNumber"`
+	ManagementIp string `json:"managementIp"`
+	GroupName    string `json:"groupName"`
+	ActiveWacIp  string `json:"activeWacIp"`
 }
 
 type DiscoveryResponse struct {
-	Hostname        string               `json:"hostname"`
-	SysDescr        string               `json:"sysDescr"`
-	Uptime          uint64               `json:"uptime"`
-	ChassisId       string               `json:"chassisID"`
-	Interfaces      []*DeviceInterface   `json:"interfaces"`
-	LldpNeighbors   []*LldpNeighbor      `json:"lldpNeighbors"`
-	Entities        []*Entity            `json:"entities"`
-	Stacks          []*Stack             `json:"stacks"`
-	Vlans           []*Vlan              `json:"vlans"`
-	MacAddressTable *map[uint64][]string `json:"macAddressTable"`
-	ArpTable        *map[string]*ArpItem   `json:"arpTable"`
-	Errors          []string             `json:"errors"`
+	Hostname        string             `json:"hostname"`
+	SysDescr        string             `json:"sysDescr"`
+	Uptime          uint64             `json:"uptime"`
+	ChassisId       string             `json:"chassisID"`
+	Interfaces      []*DeviceInterface `json:"interfaces"`
+	LldpNeighbors   []*LldpNeighbor    `json:"lldpNeighbors"`
+	Entities        []*Entity          `json:"entities"`
+	Stacks          []*Stack           `json:"stacks"`
+	Vlans           []*VlanItem        `json:"vlans"`
+	MacAddressTable []*MacAddressItem  `json:"macAddressTable"`
+	ArpTable        []*ArpItem         `json:"arpTable"`
+	Errors          []string           `json:"errors"`
 }
 
 type DispatchResponse struct {
