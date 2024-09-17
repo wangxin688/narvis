@@ -28,13 +28,14 @@ func newAlertActionLog(db *gorm.DB, opts ...gen.DOOption) alertActionLog {
 	_alertActionLog.ALL = field.NewAsterisk(tableName)
 	_alertActionLog.Id = field.NewString(tableName, "id")
 	_alertActionLog.CreatedAt = field.NewTime(tableName, "createdAt")
-	_alertActionLog.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_alertActionLog.Acknowledged = field.NewBool(tableName, "acknowledged")
 	_alertActionLog.Resolved = field.NewBool(tableName, "resolved")
 	_alertActionLog.Suppressed = field.NewBool(tableName, "suppressed")
 	_alertActionLog.Comment = field.NewString(tableName, "comment")
 	_alertActionLog.AssignUserId = field.NewString(tableName, "assignUserId")
+	_alertActionLog.RootCauseId = field.NewString(tableName, "rootCauseId")
 	_alertActionLog.CreatedById = field.NewString(tableName, "createdById")
+	_alertActionLog.AlertId = field.NewString(tableName, "alertId")
 	_alertActionLog.AssignUser = alertActionLogBelongsToAssignUser{
 		db: db.Session(&gorm.Session{}),
 
@@ -103,13 +104,24 @@ func newAlertActionLog(db *gorm.DB, opts ...gen.DOOption) alertActionLog {
 		},
 	}
 
+	_alertActionLog.RootCause = alertActionLogBelongsToRootCause{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("RootCause", "models.RootCause"),
+		Organization: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("RootCause.Organization", "models.Organization"),
+		},
+	}
+
 	_alertActionLog.CreatedBy = alertActionLogBelongsToCreatedBy{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("CreatedBy", "models.User"),
 	}
 
-	_alertActionLog.Alert = alertActionLogManyToManyAlert{
+	_alertActionLog.Alert = alertActionLogBelongsToAlert{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Alert", "models.Alert"),
@@ -270,6 +282,32 @@ func newAlertActionLog(db *gorm.DB, opts ...gen.DOOption) alertActionLog {
 				RelationField: field.NewRelation("Alert.Circuit.Organization", "models.Organization"),
 			},
 		},
+		RootCause: struct {
+			field.RelationField
+		}{
+			RelationField: field.NewRelation("Alert.RootCause", "models.RootCause"),
+		},
+		AlertGroup: struct {
+			field.RelationField
+			Site struct {
+				field.RelationField
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}{
+			RelationField: field.NewRelation("Alert.AlertGroup", "models.AlertGroup"),
+			Site: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.AlertGroup.Site", "models.Site"),
+			},
+			Organization: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.AlertGroup.Organization", "models.Organization"),
+			},
+		},
 		DeviceInterface: struct {
 			field.RelationField
 		}{
@@ -277,6 +315,12 @@ func newAlertActionLog(db *gorm.DB, opts ...gen.DOOption) alertActionLog {
 		},
 		Maintenance: struct {
 			field.RelationField
+			CreatedBy struct {
+				field.RelationField
+			}
+			UpdatedBy struct {
+				field.RelationField
+			}
 			Organization struct {
 				field.RelationField
 			}
@@ -285,6 +329,16 @@ func newAlertActionLog(db *gorm.DB, opts ...gen.DOOption) alertActionLog {
 			}
 		}{
 			RelationField: field.NewRelation("Alert.Maintenance", "models.Maintenance"),
+			CreatedBy: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.Maintenance.CreatedBy", "models.User"),
+			},
+			UpdatedBy: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.Maintenance.UpdatedBy", "models.User"),
+			},
 			Organization: struct {
 				field.RelationField
 			}{
@@ -301,21 +355,42 @@ func newAlertActionLog(db *gorm.DB, opts ...gen.DOOption) alertActionLog {
 		}{
 			RelationField: field.NewRelation("Alert.Organization", "models.Organization"),
 		},
-	}
-
-	_alertActionLog.AlertGroup = alertActionLogManyToManyAlertGroup{
-		db: db.Session(&gorm.Session{}),
-
-		RelationField: field.NewRelation("AlertGroup", "models.AlertGroup"),
-		Site: struct {
+		ActionLog: struct {
 			field.RelationField
+			AssignUser struct {
+				field.RelationField
+			}
+			RootCause struct {
+				field.RelationField
+			}
+			CreatedBy struct {
+				field.RelationField
+			}
+			Alert struct {
+				field.RelationField
+			}
 		}{
-			RelationField: field.NewRelation("AlertGroup.Site", "models.Site"),
-		},
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("AlertGroup.Organization", "models.Organization"),
+			RelationField: field.NewRelation("Alert.ActionLog", "models.AlertActionLog"),
+			AssignUser: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.ActionLog.AssignUser", "models.User"),
+			},
+			RootCause: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.ActionLog.RootCause", "models.RootCause"),
+			},
+			CreatedBy: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.ActionLog.CreatedBy", "models.User"),
+			},
+			Alert: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.ActionLog.Alert", "models.Alert"),
+			},
 		},
 	}
 
@@ -330,20 +405,21 @@ type alertActionLog struct {
 	ALL          field.Asterisk
 	Id           field.String
 	CreatedAt    field.Time
-	UpdatedAt    field.Time
 	Acknowledged field.Bool
 	Resolved     field.Bool
 	Suppressed   field.Bool
 	Comment      field.String
 	AssignUserId field.String
+	RootCauseId  field.String
 	CreatedById  field.String
+	AlertId      field.String
 	AssignUser   alertActionLogBelongsToAssignUser
+
+	RootCause alertActionLogBelongsToRootCause
 
 	CreatedBy alertActionLogBelongsToCreatedBy
 
-	Alert alertActionLogManyToManyAlert
-
-	AlertGroup alertActionLogManyToManyAlertGroup
+	Alert alertActionLogBelongsToAlert
 
 	fieldMap map[string]field.Expr
 }
@@ -362,13 +438,14 @@ func (a *alertActionLog) updateTableName(table string) *alertActionLog {
 	a.ALL = field.NewAsterisk(table)
 	a.Id = field.NewString(table, "id")
 	a.CreatedAt = field.NewTime(table, "createdAt")
-	a.UpdatedAt = field.NewTime(table, "updatedAt")
 	a.Acknowledged = field.NewBool(table, "acknowledged")
 	a.Resolved = field.NewBool(table, "resolved")
 	a.Suppressed = field.NewBool(table, "suppressed")
 	a.Comment = field.NewString(table, "comment")
 	a.AssignUserId = field.NewString(table, "assignUserId")
+	a.RootCauseId = field.NewString(table, "rootCauseId")
 	a.CreatedById = field.NewString(table, "createdById")
+	a.AlertId = field.NewString(table, "alertId")
 
 	a.fillFieldMap()
 
@@ -385,16 +462,17 @@ func (a *alertActionLog) GetFieldByName(fieldName string) (field.OrderExpr, bool
 }
 
 func (a *alertActionLog) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 13)
+	a.fieldMap = make(map[string]field.Expr, 14)
 	a.fieldMap["id"] = a.Id
 	a.fieldMap["createdAt"] = a.CreatedAt
-	a.fieldMap["updatedAt"] = a.UpdatedAt
 	a.fieldMap["acknowledged"] = a.Acknowledged
 	a.fieldMap["resolved"] = a.Resolved
 	a.fieldMap["suppressed"] = a.Suppressed
 	a.fieldMap["comment"] = a.Comment
 	a.fieldMap["assignUserId"] = a.AssignUserId
+	a.fieldMap["rootCauseId"] = a.RootCauseId
 	a.fieldMap["createdById"] = a.CreatedById
+	a.fieldMap["alertId"] = a.AlertId
 
 }
 
@@ -501,6 +579,81 @@ func (a alertActionLogBelongsToAssignUserTx) Count() int64 {
 	return a.tx.Count()
 }
 
+type alertActionLogBelongsToRootCause struct {
+	db *gorm.DB
+
+	field.RelationField
+
+	Organization struct {
+		field.RelationField
+	}
+}
+
+func (a alertActionLogBelongsToRootCause) Where(conds ...field.Expr) *alertActionLogBelongsToRootCause {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a alertActionLogBelongsToRootCause) WithContext(ctx context.Context) *alertActionLogBelongsToRootCause {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a alertActionLogBelongsToRootCause) Session(session *gorm.Session) *alertActionLogBelongsToRootCause {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a alertActionLogBelongsToRootCause) Model(m *models.AlertActionLog) *alertActionLogBelongsToRootCauseTx {
+	return &alertActionLogBelongsToRootCauseTx{a.db.Model(m).Association(a.Name())}
+}
+
+type alertActionLogBelongsToRootCauseTx struct{ tx *gorm.Association }
+
+func (a alertActionLogBelongsToRootCauseTx) Find() (result *models.RootCause, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a alertActionLogBelongsToRootCauseTx) Append(values ...*models.RootCause) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a alertActionLogBelongsToRootCauseTx) Replace(values ...*models.RootCause) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a alertActionLogBelongsToRootCauseTx) Delete(values ...*models.RootCause) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a alertActionLogBelongsToRootCauseTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a alertActionLogBelongsToRootCauseTx) Count() int64 {
+	return a.tx.Count()
+}
+
 type alertActionLogBelongsToCreatedBy struct {
 	db *gorm.DB
 
@@ -572,7 +725,7 @@ func (a alertActionLogBelongsToCreatedByTx) Count() int64 {
 	return a.tx.Count()
 }
 
-type alertActionLogManyToManyAlert struct {
+type alertActionLogBelongsToAlert struct {
 	db *gorm.DB
 
 	field.RelationField
@@ -637,11 +790,29 @@ type alertActionLogManyToManyAlert struct {
 			field.RelationField
 		}
 	}
+	RootCause struct {
+		field.RelationField
+	}
+	AlertGroup struct {
+		field.RelationField
+		Site struct {
+			field.RelationField
+		}
+		Organization struct {
+			field.RelationField
+		}
+	}
 	DeviceInterface struct {
 		field.RelationField
 	}
 	Maintenance struct {
 		field.RelationField
+		CreatedBy struct {
+			field.RelationField
+		}
+		UpdatedBy struct {
+			field.RelationField
+		}
 		Organization struct {
 			field.RelationField
 		}
@@ -652,9 +823,24 @@ type alertActionLogManyToManyAlert struct {
 	Organization struct {
 		field.RelationField
 	}
+	ActionLog struct {
+		field.RelationField
+		AssignUser struct {
+			field.RelationField
+		}
+		RootCause struct {
+			field.RelationField
+		}
+		CreatedBy struct {
+			field.RelationField
+		}
+		Alert struct {
+			field.RelationField
+		}
+	}
 }
 
-func (a alertActionLogManyToManyAlert) Where(conds ...field.Expr) *alertActionLogManyToManyAlert {
+func (a alertActionLogBelongsToAlert) Where(conds ...field.Expr) *alertActionLogBelongsToAlert {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -667,27 +853,27 @@ func (a alertActionLogManyToManyAlert) Where(conds ...field.Expr) *alertActionLo
 	return &a
 }
 
-func (a alertActionLogManyToManyAlert) WithContext(ctx context.Context) *alertActionLogManyToManyAlert {
+func (a alertActionLogBelongsToAlert) WithContext(ctx context.Context) *alertActionLogBelongsToAlert {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a alertActionLogManyToManyAlert) Session(session *gorm.Session) *alertActionLogManyToManyAlert {
+func (a alertActionLogBelongsToAlert) Session(session *gorm.Session) *alertActionLogBelongsToAlert {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a alertActionLogManyToManyAlert) Model(m *models.AlertActionLog) *alertActionLogManyToManyAlertTx {
-	return &alertActionLogManyToManyAlertTx{a.db.Model(m).Association(a.Name())}
+func (a alertActionLogBelongsToAlert) Model(m *models.AlertActionLog) *alertActionLogBelongsToAlertTx {
+	return &alertActionLogBelongsToAlertTx{a.db.Model(m).Association(a.Name())}
 }
 
-type alertActionLogManyToManyAlertTx struct{ tx *gorm.Association }
+type alertActionLogBelongsToAlertTx struct{ tx *gorm.Association }
 
-func (a alertActionLogManyToManyAlertTx) Find() (result []*models.Alert, err error) {
+func (a alertActionLogBelongsToAlertTx) Find() (result *models.Alert, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a alertActionLogManyToManyAlertTx) Append(values ...*models.Alert) (err error) {
+func (a alertActionLogBelongsToAlertTx) Append(values ...*models.Alert) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -695,7 +881,7 @@ func (a alertActionLogManyToManyAlertTx) Append(values ...*models.Alert) (err er
 	return a.tx.Append(targetValues...)
 }
 
-func (a alertActionLogManyToManyAlertTx) Replace(values ...*models.Alert) (err error) {
+func (a alertActionLogBelongsToAlertTx) Replace(values ...*models.Alert) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -703,7 +889,7 @@ func (a alertActionLogManyToManyAlertTx) Replace(values ...*models.Alert) (err e
 	return a.tx.Replace(targetValues...)
 }
 
-func (a alertActionLogManyToManyAlertTx) Delete(values ...*models.Alert) (err error) {
+func (a alertActionLogBelongsToAlertTx) Delete(values ...*models.Alert) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -711,89 +897,11 @@ func (a alertActionLogManyToManyAlertTx) Delete(values ...*models.Alert) (err er
 	return a.tx.Delete(targetValues...)
 }
 
-func (a alertActionLogManyToManyAlertTx) Clear() error {
+func (a alertActionLogBelongsToAlertTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a alertActionLogManyToManyAlertTx) Count() int64 {
-	return a.tx.Count()
-}
-
-type alertActionLogManyToManyAlertGroup struct {
-	db *gorm.DB
-
-	field.RelationField
-
-	Site struct {
-		field.RelationField
-	}
-	Organization struct {
-		field.RelationField
-	}
-}
-
-func (a alertActionLogManyToManyAlertGroup) Where(conds ...field.Expr) *alertActionLogManyToManyAlertGroup {
-	if len(conds) == 0 {
-		return &a
-	}
-
-	exprs := make([]clause.Expression, 0, len(conds))
-	for _, cond := range conds {
-		exprs = append(exprs, cond.BeCond().(clause.Expression))
-	}
-	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
-	return &a
-}
-
-func (a alertActionLogManyToManyAlertGroup) WithContext(ctx context.Context) *alertActionLogManyToManyAlertGroup {
-	a.db = a.db.WithContext(ctx)
-	return &a
-}
-
-func (a alertActionLogManyToManyAlertGroup) Session(session *gorm.Session) *alertActionLogManyToManyAlertGroup {
-	a.db = a.db.Session(session)
-	return &a
-}
-
-func (a alertActionLogManyToManyAlertGroup) Model(m *models.AlertActionLog) *alertActionLogManyToManyAlertGroupTx {
-	return &alertActionLogManyToManyAlertGroupTx{a.db.Model(m).Association(a.Name())}
-}
-
-type alertActionLogManyToManyAlertGroupTx struct{ tx *gorm.Association }
-
-func (a alertActionLogManyToManyAlertGroupTx) Find() (result []*models.AlertGroup, err error) {
-	return result, a.tx.Find(&result)
-}
-
-func (a alertActionLogManyToManyAlertGroupTx) Append(values ...*models.AlertGroup) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Append(targetValues...)
-}
-
-func (a alertActionLogManyToManyAlertGroupTx) Replace(values ...*models.AlertGroup) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Replace(targetValues...)
-}
-
-func (a alertActionLogManyToManyAlertGroupTx) Delete(values ...*models.AlertGroup) (err error) {
-	targetValues := make([]interface{}, len(values))
-	for i, v := range values {
-		targetValues[i] = v
-	}
-	return a.tx.Delete(targetValues...)
-}
-
-func (a alertActionLogManyToManyAlertGroupTx) Clear() error {
-	return a.tx.Clear()
-}
-
-func (a alertActionLogManyToManyAlertGroupTx) Count() int64 {
+func (a alertActionLogBelongsToAlertTx) Count() int64 {
 	return a.tx.Count()
 }
 

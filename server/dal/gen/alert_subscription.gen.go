@@ -6,6 +6,7 @@ package gen
 
 import (
 	"context"
+	"strings"
 
 	"github.com/wangxin688/narvis/server/models"
 	"gorm.io/gorm"
@@ -35,9 +36,10 @@ func newSubscription(db *gorm.DB, opts ...gen.DOOption) subscription {
 	_subscription.Conditions = field.NewField(tableName, "conditions")
 	_subscription.SendResolved = field.NewBool(tableName, "sendResolved")
 	_subscription.RepeatInterval = field.NewUint32(tableName, "repeatInterval")
-	_subscription.ChannelType = field.NewUint8(tableName, "channelType")
+	_subscription.ChannelType = field.NewString(tableName, "channelType")
 	_subscription.ChannelConfig = field.NewField(tableName, "channelConfig")
 	_subscription.CreatedById = field.NewString(tableName, "createdById")
+	_subscription.UpdatedById = field.NewString(tableName, "updatedById")
 	_subscription.OrganizationId = field.NewString(tableName, "organizationId")
 	_subscription.CreatedBy = subscriptionBelongsToCreatedBy{
 		db: db.Session(&gorm.Session{}),
@@ -107,6 +109,12 @@ func newSubscription(db *gorm.DB, opts ...gen.DOOption) subscription {
 		},
 	}
 
+	_subscription.UpdatedBy = subscriptionBelongsToUpdatedBy{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("UpdatedBy", "models.User"),
+	}
+
 	_subscription.Organization = subscriptionBelongsToOrganization{
 		db: db.Session(&gorm.Session{}),
 
@@ -131,11 +139,14 @@ type subscription struct {
 	Conditions     field.Field
 	SendResolved   field.Bool
 	RepeatInterval field.Uint32
-	ChannelType    field.Uint8
+	ChannelType    field.String
 	ChannelConfig  field.Field
 	CreatedById    field.String
+	UpdatedById    field.String
 	OrganizationId field.String
 	CreatedBy      subscriptionBelongsToCreatedBy
+
+	UpdatedBy subscriptionBelongsToUpdatedBy
 
 	Organization subscriptionBelongsToOrganization
 
@@ -163,9 +174,10 @@ func (s *subscription) updateTableName(table string) *subscription {
 	s.Conditions = field.NewField(table, "conditions")
 	s.SendResolved = field.NewBool(table, "sendResolved")
 	s.RepeatInterval = field.NewUint32(table, "repeatInterval")
-	s.ChannelType = field.NewUint8(table, "channelType")
+	s.ChannelType = field.NewString(table, "channelType")
 	s.ChannelConfig = field.NewField(table, "channelConfig")
 	s.CreatedById = field.NewString(table, "createdById")
+	s.UpdatedById = field.NewString(table, "updatedById")
 	s.OrganizationId = field.NewString(table, "organizationId")
 
 	s.fillFieldMap()
@@ -183,7 +195,7 @@ func (s *subscription) GetFieldByName(fieldName string) (field.OrderExpr, bool) 
 }
 
 func (s *subscription) fillFieldMap() {
-	s.fieldMap = make(map[string]field.Expr, 15)
+	s.fieldMap = make(map[string]field.Expr, 17)
 	s.fieldMap["id"] = s.Id
 	s.fieldMap["createdAt"] = s.CreatedAt
 	s.fieldMap["updatedAt"] = s.UpdatedAt
@@ -196,6 +208,7 @@ func (s *subscription) fillFieldMap() {
 	s.fieldMap["channelType"] = s.ChannelType
 	s.fieldMap["channelConfig"] = s.ChannelConfig
 	s.fieldMap["createdById"] = s.CreatedById
+	s.fieldMap["updatedById"] = s.UpdatedById
 	s.fieldMap["organizationId"] = s.OrganizationId
 
 }
@@ -300,6 +313,77 @@ func (a subscriptionBelongsToCreatedByTx) Clear() error {
 }
 
 func (a subscriptionBelongsToCreatedByTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type subscriptionBelongsToUpdatedBy struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a subscriptionBelongsToUpdatedBy) Where(conds ...field.Expr) *subscriptionBelongsToUpdatedBy {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a subscriptionBelongsToUpdatedBy) WithContext(ctx context.Context) *subscriptionBelongsToUpdatedBy {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a subscriptionBelongsToUpdatedBy) Session(session *gorm.Session) *subscriptionBelongsToUpdatedBy {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a subscriptionBelongsToUpdatedBy) Model(m *models.Subscription) *subscriptionBelongsToUpdatedByTx {
+	return &subscriptionBelongsToUpdatedByTx{a.db.Model(m).Association(a.Name())}
+}
+
+type subscriptionBelongsToUpdatedByTx struct{ tx *gorm.Association }
+
+func (a subscriptionBelongsToUpdatedByTx) Find() (result *models.User, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a subscriptionBelongsToUpdatedByTx) Append(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a subscriptionBelongsToUpdatedByTx) Replace(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a subscriptionBelongsToUpdatedByTx) Delete(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a subscriptionBelongsToUpdatedByTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a subscriptionBelongsToUpdatedByTx) Count() int64 {
 	return a.tx.Count()
 }
 
@@ -435,6 +519,90 @@ type ISubscriptionDo interface {
 	Returning(value interface{}, columns ...string) ISubscriptionDo
 	UnderlyingDB() *gorm.DB
 	schema.Tabler
+
+	FilterWithColumn(column string, value string) (result models.Subscription, err error)
+	FilterWithColumnIn(column string, values []string) (result models.Subscription, err error)
+	FilterWithColumnNotIn(column string, values []string) (result models.Subscription, err error)
+	FilterWithColumnIsNotNull(column string) (result models.Subscription, err error)
+	FilterWithColumnIsNull(column string) (result models.Subscription, err error)
+}
+
+// SELECT * FROM @@table WHERE @column = @value
+func (s subscriptionDo) FilterWithColumn(column string, value string) (result models.Subscription, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	params = append(params, value)
+	generateSQL.WriteString("SELECT * FROM alert_subscription WHERE ? = ? ")
+
+	var executeSQL *gorm.DB
+	executeSQL = s.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column IN (@values)
+func (s subscriptionDo) FilterWithColumnIn(column string, values []string) (result models.Subscription, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	params = append(params, values)
+	generateSQL.WriteString("SELECT * FROM alert_subscription WHERE ? IN (?) ")
+
+	var executeSQL *gorm.DB
+	executeSQL = s.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column NOT IN (@values)
+func (s subscriptionDo) FilterWithColumnNotIn(column string, values []string) (result models.Subscription, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	params = append(params, values)
+	generateSQL.WriteString("SELECT * FROM alert_subscription WHERE ? NOT IN (?) ")
+
+	var executeSQL *gorm.DB
+	executeSQL = s.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column IS NOT NULL
+func (s subscriptionDo) FilterWithColumnIsNotNull(column string) (result models.Subscription, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	generateSQL.WriteString("SELECT * FROM alert_subscription WHERE ? IS NOT NULL ")
+
+	var executeSQL *gorm.DB
+	executeSQL = s.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column IS NULL
+func (s subscriptionDo) FilterWithColumnIsNull(column string) (result models.Subscription, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	generateSQL.WriteString("SELECT * FROM alert_subscription WHERE ? IS NULL ")
+
+	var executeSQL *gorm.DB
+	executeSQL = s.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
 }
 
 func (s subscriptionDo) Debug() ISubscriptionDo {

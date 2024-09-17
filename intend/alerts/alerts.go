@@ -10,10 +10,10 @@ type AlertNameEnum string
 type SeverityEnum string
 
 const (
-	SeverityDisaster SeverityEnum = "DISASTER"
-	SeverityCritical SeverityEnum = "CRITICAL"
-	SeverityWarning  SeverityEnum = "WARNING"
-	SeverityInfo     SeverityEnum = "INFO"
+	SeverityDisaster SeverityEnum = "P1"
+	SeverityCritical SeverityEnum = "P2"
+	SeverityWarning  SeverityEnum = "P3"
+	SeverityInfo     SeverityEnum = "P4"
 )
 
 const (

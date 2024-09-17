@@ -1,0 +1,72 @@
+services:
+  elasticflow:
+    image: elastiflow/flow-collector:6.4.0
+    container_name: netflow-collector
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      - vector-agent
+    EF_PROCESSOR_TIMESTAMP_PRECISION: 'sec'
+    EF_LICENSE_ACCEPTED: 'true'
+    EF_API_PORT: 18080  # TODO: can't be accessed from docker bridge network
+
+    EF_FLOW_SERVER_UDP_IP: '0.0.0.0'
+    EF_FLOW_SERVER_UDP_PORT: 2055,6343  # ? 2055 for netflow and netstream, 6343 for sflow
+
+    EF_PROCESSOR_DROP_FIELDS: 'flow.end.sysuptime,flow.export.sysuptime,flow.start.sysuptime,flow.end.timestamp,flow.export.ip.subnet.name,flow.export.timestamp,flow.start.timestamp,flow.client.isInternal,flow.client.l4.port.id,flow.dst.isInternal,flow.dst.l4.port.id,flow.export.type,flow.export.version.ver,flow.in.ip.dscp.name,flow.isServer,flow.server.isInternal,flow.server.l4.port.id,flow.src.isInternal,flow.src.l4.port.id,flow.template.id,flow.in.bytes,flow.in.packets,flow.server.l4.bytes,flow.client.as.asn,flow.client.as.org,flow.dst.as.org,flow.export.l4.port.id,flow.seq_num,flow.server.as.org,flow.server.ip.subnet.mask_size,flow.src.as.org,flow.src.ip.subnet.mask_size,bgp.next_hop.ip.addr,ethernet.ether_type.name,flow.client.ip.subnet.mask_size,flow.client.mac.addr,flow.dst.as.asn,flow.dst.ip.subnet.mask_size,flow.dst.mac.addr,flow.forwarding.reason.name,flow.forwarding.status.name,flow.in.ip.ecn.name,flow.in.netif.bandwidth.bw,flow.in.netif.descr,flow.in.netif.index,flow.in.netif.type.name,flow.in.vlan.tag.id,flow.in.vlan.tag.pcp.name,flow.meter.observe.domain.id,flow.meter.packets_drop,flow.meter.packets_total,flow.next_hop.host.name,flow.next_hop.ip.addr,flow.next_hop.ip.subnet.name,flow.out.netif.bandwidth.bw,flow.out.netif.descr,flow.out.netif.index,flow.out.netif.type.name,flow.out.vlan.tag.id,flow.out.vlan.tag.pcp.name,flow.server.as.asn,flow.server.mac.addr,flow.src.as.asn,flow.src.mac.addr,gre.version.ver,icmp.code.name,icmp.type.name,ip.ecn.name,ip.frag.flags.tags,ip.packet.size,ip.ttl,ip.v6.flow_label,l2.frame.size,sflow.pen.id,sflow.pen.name,sflow.sample.header_proto.name,sflow.sample.seq_num,sflow.sample.size,sflow.sample.strip_size,sflow.sample_type.name,sflow.source_id,sflow.source_id_type.name,sflow.sub_agent_id,tcp.flags.bits,tcp.header.size,tcp.options.payload,tcp.urgent_pointer,tcp.window.size,tunnel.dst.as.asn,tunnel.dst.as.label,tunnel.dst.as.org,tunnel.dst.host.name,tunnel.dst.ip.addr,tunnel.dst.ip.subnet.name,tunnel.dst.mac.addr,tunnel.ip.dscp.name,tunnel.ip.ecn.name,tunnel.ip.packet.size,tunnel.ip.ttl,tunnel.ip.version.name,tunnel.ip.version.ver,tunnel.l4.proto.name,tunnel.src.as.asn,tunnel.src.as.label,tunnel.src.as.org,tunnel.src.host.name,tunnel.src.ip.addr,tunnel.src.ip.subnet.name,tunnel.src.mac.addr,tunnel.type.name,tunnel.vlan.c_tag.dei.state,tunnel.vlan.c_tag.id,tunnel.vlan.c_tag.pcp.name,udp.size,vlan.c_tag.dei.state,vlan.c_tag.id,vlan.c_tag.pcp.name,vlan.tag.id,bgp.next_hop.host.name'
+
+    EF_OUTPUT_GENERIC_HTTP_ENABLE: true
+    EF_OUTPUT_GENERIC_HTTP_ADDRESSES: 127.0.0.1:12055
+  
+  vector-agent:
+    image: timberio/vector:0.10.0-alpine
+    container_name: vector-agent
+    restart: unless-stopped
+    ports:
+      - 514:514/udp # syslog
+      - 127.0.0.1:12055:12055 # netflow http input
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      ORGANIZATION_ID: ${ORGANIZATION_ID}
+      PROXY_ID: ${PROXY_ID}
+      VECTOR_RECEIVER_URL: ${VECTOR_RECEIVER_URL}
+  
+  zabbix-proxy:
+    image: zabbix/zabbix-proxy-sqlite3:alpine-7.0.3
+    container_name: metrics-collector
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - zabbix-proxy-data:/var/lib/zabbix
+    environment:
+      ZBX_PROXYMODE: 0
+      ZBX_PROXYLOCALBUFFER: 0
+      ZBX_PROXYOFFLINEBUFFER: 24  # ? Proxy will keep data for N hours in case of no connectivity with Zabbix server. Older data will be lost. (Default :  1)
+      ZBX_PROXYCONFIGFREQUENCY: 30
+      ZBX_DATASENDERFREQUENCY: 1
+      ZBX_STARTPOLLERS: 200
+      ZBX_STARTPOLLERSUNREACHABLE: 20
+      ZBX_STARTPINGERS: 25
+      ZBX_STARTDISCOVERERS: 5
+      ZBX_STARTHTTPPOLLERS: 5
+      ZBX_HOUSEKEEPINGFREQUENCY: 1
+      ZBX_CACHESIZE: 2G
+      ZBX_STARTDBSYNCERS: 30
+      ZBX_HISTORYCACHESIZE: 1G
+      ZBX_HISTORYINDEXCACHESIZE: 1G
+      ZBX_TIMEOUT: 15
+      ZBX_UNREACHABLEPERIOD: 45
+      ZBX_UNAVAILABLEDELAY: 60
+      ZBX_UNREACHABLEDELAY: 15
+      ZBX_LOGSLOWQUERIES: 3000
+      ZBX_TLSCONNECT: psk
+      ZBX_TLSACCEPT: psk
+      ZBX_TLSPSKFILE: /etc/zabbix/proxy.psk
+
+      ZBX_TLSPSKIDENTITY: ${PROXY_ID}
+      ZBX_SERVER_HOST: ${METRIC_SERVER_HOST}
+      ZBX_HOSTNAME: ${PROXY_ID}
+      ZBX_PSK: ${SECRET_KEY}
+

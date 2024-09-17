@@ -544,6 +544,804 @@ const docTemplate = `{
                 }
             }
         },
+        "/alert/alert-groups": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create Alert Group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Create Alert Group",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.AlertGroupCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/alert/alerts": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List Alerts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "List Alerts",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "name": "acknowledged",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "alertName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "apId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "circuitId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "deviceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "deviceInterfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "deviceRole",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "endsAtGte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "endsAtLte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "severity",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "siteId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "startedAtGte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "startedAtLte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "suppressed",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/schemas.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/schemas.Alert"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Alert",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Create Alert",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.AlertCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/alert/alerts/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get Alert",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Get Alert",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "alertId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Alert"
+                        }
+                    }
+                }
+            }
+        },
+        "/alert/maintenances": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List Maintenances",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "List Maintenances",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "maintenanceType",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "siteId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Approaching",
+                            "Active",
+                            "Expired"
+                        ],
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/schemas.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/schemas.Maintenance"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create Maintenance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Create Maintenance",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.MaintenanceCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/alert/maintenances/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get Maintenance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Get Maintenance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Maintenance"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update Maintenance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Update Maintenance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.MaintenanceUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete Maintenance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Delete Maintenance",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/alert/subscriptions": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "List Subscriptions",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "List Subscriptions",
+                "parameters": [
+                    {
+                        "enum": [
+                            "Webhook",
+                            "Email"
+                        ],
+                        "type": "string",
+                        "name": "channelType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "enabled",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/schemas.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/schemas.Subscription"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create Subscription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Create Subscription",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SubscriptionCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/alert/subscriptions/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get Subscription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Get Subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "subscriptionId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Subscription"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update Subscription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Update Subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "subscriptionId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SubscriptionUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete Subscription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alert"
+                ],
+                "summary": "Delete Subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "subscriptionId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/infra/aps": {
             "get": {
                 "security": [
@@ -3170,12 +3968,133 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "alerts.AlertName": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "$ref": "#/definitions/common.I18n"
+                },
+                "name": {
+                    "$ref": "#/definitions/alerts.AlertNameEnum"
+                },
+                "severity": {
+                    "$ref": "#/definitions/alerts.SeverityEnum"
+                },
+                "suggestion": {
+                    "$ref": "#/definitions/common.I18n"
+                },
+                "title": {
+                    "$ref": "#/definitions/common.I18n"
+                }
+            }
+        },
+        "alerts.AlertNameEnum": {
+            "type": "string",
+            "enum": [
+                "HighCpuUsage",
+                "HighMemoryUsage",
+                "HighDiskUsage",
+                "HighSystemLoad",
+                "HighChannelUsage",
+                "HighChannelInterference",
+                "HighChannelNoise",
+                "HighClientNumber",
+                "HighBandwidthUsage",
+                "HighErrorRate",
+                "HighICMPLatency",
+                "HighICMPPacketLoss",
+                "HighTemperature",
+                "AbnormalFanStatus",
+                "AbnormalPowerStatus",
+                "InterfaceDown",
+                "SnmpAgentTimeout",
+                "NodePingTimeout",
+                "ApDown",
+                "unknown"
+            ],
+            "x-enum-varnames": [
+                "HighCpuUsage",
+                "HighMemoryUsage",
+                "HighDiskUsage",
+                "HighSystemLoad",
+                "HighChannelUsage",
+                "HighChannelInterference",
+                "HighChannelNoise",
+                "HighClientNumber",
+                "HighBandwidthUsage",
+                "HighErrorRate",
+                "HighICMPLatency",
+                "HighICMPPacketLoss",
+                "HighTemperature",
+                "AbnormalFanStatus",
+                "AbnormalPowerStatus",
+                "InterfaceDown",
+                "SnmpAgentTimeout",
+                "NodePingTimeout",
+                "ApDown",
+                "Unknown"
+            ]
+        },
+        "alerts.SeverityEnum": {
+            "type": "string",
+            "enum": [
+                "P1",
+                "P2",
+                "P3",
+                "P4"
+            ],
+            "x-enum-varnames": [
+                "SeverityDisaster",
+                "SeverityCritical",
+                "SeverityWarning",
+                "SeverityInfo"
+            ]
+        },
+        "am.Alert": {
+            "type": "object",
+            "properties": {
+                "annotations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "endsAt": {
+                    "description": "rfc3339",
+                    "type": "string"
+                },
+                "generatorURL": {
+                    "type": "string"
+                },
+                "labels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "startsAt": {
+                    "description": "rfc3339",
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "common.I18n": {
+            "type": "object",
+            "properties": {
+                "en": {
+                    "type": "string"
+                },
+                "zh": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.AP": {
             "type": "object",
             "properties": {
-                "activeWacId": {
-                    "type": "string"
-                },
                 "coordinate": {
                     "$ref": "#/definitions/schemas.ApCoordinate"
                 },
@@ -3229,6 +4148,151 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "wlanACIpAddress": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "schemas.Alert": {
+            "type": "object",
+            "properties": {
+                "acknowledged": {
+                    "type": "boolean"
+                },
+                "actionLogCount": {
+                    "type": "integer"
+                },
+                "alertName": {
+                    "$ref": "#/definitions/alerts.AlertName"
+                },
+                "deviceRole": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "string"
+                },
+                "entity": {
+                    "$ref": "#/definitions/schemas.Entity"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "labels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.Label"
+                    }
+                },
+                "resolvedAt": {
+                    "type": "string"
+                },
+                "severity": {
+                    "type": "string"
+                },
+                "site": {
+                    "$ref": "#/definitions/schemas.SiteShort"
+                },
+                "startedAt": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "suppressed": {
+                    "type": "boolean"
+                },
+                "user": {
+                    "$ref": "#/definitions/schemas.UserShort"
+                }
+            }
+        },
+        "schemas.AlertCreate": {
+            "type": "object",
+            "required": [
+                "alertName",
+                "eventId",
+                "hostId",
+                "severity",
+                "status",
+                "triggerId"
+            ],
+            "properties": {
+                "alertName": {
+                    "type": "string"
+                },
+                "eventId": {
+                    "type": "string"
+                },
+                "hostId": {
+                    "type": "string"
+                },
+                "severity": {
+                    "type": "string"
+                },
+                "startedAt": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.Label"
+                    }
+                },
+                "triggerId": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.AlertGroupCreate": {
+            "type": "object",
+            "required": [
+                "alerts",
+                "status"
+            ],
+            "properties": {
+                "alerts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/am.Alert"
+                    }
+                },
+                "commonAnnotations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "commonLabels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "externalURL": {
+                    "type": "string"
+                },
+                "groupKey": {
+                    "type": "string"
+                },
+                "groupLabels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "firing",
+                        "resolved"
+                    ]
                 }
             }
         },
@@ -3254,6 +4318,23 @@ const docTemplate = `{
                 },
                 "clientSecret": {
                     "type": "string"
+                }
+            }
+        },
+        "schemas.ChannelConfig": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "webhook": {
+                    "type": "string"
+                },
+                "webhook_headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -3461,6 +4542,25 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                }
+            }
+        },
+        "schemas.Condition": {
+            "type": "object",
+            "required": [
+                "item",
+                "value"
+            ],
+            "properties": {
+                "item": {
+                    "type": "string"
+                },
+                "value": {
+                    "description": "[\"*\"] means match all",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -3717,6 +4817,20 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.Entity": {
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.I18n": {
             "type": "object",
             "properties": {
@@ -3864,12 +4978,127 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.Label": {
+            "type": "object",
+            "required": [
+                "tag",
+                "value"
+            ],
+            "properties": {
+                "tag": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.ListResponse": {
             "type": "object",
             "properties": {
                 "results": {},
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "schemas.Maintenance": {
+            "type": "object",
+            "properties": {
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.Condition"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "$ref": "#/definitions/schemas.UserShort"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "endedAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "maintenanceType": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "startedAt": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "$ref": "#/definitions/schemas.UserShort"
+                }
+            }
+        },
+        "schemas.MaintenanceCreate": {
+            "type": "object",
+            "required": [
+                "conditions",
+                "endedAt",
+                "maintenanceType",
+                "name",
+                "startedAt"
+            ],
+            "properties": {
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.Condition"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "endedAt": {
+                    "type": "string"
+                },
+                "maintenanceType": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "startedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.MaintenanceUpdate": {
+            "type": "object",
+            "properties": {
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.Condition"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "endedAt": {
+                    "type": "string"
+                },
+                "maintenanceType": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "startedAt": {
+                    "type": "string"
                 }
             }
         },
@@ -4479,6 +5708,20 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.SiteShort": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "siteCode": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.SiteUpdate": {
             "type": "object",
             "properties": {
@@ -4585,6 +5828,131 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.Subscription": {
+            "type": "object",
+            "properties": {
+                "channelConfig": {
+                    "$ref": "#/definitions/schemas.ChannelConfig"
+                },
+                "channelType": {
+                    "type": "string"
+                },
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.Condition"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "$ref": "#/definitions/schemas.UserShort"
+                },
+                "deduplication": {
+                    "type": "boolean"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "repeatInterval": {
+                    "type": "integer"
+                },
+                "sendResolved": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "$ref": "#/definitions/schemas.UserShort"
+                }
+            }
+        },
+        "schemas.SubscriptionCreate": {
+            "type": "object",
+            "required": [
+                "channelConfig",
+                "channelType",
+                "conditions",
+                "deduplication",
+                "enabled",
+                "name",
+                "repeatInterval",
+                "sendResolved"
+            ],
+            "properties": {
+                "channelConfig": {
+                    "$ref": "#/definitions/schemas.ChannelConfig"
+                },
+                "channelType": {
+                    "type": "string"
+                },
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.Condition"
+                    }
+                },
+                "deduplication": {
+                    "type": "boolean"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "repeatInterval": {
+                    "type": "integer"
+                },
+                "sendResolved": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schemas.SubscriptionUpdate": {
+            "type": "object",
+            "properties": {
+                "channelConfig": {
+                    "$ref": "#/definitions/schemas.ChannelConfig"
+                },
+                "channelType": {
+                    "type": "string",
+                    "enum": [
+                        "Webhook",
+                        "Email"
+                    ]
+                },
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.Condition"
+                    }
+                },
+                "deduplication": {
+                    "type": "boolean"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "repeatInterval": {
+                    "type": "integer"
+                },
+                "sendResolved": {
+                    "type": "boolean"
+                }
+            }
+        },
         "schemas.Transition": {
             "type": "object",
             "properties": {
@@ -4663,6 +6031,23 @@ const docTemplate = `{
                         "Active",
                         "Inactive"
                     ]
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.UserShort": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
                 },
                 "username": {
                     "type": "string"

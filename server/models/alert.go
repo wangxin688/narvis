@@ -54,6 +54,10 @@ type Alert struct {
 	Ap                AP                         `gorm:"constraint:Ondelete:CASCADE"`
 	CircuitId         *string                    `gorm:"column:circuitId;type:uuid;index"`
 	Circuit           Circuit                    `gorm:"constraint:Ondelete:CASCADE"`
+	RootCauseId       *string                    `gorm:"column:rootCauseId;type:uuid;default:null"`
+	RootCause         RootCause                  `gorm:"constraint:Ondelete:SET NULL"`
+	AlertGroupId      *string                    `gorm:"column:alertGroupId;type:uuid;default:null"`
+	AlertGroup        AlertGroup                 `gorm:"constraint:Ondelete:SET NULL"`
 	DeviceRole        *string                    `gorm:"column:deviceRole;default:null"`
 	DeviceInterfaceId *string                    `gorm:"column:deviceInterfaceId;type:uuid;index"`
 	DeviceInterface   DeviceInterface            `gorm:"constraint:Ondelete:SET NULL"`
@@ -61,6 +65,7 @@ type Alert struct {
 	Maintenance       Maintenance                `gorm:"constraint:Ondelete:SET NULL"`
 	OrganizationId    string                     `gorm:"column:organizationId;type:uuid;not null;index"`
 	Organization      Organization               `gorm:"constraint:Ondelete:CASCADE"`
+	ActionLog         []*AlertActionLog          `gorm:"constraint:Ondelete:CASCADE"`
 }
 
 func (Alert) TableName() string {
@@ -74,8 +79,7 @@ type AlertGroup struct {
 	ResolvedAt     *time.Time   `gorm:"column:resolvedAt;default:null"`
 	Acknowledged   bool         `gorm:"column:acknowledged;default:false"`
 	Suppressed     bool         `gorm:"column:suppressed;default:false"`
-	Severity       uint8        `gorm:"column:severity;default:0"` // 0: info 1: warning 2: critical 3: disaster
-	Duration       *string      `gorm:"-"`
+	Severity       string       `gorm:"column:severity;default:P4"` // P1 P2 P3 P4
 	AlertName      string       `gorm:"column:alertName;not null;index"`
 	GroupKey       string       `gorm:"column:groupKey;not null"`
 	HashKey        string       `gorm:"column:hashKey;not null"`
@@ -90,18 +94,20 @@ func (AlertGroup) TableName() string {
 }
 
 type AlertActionLog struct {
-	BaseDbModel
+	BaseDbSingleModel
 
-	Acknowledged *bool        `gorm:"column:acknowledged;default:null"`
-	Resolved     *bool        `gorm:"column:resolved;default:null"`
-	Suppressed   *bool        `gorm:"column:suppressed;default:null"`
-	Comment      *string      `gorm:"column:comment;default:null"`
-	AssignUserId *string      `gorm:"column:assignUserId;type:uuid;default:null"`
-	AssignUser   User         `gorm:"constraint:Ondelete:SET NULL;foreignKey:AssignUserId"`
-	CreatedById  string       `gorm:"column:createdById;type:uuid"`
-	CreatedBy    User         `gorm:"constraint:Ondelete:SET NULL;foreignKey:CreatedById"`
-	Alert        []Alert      `gorm:"many2many:alert_action_logs"`
-	AlertGroup   []AlertGroup `gorm:"many2many:alert_group_action_logs"`
+	Acknowledged *bool     `gorm:"column:acknowledged;default:null"`
+	Resolved     *bool     `gorm:"column:resolved;default:null"`
+	Suppressed   *bool     `gorm:"column:suppressed;default:null"`
+	Comment      *string   `gorm:"column:comment;default:null"`
+	AssignUserId *string   `gorm:"column:assignUserId;type:uuid;default:null"`
+	AssignUser   User      `gorm:"constraint:Ondelete:SET NULL;foreignKey:AssignUserId"`
+	RootCauseId  *string   `gorm:"column:rootCauseId;type:uuid;default:null"`
+	RootCause    RootCause `gorm:"constraint:Ondelete:SET NULL;foreignKey:RootCauseId"`
+	CreatedById  string    `gorm:"column:createdById;type:uuid"`
+	CreatedBy    User      `gorm:"constraint:Ondelete:SET NULL;foreignKey:CreatedById"`
+	AlertId      string    `gorm:"column:alertId;type:uuid;not null"`
+	Alert        Alert     `gorm:"constraint:Ondelete:CASCADE;foreignKey:AlertId"`
 }
 
 func (AlertActionLog) TableName() string {
@@ -117,6 +123,10 @@ type Maintenance struct {
 	MaintenanceType string                         `gorm:"column:maintenanceType;not null"`
 	Conditions      datatypes.JSONSlice[Condition] `gorm:"column:conditions;type:json;not null"`
 	Description     *string                        `gorm:"column:description;default:null"`
+	CreatedById     string                         `gorm:"column:createdById;type:uuid"`
+	CreatedBy       User                           `gorm:"constraint:Ondelete:SET NULL;foreignKey:CreatedById"`
+	UpdatedById     string                         `gorm:"column:updatedById;type:uuid"`
+	UpdatedBy       User                           `gorm:"constraint:Ondelete:SET NULL;foreignKey:UpdatedById"`
 	OrganizationId  string                         `gorm:"column:organizationId;type:uuid;not null;index"`
 	Organization    Organization                   `gorm:"constraint:Ondelete:CASCADE"`
 	Alert           []Alert
@@ -145,13 +155,15 @@ type Subscription struct {
 	Name           string                            `gorm:"column:name;not null"`
 	Enabled        bool                              `gorm:"column:enabled;not null;default:true"`
 	Deduplication  bool                              `gorm:"column:deduplication;not null;default:true"`
-	Conditions     datatypes.JSONType[Condition]     `gorm:"column:conditions;type:json;not null"`
+	Conditions     datatypes.JSONSlice[Condition]    `gorm:"column:conditions;type:json;not null"`
 	SendResolved   bool                              `gorm:"column:sendResolved;not null;default:true"`
 	RepeatInterval uint32                            `gorm:"column:repeatInterval;type:smallint;not null;default:0"`
-	ChannelType    uint8                             `gorm:"column:channelType;type:smallint;not null;default:0"`
+	ChannelType    string                            `gorm:"column:channelType;type:smallint;not null"`
 	ChannelConfig  datatypes.JSONType[ChannelConfig] `gorm:"column:channelConfig;type:json;not null"`
 	CreatedById    string                            `gorm:"column:createdById;type:uuid;not null;index"`
 	CreatedBy      User                              `gorm:"constraint:Ondelete:SET NULL;foreignKey:CreatedById"`
+	UpdatedById    string                            `gorm:"column:updatedById;type:uuid"`
+	UpdatedBy      User                              `gorm:"constraint:Ondelete:SET NULL;foreignKey:UpdatedById"`
 	OrganizationId string                            `gorm:"column:organizationId;type:uuid;not null;index"`
 	Organization   Organization                      `gorm:"constraint:Ondelete:CASCADE"`
 }

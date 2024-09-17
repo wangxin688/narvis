@@ -25,6 +25,23 @@ func connectDb() *gorm.DB {
 	return db
 }
 
+type Filter interface {
+	// SELECT * FROM @@table WHERE @column = @value
+	FilterWithColumn(column string, value string) (gen.T, error)
+
+	// SELECT * FROM @@table WHERE @column IN (@values)
+	FilterWithColumnIn(column string, values []string) (gen.T, error)
+
+	// SELECT * FROM @@table WHERE @column NOT IN (@values)
+	FilterWithColumnNotIn(column string, values []string) (gen.T, error)
+
+	//  SELECT * FROM @@table WHERE @column IS NOT NULL
+	FilterWithColumnIsNotNull(column string) (gen.T, error)
+
+	// SELECT * FROM @@table WHERE @column IS NULL
+	FilterWithColumnIsNull(column string) (gen.T, error)
+}
+
 func main() {
 	g := gen.NewGenerator(gen.Config{
 		OutPath:        "../../dal/gen",
@@ -66,5 +83,6 @@ func main() {
 		&models.SubscriptionRecord{},
 		&models.Template{},
 	)
+	g.ApplyInterface(func(Filter) {}, models.Alert{}, models.Maintenance{}, models.Subscription{})
 	defer g.Execute()
 }

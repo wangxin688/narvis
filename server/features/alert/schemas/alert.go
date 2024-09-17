@@ -7,8 +7,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/alerts"
+	as "github.com/wangxin688/narvis/server/features/admin/schemas"
+	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global/constants"
 	"github.com/wangxin688/narvis/server/tools/errors"
+	"github.com/wangxin688/narvis/server/tools/helpers"
+	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
 type Label struct {
@@ -95,6 +99,14 @@ func GetStatus(status string) uint8 {
 	return statusMap[status]
 }
 
+func GetReverseStatus(status uint8) string {
+	statusMap := map[uint8]string{
+		constants.AlertFiringStatus:   "firing",
+		constants.AlertResolvedStatus: "resolved",
+	}
+	return statusMap[status]
+}
+
 type AlertConcrete struct {
 	AlertName      string
 	Labels         []*Label
@@ -110,4 +122,86 @@ type AlertConcrete struct {
 	InterfaceId    *string
 	DeviceRole     *string
 	OrganizationId string
+}
+
+type Alert struct {
+	Status         uint8             `json:"status"`
+	StartedAt      time.Time         `json:"startedAt"`
+	ResolvedAt     *time.Time        `json:"resolvedAt"`
+	Duration       string            `json:"duration"`
+	Acknowledged   bool              `json:"acknowledged"`
+	Suppressed     bool              `json:"suppressed"`
+	Severity       string            `json:"severity"`
+	Id             string            `json:"id"`
+	AlertName      alerts.AlertName  `json:"alertName"`
+	Site           schemas.SiteShort `json:"site"`
+	Entity         Entity            `json:"entity"`
+	Labels         []Label           `json:"labels"`
+	DeviceRole     *string           `json:"deviceRole"`
+	User           *as.UserShort     `json:"user"`
+	ActionLogCount int               `json:"actionLogCount"`
+}
+
+func (a *Alert) GetDuration() string {
+	duration := "0s"
+	if a.ResolvedAt != nil {
+		duration = helpers.HumanReadableDuration(int64(a.ResolvedAt.Sub(a.StartedAt).Seconds()))
+	} else {
+		duration = helpers.HumanReadableDuration(int64(time.Since(a.StartedAt).Seconds()))
+	}
+	return duration
+}
+
+type AlertDetail struct {
+	Status       uint8             `json:"status"`
+	StartedAt    time.Time         `json:"startedAt"`
+	ResolvedAt   *time.Time        `json:"resolvedAt"`
+	Duration     string            `json:"duration"`
+	Acknowledged bool              `json:"acknowledged"`
+	Suppressed   bool              `json:"suppressed"`
+	Severity     string            `json:"severity"`
+	Id           string            `json:"id"`
+	AlertName    alerts.AlertName  `json:"alertName"`
+	Site         schemas.SiteShort `json:"site"`
+	Entity       Entity            `json:"entity"`
+	Labels       []Label           `json:"labels"`
+	DeviceRole   *string           `json:"deviceRole"`
+	RootCause    *RootCause        `json:"rootCause"`
+	User         *as.UserShort     `json:"user"`
+	ActionLog    []*ActionLog      `json:"actionLog"`
+}
+
+func (a *AlertDetail) GetDuration() string {
+	duration := "0s"
+	if a.ResolvedAt != nil {
+		duration = helpers.HumanReadableDuration(int64(a.ResolvedAt.Sub(a.StartedAt).Seconds()))
+	} else {
+		duration = helpers.HumanReadableDuration(int64(time.Since(a.StartedAt).Seconds()))
+	}
+	return duration
+}
+
+type Entity struct {
+	Id   string `json:"Id"`
+	Name string `json:"Name"`
+	Type string `json:"Type"`
+}
+
+type AlertQuery struct {
+	ts.PageInfo
+	SiteId            *[]string  `json:"siteId" binding:"omitEmpty,list_uuid"`
+	AlertName         *[]string  `json:"alertName" binding:"omitempty"`
+	DeviceId          *[]string  `json:"deviceId" binding:"omitempty,list_uuid"`
+	ApId              *[]string  `json:"apId" binding:"omitempty,list_uuid"`
+	CircuitId         *[]string  `json:"circuitId" binding:"omitempty,list_uuid"`
+	DeviceInterfaceId *[]string  `json:"deviceInterfaceId" binding:"omitempty,list_uuid"`
+	DeviceRole        *[]string  `json:"deviceRole" binding:"omitempty"`
+	Severity          *[]string  `json:"severity" binding:"omitempty"`
+	Status            *uint8     `json:"status" binding:"omitempty"`
+	Acknowledged      *bool      `json:"acknowledged" binding:"omitempty"`
+	Suppressed        *bool      `json:"suppressed" binding:"omitempty"`
+	StartedAtGte      *time.Time `json:"startedAtGte" binding:"omitempty"`
+	StartedAtLte      *time.Time `json:"startedAtLte" binding:"omitempty"`
+	ResolvedAtGte     *time.Time `json:"endsAtGte" binding:"omitempty"`
+	ResolvedAtLte     *time.Time `json:"endsAtLte" binding:"omitempty"`
 }

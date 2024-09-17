@@ -5,8 +5,8 @@ import (
 )
 
 type QueryLabelRequest struct {
-	Start     *uint64 `json:"start"`
-	End       *uint64 `json:"end"`
+	Start     *uint64 `json:"start,omitempty"`
+	End       *uint64 `json:"end,omitempty"`
 	Match     string  `json:"match"` // query string
 	LabelName string  `json:"label_name"`
 }
@@ -14,12 +14,12 @@ type QueryLabelRequest struct {
 type BaseRequest struct {
 	Step         uint64  `json:"step"`
 	Query        string  `json:"query"`
-	LegendFormat *string `json:"legend_format"`
+	LegendFormat *string `json:"legend_format,omitempty"`
 }
 
 type VectorRequest struct {
 	BaseRequest
-	Time *uint `json:"time"`
+	Time *uint `json:"time,omitempty"`
 }
 
 type MatrixRequest struct {
@@ -54,5 +54,5 @@ type Metric struct {
 	Metric    string            `json:"metric"`
 	Labels    map[string]string `json:"labels"`
 	Value     float64           `json:"value"`
-	Timestamp uint64            `json:"timestamp"`
+	Timestamp int64             `json:"timestamp"`
 }

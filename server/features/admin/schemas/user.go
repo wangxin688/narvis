@@ -47,6 +47,12 @@ type User struct {
 	Role      RoleShort `json:"role"`
 }
 
+type UserShort struct {
+	Id       string  `json:"id"`
+	Username string  `json:"username"`
+	Email    string  `json:"email"`
+	Avatar   *string `json:"avatar"`
+}
 
 type UserMe struct {
 	Id        string    `json:"id"`

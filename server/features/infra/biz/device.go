@@ -132,22 +132,22 @@ func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
 		return nil, err
 	}
 	return &schemas.Device{
-		Id:            device.Id,
-		CreatedAt:     device.CreatedAt,
-		UpdatedAt:     device.UpdatedAt,
-		Name:          device.Name,
-		ManagementIp:  device.ManagementIp,
-		Platform:      device.Platform,
-		Status:        device.Status,
-		OperStatus:    "",
-		DeviceModel:   device.DeviceModel,
-		Manufacturer:  device.Manufacturer,
-		DeviceRole:    device.DeviceRole,
-		Floor:         device.Floor,
-		OsPatch:       device.OsPatch,
-		OsVersion:     device.OsVersion,
-		Description:   device.Description,
-		RackId:        device.RackId,
+		Id:           device.Id,
+		CreatedAt:    device.CreatedAt,
+		UpdatedAt:    device.UpdatedAt,
+		Name:         device.Name,
+		ManagementIp: device.ManagementIp,
+		Platform:     device.Platform,
+		Status:       device.Status,
+		OperStatus:   "",
+		DeviceModel:  device.DeviceModel,
+		Manufacturer: device.Manufacturer,
+		DeviceRole:   device.DeviceRole,
+		Floor:        device.Floor,
+		OsPatch:      device.OsPatch,
+		OsVersion:    device.OsVersion,
+		Description:  device.Description,
+		RackId:       device.RackId,
 		RackPosition: func() *[]uint8 {
 			if device.RackPosition == nil {
 				return nil
@@ -216,23 +216,23 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 
 	for _, item := range list {
 		res = append(res, &schemas.Device{
-			Id:            item.Id,
-			CreatedAt:     item.CreatedAt,
-			UpdatedAt:     item.UpdatedAt,
-			Name:          item.Name,
-			ManagementIp:  item.ManagementIp,
-			Platform:      item.Platform,
-			Status:        item.Status,
-			OperStatus:    "",
-			IsRegistered:  item.IsRegistered,
-			DeviceModel:   item.DeviceModel,
-			Manufacturer:  item.Manufacturer,
-			DeviceRole:    item.DeviceRole,
-			Floor:         item.Floor,
-			OsPatch:       item.OsPatch,
-			OsVersion:     item.OsVersion,
-			Description:   item.Description,
-			RackId:        item.RackId,
+			Id:           item.Id,
+			CreatedAt:    item.CreatedAt,
+			UpdatedAt:    item.UpdatedAt,
+			Name:         item.Name,
+			ManagementIp: item.ManagementIp,
+			Platform:     item.Platform,
+			Status:       item.Status,
+			OperStatus:   "",
+			IsRegistered: item.IsRegistered,
+			DeviceModel:  item.DeviceModel,
+			Manufacturer: item.Manufacturer,
+			DeviceRole:   item.DeviceRole,
+			Floor:        item.Floor,
+			OsPatch:      item.OsPatch,
+			OsVersion:    item.OsVersion,
+			Description:  item.Description,
+			RackId:       item.RackId,
 			RackPosition: func() *[]uint8 {
 				if item.RackPosition == nil {
 					return nil
@@ -275,3 +275,46 @@ func (d *DeviceService) GetDeviceInterfaces(deviceId string) (*[]*schemas.Device
 	}
 	return &res, nil
 }
+
+func (d *DeviceService) GetDeviceShortMap(deviceIds []string) (map[string]*schemas.DeviceShort, error) {
+	devices, err := gen.Device.Select(
+		gen.Device.Id,
+		gen.Device.Name,
+		gen.Device.ManagementIp,
+		gen.Device.Status,
+	).Where(gen.Device.Id.In(deviceIds...)).Find()
+
+	if err != nil {
+		return nil, err
+	}
+
+	res := make(map[string]*schemas.DeviceShort)
+	for _, item := range devices {
+		res[item.Id] = &schemas.DeviceShort{
+			Id:           item.Id,
+			Name:         item.Name,
+			ManagementIp: item.ManagementIp,
+			Status:       item.Status,
+		}
+	}
+	return res, nil
+}
+
+func (d *DeviceService) SearchDeviceByKeyword(keyword string, orgId string) ([]string, error) {
+	var result []string
+
+	stmt := gen.Device.Select(gen.Device.Id).Where(gen.Device.OrganizationId.Eq(orgId))
+	keyword = "%" + keyword + "%"
+	stmt = stmt.Where(
+		gen.Device.Name.Like(keyword),
+	).Or(
+		gen.Device.ChassisId.Like(keyword),
+	).Or(
+		gen.Device.SerialNumber.Like(keyword),
+	).Or(
+		gen.Device.ManagementIp.Like(keyword),
+	)
+	err := stmt.Scan(&result)
+	return result, err
+}
+

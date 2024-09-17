@@ -37,7 +37,7 @@ type AlertResponse struct {
 
 type AlertGroupResponse struct {
 	Labels map[string]string `json:"labels"`
-	Alerts []Alert           `json:"alerts"`
+	Alerts []AlertResponse           `json:"alerts"`
 }
 
 type AlertRequest struct {

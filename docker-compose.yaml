@@ -119,6 +119,26 @@ services:
 
   #     - "--httpAuth.username=${VICTORIA_METRICS_USER}"
   #     - "--httpAuth.password=${VICTORIA_METRICS_PASSWORD}"
+  clickhouse:
+    image: clickhouse/clickhouse-server:22.2.3.5
+    container_name: clickhouse
+    restart: unless-stopped
+    ports:
+      - 8123:8123/tcp
+      - 9000:9000/tcp
+    volumes:
+      - ./config/clickhouse/initdb.d:/docker-entrypoint-initdb.d
+      - clickhouse-data:/var/lib/clickhouse
+    environment:
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      CLICKHOUSE_DB: narvis
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      test: ["CMD", "wget", "-T", "1", "--spider", "--no-proxy", "http://clickhouse:8123"]
 
 volumes:
   zabbix-timescaledb-data:

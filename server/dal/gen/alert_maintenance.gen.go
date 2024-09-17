@@ -6,6 +6,7 @@ package gen
 
 import (
 	"context"
+	"strings"
 
 	"github.com/wangxin688/narvis/server/models"
 	"gorm.io/gorm"
@@ -35,6 +36,8 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 	_maintenance.MaintenanceType = field.NewString(tableName, "maintenanceType")
 	_maintenance.Conditions = field.NewField(tableName, "conditions")
 	_maintenance.Description = field.NewString(tableName, "description")
+	_maintenance.CreatedById = field.NewString(tableName, "createdById")
+	_maintenance.UpdatedById = field.NewString(tableName, "updatedById")
 	_maintenance.OrganizationId = field.NewString(tableName, "organizationId")
 	_maintenance.Alert = maintenanceHasManyAlert{
 		db: db.Session(&gorm.Session{}),
@@ -280,6 +283,40 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 				RelationField: field.NewRelation("Alert.Circuit.Organization", "models.Organization"),
 			},
 		},
+		RootCause: struct {
+			field.RelationField
+			Organization struct {
+				field.RelationField
+			}
+		}{
+			RelationField: field.NewRelation("Alert.RootCause", "models.RootCause"),
+			Organization: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.RootCause.Organization", "models.Organization"),
+			},
+		},
+		AlertGroup: struct {
+			field.RelationField
+			Site struct {
+				field.RelationField
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}{
+			RelationField: field.NewRelation("Alert.AlertGroup", "models.AlertGroup"),
+			Site: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.AlertGroup.Site", "models.Site"),
+			},
+			Organization: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.AlertGroup.Organization", "models.Organization"),
+			},
+		},
 		DeviceInterface: struct {
 			field.RelationField
 		}{
@@ -287,6 +324,12 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 		},
 		Maintenance: struct {
 			field.RelationField
+			CreatedBy struct {
+				field.RelationField
+			}
+			UpdatedBy struct {
+				field.RelationField
+			}
 			Organization struct {
 				field.RelationField
 			}
@@ -295,6 +338,16 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 			}
 		}{
 			RelationField: field.NewRelation("Alert.Maintenance", "models.Maintenance"),
+			CreatedBy: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.Maintenance.CreatedBy", "models.User"),
+			},
+			UpdatedBy: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.Maintenance.UpdatedBy", "models.User"),
+			},
 			Organization: struct {
 				field.RelationField
 			}{
@@ -311,6 +364,55 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 		}{
 			RelationField: field.NewRelation("Alert.Organization", "models.Organization"),
 		},
+		ActionLog: struct {
+			field.RelationField
+			AssignUser struct {
+				field.RelationField
+			}
+			RootCause struct {
+				field.RelationField
+			}
+			CreatedBy struct {
+				field.RelationField
+			}
+			Alert struct {
+				field.RelationField
+			}
+		}{
+			RelationField: field.NewRelation("Alert.ActionLog", "models.AlertActionLog"),
+			AssignUser: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.ActionLog.AssignUser", "models.User"),
+			},
+			RootCause: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.ActionLog.RootCause", "models.RootCause"),
+			},
+			CreatedBy: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.ActionLog.CreatedBy", "models.User"),
+			},
+			Alert: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.ActionLog.Alert", "models.Alert"),
+			},
+		},
+	}
+
+	_maintenance.CreatedBy = maintenanceBelongsToCreatedBy{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("CreatedBy", "models.User"),
+	}
+
+	_maintenance.UpdatedBy = maintenanceBelongsToUpdatedBy{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("UpdatedBy", "models.User"),
 	}
 
 	_maintenance.Organization = maintenanceBelongsToOrganization{
@@ -337,8 +439,14 @@ type maintenance struct {
 	MaintenanceType field.String
 	Conditions      field.Field
 	Description     field.String
+	CreatedById     field.String
+	UpdatedById     field.String
 	OrganizationId  field.String
 	Alert           maintenanceHasManyAlert
+
+	CreatedBy maintenanceBelongsToCreatedBy
+
+	UpdatedBy maintenanceBelongsToUpdatedBy
 
 	Organization maintenanceBelongsToOrganization
 
@@ -366,6 +474,8 @@ func (m *maintenance) updateTableName(table string) *maintenance {
 	m.MaintenanceType = field.NewString(table, "maintenanceType")
 	m.Conditions = field.NewField(table, "conditions")
 	m.Description = field.NewString(table, "description")
+	m.CreatedById = field.NewString(table, "createdById")
+	m.UpdatedById = field.NewString(table, "updatedById")
 	m.OrganizationId = field.NewString(table, "organizationId")
 
 	m.fillFieldMap()
@@ -383,7 +493,7 @@ func (m *maintenance) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (m *maintenance) fillFieldMap() {
-	m.fieldMap = make(map[string]field.Expr, 12)
+	m.fieldMap = make(map[string]field.Expr, 16)
 	m.fieldMap["id"] = m.Id
 	m.fieldMap["createdAt"] = m.CreatedAt
 	m.fieldMap["updatedAt"] = m.UpdatedAt
@@ -393,6 +503,8 @@ func (m *maintenance) fillFieldMap() {
 	m.fieldMap["maintenanceType"] = m.MaintenanceType
 	m.fieldMap["conditions"] = m.Conditions
 	m.fieldMap["description"] = m.Description
+	m.fieldMap["createdById"] = m.CreatedById
+	m.fieldMap["updatedById"] = m.UpdatedById
 	m.fieldMap["organizationId"] = m.OrganizationId
 
 }
@@ -493,11 +605,32 @@ type maintenanceHasManyAlert struct {
 			field.RelationField
 		}
 	}
+	RootCause struct {
+		field.RelationField
+		Organization struct {
+			field.RelationField
+		}
+	}
+	AlertGroup struct {
+		field.RelationField
+		Site struct {
+			field.RelationField
+		}
+		Organization struct {
+			field.RelationField
+		}
+	}
 	DeviceInterface struct {
 		field.RelationField
 	}
 	Maintenance struct {
 		field.RelationField
+		CreatedBy struct {
+			field.RelationField
+		}
+		UpdatedBy struct {
+			field.RelationField
+		}
 		Organization struct {
 			field.RelationField
 		}
@@ -507,6 +640,21 @@ type maintenanceHasManyAlert struct {
 	}
 	Organization struct {
 		field.RelationField
+	}
+	ActionLog struct {
+		field.RelationField
+		AssignUser struct {
+			field.RelationField
+		}
+		RootCause struct {
+			field.RelationField
+		}
+		CreatedBy struct {
+			field.RelationField
+		}
+		Alert struct {
+			field.RelationField
+		}
 	}
 }
 
@@ -572,6 +720,148 @@ func (a maintenanceHasManyAlertTx) Clear() error {
 }
 
 func (a maintenanceHasManyAlertTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type maintenanceBelongsToCreatedBy struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a maintenanceBelongsToCreatedBy) Where(conds ...field.Expr) *maintenanceBelongsToCreatedBy {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a maintenanceBelongsToCreatedBy) WithContext(ctx context.Context) *maintenanceBelongsToCreatedBy {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a maintenanceBelongsToCreatedBy) Session(session *gorm.Session) *maintenanceBelongsToCreatedBy {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a maintenanceBelongsToCreatedBy) Model(m *models.Maintenance) *maintenanceBelongsToCreatedByTx {
+	return &maintenanceBelongsToCreatedByTx{a.db.Model(m).Association(a.Name())}
+}
+
+type maintenanceBelongsToCreatedByTx struct{ tx *gorm.Association }
+
+func (a maintenanceBelongsToCreatedByTx) Find() (result *models.User, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a maintenanceBelongsToCreatedByTx) Append(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a maintenanceBelongsToCreatedByTx) Replace(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a maintenanceBelongsToCreatedByTx) Delete(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a maintenanceBelongsToCreatedByTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a maintenanceBelongsToCreatedByTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type maintenanceBelongsToUpdatedBy struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a maintenanceBelongsToUpdatedBy) Where(conds ...field.Expr) *maintenanceBelongsToUpdatedBy {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a maintenanceBelongsToUpdatedBy) WithContext(ctx context.Context) *maintenanceBelongsToUpdatedBy {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a maintenanceBelongsToUpdatedBy) Session(session *gorm.Session) *maintenanceBelongsToUpdatedBy {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a maintenanceBelongsToUpdatedBy) Model(m *models.Maintenance) *maintenanceBelongsToUpdatedByTx {
+	return &maintenanceBelongsToUpdatedByTx{a.db.Model(m).Association(a.Name())}
+}
+
+type maintenanceBelongsToUpdatedByTx struct{ tx *gorm.Association }
+
+func (a maintenanceBelongsToUpdatedByTx) Find() (result *models.User, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a maintenanceBelongsToUpdatedByTx) Append(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a maintenanceBelongsToUpdatedByTx) Replace(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a maintenanceBelongsToUpdatedByTx) Delete(values ...*models.User) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a maintenanceBelongsToUpdatedByTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a maintenanceBelongsToUpdatedByTx) Count() int64 {
 	return a.tx.Count()
 }
 
@@ -707,6 +997,90 @@ type IMaintenanceDo interface {
 	Returning(value interface{}, columns ...string) IMaintenanceDo
 	UnderlyingDB() *gorm.DB
 	schema.Tabler
+
+	FilterWithColumn(column string, value string) (result models.Maintenance, err error)
+	FilterWithColumnIn(column string, values []string) (result models.Maintenance, err error)
+	FilterWithColumnNotIn(column string, values []string) (result models.Maintenance, err error)
+	FilterWithColumnIsNotNull(column string) (result models.Maintenance, err error)
+	FilterWithColumnIsNull(column string) (result models.Maintenance, err error)
+}
+
+// SELECT * FROM @@table WHERE @column = @value
+func (m maintenanceDo) FilterWithColumn(column string, value string) (result models.Maintenance, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	params = append(params, value)
+	generateSQL.WriteString("SELECT * FROM alert_maintenance WHERE ? = ? ")
+
+	var executeSQL *gorm.DB
+	executeSQL = m.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column IN (@values)
+func (m maintenanceDo) FilterWithColumnIn(column string, values []string) (result models.Maintenance, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	params = append(params, values)
+	generateSQL.WriteString("SELECT * FROM alert_maintenance WHERE ? IN (?) ")
+
+	var executeSQL *gorm.DB
+	executeSQL = m.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column NOT IN (@values)
+func (m maintenanceDo) FilterWithColumnNotIn(column string, values []string) (result models.Maintenance, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	params = append(params, values)
+	generateSQL.WriteString("SELECT * FROM alert_maintenance WHERE ? NOT IN (?) ")
+
+	var executeSQL *gorm.DB
+	executeSQL = m.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column IS NOT NULL
+func (m maintenanceDo) FilterWithColumnIsNotNull(column string) (result models.Maintenance, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	generateSQL.WriteString("SELECT * FROM alert_maintenance WHERE ? IS NOT NULL ")
+
+	var executeSQL *gorm.DB
+	executeSQL = m.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column IS NULL
+func (m maintenanceDo) FilterWithColumnIsNull(column string) (result models.Maintenance, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	generateSQL.WriteString("SELECT * FROM alert_maintenance WHERE ? IS NULL ")
+
+	var executeSQL *gorm.DB
+	executeSQL = m.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
 }
 
 func (m maintenanceDo) Debug() IMaintenanceDo {

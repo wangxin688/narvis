@@ -36,7 +36,6 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 	if query.IsSearchable() {
 		searchString := "%" + *query.Keyword + "%"
 		stmt = stmt.Where(gen.AP.Name.Like(searchString)).Or(gen.AP.ManagementIp.Like(searchString))
-
 	}
 
 	count, err := stmt.Count()
@@ -110,4 +109,34 @@ func (s *ApService) GetById(id string) (*schemas.AP, error) {
 		WlanACIpAddress: (*[]string)(ap.WlanACIpAddress),
 		SiteId:          ap.SiteId,
 	}, nil
+}
+
+func (s *ApService) GetApShortMap(apIds []string) (map[string]*schemas.APShort, error) {
+	aps, err := gen.AP.Select(
+		gen.AP.Id,
+		gen.AP.Name,
+		gen.AP.ManagementIp,
+	).Where(gen.AP.Id.In(apIds...)).Find()
+
+	if err != nil {
+		return nil, err
+	}
+	res := make(map[string]*schemas.APShort)
+	for _, ap := range aps {
+		res[ap.Id] = &schemas.APShort{
+			Id:           ap.Id,
+			Name:         ap.Name,
+			ManagementIP: ap.ManagementIp,
+		}
+	}
+	return res, nil
+}
+
+func (d *ApService) SearchApByKeyword(keyword string, orgId string) ([]string, error) {
+	var result []string
+	stmt := gen.AP.Select(gen.AP.Id).Where(gen.AP.OrganizationId.Eq(orgId))
+	keyword = "%" + keyword + "%"
+	stmt = stmt.Where(gen.AP.Name.Like(keyword)).Or(gen.AP.ManagementIp.Like(keyword))
+	err := stmt.Scan(&result)
+	return result, err
 }

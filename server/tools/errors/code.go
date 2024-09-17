@@ -103,4 +103,6 @@ const (
 	MsgApNameTagMissing        ErrorMsg  = "alert apName tag missing in metrics system"
 	CodeInterfaceTagMissing    ErrorCode = 900004
 	MsgInterfaceTagMissing     ErrorMsg  = "alert interface tag missing in metrics system"
+	CodeAlertGroupMissingOrganizationId ErrorCode = 900005
+	MsgAlertGroupMissingOrganizationId  ErrorMsg  = "alert group missing organization id"
 )

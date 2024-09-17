@@ -50,7 +50,7 @@ func NewAlertManager(url, username, password string) *AlertManager {
 
 }
 
-func (am *AlertManager) CreateAlerts(alert []Alert) error {
+func (am *AlertManager) CreateAlerts(alert []*Alert) error {
 	path := "/api/v2/alerts"
 	resp, err := am.R().SetBody(alert).Post(path)
 	if err != nil {
@@ -63,24 +63,24 @@ func (am *AlertManager) CreateAlerts(alert []Alert) error {
 	return nil
 }
 
-func (am *AlertManager) GetAlerts(query AlertRequest) (alerts []AlertResponse, err error) {
+func (am *AlertManager) GetAlerts(query *AlertRequest) (alerts []*AlertResponse, err error) {
 
 	path := "/api/v2/alerts"
 	requestParams := map[string]any{}
 	if query.Active != nil {
-		requestParams["active"] = *query.Active
+		requestParams["active"] = query.Active
 	} else {
 		requestParams["active"] = true
 	}
 
 	if query.Silenced != nil {
-		requestParams["silenced"] = *query.Silenced
+		requestParams["silenced"] = query.Silenced
 	} else {
 		requestParams["silenced"] = true
 	}
 
 	if query.Inhibited != nil {
-		requestParams["inhibited"] = *query.Inhibited
+		requestParams["inhibited"] = query.Inhibited
 	} else {
 		requestParams["inhibited"] = true
 	}
@@ -100,23 +100,23 @@ func (am *AlertManager) GetAlerts(query AlertRequest) (alerts []AlertResponse, e
 	return
 }
 
-func (am *AlertManager) GetAlertGroups(query AlertRequest) (alerts []AlertGroupResponse, err error) {
+func (am *AlertManager) GetAlertGroups(query *AlertRequest) (alerts []*AlertGroupResponse, err error) {
 	path := "/api/v2/alerts/groups"
 	requestParams := map[string]any{}
 	if query.Active != nil {
-		requestParams["active"] = *query.Active
+		requestParams["active"] = query.Active
 	} else {
 		requestParams["active"] = true
 	}
 
 	if query.Silenced != nil {
-		requestParams["silenced"] = *query.Silenced
+		requestParams["silenced"] = query.Silenced
 	} else {
 		requestParams["silenced"] = true
 	}
 
 	if query.Inhibited != nil {
-		requestParams["inhibited"] = *query.Inhibited
+		requestParams["inhibited"] = query.Inhibited
 	} else {
 		requestParams["inhibited"] = true
 	}

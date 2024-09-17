@@ -388,3 +388,24 @@ func (s *SiteService) GetDeviceApTotalBySites(sites []string) (*map[string]int64
 	}
 	return &res, nil
 }
+
+
+func (s *SiteService) GetSiteShortMap(siteIds []string) (map[string]*schemas.SiteShort, error) {
+	sites, err := gen.Site.Select(
+		gen.Site.Id,
+		gen.Site.Name,
+		gen.Site.SiteCode,
+	).Where(gen.Site.Id.In(siteIds...)).Find()
+	if err != nil {
+		return nil, err
+	}
+	res := make(map[string]*schemas.SiteShort)
+	for _, site := range sites {
+		res[site.Id] = &schemas.SiteShort{
+			Id:       site.Id,
+			Name:     site.Name,
+			SiteCode: site.SiteCode,
+		}
+	}
+	return res, nil
+}

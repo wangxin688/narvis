@@ -50,7 +50,7 @@ func (rsp *VtmResponse) getResult(v any) {
 	json.Unmarshal(rsp.Data.Result, &v)
 }
 
-func (c *VtmClient) GetLabelValues(label QueryLabelRequest, OrganizationId string) (result []string, err error) {
+func (c *VtmClient) GetLabelValues(label QueryLabelRequest, OrganizationId *string) (result []string, err error) {
 	label_query_path := fmt.Sprintf("/api/v1/label/%s/values", label.LabelName)
 	if label.Match != "" {
 		c.R().SetQueryParam("match", label.Match)
@@ -61,8 +61,8 @@ func (c *VtmClient) GetLabelValues(label QueryLabelRequest, OrganizationId strin
 	if label.End != nil {
 		c.R().SetQueryParam("end", fmt.Sprintf("%d", *label.End))
 	}
-	if OrganizationId != "" {
-		c.R().SetQueryParam("extra_label=organizationId", OrganizationId)
+	if OrganizationId != nil {
+		c.R().SetQueryParam("extra_label=organizationId", *OrganizationId)
 	}
 	rsp := VtmResponse{}
 	c.R().SetSuccessResult(&rsp)
@@ -74,7 +74,7 @@ func (c *VtmClient) GetLabelValues(label QueryLabelRequest, OrganizationId strin
 	return
 }
 
-func (c *VtmClient) GetVector(query VectorRequest, OrganizationId string) (results []*VectorResponse, err error) {
+func (c *VtmClient) GetVector(query VectorRequest, OrganizationId *string) (results []*VectorResponse, err error) {
 
 	vector_query_path := "/api/v1/query"
 	if query.Time != nil {
@@ -83,8 +83,8 @@ func (c *VtmClient) GetVector(query VectorRequest, OrganizationId string) (resul
 	if query.LegendFormat != nil {
 		c.R().SetQueryParam("legend_format", *query.LegendFormat)
 	}
-	if OrganizationId != "" {
-		c.R().SetQueryParam("extra_label=organizationId", OrganizationId)
+	if OrganizationId != nil {
+		c.R().SetQueryParam("extra_label=organizationId", *OrganizationId)
 	}
 	rsp := VtmResponse{}
 	c.R().SetSuccessResult(&rsp)
@@ -96,7 +96,7 @@ func (c *VtmClient) GetVector(query VectorRequest, OrganizationId string) (resul
 	return
 }
 
-func (c *VtmClient) GetMatrix(query MatrixRequest, OrganizationId string) (results []*MatrixResponse, err error) {
+func (c *VtmClient) GetMatrix(query MatrixRequest, OrganizationId *string) (results []*MatrixResponse, err error) {
 
 	matrix_query_path := "/api/v1/query_range"
 
@@ -112,8 +112,8 @@ func (c *VtmClient) GetMatrix(query MatrixRequest, OrganizationId string) (resul
 	if query.LegendFormat != nil {
 		c.R().SetQueryParam("legend_format", *query.LegendFormat)
 	}
-	if OrganizationId != "" {
-		c.R().SetQueryParam("extra_label=organizationId", OrganizationId)
+	if OrganizationId != nil {
+		c.R().SetQueryParam("extra_label=organizationId", *OrganizationId)
 	}
 
 	rsp := VtmResponse{}
@@ -126,57 +126,84 @@ func (c *VtmClient) GetMatrix(query MatrixRequest, OrganizationId string) (resul
 	return
 }
 
-func (v *VtmClient) GetBulkVector(query []VectorRequest, OrganizationId string) (results []*VectorResponse, err error) {
-
+func (v *VtmClient) GetBulkVector(query []VectorRequest, OrganizationId *string) (results []*VectorResponse, err error) {
 	var wg sync.WaitGroup
-
+	resultsChan := make(chan []*VectorResponse, len(query))
 	for _, q := range query {
 		wg.Add(1)
 		go func(q VectorRequest) {
 			defer wg.Done()
 			matrix, err := v.GetVector(q, OrganizationId)
 			if err != nil {
+				resultsChan <- nil
 				return
 			}
-			results = append(results, matrix...)
+			resultsChan <- matrix
 		}(q)
 	}
+	go func() {
+		wg.Wait()
+		close(resultsChan)
+	}()
 
-	wg.Wait()
+	for r := range resultsChan {
+		if r == nil {
+			err = fmt.Errorf("error occurred while getting vector response")
+			return
+		}
+		results = append(results, r...)
+	}
+
 	return
 }
 
-func (v *VtmClient) GetBulkMatrix(query []MatrixRequest, OrganizationId string) (results []*MatrixResponse, err error) {
+func (v *VtmClient) GetBulkMatrix(query []MatrixRequest, OrganizationId *string) (results []*MatrixResponse, err error) {
 
 	var wg sync.WaitGroup
-
+	resultsChan := make(chan []*MatrixResponse, len(query))
 	for _, q := range query {
 		wg.Add(1)
 		go func(q MatrixRequest) {
 			defer wg.Done()
 			matrix, err := v.GetMatrix(q, OrganizationId)
 			if err != nil {
+				resultsChan <- nil
 				return
 			}
-			results = append(results, matrix...)
+			resultsChan <- matrix
 		}(q)
 	}
+	go func() {
+		wg.Wait()
+		close(resultsChan)
+	}()
 
-	wg.Wait()
+	for r := range resultsChan {
+		if r == nil {
+			err = fmt.Errorf("error occurred while getting vector response")
+			return
+		}
+		results = append(results, r...)
+	}
+
 	return
 }
 
-func (c *VtmClient) BulkImportMetrics(metrics []Metric, OrganizationId string) {
+func (c *VtmClient) BulkImportMetrics(metrics []*Metric, OrganizationId *string) (err error) {
 	importPath := "/api/v1/import/prometheus"
-	if OrganizationId != "" {
-		c.R().SetQueryParam("extra_label=organizationId", OrganizationId)
+	if OrganizationId != nil {
+		c.R().SetQueryParam("extra_label=organizationId", *OrganizationId)
 	}
 
 	metricJson := metricStringBuilder(metrics)
-	c.R().SetBody(metricJson).Post(importPath)
+	_, err = c.R().SetBody(metricJson).Post(importPath)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func metricStringBuilder(metrics []Metric) string {
+func metricStringBuilder(metrics []*Metric) string {
 
 	var builder strings.Builder
 	for _, metric := range metrics {

@@ -32,7 +32,7 @@ func newAlertGroup(db *gorm.DB, opts ...gen.DOOption) alertGroup {
 	_alertGroup.ResolvedAt = field.NewTime(tableName, "resolvedAt")
 	_alertGroup.Acknowledged = field.NewBool(tableName, "acknowledged")
 	_alertGroup.Suppressed = field.NewBool(tableName, "suppressed")
-	_alertGroup.Severity = field.NewUint8(tableName, "severity")
+	_alertGroup.Severity = field.NewString(tableName, "severity")
 	_alertGroup.AlertName = field.NewString(tableName, "alertName")
 	_alertGroup.GroupKey = field.NewString(tableName, "groupKey")
 	_alertGroup.HashKey = field.NewString(tableName, "hashKey")
@@ -70,7 +70,7 @@ type alertGroup struct {
 	ResolvedAt     field.Time
 	Acknowledged   field.Bool
 	Suppressed     field.Bool
-	Severity       field.Uint8
+	Severity       field.String
 	AlertName      field.String
 	GroupKey       field.String
 	HashKey        field.String
@@ -101,7 +101,7 @@ func (a *alertGroup) updateTableName(table string) *alertGroup {
 	a.ResolvedAt = field.NewTime(table, "resolvedAt")
 	a.Acknowledged = field.NewBool(table, "acknowledged")
 	a.Suppressed = field.NewBool(table, "suppressed")
-	a.Severity = field.NewUint8(table, "severity")
+	a.Severity = field.NewString(table, "severity")
 	a.AlertName = field.NewString(table, "alertName")
 	a.GroupKey = field.NewString(table, "groupKey")
 	a.HashKey = field.NewString(table, "hashKey")

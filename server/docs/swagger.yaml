@@ -1,8 +1,103 @@
 definitions:
+  alerts.AlertName:
+    properties:
+      description:
+        $ref: '#/definitions/common.I18n'
+      name:
+        $ref: '#/definitions/alerts.AlertNameEnum'
+      severity:
+        $ref: '#/definitions/alerts.SeverityEnum'
+      suggestion:
+        $ref: '#/definitions/common.I18n'
+      title:
+        $ref: '#/definitions/common.I18n'
+    type: object
+  alerts.AlertNameEnum:
+    enum:
+    - HighCpuUsage
+    - HighMemoryUsage
+    - HighDiskUsage
+    - HighSystemLoad
+    - HighChannelUsage
+    - HighChannelInterference
+    - HighChannelNoise
+    - HighClientNumber
+    - HighBandwidthUsage
+    - HighErrorRate
+    - HighICMPLatency
+    - HighICMPPacketLoss
+    - HighTemperature
+    - AbnormalFanStatus
+    - AbnormalPowerStatus
+    - InterfaceDown
+    - SnmpAgentTimeout
+    - NodePingTimeout
+    - ApDown
+    - unknown
+    type: string
+    x-enum-varnames:
+    - HighCpuUsage
+    - HighMemoryUsage
+    - HighDiskUsage
+    - HighSystemLoad
+    - HighChannelUsage
+    - HighChannelInterference
+    - HighChannelNoise
+    - HighClientNumber
+    - HighBandwidthUsage
+    - HighErrorRate
+    - HighICMPLatency
+    - HighICMPPacketLoss
+    - HighTemperature
+    - AbnormalFanStatus
+    - AbnormalPowerStatus
+    - InterfaceDown
+    - SnmpAgentTimeout
+    - NodePingTimeout
+    - ApDown
+    - Unknown
+  alerts.SeverityEnum:
+    enum:
+    - P1
+    - P2
+    - P3
+    - P4
+    type: string
+    x-enum-varnames:
+    - SeverityDisaster
+    - SeverityCritical
+    - SeverityWarning
+    - SeverityInfo
+  am.Alert:
+    properties:
+      annotations:
+        additionalProperties:
+          type: string
+        type: object
+      endsAt:
+        description: rfc3339
+        type: string
+      generatorURL:
+        type: string
+      labels:
+        additionalProperties:
+          type: string
+        type: object
+      startsAt:
+        description: rfc3339
+        type: string
+      status:
+        type: string
+    type: object
+  common.I18n:
+    properties:
+      en:
+        type: string
+      zh:
+        type: string
+    type: object
   schemas.AP:
     properties:
-      activeWacId:
-        type: string
       coordinate:
         $ref: '#/definitions/schemas.ApCoordinate'
       createdAt:
@@ -39,6 +134,104 @@ definitions:
         type: string
       updatedAt:
         type: string
+      wlanACIpAddress:
+        items:
+          type: string
+        type: array
+    type: object
+  schemas.Alert:
+    properties:
+      acknowledged:
+        type: boolean
+      actionLogCount:
+        type: integer
+      alertName:
+        $ref: '#/definitions/alerts.AlertName'
+      deviceRole:
+        type: string
+      duration:
+        type: string
+      entity:
+        $ref: '#/definitions/schemas.Entity'
+      id:
+        type: string
+      labels:
+        items:
+          $ref: '#/definitions/schemas.Label'
+        type: array
+      resolvedAt:
+        type: string
+      severity:
+        type: string
+      site:
+        $ref: '#/definitions/schemas.SiteShort'
+      startedAt:
+        type: string
+      status:
+        type: integer
+      suppressed:
+        type: boolean
+      user:
+        $ref: '#/definitions/schemas.UserShort'
+    type: object
+  schemas.AlertCreate:
+    properties:
+      alertName:
+        type: string
+      eventId:
+        type: string
+      hostId:
+        type: string
+      severity:
+        type: string
+      startedAt:
+        type: string
+      status:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/schemas.Label'
+        type: array
+      triggerId:
+        type: string
+    required:
+    - alertName
+    - eventId
+    - hostId
+    - severity
+    - status
+    - triggerId
+    type: object
+  schemas.AlertGroupCreate:
+    properties:
+      alerts:
+        items:
+          $ref: '#/definitions/am.Alert'
+        type: array
+      commonAnnotations:
+        additionalProperties:
+          type: string
+        type: object
+      commonLabels:
+        additionalProperties:
+          type: string
+        type: object
+      externalURL:
+        type: string
+      groupKey:
+        type: string
+      groupLabels:
+        additionalProperties:
+          type: string
+        type: object
+      status:
+        enum:
+        - firing
+        - resolved
+        type: string
+    required:
+    - alerts
+    - status
     type: object
   schemas.ApCoordinate:
     properties:
@@ -55,6 +248,17 @@ definitions:
         type: string
       clientSecret:
         type: string
+    type: object
+  schemas.ChannelConfig:
+    properties:
+      email:
+        type: string
+      webhook:
+        type: string
+      webhook_headers:
+        additionalProperties:
+          type: string
+        type: object
     type: object
   schemas.Circuit:
     properties:
@@ -195,6 +399,19 @@ definitions:
         type: integer
       username:
         type: string
+    type: object
+  schemas.Condition:
+    properties:
+      item:
+        type: string
+      value:
+        description: '["*"] means match all'
+        items:
+          type: string
+        type: array
+    required:
+    - item
+    - value
     type: object
   schemas.Device:
     properties:
@@ -365,6 +582,15 @@ definitions:
         - Inactive
         type: string
     type: object
+  schemas.Entity:
+    properties:
+      Id:
+        type: string
+      Name:
+        type: string
+      Type:
+        type: string
+    type: object
   schemas.I18n:
     properties:
       en:
@@ -467,11 +693,88 @@ definitions:
       vlan:
         type: integer
     type: object
+  schemas.Label:
+    properties:
+      tag:
+        type: string
+      value:
+        type: string
+    required:
+    - tag
+    - value
+    type: object
   schemas.ListResponse:
     properties:
       results: {}
       total:
         type: integer
+    type: object
+  schemas.Maintenance:
+    properties:
+      conditions:
+        items:
+          $ref: '#/definitions/schemas.Condition'
+        type: array
+      createdAt:
+        type: string
+      createdBy:
+        $ref: '#/definitions/schemas.UserShort'
+      description:
+        type: string
+      endedAt:
+        type: string
+      id:
+        type: string
+      maintenanceType:
+        type: string
+      name:
+        type: string
+      startedAt:
+        type: string
+      updatedAt:
+        type: string
+      updatedBy:
+        $ref: '#/definitions/schemas.UserShort'
+    type: object
+  schemas.MaintenanceCreate:
+    properties:
+      conditions:
+        items:
+          $ref: '#/definitions/schemas.Condition'
+        type: array
+      description:
+        type: string
+      endedAt:
+        type: string
+      maintenanceType:
+        type: string
+      name:
+        type: string
+      startedAt:
+        type: string
+    required:
+    - conditions
+    - endedAt
+    - maintenanceType
+    - name
+    - startedAt
+    type: object
+  schemas.MaintenanceUpdate:
+    properties:
+      conditions:
+        items:
+          $ref: '#/definitions/schemas.Condition'
+        type: array
+      description:
+        type: string
+      endedAt:
+        type: string
+      maintenanceType:
+        type: string
+      name:
+        type: string
+      startedAt:
+        type: string
     type: object
   schemas.Menu:
     properties:
@@ -881,6 +1184,15 @@ definitions:
       vlanCount:
         type: integer
     type: object
+  schemas.SiteShort:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      siteCode:
+        type: string
+    type: object
   schemas.SiteUpdate:
     properties:
       address:
@@ -955,6 +1267,91 @@ definitions:
         minimum: 1
         type: integer
     type: object
+  schemas.Subscription:
+    properties:
+      channelConfig:
+        $ref: '#/definitions/schemas.ChannelConfig'
+      channelType:
+        type: string
+      conditions:
+        items:
+          $ref: '#/definitions/schemas.Condition'
+        type: array
+      createdAt:
+        type: string
+      createdBy:
+        $ref: '#/definitions/schemas.UserShort'
+      deduplication:
+        type: boolean
+      enabled:
+        type: boolean
+      id:
+        type: string
+      name:
+        type: string
+      repeatInterval:
+        type: integer
+      sendResolved:
+        type: boolean
+      updatedAt:
+        type: string
+      updatedBy:
+        $ref: '#/definitions/schemas.UserShort'
+    type: object
+  schemas.SubscriptionCreate:
+    properties:
+      channelConfig:
+        $ref: '#/definitions/schemas.ChannelConfig'
+      channelType:
+        type: string
+      conditions:
+        items:
+          $ref: '#/definitions/schemas.Condition'
+        type: array
+      deduplication:
+        type: boolean
+      enabled:
+        type: boolean
+      name:
+        type: string
+      repeatInterval:
+        type: integer
+      sendResolved:
+        type: boolean
+    required:
+    - channelConfig
+    - channelType
+    - conditions
+    - deduplication
+    - enabled
+    - name
+    - repeatInterval
+    - sendResolved
+    type: object
+  schemas.SubscriptionUpdate:
+    properties:
+      channelConfig:
+        $ref: '#/definitions/schemas.ChannelConfig'
+      channelType:
+        enum:
+        - Webhook
+        - Email
+        type: string
+      conditions:
+        items:
+          $ref: '#/definitions/schemas.Condition'
+        type: array
+      deduplication:
+        type: boolean
+      enabled:
+        type: boolean
+      name:
+        type: string
+      repeatInterval:
+        type: integer
+      sendResolved:
+        type: boolean
+    type: object
   schemas.Transition:
     properties:
       enterTransition:
@@ -1011,6 +1408,17 @@ definitions:
     - roleId
     - status
     - username
+    type: object
+  schemas.UserShort:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
     type: object
   schemas.UserUpdate:
     properties:
@@ -1382,6 +1790,503 @@ paths:
       summary: Update user
       tags:
       - Admin
+  /alert/alert-groups:
+    post:
+      consumes:
+      - application/json
+      description: Create Alert Group
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.AlertGroupCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create Alert Group
+      tags:
+      - Alert
+  /alert/alerts:
+    get:
+      consumes:
+      - application/json
+      description: List Alerts
+      parameters:
+      - in: query
+        name: acknowledged
+        type: boolean
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: alertName
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: apId
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: circuitId
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: deviceId
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: deviceInterfaceId
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: deviceRole
+        type: array
+      - in: query
+        name: endsAtGte
+        type: string
+      - in: query
+        name: endsAtLte
+        type: string
+      - in: query
+        name: keyword
+        type: string
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: severity
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: siteId
+        type: array
+      - in: query
+        name: startedAtGte
+        type: string
+      - in: query
+        name: startedAtLte
+        type: string
+      - in: query
+        name: status
+        type: integer
+      - in: query
+        name: suppressed
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/schemas.Alert'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List Alerts
+      tags:
+      - Alert
+    post:
+      consumes:
+      - application/json
+      description: Create Alert
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.AlertCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      summary: Create Alert
+      tags:
+      - Alert
+  /alert/alerts/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Alert
+      parameters:
+      - description: alertId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Alert'
+      security:
+      - BearerAuth: []
+      summary: Get Alert
+      tags:
+      - Alert
+  /alert/maintenances:
+    get:
+      consumes:
+      - application/json
+      description: List Maintenances
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: id
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - in: query
+        name: maintenanceType
+        type: string
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: siteId
+        type: array
+      - enum:
+        - Approaching
+        - Active
+        - Expired
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.Maintenance'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List Maintenances
+      tags:
+      - Alert
+    post:
+      consumes:
+      - application/json
+      description: Create Maintenance
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.MaintenanceCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create Maintenance
+      tags:
+      - Alert
+  /alert/maintenances/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Maintenance
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete Maintenance
+      tags:
+      - Alert
+    get:
+      consumes:
+      - application/json
+      description: Get Maintenance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Maintenance'
+      security:
+      - BearerAuth: []
+      summary: Get Maintenance
+      tags:
+      - Alert
+    put:
+      consumes:
+      - application/json
+      description: Update Maintenance
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.MaintenanceUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update Maintenance
+      tags:
+      - Alert
+  /alert/subscriptions:
+    get:
+      consumes:
+      - application/json
+      description: List Subscriptions
+      parameters:
+      - enum:
+        - Webhook
+        - Email
+        in: query
+        name: channelType
+        type: string
+      - in: query
+        name: enabled
+        type: boolean
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: id
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - in: query
+        name: name
+        type: string
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/schemas.Subscription'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: List Subscriptions
+      tags:
+      - Alert
+    post:
+      consumes:
+      - application/json
+      description: Create Subscription
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.SubscriptionCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create Subscription
+      tags:
+      - Alert
+  /alert/subscriptions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Subscription
+      parameters:
+      - description: subscriptionId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - BearerAuth: []
+      summary: Delete Subscription
+      tags:
+      - Alert
+    get:
+      consumes:
+      - application/json
+      description: Get Subscription
+      parameters:
+      - description: subscriptionId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Subscription'
+      security:
+      - BearerAuth: []
+      summary: Get Subscription
+      tags:
+      - Alert
+    put:
+      consumes:
+      - application/json
+      description: Update Subscription
+      parameters:
+      - description: subscriptionId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.SubscriptionUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - BearerAuth: []
+      summary: Update Subscription
+      tags:
+      - Alert
   /infra/aps:
     get:
       consumes:

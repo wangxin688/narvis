@@ -14,6 +14,7 @@ type SwitchingMetrics MetricNameEnum
 type RoutingMetrics MetricNameEnum
 type WirelessMetrics MetricNameEnum
 type SecurityMetrics MetricNameEnum
+type Device360Metrics MetricNameEnum
 
 const (
 	ICMPPing         ICMPMetrics = "icmp_ping"
@@ -66,18 +67,39 @@ const (
 // radio_type: 2.4GHz/5GHz/6GHz
 // channel: 1..14, 36-64, 100-140, 149-165
 const (
-	ApStatus                WirelessMetrics = "ap_status"
-	ApUptime                WirelessMetrics = "ap_uptime"
-	ChannelUtilization      WirelessMetrics = "channel_utilization"
-	ChannelNoise            WirelessMetrics = "channel_noise"
-	ChannelReceiveErrorRate WirelessMetrics = "channel_error_rate"
-	ChannelRxRate           WirelessMetrics = "channel_rx_rate"
-	ChannelTxRate           WirelessMetrics = "channel_tx_rate"
-	ChannelRxBytes          WirelessMetrics = "channel_rx_bytes"
-	ChannelTxBytes          WirelessMetrics = "channel_tx_bytes"
-	ChannelFrameRetryRate   WirelessMetrics = "channel_frame_retry_rate"
-	ChannelEirp             WirelessMetrics = "channel_eirp" // transmit power
-	ChannelInterferenceRate WirelessMetrics = "channel_interference_rate"
+	ApStatus                  WirelessMetrics = "ap_status"
+	ApUptime                  WirelessMetrics = "ap_uptime"
+	ChannelUtilization        WirelessMetrics = "channel_utilization"
+	ChannelNoise              WirelessMetrics = "channel_noise"
+	ChannelReceiveErrorRate   WirelessMetrics = "channel_error_rate"
+	ChannelRxRate             WirelessMetrics = "channel_rx_rate"
+	ChannelTxRate             WirelessMetrics = "channel_tx_rate"
+	ChannelRxBytes            WirelessMetrics = "channel_rx_bytes"
+	ChannelTxBytes            WirelessMetrics = "channel_tx_bytes"
+	ChannelFrameRetryRate     WirelessMetrics = "channel_frame_retry_rate"
+	ChannelEirp               WirelessMetrics = "channel_eirp" // transmit power
+	ChannelInterferenceRate   WirelessMetrics = "channel_interference_rate"
+	ChannelAssociationClients WirelessMetrics = "channel_association_clients"
+)
+
+const (
+	Device360Score      Device360Metrics = "device360_score"
+	IcmpScore           Device360Metrics = "icmp_score"
+	CpuScore            Device360Metrics = "cpu_score"
+	MemoryScore         Device360Metrics = "memory_score"
+	FanScore            Device360Metrics = "fan_score"
+	FanAnomaly          Device360Metrics = "fan_anomaly"
+	PowerSupplyScore    Device360Metrics = "power_supply_score"
+	PowerAnomaly        Device360Metrics = "power_supply_anomaly"
+	TemperatureScore    Device360Metrics = "temperature_score"
+	IfErrorScore        Device360Metrics = "interface_error_score"
+	IfErrorAnomaly      Device360Metrics = "interface_error_anomaly"
+	IfDiscardScore      Device360Metrics = "interface_discard_score"
+	IfDiscardAnomaly    Device360Metrics = "interface_discard_anomaly"
+	IfTrafficScore      Device360Metrics = "interface_traffic_score"
+	IfTrafficAnomaly    Device360Metrics = "interface_traffic_anomaly"
+	IfOperStatusScore   Device360Metrics = "interface_oper_status_score"
+	IfOperStatusAnomaly Device360Metrics = "interface_oper_status_anomaly"
 )
 
 type Metric struct {
@@ -411,6 +433,14 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{device_name}(channel) Channel Interference",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(ChannelAssociationClients): {
+			Name:                      MetricNameEnum(ChannelAssociationClients),
+			Description:               common.I18n{En: "Channel Association Clients", Zh: "信道关联客户端"},
+			Unit:                      nil,
+			ValueMapping:              nil,
+			Legend:                    "{device_name}(channel) Channel Association Clients",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 	}

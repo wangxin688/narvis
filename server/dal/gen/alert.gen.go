@@ -6,6 +6,7 @@ package gen
 
 import (
 	"context"
+	"strings"
 
 	"github.com/wangxin688/narvis/server/models"
 	"gorm.io/gorm"
@@ -43,187 +44,500 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 	_alert.DeviceId = field.NewString(tableName, "deviceId")
 	_alert.ApId = field.NewString(tableName, "apId")
 	_alert.CircuitId = field.NewString(tableName, "circuitId")
+	_alert.RootCauseId = field.NewString(tableName, "rootCauseId")
+	_alert.AlertGroupId = field.NewString(tableName, "alertGroupId")
 	_alert.DeviceRole = field.NewString(tableName, "deviceRole")
 	_alert.DeviceInterfaceId = field.NewString(tableName, "deviceInterfaceId")
 	_alert.MaintenanceId = field.NewString(tableName, "maintenanceId")
 	_alert.OrganizationId = field.NewString(tableName, "organizationId")
-	_alert.User = alertBelongsToUser{
+	_alert.ActionLog = alertHasManyActionLog{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("User", "models.User"),
-		Role: struct {
+		RelationField: field.NewRelation("ActionLog", "models.AlertActionLog"),
+		AssignUser: struct {
+			field.RelationField
+			Role struct {
+				field.RelationField
+				Organization struct {
+					field.RelationField
+				}
+				Menus struct {
+					field.RelationField
+					Parent struct {
+						field.RelationField
+					}
+					Permission struct {
+						field.RelationField
+						Menu struct {
+							field.RelationField
+						}
+					}
+				}
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}{
+			RelationField: field.NewRelation("ActionLog.AssignUser", "models.User"),
+			Role: struct {
+				field.RelationField
+				Organization struct {
+					field.RelationField
+				}
+				Menus struct {
+					field.RelationField
+					Parent struct {
+						field.RelationField
+					}
+					Permission struct {
+						field.RelationField
+						Menu struct {
+							field.RelationField
+						}
+					}
+				}
+			}{
+				RelationField: field.NewRelation("ActionLog.AssignUser.Role", "models.Role"),
+				Organization: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.AssignUser.Role.Organization", "models.Organization"),
+				},
+				Menus: struct {
+					field.RelationField
+					Parent struct {
+						field.RelationField
+					}
+					Permission struct {
+						field.RelationField
+						Menu struct {
+							field.RelationField
+						}
+					}
+				}{
+					RelationField: field.NewRelation("ActionLog.AssignUser.Role.Menus", "models.Menu"),
+					Parent: struct {
+						field.RelationField
+					}{
+						RelationField: field.NewRelation("ActionLog.AssignUser.Role.Menus.Parent", "models.Menu"),
+					},
+					Permission: struct {
+						field.RelationField
+						Menu struct {
+							field.RelationField
+						}
+					}{
+						RelationField: field.NewRelation("ActionLog.AssignUser.Role.Menus.Permission", "models.Permission"),
+						Menu: struct {
+							field.RelationField
+						}{
+							RelationField: field.NewRelation("ActionLog.AssignUser.Role.Menus.Permission.Menu", "models.Menu"),
+						},
+					},
+				},
+			},
+			Organization: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("ActionLog.AssignUser.Organization", "models.Organization"),
+			},
+		},
+		RootCause: struct {
 			field.RelationField
 			Organization struct {
 				field.RelationField
 			}
-			Menus struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Permission struct {
-					field.RelationField
-					Menu struct {
-						field.RelationField
-					}
-				}
-			}
 		}{
-			RelationField: field.NewRelation("User.Role", "models.Role"),
+			RelationField: field.NewRelation("ActionLog.RootCause", "models.RootCause"),
 			Organization: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("User.Role.Organization", "models.Organization"),
-			},
-			Menus: struct {
-				field.RelationField
-				Parent struct {
-					field.RelationField
-				}
-				Permission struct {
-					field.RelationField
-					Menu struct {
-						field.RelationField
-					}
-				}
-			}{
-				RelationField: field.NewRelation("User.Role.Menus", "models.Menu"),
-				Parent: struct {
-					field.RelationField
-				}{
-					RelationField: field.NewRelation("User.Role.Menus.Parent", "models.Menu"),
-				},
-				Permission: struct {
-					field.RelationField
-					Menu struct {
-						field.RelationField
-					}
-				}{
-					RelationField: field.NewRelation("User.Role.Menus.Permission", "models.Permission"),
-					Menu: struct {
-						field.RelationField
-					}{
-						RelationField: field.NewRelation("User.Role.Menus.Permission.Menu", "models.Menu"),
-					},
-				},
+				RelationField: field.NewRelation("ActionLog.RootCause.Organization", "models.Organization"),
 			},
 		},
-		Organization: struct {
+		CreatedBy: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("User.Organization", "models.Organization"),
+			RelationField: field.NewRelation("ActionLog.CreatedBy", "models.User"),
 		},
+		Alert: struct {
+			field.RelationField
+			User struct {
+				field.RelationField
+			}
+			Site struct {
+				field.RelationField
+				Organization struct {
+					field.RelationField
+				}
+			}
+			Device struct {
+				field.RelationField
+				Rack struct {
+					field.RelationField
+					Site struct {
+						field.RelationField
+					}
+					Organization struct {
+						field.RelationField
+					}
+				}
+				Template struct {
+					field.RelationField
+				}
+				Site struct {
+					field.RelationField
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}
+			Ap struct {
+				field.RelationField
+				Site struct {
+					field.RelationField
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}
+			Circuit struct {
+				field.RelationField
+				Site struct {
+					field.RelationField
+				}
+				Device struct {
+					field.RelationField
+				}
+				DeviceInterface struct {
+					field.RelationField
+					Device struct {
+						field.RelationField
+					}
+					Site struct {
+						field.RelationField
+					}
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}
+			RootCause struct {
+				field.RelationField
+			}
+			AlertGroup struct {
+				field.RelationField
+				Site struct {
+					field.RelationField
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}
+			DeviceInterface struct {
+				field.RelationField
+			}
+			Maintenance struct {
+				field.RelationField
+				CreatedBy struct {
+					field.RelationField
+				}
+				UpdatedBy struct {
+					field.RelationField
+				}
+				Organization struct {
+					field.RelationField
+				}
+				Alert struct {
+					field.RelationField
+				}
+			}
+			Organization struct {
+				field.RelationField
+			}
+			ActionLog struct {
+				field.RelationField
+			}
+		}{
+			RelationField: field.NewRelation("ActionLog.Alert", "models.Alert"),
+			User: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.User", "models.User"),
+			},
+			Site: struct {
+				field.RelationField
+				Organization struct {
+					field.RelationField
+				}
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.Site", "models.Site"),
+				Organization: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Site.Organization", "models.Organization"),
+				},
+			},
+			Device: struct {
+				field.RelationField
+				Rack struct {
+					field.RelationField
+					Site struct {
+						field.RelationField
+					}
+					Organization struct {
+						field.RelationField
+					}
+				}
+				Template struct {
+					field.RelationField
+				}
+				Site struct {
+					field.RelationField
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.Device", "models.Device"),
+				Rack: struct {
+					field.RelationField
+					Site struct {
+						field.RelationField
+					}
+					Organization struct {
+						field.RelationField
+					}
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Device.Rack", "models.Rack"),
+					Site: struct {
+						field.RelationField
+					}{
+						RelationField: field.NewRelation("ActionLog.Alert.Device.Rack.Site", "models.Site"),
+					},
+					Organization: struct {
+						field.RelationField
+					}{
+						RelationField: field.NewRelation("ActionLog.Alert.Device.Rack.Organization", "models.Organization"),
+					},
+				},
+				Template: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Device.Template", "models.Template"),
+				},
+				Site: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Device.Site", "models.Site"),
+				},
+				Organization: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Device.Organization", "models.Organization"),
+				},
+			},
+			Ap: struct {
+				field.RelationField
+				Site struct {
+					field.RelationField
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.Ap", "models.AP"),
+				Site: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Ap.Site", "models.Site"),
+				},
+				Organization: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Ap.Organization", "models.Organization"),
+				},
+			},
+			Circuit: struct {
+				field.RelationField
+				Site struct {
+					field.RelationField
+				}
+				Device struct {
+					field.RelationField
+				}
+				DeviceInterface struct {
+					field.RelationField
+					Device struct {
+						field.RelationField
+					}
+					Site struct {
+						field.RelationField
+					}
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.Circuit", "models.Circuit"),
+				Site: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Circuit.Site", "models.Site"),
+				},
+				Device: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Circuit.Device", "models.Device"),
+				},
+				DeviceInterface: struct {
+					field.RelationField
+					Device struct {
+						field.RelationField
+					}
+					Site struct {
+						field.RelationField
+					}
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Circuit.DeviceInterface", "models.DeviceInterface"),
+					Device: struct {
+						field.RelationField
+					}{
+						RelationField: field.NewRelation("ActionLog.Alert.Circuit.DeviceInterface.Device", "models.Device"),
+					},
+					Site: struct {
+						field.RelationField
+					}{
+						RelationField: field.NewRelation("ActionLog.Alert.Circuit.DeviceInterface.Site", "models.Site"),
+					},
+				},
+				Organization: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Circuit.Organization", "models.Organization"),
+				},
+			},
+			RootCause: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.RootCause", "models.RootCause"),
+			},
+			AlertGroup: struct {
+				field.RelationField
+				Site struct {
+					field.RelationField
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.AlertGroup", "models.AlertGroup"),
+				Site: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.AlertGroup.Site", "models.Site"),
+				},
+				Organization: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.AlertGroup.Organization", "models.Organization"),
+				},
+			},
+			DeviceInterface: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.DeviceInterface", "models.DeviceInterface"),
+			},
+			Maintenance: struct {
+				field.RelationField
+				CreatedBy struct {
+					field.RelationField
+				}
+				UpdatedBy struct {
+					field.RelationField
+				}
+				Organization struct {
+					field.RelationField
+				}
+				Alert struct {
+					field.RelationField
+				}
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.Maintenance", "models.Maintenance"),
+				CreatedBy: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Maintenance.CreatedBy", "models.User"),
+				},
+				UpdatedBy: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Maintenance.UpdatedBy", "models.User"),
+				},
+				Organization: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Maintenance.Organization", "models.Organization"),
+				},
+				Alert: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Maintenance.Alert", "models.Alert"),
+				},
+			},
+			Organization: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.Organization", "models.Organization"),
+			},
+			ActionLog: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.ActionLog", "models.AlertActionLog"),
+			},
+		},
+	}
+
+	_alert.User = alertBelongsToUser{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("User", "models.User"),
 	}
 
 	_alert.Site = alertBelongsToSite{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Site", "models.Site"),
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Site.Organization", "models.Organization"),
-		},
 	}
 
 	_alert.Device = alertBelongsToDevice{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Device", "models.Device"),
-		Rack: struct {
-			field.RelationField
-			Site struct {
-				field.RelationField
-			}
-			Organization struct {
-				field.RelationField
-			}
-		}{
-			RelationField: field.NewRelation("Device.Rack", "models.Rack"),
-			Site: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Device.Rack.Site", "models.Site"),
-			},
-			Organization: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Device.Rack.Organization", "models.Organization"),
-			},
-		},
-		Template: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Device.Template", "models.Template"),
-		},
-		Site: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Device.Site", "models.Site"),
-		},
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Device.Organization", "models.Organization"),
-		},
 	}
 
 	_alert.Ap = alertBelongsToAp{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Ap", "models.AP"),
-		Site: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Ap.Site", "models.Site"),
-		},
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Ap.Organization", "models.Organization"),
-		},
 	}
 
 	_alert.Circuit = alertBelongsToCircuit{
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Circuit", "models.Circuit"),
-		Site: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Circuit.Site", "models.Site"),
-		},
-		Device: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Circuit.Device", "models.Device"),
-		},
-		DeviceInterface: struct {
-			field.RelationField
-			Device struct {
-				field.RelationField
-			}
-			Site struct {
-				field.RelationField
-			}
-		}{
-			RelationField: field.NewRelation("Circuit.DeviceInterface", "models.DeviceInterface"),
-			Device: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Circuit.DeviceInterface.Device", "models.Device"),
-			},
-			Site: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Circuit.DeviceInterface.Site", "models.Site"),
-			},
-		},
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Circuit.Organization", "models.Organization"),
-		},
+	}
+
+	_alert.RootCause = alertBelongsToRootCause{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("RootCause", "models.RootCause"),
+	}
+
+	_alert.AlertGroup = alertBelongsToAlertGroup{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("AlertGroup", "models.AlertGroup"),
 	}
 
 	_alert.DeviceInterface = alertBelongsToDeviceInterface{
@@ -236,80 +550,6 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 		db: db.Session(&gorm.Session{}),
 
 		RelationField: field.NewRelation("Maintenance", "models.Maintenance"),
-		Organization: struct {
-			field.RelationField
-		}{
-			RelationField: field.NewRelation("Maintenance.Organization", "models.Organization"),
-		},
-		Alert: struct {
-			field.RelationField
-			User struct {
-				field.RelationField
-			}
-			Site struct {
-				field.RelationField
-			}
-			Device struct {
-				field.RelationField
-			}
-			Ap struct {
-				field.RelationField
-			}
-			Circuit struct {
-				field.RelationField
-			}
-			DeviceInterface struct {
-				field.RelationField
-			}
-			Maintenance struct {
-				field.RelationField
-			}
-			Organization struct {
-				field.RelationField
-			}
-		}{
-			RelationField: field.NewRelation("Maintenance.Alert", "models.Alert"),
-			User: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Maintenance.Alert.User", "models.User"),
-			},
-			Site: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Maintenance.Alert.Site", "models.Site"),
-			},
-			Device: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Maintenance.Alert.Device", "models.Device"),
-			},
-			Ap: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Maintenance.Alert.Ap", "models.AP"),
-			},
-			Circuit: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Maintenance.Alert.Circuit", "models.Circuit"),
-			},
-			DeviceInterface: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Maintenance.Alert.DeviceInterface", "models.DeviceInterface"),
-			},
-			Maintenance: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Maintenance.Alert.Maintenance", "models.Maintenance"),
-			},
-			Organization: struct {
-				field.RelationField
-			}{
-				RelationField: field.NewRelation("Maintenance.Alert.Organization", "models.Organization"),
-			},
-		},
 	}
 
 	_alert.Organization = alertBelongsToOrganization{
@@ -344,11 +584,15 @@ type alert struct {
 	DeviceId          field.String
 	ApId              field.String
 	CircuitId         field.String
+	RootCauseId       field.String
+	AlertGroupId      field.String
 	DeviceRole        field.String
 	DeviceInterfaceId field.String
 	MaintenanceId     field.String
 	OrganizationId    field.String
-	User              alertBelongsToUser
+	ActionLog         alertHasManyActionLog
+
+	User alertBelongsToUser
 
 	Site alertBelongsToSite
 
@@ -357,6 +601,10 @@ type alert struct {
 	Ap alertBelongsToAp
 
 	Circuit alertBelongsToCircuit
+
+	RootCause alertBelongsToRootCause
+
+	AlertGroup alertBelongsToAlertGroup
 
 	DeviceInterface alertBelongsToDeviceInterface
 
@@ -396,6 +644,8 @@ func (a *alert) updateTableName(table string) *alert {
 	a.DeviceId = field.NewString(table, "deviceId")
 	a.ApId = field.NewString(table, "apId")
 	a.CircuitId = field.NewString(table, "circuitId")
+	a.RootCauseId = field.NewString(table, "rootCauseId")
+	a.AlertGroupId = field.NewString(table, "alertGroupId")
 	a.DeviceRole = field.NewString(table, "deviceRole")
 	a.DeviceInterfaceId = field.NewString(table, "deviceInterfaceId")
 	a.MaintenanceId = field.NewString(table, "maintenanceId")
@@ -416,7 +666,7 @@ func (a *alert) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *alert) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 29)
+	a.fieldMap = make(map[string]field.Expr, 34)
 	a.fieldMap["Id"] = a.Id
 	a.fieldMap["status"] = a.Status
 	a.fieldMap["startedAt"] = a.StartedAt
@@ -434,6 +684,8 @@ func (a *alert) fillFieldMap() {
 	a.fieldMap["deviceId"] = a.DeviceId
 	a.fieldMap["apId"] = a.ApId
 	a.fieldMap["circuitId"] = a.CircuitId
+	a.fieldMap["rootCauseId"] = a.RootCauseId
+	a.fieldMap["alertGroupId"] = a.AlertGroupId
 	a.fieldMap["deviceRole"] = a.DeviceRole
 	a.fieldMap["deviceInterfaceId"] = a.DeviceInterfaceId
 	a.fieldMap["maintenanceId"] = a.MaintenanceId
@@ -451,32 +703,214 @@ func (a alert) replaceDB(db *gorm.DB) alert {
 	return a
 }
 
-type alertBelongsToUser struct {
+type alertHasManyActionLog struct {
 	db *gorm.DB
 
 	field.RelationField
 
-	Role struct {
+	AssignUser struct {
+		field.RelationField
+		Role struct {
+			field.RelationField
+			Organization struct {
+				field.RelationField
+			}
+			Menus struct {
+				field.RelationField
+				Parent struct {
+					field.RelationField
+				}
+				Permission struct {
+					field.RelationField
+					Menu struct {
+						field.RelationField
+					}
+				}
+			}
+		}
+		Organization struct {
+			field.RelationField
+		}
+	}
+	RootCause struct {
 		field.RelationField
 		Organization struct {
 			field.RelationField
 		}
-		Menus struct {
+	}
+	CreatedBy struct {
+		field.RelationField
+	}
+	Alert struct {
+		field.RelationField
+		User struct {
 			field.RelationField
-			Parent struct {
+		}
+		Site struct {
+			field.RelationField
+			Organization struct {
 				field.RelationField
 			}
-			Permission struct {
+		}
+		Device struct {
+			field.RelationField
+			Rack struct {
 				field.RelationField
-				Menu struct {
+				Site struct {
+					field.RelationField
+				}
+				Organization struct {
 					field.RelationField
 				}
 			}
+			Template struct {
+				field.RelationField
+			}
+			Site struct {
+				field.RelationField
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}
+		Ap struct {
+			field.RelationField
+			Site struct {
+				field.RelationField
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}
+		Circuit struct {
+			field.RelationField
+			Site struct {
+				field.RelationField
+			}
+			Device struct {
+				field.RelationField
+			}
+			DeviceInterface struct {
+				field.RelationField
+				Device struct {
+					field.RelationField
+				}
+				Site struct {
+					field.RelationField
+				}
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}
+		RootCause struct {
+			field.RelationField
+		}
+		AlertGroup struct {
+			field.RelationField
+			Site struct {
+				field.RelationField
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}
+		DeviceInterface struct {
+			field.RelationField
+		}
+		Maintenance struct {
+			field.RelationField
+			CreatedBy struct {
+				field.RelationField
+			}
+			UpdatedBy struct {
+				field.RelationField
+			}
+			Organization struct {
+				field.RelationField
+			}
+			Alert struct {
+				field.RelationField
+			}
+		}
+		Organization struct {
+			field.RelationField
+		}
+		ActionLog struct {
+			field.RelationField
 		}
 	}
-	Organization struct {
-		field.RelationField
+}
+
+func (a alertHasManyActionLog) Where(conds ...field.Expr) *alertHasManyActionLog {
+	if len(conds) == 0 {
+		return &a
 	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a alertHasManyActionLog) WithContext(ctx context.Context) *alertHasManyActionLog {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a alertHasManyActionLog) Session(session *gorm.Session) *alertHasManyActionLog {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a alertHasManyActionLog) Model(m *models.Alert) *alertHasManyActionLogTx {
+	return &alertHasManyActionLogTx{a.db.Model(m).Association(a.Name())}
+}
+
+type alertHasManyActionLogTx struct{ tx *gorm.Association }
+
+func (a alertHasManyActionLogTx) Find() (result []*models.AlertActionLog, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a alertHasManyActionLogTx) Append(values ...*models.AlertActionLog) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a alertHasManyActionLogTx) Replace(values ...*models.AlertActionLog) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a alertHasManyActionLogTx) Delete(values ...*models.AlertActionLog) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a alertHasManyActionLogTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a alertHasManyActionLogTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type alertBelongsToUser struct {
+	db *gorm.DB
+
+	field.RelationField
 }
 
 func (a alertBelongsToUser) Where(conds ...field.Expr) *alertBelongsToUser {
@@ -548,10 +982,6 @@ type alertBelongsToSite struct {
 	db *gorm.DB
 
 	field.RelationField
-
-	Organization struct {
-		field.RelationField
-	}
 }
 
 func (a alertBelongsToSite) Where(conds ...field.Expr) *alertBelongsToSite {
@@ -623,25 +1053,6 @@ type alertBelongsToDevice struct {
 	db *gorm.DB
 
 	field.RelationField
-
-	Rack struct {
-		field.RelationField
-		Site struct {
-			field.RelationField
-		}
-		Organization struct {
-			field.RelationField
-		}
-	}
-	Template struct {
-		field.RelationField
-	}
-	Site struct {
-		field.RelationField
-	}
-	Organization struct {
-		field.RelationField
-	}
 }
 
 func (a alertBelongsToDevice) Where(conds ...field.Expr) *alertBelongsToDevice {
@@ -713,13 +1124,6 @@ type alertBelongsToAp struct {
 	db *gorm.DB
 
 	field.RelationField
-
-	Site struct {
-		field.RelationField
-	}
-	Organization struct {
-		field.RelationField
-	}
 }
 
 func (a alertBelongsToAp) Where(conds ...field.Expr) *alertBelongsToAp {
@@ -791,25 +1195,6 @@ type alertBelongsToCircuit struct {
 	db *gorm.DB
 
 	field.RelationField
-
-	Site struct {
-		field.RelationField
-	}
-	Device struct {
-		field.RelationField
-	}
-	DeviceInterface struct {
-		field.RelationField
-		Device struct {
-			field.RelationField
-		}
-		Site struct {
-			field.RelationField
-		}
-	}
-	Organization struct {
-		field.RelationField
-	}
 }
 
 func (a alertBelongsToCircuit) Where(conds ...field.Expr) *alertBelongsToCircuit {
@@ -874,6 +1259,148 @@ func (a alertBelongsToCircuitTx) Clear() error {
 }
 
 func (a alertBelongsToCircuitTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type alertBelongsToRootCause struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a alertBelongsToRootCause) Where(conds ...field.Expr) *alertBelongsToRootCause {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a alertBelongsToRootCause) WithContext(ctx context.Context) *alertBelongsToRootCause {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a alertBelongsToRootCause) Session(session *gorm.Session) *alertBelongsToRootCause {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a alertBelongsToRootCause) Model(m *models.Alert) *alertBelongsToRootCauseTx {
+	return &alertBelongsToRootCauseTx{a.db.Model(m).Association(a.Name())}
+}
+
+type alertBelongsToRootCauseTx struct{ tx *gorm.Association }
+
+func (a alertBelongsToRootCauseTx) Find() (result *models.RootCause, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a alertBelongsToRootCauseTx) Append(values ...*models.RootCause) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a alertBelongsToRootCauseTx) Replace(values ...*models.RootCause) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a alertBelongsToRootCauseTx) Delete(values ...*models.RootCause) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a alertBelongsToRootCauseTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a alertBelongsToRootCauseTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type alertBelongsToAlertGroup struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a alertBelongsToAlertGroup) Where(conds ...field.Expr) *alertBelongsToAlertGroup {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a alertBelongsToAlertGroup) WithContext(ctx context.Context) *alertBelongsToAlertGroup {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a alertBelongsToAlertGroup) Session(session *gorm.Session) *alertBelongsToAlertGroup {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a alertBelongsToAlertGroup) Model(m *models.Alert) *alertBelongsToAlertGroupTx {
+	return &alertBelongsToAlertGroupTx{a.db.Model(m).Association(a.Name())}
+}
+
+type alertBelongsToAlertGroupTx struct{ tx *gorm.Association }
+
+func (a alertBelongsToAlertGroupTx) Find() (result *models.AlertGroup, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a alertBelongsToAlertGroupTx) Append(values ...*models.AlertGroup) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a alertBelongsToAlertGroupTx) Replace(values ...*models.AlertGroup) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a alertBelongsToAlertGroupTx) Delete(values ...*models.AlertGroup) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a alertBelongsToAlertGroupTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a alertBelongsToAlertGroupTx) Count() int64 {
 	return a.tx.Count()
 }
 
@@ -952,37 +1479,6 @@ type alertBelongsToMaintenance struct {
 	db *gorm.DB
 
 	field.RelationField
-
-	Organization struct {
-		field.RelationField
-	}
-	Alert struct {
-		field.RelationField
-		User struct {
-			field.RelationField
-		}
-		Site struct {
-			field.RelationField
-		}
-		Device struct {
-			field.RelationField
-		}
-		Ap struct {
-			field.RelationField
-		}
-		Circuit struct {
-			field.RelationField
-		}
-		DeviceInterface struct {
-			field.RelationField
-		}
-		Maintenance struct {
-			field.RelationField
-		}
-		Organization struct {
-			field.RelationField
-		}
-	}
 }
 
 func (a alertBelongsToMaintenance) Where(conds ...field.Expr) *alertBelongsToMaintenance {
@@ -1182,6 +1678,90 @@ type IAlertDo interface {
 	Returning(value interface{}, columns ...string) IAlertDo
 	UnderlyingDB() *gorm.DB
 	schema.Tabler
+
+	FilterWithColumn(column string, value string) (result models.Alert, err error)
+	FilterWithColumnIn(column string, values []string) (result models.Alert, err error)
+	FilterWithColumnNotIn(column string, values []string) (result models.Alert, err error)
+	FilterWithColumnIsNotNull(column string) (result models.Alert, err error)
+	FilterWithColumnIsNull(column string) (result models.Alert, err error)
+}
+
+// SELECT * FROM @@table WHERE @column = @value
+func (a alertDo) FilterWithColumn(column string, value string) (result models.Alert, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	params = append(params, value)
+	generateSQL.WriteString("SELECT * FROM alert WHERE ? = ? ")
+
+	var executeSQL *gorm.DB
+	executeSQL = a.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column IN (@values)
+func (a alertDo) FilterWithColumnIn(column string, values []string) (result models.Alert, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	params = append(params, values)
+	generateSQL.WriteString("SELECT * FROM alert WHERE ? IN (?) ")
+
+	var executeSQL *gorm.DB
+	executeSQL = a.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column NOT IN (@values)
+func (a alertDo) FilterWithColumnNotIn(column string, values []string) (result models.Alert, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	params = append(params, values)
+	generateSQL.WriteString("SELECT * FROM alert WHERE ? NOT IN (?) ")
+
+	var executeSQL *gorm.DB
+	executeSQL = a.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column IS NOT NULL
+func (a alertDo) FilterWithColumnIsNotNull(column string) (result models.Alert, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	generateSQL.WriteString("SELECT * FROM alert WHERE ? IS NOT NULL ")
+
+	var executeSQL *gorm.DB
+	executeSQL = a.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// SELECT * FROM @@table WHERE @column IS NULL
+func (a alertDo) FilterWithColumnIsNull(column string) (result models.Alert, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, column)
+	generateSQL.WriteString("SELECT * FROM alert WHERE ? IS NULL ")
+
+	var executeSQL *gorm.DB
+	executeSQL = a.UnderlyingDB().Raw(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
 }
 
 func (a alertDo) Debug() IAlertDo {

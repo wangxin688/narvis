@@ -225,3 +225,39 @@ func (c *CircuitService) ListCircuit(query *schemas.CircuitQuery) (int64, *[]*sc
 	}
 	return count, &res, nil
 }
+
+func (c *CircuitService) GetCircuitShortMap(cIds []string) (map[string]*schemas.CircuitShort, error) {
+	circuits, err := gen.Circuit.Select(
+		gen.Circuit.Id,
+		gen.Circuit.Name,
+		gen.Circuit.RxBandWidth,
+		gen.Circuit.TxBandWidth,
+		gen.Circuit.Provider,
+	).Where(gen.Circuit.Id.In(cIds...)).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	res := make(map[string]*schemas.CircuitShort)
+	for _, circuit := range circuits {
+		res[circuit.Id] = &schemas.CircuitShort{
+			Id:          circuit.Id,
+			Name:        circuit.Name,
+			RxBandWidth: circuit.RxBandWidth,
+			TxBandWidth: circuit.TxBandWidth,
+			Provider:    circuit.Provider,
+		}
+	}
+	return res, nil
+}
+
+func (d *CircuitService) SearchCircuitByKeyword(keyword string, orgId string) ([]string, error) {
+	var result []string
+	stmt := gen.Circuit.Select(gen.Circuit.Id).Where(gen.Circuit.OrganizationId.Eq(orgId))
+	keyword = "%" + keyword + "%"
+	stmt = stmt.Where(gen.Circuit.Name.Like(keyword)).Or(
+		gen.Circuit.Ipv4Address.Like(keyword)).Or(
+		gen.Circuit.Ipv6Address.Like(keyword))
+	err := stmt.Scan(&result)
+	return result, err
+}
