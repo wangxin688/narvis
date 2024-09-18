@@ -158,7 +158,7 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 	return
 }
 
-func calcDevice360Score(deviceMetrics map[string]*DeviceSchema, timestamp int64) []*vtm.Metric {
+func calcHealthScore(deviceMetrics map[string]*DeviceSchema, timestamp int64) []*vtm.Metric {
 	var results []*vtm.Metric
 	for _, device := range deviceMetrics {
 		icmpScore := calcIcmpScore(device.ICMPPing)
@@ -176,7 +176,7 @@ func calcDevice360Score(deviceMetrics map[string]*DeviceSchema, timestamp int64)
 		operationalStatusScore, operationalStatusAnomaly := calcIfOpStatusScore(device.OperationalStatus)
 		device360Score := lo.Min([]float64{icmpScore, cpuScore, memoryScore, tempScore, fanScore, powerSupplyScore, rxDiscardScore, txDiscardScore, rxErrorScore, txErrorScore, rxRateScore, txRateScore, operationalStatusScore})
 		results = append(results, &vtm.Metric{
-			Metric:    string(metrics.Device360Score),
+			Metric:    string(metrics.HealthScore),
 			Labels:    device.Labels,
 			Value:     device360Score,
 			Timestamp: timestamp,
@@ -300,7 +300,7 @@ func calcAp360(apMetrics map[string]map[string]*ApSchema, timestamp int64) []*vt
 			}
 
 			results = append(results, &vtm.Metric{
-				Metric:    string(metrics.Device360Score),
+				Metric:    string(metrics.HealthScore),
 				Labels:    ap.Labels,
 				Value:     float64(score),
 				Timestamp: timestamp,
@@ -321,7 +321,7 @@ func Device360OfflineTask() {
 	}
 	aggDevice := aggregateDeviceMetrics(deviceVectors)
 	aggAP := aggregateApMetrics(apVectors)
-	device360 := calcDevice360Score(aggDevice, timestamp)
+	device360 := calcHealthScore(aggDevice, timestamp)
 	ap360 := calcAp360(aggAP, timestamp)
 
 	vtmClient := vtm.NewVtmClient(core.Settings.Vtm.Url, core.Settings.Vtm.Username, core.Settings.Vtm.Password)

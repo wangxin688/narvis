@@ -4,8 +4,6 @@ import (
 	"strconv"
 
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/intend/metrics"
-	"github.com/wangxin688/narvis/server/pkg/vtm"
 )
 
 const channelBusyThreshold float64 = 70
@@ -16,7 +14,6 @@ const temperatureHighThreshold float64 = 75
 const packErrDiscardThreshold float64 = 10
 const trafficHighThreshold float64 = 90
 const trafficCriticalThreshold float64 = 98
-
 
 func calcIcmpScore(icmp float64) float64 {
 	if icmp == -1 {
