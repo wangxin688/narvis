@@ -7,7 +7,7 @@ jwt:
 
 zap:
   level: info
-  prefix: '[go-netty/server]'
+  prefix: '[narvis/server]'
   format: console # json or console
   show_line: true
   encode_level: LowercaseColorLevelEncoder
@@ -62,7 +62,7 @@ env: dev
 
 zbx:
   url: "http://127.0.0.1:8088"
-  token: f9454ee305be33d134c68054ef96ec8ec010e472aa94663a8f186e5a585dfd05
+  token: f9454ee305be33d134c68054ef96ec8ec010e472aa94663a8f186e5a585dfd05 // replace after init
 
 vtm:
   url: "http://127.0.0.1:8428"
@@ -73,3 +73,7 @@ atm:
   url: "http://127.0.0.1:9093"
   username: narvis
   password: df22af3b501608cd63616d86b0ac1d77
+
+rmq:
+  server_url: amqp://narvis-server:26cc7abbea97a17b9f7860ee0dabb051@localhost:5672/server
+  proxy_url: amqp://narvis-proxy:851b090b967a89f802e72a0baf1d230e@localhost:5672/proxy

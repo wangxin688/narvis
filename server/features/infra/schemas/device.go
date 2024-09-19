@@ -77,7 +77,6 @@ type Device struct {
 	DeviceModel   string    `json:"deviceModel"`
 	DeviceRole    string    `json:"deviceRole"`
 	Floor         *string   `json:"location"`
-	IsRegistered  bool      `json:"isRegistered"`
 	OsVersion     *string   `json:"osVersion"`
 	OsPatch       *string   `json:"osPatch"`
 	RackId        *string   `json:"rackId"`

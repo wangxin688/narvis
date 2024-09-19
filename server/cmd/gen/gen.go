@@ -71,6 +71,7 @@ func main() {
 		&models.RestconfCredential{},
 		&models.AP{},
 		&models.MacAddress{},
+		&models.ScanDevice{},
 		&models.Circuit{},
 		&models.Prefix{},
 		&models.IpAddress{},
@@ -82,6 +83,7 @@ func main() {
 		&models.RootCause{},
 		&models.SubscriptionRecord{},
 		&models.Template{},
+		&models.TaskResult{},
 	)
 	g.ApplyInterface(func(Filter) {}, models.Alert{}, models.Maintenance{}, models.Subscription{})
 	defer g.Execute()

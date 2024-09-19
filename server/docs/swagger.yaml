@@ -427,8 +427,6 @@ definitions:
         type: string
       id:
         type: string
-      isRegistered:
-        type: boolean
       location:
         type: string
       managementIp:
@@ -1081,33 +1079,6 @@ definitions:
       name:
         type: string
     type: object
-  schemas.Site:
-    properties:
-      address:
-        type: string
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      latitude:
-        type: number
-      longitude:
-        type: number
-      name:
-        type: string
-      region:
-        type: string
-      siteCode:
-        type: string
-      status:
-        type: string
-      timeZone:
-        type: string
-      updatedAt:
-        type: string
-    type: object
   schemas.SiteCreate:
     properties:
       address:
@@ -1183,6 +1154,39 @@ definitions:
         type: string
       vlanCount:
         type: integer
+    type: object
+  schemas.SiteResponse:
+    properties:
+      address:
+        type: string
+      circuit:
+        items:
+          $ref: '#/definitions/schemas.CircuitShort'
+        type: array
+      createdAt:
+        type: string
+      description:
+        type: string
+      deviceCount:
+        type: integer
+      id:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      region:
+        type: string
+      siteCode:
+        type: string
+      status:
+        type: string
+      timeZone:
+        type: string
+      updatedAt:
+        type: string
     type: object
   schemas.SiteShort:
     properties:
@@ -3352,7 +3356,7 @@ paths:
             - properties:
                 results:
                   items:
-                    $ref: '#/definitions/schemas.Site'
+                    $ref: '#/definitions/schemas.SiteResponse'
                   type: array
               type: object
       security:

@@ -23,6 +23,7 @@ var CliCredentialTableName = "infra_cli_credential"
 var SnmpV2CredentialTableName = "infra_snmp_v2_credential"
 var RestconfCredentialTableName = "infra_restconf_credential"
 var MacAddressTableName = "mac_address"
+var ScanDeviceTableName = "infra_scan_device"
 
 type Site struct {
 	BaseDbModel
@@ -71,7 +72,6 @@ type Device struct {
 	Manufacturer   string       `gorm:"column:manufacturer;default:Unknown"`
 	DeviceRole     string       `gorm:"column:deviceRole;default:Unknown"`
 	Floor          *string      `gorm:"column:floor;default:null"`
-	IsRegistered   bool         `gorm:"column:isRegistered;type:bool;default:false"`
 	ChassisId      *string      `gorm:"column:chassisId;uniqueIndex:idx_chassis_id_organization_id;default:null;index"`
 	SerialNumber   *string      `gorm:"column:serialNumber;uniqueIndex:idx_serial_number_organization_id"`
 	Description    *string      `gorm:"column:description;default:null"`
@@ -253,7 +253,6 @@ type AP struct {
 	DeviceRole      string                            `gorm:"column:deviceRole;default:WlanAP"`
 	OsVersion       *string                           `gorm:"column:osVersion;default:null"`
 	GroupName       *string                           `gorm:"column:groupName;default:null"`
-	IsRegistered    bool                              `gorm:"column:isRegistered;type:bool;default:false"`
 	Coordinate      *datatypes.JSONType[ApCoordinate] `gorm:"column:coordinate;type:json;default:null"`
 	WlanACIpAddress *pq.StringArray                   `gorm:"column:wlanACIpAddress;type:text[];default:null"`
 	Floor           *string                           `gorm:"column:floor;default:null"`
@@ -276,4 +275,22 @@ type MacAddress struct {
 
 func (MacAddress) TableName() string {
 	return MacAddressTableName
+}
+
+type ScanDevice struct {
+	BaseDbSingleModel
+	Name           string       `gorm:"column:name;not null"`
+	Range          string       `gorm:"column:range;not null"`
+	ManagementIp   string       `gorm:"column:managementIp;not null"`
+	Platform       string       `gorm:"column:platform;not null"`
+	DeviceModel    string       `gorm:"column:deviceModel;not null"`
+	Manufacturer   string       `gorm:"column:manufacturer;not null"`
+	ChassisId      string       `gorm:"column:chassisId;not null"`
+	Description    string       `gorm:"column:description;not null"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
+	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+}
+
+func (ScanDevice) TableName() string {
+	return ScanDeviceTableName
 }

@@ -77,7 +77,7 @@ func getSite(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param object query schemas.SiteQuery false "query sites"
-// @Success 200 {object} ts.ListResponse{results=[]schemas.Site}
+// @Success 200 {object} ts.ListResponse{results=[]schemas.SiteResponse}
 // @Router /infra/sites [get]
 func listSites(c *gin.Context) {
 	var err error

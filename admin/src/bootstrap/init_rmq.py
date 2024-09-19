@@ -16,7 +16,7 @@ async def init_rabbit_mq() -> None:
         else:
             vhost_server = await rq.create_vhost(client, settings.RABBIT_MQ_SERVER_VHOST)
             assert vhost_server == 201
-            vhost_client = await rq.create_vhost(client, settings.RABBIT_MQ_CLIENT_VHOST)
+            vhost_client = await rq.create_vhost(client, settings.RABBIT_MQ_PROXY_VHOST)
             assert vhost_client == 201
             print("Init app: Create vhost successfully. ")
         users = await rq.get_users(client)
@@ -24,14 +24,14 @@ async def init_rabbit_mq() -> None:
             print("Init app: Users already exists, will not be created anymore.")
         else:
             client_user = await rq.create_user(
-                client, username=settings.RABBIT_MQ_CLIENT_USER, password=settings.RABBIT_MQ_CLIENT_PASSWORD
+                client, username=settings.RABBIT_MQ_PROXY_USER, password=settings.RABBIT_MQ_PROXY_PASSWORD
             )
             assert client_user == 201
             server_permission = await rq.create_vhost_permission(
                 client, vhost=settings.RABBIT_MQ_SERVER_VHOST, username=settings.RABBIT_MQ_SERVER_USER
             )
             client_permission = await rq.create_vhost_permission(
-                client, vhost=settings.RABBIT_MQ_CLIENT_VHOST, username=settings.RABBIT_MQ_CLIENT_USER
+                client, vhost=settings.RABBIT_MQ_PROXY_VHOST, username=settings.RABBIT_MQ_PROXY_USER
             )
 
             assert server_permission == 204

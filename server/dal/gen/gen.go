@@ -42,10 +42,12 @@ var (
 	RestconfCredential *restconfCredential
 	Role               *role
 	RootCause          *rootCause
+	ScanDevice         *scanDevice
 	Site               *site
 	SnmpV2Credential   *snmpV2Credential
 	Subscription       *subscription
 	SubscriptionRecord *subscriptionRecord
+	TaskResult         *taskResult
 	Template           *template
 	User               *user
 )
@@ -77,10 +79,12 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	RestconfCredential = &Q.RestconfCredential
 	Role = &Q.Role
 	RootCause = &Q.RootCause
+	ScanDevice = &Q.ScanDevice
 	Site = &Q.Site
 	SnmpV2Credential = &Q.SnmpV2Credential
 	Subscription = &Q.Subscription
 	SubscriptionRecord = &Q.SubscriptionRecord
+	TaskResult = &Q.TaskResult
 	Template = &Q.Template
 	User = &Q.User
 }
@@ -113,10 +117,12 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		RestconfCredential: newRestconfCredential(db, opts...),
 		Role:               newRole(db, opts...),
 		RootCause:          newRootCause(db, opts...),
+		ScanDevice:         newScanDevice(db, opts...),
 		Site:               newSite(db, opts...),
 		SnmpV2Credential:   newSnmpV2Credential(db, opts...),
 		Subscription:       newSubscription(db, opts...),
 		SubscriptionRecord: newSubscriptionRecord(db, opts...),
+		TaskResult:         newTaskResult(db, opts...),
 		Template:           newTemplate(db, opts...),
 		User:               newUser(db, opts...),
 	}
@@ -150,10 +156,12 @@ type Query struct {
 	RestconfCredential restconfCredential
 	Role               role
 	RootCause          rootCause
+	ScanDevice         scanDevice
 	Site               site
 	SnmpV2Credential   snmpV2Credential
 	Subscription       subscription
 	SubscriptionRecord subscriptionRecord
+	TaskResult         taskResult
 	Template           template
 	User               user
 }
@@ -188,10 +196,12 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		RestconfCredential: q.RestconfCredential.clone(db),
 		Role:               q.Role.clone(db),
 		RootCause:          q.RootCause.clone(db),
+		ScanDevice:         q.ScanDevice.clone(db),
 		Site:               q.Site.clone(db),
 		SnmpV2Credential:   q.SnmpV2Credential.clone(db),
 		Subscription:       q.Subscription.clone(db),
 		SubscriptionRecord: q.SubscriptionRecord.clone(db),
+		TaskResult:         q.TaskResult.clone(db),
 		Template:           q.Template.clone(db),
 		User:               q.User.clone(db),
 	}
@@ -233,10 +243,12 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		RestconfCredential: q.RestconfCredential.replaceDB(db),
 		Role:               q.Role.replaceDB(db),
 		RootCause:          q.RootCause.replaceDB(db),
+		ScanDevice:         q.ScanDevice.replaceDB(db),
 		Site:               q.Site.replaceDB(db),
 		SnmpV2Credential:   q.SnmpV2Credential.replaceDB(db),
 		Subscription:       q.Subscription.replaceDB(db),
 		SubscriptionRecord: q.SubscriptionRecord.replaceDB(db),
+		TaskResult:         q.TaskResult.replaceDB(db),
 		Template:           q.Template.replaceDB(db),
 		User:               q.User.replaceDB(db),
 	}
@@ -268,10 +280,12 @@ type queryCtx struct {
 	RestconfCredential IRestconfCredentialDo
 	Role               IRoleDo
 	RootCause          IRootCauseDo
+	ScanDevice         IScanDeviceDo
 	Site               ISiteDo
 	SnmpV2Credential   ISnmpV2CredentialDo
 	Subscription       ISubscriptionDo
 	SubscriptionRecord ISubscriptionRecordDo
+	TaskResult         ITaskResultDo
 	Template           ITemplateDo
 	User               IUserDo
 }
@@ -303,10 +317,12 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		RestconfCredential: q.RestconfCredential.WithContext(ctx),
 		Role:               q.Role.WithContext(ctx),
 		RootCause:          q.RootCause.WithContext(ctx),
+		ScanDevice:         q.ScanDevice.WithContext(ctx),
 		Site:               q.Site.WithContext(ctx),
 		SnmpV2Credential:   q.SnmpV2Credential.WithContext(ctx),
 		Subscription:       q.Subscription.WithContext(ctx),
 		SubscriptionRecord: q.SubscriptionRecord.WithContext(ctx),
+		TaskResult:         q.TaskResult.WithContext(ctx),
 		Template:           q.Template.WithContext(ctx),
 		User:               q.User.WithContext(ctx),
 	}

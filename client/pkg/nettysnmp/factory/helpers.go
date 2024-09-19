@@ -1,6 +1,8 @@
 package factory
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"net"
 	"regexp"
@@ -169,7 +171,7 @@ func ipAddrToNet(addr string) (string, error) {
 func getIfVlanIpRange(interfaces []*DeviceInterface) map[uint64]*VlanIpRange {
 	var results = make(map[uint64]*VlanIpRange)
 	for _, iface := range interfaces {
-		if iface.IfType == "portVirtual" {
+		if iface.IfType == "propVirtual" {
 			vlanIpRange := &VlanIpRange{}
 			vlan, ok := extractVlanId(iface.IfName)
 			if ok {
@@ -183,6 +185,16 @@ func getIfVlanIpRange(interfaces []*DeviceInterface) map[uint64]*VlanIpRange {
 			if vlan != 0 && inet != "" {
 				results[iface.IfIndex] = vlanIpRange
 			}
+		} else if iface.IfType == "ethernetCsmacd" {
+			vlanIpRange := &VlanIpRange{}
+			inet, err := ipAddrToNet(iface.IfIpAddress)
+			if err == nil {
+				vlanIpRange.Range = inet
+				vlanIpRange.Gateway = iface.IfIpAddress
+			}
+			if inet != "" {
+				results[iface.IfIndex] = vlanIpRange
+			}
 		}
 	}
 	return results
@@ -193,6 +205,9 @@ func EnrichArpInfo(arp []*ArpItem, interfaces []*DeviceInterface) []*ArpItem {
 		return arp
 	}
 	ifVlanIpRange := getIfVlanIpRange(interfaces)
+	if len(ifVlanIpRange) <= 0 {
+		return arp
+	}
 	for _, item := range arp {
 		inner := ifVlanIpRange[item.IfIndex]
 		item.VlanId = inner.VlanId
@@ -207,7 +222,10 @@ func EnrichVlanInfo(vlan []*VlanItem, interfaces []*DeviceInterface) []*VlanItem
 	}
 	ifVlanIpRange := getIfVlanIpRange(interfaces)
 	for _, vl := range vlan {
-		ipRange := ifVlanIpRange[vl.IfIndex]
+		ipRange, ok := ifVlanIpRange[vl.IfIndex]
+		if !ok {
+			continue
+		}
 		vl.Range = ipRange.Range
 		vl.Gateway = ipRange.Gateway
 	}
@@ -277,4 +295,15 @@ func EnrichMacAddress(mac *map[uint64][]string, interfaces []*DeviceInterface, l
 		}
 	}
 	return results
+}
+
+func lldpHashValue(lldp *LldpNeighbor) string {
+	hashString := lldp.LocalChassisId + lldp.LocalIfName + lldp.RemoteChassisId + lldp.RemoteIfName
+	return stringToMd5(hashString)
+}
+
+func stringToMd5(str string) string {
+	h := md5.New()
+	h.Write([]byte(str))
+	return hex.EncodeToString(h.Sum(nil))
 }

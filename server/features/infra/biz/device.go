@@ -25,6 +25,8 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 		DeviceModel:    *device.DeviceModel,
 		Manufacturer:   *device.Manufacturer,
 		DeviceRole:     device.DeviceRole,
+		OsVersion:      device.OsVersion,
+		SerialNumber:   device.SerialNumber,
 		Floor:          device.Floor,
 		SiteId:         device.SiteId,
 		OrganizationId: global.OrganizationId.Get(),
@@ -60,11 +62,11 @@ func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *sc
 		dbDevice.Status = *device.Status
 	}
 	if device.ManagementIp != nil && *device.ManagementIp != dbDevice.ManagementIp {
-		updateFields["management_ip"] = &ts.OrmDiff{Before: dbDevice.ManagementIp, After: *device.ManagementIp}
+		updateFields["managementIp"] = &ts.OrmDiff{Before: dbDevice.ManagementIp, After: *device.ManagementIp}
 		dbDevice.ManagementIp = *device.ManagementIp
 	}
 	if device.DeviceModel != nil && *device.DeviceModel != dbDevice.DeviceModel {
-		updateFields["device_model"] = &ts.OrmDiff{Before: dbDevice.DeviceModel, After: *device.DeviceModel}
+		updateFields["deviceModel"] = &ts.OrmDiff{Before: dbDevice.DeviceModel, After: *device.DeviceModel}
 		dbDevice.DeviceModel = *device.DeviceModel
 	}
 	if device.Manufacturer != nil && *device.Manufacturer != dbDevice.Manufacturer {
@@ -72,7 +74,7 @@ func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *sc
 		dbDevice.Manufacturer = *device.Manufacturer
 	}
 	if device.DeviceRole != nil && *device.DeviceRole != dbDevice.DeviceRole {
-		updateFields["device_role"] = &ts.OrmDiff{Before: dbDevice.DeviceRole, After: *device.DeviceRole}
+		updateFields["deviceRole"] = &ts.OrmDiff{Before: dbDevice.DeviceRole, After: *device.DeviceRole}
 		dbDevice.DeviceRole = *device.DeviceRole
 	}
 	if device.Floor != nil && *device.Floor != *dbDevice.Floor {
@@ -84,11 +86,11 @@ func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *sc
 		dbDevice.Description = device.Description
 	}
 	if device.OsVersion != nil && *device.OsVersion != *dbDevice.OsVersion {
-		updateFields["os_version"] = &ts.OrmDiff{Before: dbDevice.OsVersion, After: *device.OsVersion}
+		updateFields["osVersion"] = &ts.OrmDiff{Before: dbDevice.OsVersion, After: *device.OsVersion}
 		dbDevice.OsVersion = device.OsVersion
 	}
 	if helpers.HasParams(g, "rackId") && device.RackId != dbDevice.RackId {
-		updateFields["rack_id"] = &ts.OrmDiff{Before: dbDevice.RackId, After: *device.RackId}
+		updateFields["rackId"] = &ts.OrmDiff{Before: dbDevice.RackId, After: *device.RackId}
 		dbDevice.RackId = device.RackId
 	}
 	if helpers.HasParams(g, "rackPosition") {
@@ -97,7 +99,7 @@ func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *sc
 			return nil, err
 		}
 		if position != *dbDevice.RackPosition {
-			updateFields["rack_position"] = &ts.OrmDiff{Before: dbDevice.RackPosition, After: position}
+			updateFields["rackPosition"] = &ts.OrmDiff{Before: dbDevice.RackPosition, After: position}
 			dbDevice.RackPosition = &position
 		}
 	}
@@ -224,7 +226,6 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 			Platform:     item.Platform,
 			Status:       item.Status,
 			OperStatus:   "",
-			IsRegistered: item.IsRegistered,
 			DeviceModel:  item.DeviceModel,
 			Manufacturer: item.Manufacturer,
 			DeviceRole:   item.DeviceRole,
@@ -318,3 +319,12 @@ func (d *DeviceService) SearchDeviceByKeyword(keyword string, orgId string) ([]s
 	return result, err
 }
 
+func (d *DeviceService) GetActiveDevices(siteId string) ([]*models.Device, error) {
+	devices, err := gen.Device.Where(
+		gen.Device.SiteId.Eq(siteId), gen.Device.Status.Eq("Active")).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	return devices, nil
+}

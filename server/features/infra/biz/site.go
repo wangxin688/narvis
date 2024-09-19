@@ -339,7 +339,7 @@ func (s *SiteService) GetDeviceCountBySites(sites []string) (*map[string]int64, 
 		SiteId string
 		Count  int64
 	}
-	err := gen.Device.Select(gen.Device.SiteId, gen.Device.Id.Count().As("count")).
+	err := gen.Device.Select(gen.Device.SiteId.As("SiteId"), gen.Device.Id.Count().As("Count")).
 		Where(gen.Device.OrganizationId.Eq(global.OrganizationId.Get()), gen.Device.SiteId.In(sites...)).
 		Group(gen.Device.SiteId).Scan(&results)
 	if err != nil {
@@ -357,7 +357,7 @@ func (s *SiteService) GetApCountBySites(sites []string) (*map[string]int64, erro
 		SiteId string
 		Count  int64
 	}
-	err := gen.AP.Select(gen.AP.SiteId, gen.AP.Id.Count().As("count")).
+	err := gen.AP.Select(gen.AP.SiteId.As("SiteId"), gen.AP.Id.Count().As("Count")).
 		Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.SiteId.In(sites...)).
 		Group(gen.AP.SiteId).Scan(&results)
 	if err != nil {

@@ -11,7 +11,7 @@ type SiteCreate struct {
 	SiteCode    string  `json:"siteCode" binding:"required"`
 	Status      string  `json:"status" binding:"required,oneof=Active Inactive"`
 	Region      string  `json:"region" binding:"required"`
-	TimeZone    string  `json:"timeZone" binding:"required"`
+	TimeZone    string  `json:"timeZone" binding:"required,timezone"`
 	Latitude    float32 `json:"latitude" binding:"required,latitude"`
 	Longitude   float32 `json:"longitude" binding:"required,longitude"`
 	Address     string  `json:"address" binding:"required"`
@@ -23,7 +23,7 @@ type SiteUpdate struct {
 	SiteCode    *string  `json:"siteCode" binding:"omitempty"`
 	Status      *string  `json:"status" binding:"omitempty,oneof=Active Inactive"`
 	Region      *string  `json:"region" binding:"omitempty"`
-	TimeZone    *string  `json:"timeZone" binding:"omitempty"`
+	TimeZone    *string  `json:"timeZone" binding:"omitempty,timezone"`
 	Latitude    *float32 `json:"latitude" binding:"omitempty,latitude"`
 	Longitude   *float32 `json:"longitude" binding:"omitempty,longitude"`
 	Address     *string  `json:"address" binding:"omitempty"`

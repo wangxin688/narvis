@@ -22,8 +22,16 @@ type PageInfo struct {
 
 func (r *PageInfo) Pagination() func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
-		if r.Page == nil || r.PageSize == nil {
+		if r.Page == nil && r.PageSize == nil {
 			return db.Offset(0).Limit(10)
+		}
+		if r.Page == nil {
+			initPage := 1
+			r.Page = &initPage
+		}
+		if r.PageSize == nil {
+			initPageSize := 10
+			r.PageSize = &initPageSize
 		}
 		return db.Offset((*r.Page - 1) * *r.PageSize).Limit(*r.PageSize)
 	}

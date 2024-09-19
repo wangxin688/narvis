@@ -29,6 +29,7 @@ func Migrate(db *gorm.DB) error {
 		&models.RestconfCredential{},
 		&models.AP{},
 		&models.MacAddress{},
+		&models.ScanDevice{},
 		&models.Circuit{},
 		&models.Prefix{},
 		&models.IpAddress{},
@@ -40,6 +41,7 @@ func Migrate(db *gorm.DB) error {
 		&models.RootCause{},
 		&models.SubscriptionRecord{},
 		&models.Template{},
+		&models.TaskResult{},
 	)
 	if err != nil {
 		core.Logger.Fatal("Failed to migrate database", zap.Error(err))

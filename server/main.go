@@ -8,6 +8,7 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/core/config"
 	"github.com/wangxin688/narvis/server/middleware"
+	// "github.com/wangxin688/narvis/server/pkg/rmq"
 	"github.com/wangxin688/narvis/server/register"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 
@@ -35,6 +36,7 @@ func main() {
 	configureRouter(router)
 	helpers.RegisterCustomValidator()
 	middleware.RegisterOpenAPI(router)
+	// rmq.GetMqConn()
 	if err := router.Run(":8080"); err != nil {
 		core.Logger.Fatal("[mainStartHttpServer]: failed to run server", zap.Error(err))
 	}

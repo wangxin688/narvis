@@ -294,7 +294,7 @@ func (sd *SnmpDiscovery) LldpNeighbors() (lldp []*LldpNeighbor, errors []string)
 	IndexRemoteIfDescr := ExtractStringWithShift(LldpRemPortDesc, -2, remoteIfDescr)
 
 	for i, v := range IndexRemChassisId {
-		lldp = append(lldp, &LldpNeighbor{
+		neighbor := &LldpNeighbor{
 			LocalChassisId:  localChassisId,
 			LocalHostname:   hostname,
 			LocalIfName:     IndexIfName["."+i],
@@ -303,7 +303,9 @@ func (sd *SnmpDiscovery) LldpNeighbors() (lldp []*LldpNeighbor, errors []string)
 			RemoteHostname:  IndexRemoteHostname[i],
 			RemoteIfName:    IndexRemoteIfName[i],
 			RemoteIfDescr:   IndexRemoteIfDescr[i],
-		})
+		}
+		neighbor.HashValue = lldpHashValue(neighbor)
+		lldp = append(lldp, neighbor)
 	}
 	return lldp, errors
 }
@@ -493,6 +495,29 @@ func (sd *SnmpDiscovery) Discovery() *DiscoveryResponse {
 	}
 	if VlanError != nil {
 		response.Errors = append(response.Errors, VlanError...)
+	}
+	return response
+}
+
+func (sd *SnmpDiscovery) DiscoveryBasicInfo() *DiscoveryBasicResponse {
+	sysDescr, sysError := sd.SysDescr()
+	sysName, sysNameError := sd.SysName()
+	chassisId, chassisIdError := sd.ChassisId()
+
+	response := &DiscoveryBasicResponse{
+		Hostname:  sysName,
+		SysDescr:  sysDescr,
+		ChassisId: chassisId,
+	}
+
+	if sysError != nil {
+		response.Errors = append(response.Errors, sysError.Error())
+	}
+	if sysNameError != nil {
+		response.Errors = append(response.Errors, sysNameError.Error())
+	}
+	if chassisIdError != nil {
+		response.Errors = append(response.Errors, chassisIdError.Error())
 	}
 	return response
 }

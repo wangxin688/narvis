@@ -83,7 +83,7 @@ const (
 )
 
 const (
-	Device360Score      Device360Metrics = "device360_score"
+	HealthScore         Device360Metrics = "health_score"
 	IcmpScore           Device360Metrics = "icmp_score"
 	CpuScore            Device360Metrics = "cpu_score"
 	MemoryScore         Device360Metrics = "memory_score"

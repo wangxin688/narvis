@@ -1,4 +1,4 @@
-package nettygo
+package nettysnmp
 
 import (
 	"fmt"
@@ -234,8 +234,9 @@ func (d *Dispatcher) dispatch(config factory.SnmpConfig) *factory.DispatchRespon
 func (d *Dispatcher) Dispatch() []*factory.DispatchResponse {
 	var responses []*factory.DispatchResponse
 	var wg sync.WaitGroup
-
+	ch := make(chan struct{}, 100)
 	for _, target := range d.Targets {
+		ch <- struct{}{}
 		wg.Add(1)
 		go func(target string) {
 			defer wg.Done()
@@ -246,11 +247,65 @@ func (d *Dispatcher) Dispatch() []*factory.DispatchResponse {
 			})
 
 			responses = append(responses, targetResponse)
+			<-ch
 		}(target)
 	}
 
 	wg.Wait()
 
+	return responses
+}
+
+func (d *Dispatcher) dispatchBasic(config factory.SnmpConfig) *factory.DispatchBasicResponse {
+	var response = &factory.DispatchBasicResponse{}
+	response.IpAddress = config.IpAddress
+	session, err := d.Session(&config)
+	if err != nil {
+		response.SnmpReachable = false
+	}
+	icmp := d.IcmpReachable(config.IpAddress)
+	ssh := d.SshReachable(config.IpAddress)
+	response.IcmpReachable = icmp
+	response.SshReachable = ssh
+	response.SnmpReachable = d.SnmpReachable(session)
+
+	sysObjectId := d.SysObjectID(session)
+	if sysObjectId == "" {
+		return response
+	}
+	response.SysObjectId = sysObjectId
+	deviceType := GetDeviceModel(sysObjectId)
+	driver, err := d.getFactory(deviceType.Platform, config)
+	if err != nil {
+		return response
+	}
+	discoveryResponse := driver.DiscoveryBasicInfo()
+	response.DeviceModel = deviceType
+	response.Data = discoveryResponse
+	return response
+}
+
+func (d *Dispatcher) DispatchBasic() []*factory.DispatchBasicResponse {
+	var responses []*factory.DispatchBasicResponse
+	var wg sync.WaitGroup
+	ch := make(chan struct{}, 100)
+	for _, target := range d.Targets {
+		ch <- struct{}{}
+		wg.Add(1)
+		go func(target string) {
+			defer wg.Done()
+
+			targetResponse := d.dispatchBasic(factory.SnmpConfig{
+				IpAddress:      target,
+				BaseSnmpConfig: d.Config,
+			})
+
+			responses = append(responses, targetResponse)
+			<-ch
+		}(target)
+	}
+
+	wg.Wait()
 	return responses
 }
 

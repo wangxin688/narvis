@@ -39,6 +39,7 @@ type LldpNeighbor struct {
 	RemoteHostname  string `json:"remoteHostname"`
 	RemoteIfName    string `json:"remoteIfName"`
 	RemoteIfDescr   string `json:"remoteIfDescr"`
+	HashValue       string `json:"hashValue"`
 }
 
 type Entity struct {
@@ -110,9 +111,26 @@ type DiscoveryResponse struct {
 	Errors          []string           `json:"errors"`
 }
 
+type DiscoveryBasicResponse struct {
+	Hostname  string   `json:"hostname"`
+	SysDescr  string   `json:"sysDescr"`
+	ChassisId string   `json:"chassisID"`
+	Errors    []string `json:"errors"`
+}
+
 type DispatchResponse struct {
 	IpAddress     string                   `json:"ipAddress"`
 	Data          *DiscoveryResponse       `json:"data"`
+	SnmpReachable bool                     `json:"snmpReachable"`
+	IcmpReachable bool                     `json:"icmpReachable"`
+	SshReachable  bool                     `json:"sshReachable"`
+	SysObjectId   string                   `json:"sysObjectId"`
+	DeviceModel   *devicemodel.DeviceModel `json:"deviceModel"`
+}
+
+type DispatchBasicResponse struct {
+	IpAddress     string                   `json:"ipAddress"`
+	Data          *DiscoveryBasicResponse  `json:"data"`
 	SnmpReachable bool                     `json:"snmpReachable"`
 	IcmpReachable bool                     `json:"icmpReachable"`
 	SshReachable  bool                     `json:"sshReachable"`

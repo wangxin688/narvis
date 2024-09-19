@@ -3044,7 +3044,7 @@ const docTemplate = `{
                                         "results": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/schemas.Site"
+                                                "$ref": "#/definitions/schemas.SiteResponse"
                                             }
                                         }
                                     }
@@ -4585,9 +4585,6 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "isRegistered": {
-                    "type": "boolean"
-                },
                 "location": {
                     "type": "string"
                 },
@@ -5556,47 +5553,6 @@ const docTemplate = `{
                 }
             }
         },
-        "schemas.Site": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "latitude": {
-                    "type": "number"
-                },
-                "longitude": {
-                    "type": "number"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "region": {
-                    "type": "string"
-                },
-                "siteCode": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "timeZone": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
         "schemas.SiteCreate": {
             "type": "object",
             "required": [
@@ -5705,6 +5661,56 @@ const docTemplate = `{
                 },
                 "vlanCount": {
                     "type": "integer"
+                }
+            }
+        },
+        "schemas.SiteResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "circuit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.CircuitShort"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "deviceCount": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "siteCode": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timeZone": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },
