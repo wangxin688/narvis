@@ -1,6 +1,8 @@
 package infra_utils
 
-import "github.com/wangxin688/narvis/server/models"
+import (
+	"github.com/wangxin688/narvis/server/models"
+)
 
 func DevicesToIds(devices []*models.Device) []string {
 	ids := make([]string, len(devices))

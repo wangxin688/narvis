@@ -24,6 +24,8 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 		Status:         device.Status,
 		DeviceModel:    *device.DeviceModel,
 		Manufacturer:   *device.Manufacturer,
+		Platform:       *device.Platform,
+		ChassisId:      device.ChassisId,
 		DeviceRole:     device.DeviceRole,
 		OsVersion:      device.OsVersion,
 		SerialNumber:   device.SerialNumber,
@@ -33,7 +35,7 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 	}
 	if device.RackId != nil && device.RackPosition != nil {
 		newDevice.RackId = device.RackId
-		position, err := infra_utils.SliceUint8ToString(device.RackPosition)
+		position, err := infra_utils.SliceUint8ToString(*device.RackPosition)
 		if err != nil {
 			return "", err
 		}

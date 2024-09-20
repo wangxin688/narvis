@@ -14,3 +14,7 @@ type ErrorResponse struct {
 	Data    any    `json:"data"`
 	Message string `json:"message"`
 }
+
+type SuccessResponse struct {
+	Status string `json:"status"`
+}
