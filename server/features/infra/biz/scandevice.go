@@ -137,6 +137,21 @@ func (s *ScanDeviceService) UpdateById(id string, update *schemas.ScanDeviceUpda
 	return newDeviceId, nil
 }
 
+func (s *ScanDeviceService) BatchUpdate(device *schemas.ScanDeviceBatchUpdate) ([]string, error) {
+	for _, id := range device.Ids {
+		_, err := s.UpdateById(id, &schemas.ScanDeviceUpdate{
+			Status:     device.Status,
+			Floor:      device.Floor,
+			DeviceRole: device.DeviceRole,
+			SiteId:     device.SiteId,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+	return device.Ids, nil
+}
+
 func (s *ScanDeviceService) GetByScanResult(ips []string, orgId string) (*map[string]*models.ScanDevice, error) {
 	devices, err := gen.ScanDevice.Select(gen.ScanDevice.Id).Where(
 		gen.ScanDevice.ManagementIp.In(ips...),

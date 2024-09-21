@@ -48,7 +48,7 @@ func getAp(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param object query schemas.ApQuery true "query aps"
-// @Success 200 {object} []ts.ListResponse{results=[]schemas.AP}
+// @Success 200 {object} ts.ListResponse{results=[]schemas.AP}
 // @Router /infra/aps [get]
 func listAp(c *gin.Context) {
 	var err error

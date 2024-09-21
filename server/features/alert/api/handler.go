@@ -3,6 +3,7 @@ package alert_api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/server/middleware"
 )
 
 func RegisterAlertRoutes(r *gin.Engine) {
@@ -12,7 +13,7 @@ func RegisterAlertRoutes(r *gin.Engine) {
 		pubRouter.POST("/alerts", createAlert)
 		pubRouter.POST("/alert-groups", createAlertGroup)
 	}
-	router := r.Group(basePath + "/alert")
+	router := r.Group(basePath + "/alert", middleware.AuthMiddleware())
 	{
 		router.GET("/alerts/:id", getAlert)
 		router.GET("/alerts", listAlerts)
@@ -28,5 +29,7 @@ func RegisterAlertRoutes(r *gin.Engine) {
 		router.GET("/subscriptions", listSubscriptions)
 		router.PUT("/subscriptions/:id", updateSubscription)
 		router.DELETE("/subscriptions/:id", deleteSubscription)
+
+		router.POST("/action-logs", createActionLog)
 	}
 }

@@ -54,5 +54,12 @@ func RegisterInfraRoutes(e *gin.Engine) {
 		router.PUT("/circuits/:id", updateCircuit)
 		router.DELETE("/circuits/:id", deleteCircuit)
 
+		router.POST("/scan-devices", createScanDevice)
+		router.GET("/scan-devices/:id", getScanDevice)
+		router.GET("/scan-devices", listScanDevices)
+		router.PUT("/scan-devices/:id", updateScanDevice)
+		router.PUT("/scan-devices", batchUpdateScanDevice)
+		router.DELETE("/scan-devices/:id", deleteScanDevice)
+		router.DELETE("/scan-devices", batchDeleteScanDevice)
 	}
 }

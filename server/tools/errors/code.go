@@ -83,6 +83,8 @@ const (
 	MsgRackPositionInconsecutive    ErrorMsg  = "rack position is not consecutive"
 	CodeGlobalCredentialDeleteDeny  ErrorCode = 500004
 	MsgGlobalCredentialDeleteDeny   ErrorMsg  = "Organization-level credential is not allowed to be deleted"
+	CodeIpRangeNotProvided          ErrorCode = 500005
+	MsgIpRangeNotProvided           ErrorMsg  = "ip range not provided"
 )
 
 // ipam error codes (600000 - 700000)
@@ -93,16 +95,16 @@ const (
 
 // alert error codes (900000 - 1000000)
 const (
-	CodeAlertStartTimeInFuture ErrorCode = 900000
-	MsgAlertStartTimeInFuture  ErrorMsg  = "alert start time should not be in the future"
-	CodeAlertNameNotDefined    ErrorCode = 900001
-	MsgAlertNameNotDefined     ErrorMsg  = "alert name: %s not defined"
-	CodeAlertHostIdInvalid     ErrorCode = 900002
-	MsgAlertHostIdInvalid      ErrorMsg  = "alert hostId: %s invalid"
-	CodeApNameTagMissing       ErrorCode = 900003
-	MsgApNameTagMissing        ErrorMsg  = "alert apName tag missing in metrics system"
-	CodeInterfaceTagMissing    ErrorCode = 900004
-	MsgInterfaceTagMissing     ErrorMsg  = "alert interface tag missing in metrics system"
+	CodeAlertStartTimeInFuture          ErrorCode = 900000
+	MsgAlertStartTimeInFuture           ErrorMsg  = "alert start time should not be in the future"
+	CodeAlertNameNotDefined             ErrorCode = 900001
+	MsgAlertNameNotDefined              ErrorMsg  = "alert name: %s not defined"
+	CodeAlertHostIdInvalid              ErrorCode = 900002
+	MsgAlertHostIdInvalid               ErrorMsg  = "alert hostId: %s invalid"
+	CodeApNameTagMissing                ErrorCode = 900003
+	MsgApNameTagMissing                 ErrorMsg  = "alert apName tag missing in metrics system"
+	CodeInterfaceTagMissing             ErrorCode = 900004
+	MsgInterfaceTagMissing              ErrorMsg  = "alert interface tag missing in metrics system"
 	CodeAlertGroupMissingOrganizationId ErrorCode = 900005
 	MsgAlertGroupMissingOrganizationId  ErrorMsg  = "alert group missing organization id"
 )

@@ -8,6 +8,8 @@ import (
 
 	"github.com/wagslane/go-rabbitmq"
 	"github.com/wangxin688/narvis/client/config"
+	"github.com/wangxin688/narvis/client/tasks"
+	"github.com/wangxin688/narvis/client/utils/helpers"
 	"github.com/wangxin688/narvis/client/utils/logger"
 )
 
@@ -44,6 +46,9 @@ func main() {
 	// block main thread - wait for shutdown signal
 	err = consumer.Run(func(delivery rabbitmq.Delivery) rabbitmq.Action {
 		logger.Logger.Info(fmt.Sprintf(" [consumer] received new message %s", delivery.Body))
+		helpers.BackgroundTask(func() {
+			tasks.TaskDispatcher(delivery.Body)
+		})
 		return rabbitmq.Ack
 	})
 	if err != nil {

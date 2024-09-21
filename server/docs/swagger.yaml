@@ -139,6 +139,27 @@ definitions:
           type: string
         type: array
     type: object
+  schemas.ActionLogCreate:
+    properties:
+      acknowledged:
+        type: boolean
+      alertIds:
+        items:
+          type: string
+        type: array
+      assignUserId:
+        type: string
+      comment:
+        type: string
+      resolved:
+        type: boolean
+      rootCauseId:
+        type: string
+      suppressed:
+        type: boolean
+    required:
+    - alertIds
+    type: object
   schemas.Alert:
     properties:
       acknowledged:
@@ -464,6 +485,10 @@ definitions:
     type: object
   schemas.DeviceCreate:
     properties:
+      Platform:
+        type: string
+      chassisId:
+        type: string
       description:
         type: string
       deviceModel:
@@ -600,6 +625,13 @@ definitions:
     properties:
       id:
         type: string
+    type: object
+  schemas.IdsResponse:
+    properties:
+      ids:
+        items:
+          type: string
+        type: array
     type: object
   schemas.IpAddress:
     properties:
@@ -1078,6 +1110,95 @@ definitions:
         type: array
       name:
         type: string
+    type: object
+  schemas.ScanDevice:
+    properties:
+      chassisId:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      deviceModel:
+        type: string
+      id:
+        type: string
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      name:
+        type: string
+      platform:
+        type: string
+    type: object
+  schemas.ScanDeviceBatchUpdate:
+    properties:
+      deviceRole:
+        type: string
+      floor:
+        type: string
+      ids:
+        items:
+          type: string
+        type: array
+      siteId:
+        type: string
+      status:
+        type: string
+    required:
+    - deviceRole
+    - ids
+    - siteId
+    - status
+    type: object
+  schemas.ScanDeviceCreate:
+    properties:
+      community:
+        type: string
+      maxRepetitions:
+        maximum: 100
+        type: integer
+      port:
+        maximum: 65535
+        type: integer
+      range:
+        items:
+          type: string
+        type: array
+      timeout:
+        maximum: 60
+        type: integer
+    required:
+    - range
+    type: object
+  schemas.ScanDeviceCreateResponse:
+    properties:
+      taskIds:
+        items:
+          type: string
+        type: array
+    type: object
+  schemas.ScanDeviceUpdate:
+    properties:
+      deviceRole:
+        type: string
+      floor:
+        type: string
+      rackId:
+        type: string
+      rackPosition:
+        items:
+          type: integer
+        type: array
+      siteId:
+        type: string
+      status:
+        type: string
+    required:
+    - deviceRole
+    - siteId
+    - status
     type: object
   schemas.SiteCreate:
     properties:
@@ -1794,6 +1915,30 @@ paths:
       summary: Update user
       tags:
       - Admin
+  /alert/action-logs:
+    post:
+      consumes:
+      - application/json
+      description: Create Action Log
+      parameters:
+      - description: Create Action Log
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.ActionLogCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create Action Log
+      tags:
+      - Alert
   /alert/alert-groups:
     post:
       consumes:
@@ -2363,16 +2508,14 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              allOf:
-              - $ref: '#/definitions/schemas.ListResponse'
-              - properties:
-                  results:
-                    items:
-                      $ref: '#/definitions/schemas.AP'
-                    type: array
-                type: object
-            type: array
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.AP'
+                  type: array
+              type: object
       security:
       - BearerAuth: []
       summary: List aps
@@ -3286,6 +3429,224 @@ paths:
       security:
       - BearerAuth: []
       summary: Update rack
+      tags:
+      - Infra
+  /infra/scan-devices:
+    delete:
+      consumes:
+      - application/json
+      description: Scan Device Batch Delete
+      parameters:
+      - description: ids
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdsResponse'
+      security:
+      - BearerAuth: []
+      summary: Scan Device Batch Delete
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: Scan Device List
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: chassisId
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: deviceModel
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: managementIp
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: manufacturer
+        type: array
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: platform
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.ScanDevice'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Scan Device List
+    post:
+      consumes:
+      - application/json
+      description: Scan Device Create
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.ScanDeviceCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.ScanDeviceCreateResponse'
+      security:
+      - BearerAuth: []
+      summary: Scan Device Create
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Scan Device Batch Update
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.ScanDeviceBatchUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdsResponse'
+      security:
+      - BearerAuth: []
+      summary: Scan Device Batch Update
+      tags:
+      - Infra
+  /infra/scan-devices/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Scan Device Delete
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Scan Device Delete
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: Scan Device Get
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.ScanDevice'
+      security:
+      - BearerAuth: []
+      summary: Scan Device Get
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Scan Device Update
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.ScanDeviceUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Scan Device Update
       tags:
       - Infra
   /infra/sites:
