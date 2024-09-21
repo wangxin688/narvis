@@ -180,11 +180,10 @@ func (ws *WebSSH) server() error {
 				return errors.Wrap(err, "write message to ssh error")
 			}
 			continue
-		} else {
-			err = json.Unmarshal(data, &msg)
-			if err != nil {
-				return errors.Wrap(err, "error format input message")
-			}
+		}
+		err = json.Unmarshal(data, &msg)
+		if err != nil {
+			return errors.Wrap(err, "error format input message")
 		}
 		switch msg.Type {
 		case messageTypeIgnore:

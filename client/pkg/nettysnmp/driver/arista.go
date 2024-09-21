@@ -2,7 +2,6 @@ package driver
 
 import "github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
 
-
 type AristaDriver struct {
 	factory.SnmpDiscovery
 }

@@ -6,7 +6,8 @@ import "github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
 // HH3C-DOT11-APMT-MIB:
 
 const hh3cDot11ApMacAddress string = ".1.3.6.1.4.1.25506.2.75.2.1.1.1.2"
-// const hh3cDot11APID = 
+
+// const hh3cDot11APID =
 
 type H3CDriver struct {
 	factory.SnmpDiscovery

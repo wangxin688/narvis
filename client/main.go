@@ -14,8 +14,10 @@ import (
 )
 
 func main() {
-	config.SetupConfig()
-
+	err := config.SetupConfig()
+	if err != nil {
+		panic(err)
+	}
 	conn, err := rabbitmq.NewConn(
 		config.Settings.AMQP_URL,
 		rabbitmq.WithConnectionOptionsLogging,

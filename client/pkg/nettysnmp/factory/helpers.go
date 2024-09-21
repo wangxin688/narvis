@@ -256,45 +256,48 @@ func RemoveNonLocalMacAddress(mac *map[uint64][]string, interfaces []*DeviceInte
 	return mac
 }
 
-func EnrichMacAddress(mac *map[uint64][]string, interfaces []*DeviceInterface, lldp []*LldpNeighbor, arp []*ArpItem) []*MacAddressItem {
-	results := make([]*MacAddressItem, 0)
-	interfaceMapping := make(map[uint64]*DeviceInterface)
-	arpMapping := make(map[string]*ArpItem)
+func EnrichMacAddress(macAddresses *map[uint64][]string, interfaces []*DeviceInterface, lldpNeighbors []*LldpNeighbor, arpItems []*ArpItem) []*MacAddressItem {
+	var results []*MacAddressItem
+	interfaceMapping := make(map[uint64]*DeviceInterface, len(interfaces))
+	arpMapping := make(map[string]*ArpItem, len(arpItems))
 	for _, iface := range interfaces {
 		interfaceMapping[iface.IfIndex] = iface
 	}
-	for _, arpItem := range arp {
+	for _, arpItem := range arpItems {
 		arpMapping[arpItem.MacAddress] = arpItem
 	}
-	lldpInterfaces := lldpNeighborInterfaces(lldp)
-	for index, value := range *mac {
-		if len(value) == 0 {
+	lldpInterfaces := lldpNeighborInterfaces(lldpNeighbors)
+	for index, macAddresses := range *macAddresses {
+		if len(macAddresses) == 0 {
 			continue
-		} else if lo.Contains(lldpInterfaces, interfaceMapping[index].IfName) || interfaceMapping[index].IfType != "ethernetCsmacd" {
-			// remove mac address is not learned from access port.
+		}
+		iface := interfaceMapping[index]
+		if !shouldIncludeMacAddress(iface, lldpInterfaces) {
 			continue
-		} else {
-			for _, v := range value {
-				ip := "0.0.0.0"
-				vlanId := uint32(0)
-				if item, ok := arpMapping[v]; !ok {
-					continue
-				} else {
-					ip = item.IpAddress
-					vlanId = item.VlanId
-				}
-				results = append(results, &MacAddressItem{
-					MacAddress: v,
-					IfIndex:    index,
-					IfName:     interfaceMapping[index].IfName,
-					IfDescr:    interfaceMapping[index].IfDescr,
-					IpAddress:  ip,
-					VlanId:     vlanId,
-				})
+		}
+		for _, macAddress := range macAddresses {
+			arpItem, ok := arpMapping[macAddress]
+			if !ok {
+				continue
 			}
+			if arpItem.IpAddress == "" {
+				arpItem.IpAddress = "0.0.0.0"
+			}
+			results = append(results, &MacAddressItem{
+				MacAddress: macAddress,
+				IfIndex:    index,
+				IfName:     iface.IfName,
+				IfDescr:    iface.IfDescr,
+				IpAddress:  arpItem.IpAddress,
+				VlanId:     arpItem.VlanId,
+			})
 		}
 	}
 	return results
+}
+
+func shouldIncludeMacAddress(iface *DeviceInterface, lldpInterfaces []string) bool {
+	return iface.IfType == "ethernetCsmacd" && !lo.Contains(lldpInterfaces, iface.IfName)
 }
 
 func lldpHashValue(lldp *LldpNeighbor) string {
