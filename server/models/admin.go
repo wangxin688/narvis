@@ -68,7 +68,6 @@ func (Role) TableName() string {
 	return RoleTableName
 }
 
-
 type Permission struct {
 	BaseDbModel
 	Name        string                            `gorm:"column:name;unique;not null"`

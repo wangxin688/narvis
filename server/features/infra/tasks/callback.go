@@ -13,46 +13,49 @@ import (
 )
 
 func deviceBasicInfoScanCallback(data []byte) error {
-	basicInfo := make([]*intendtask.DeviceBasicInfoScanResponse, 0)
-	err := json.Unmarshal(data, &basicInfo)
-	if err != nil {
+	var scanResults []*intendtask.DeviceBasicInfoScanResponse
+	if err := json.Unmarshal(data, &scanResults); err != nil {
 		return err
 	}
-	ips := lo.Map(basicInfo, func(v *intendtask.DeviceBasicInfoScanResponse, _ int) string {
+
+	managementIPs := lo.Map(scanResults, func(v *intendtask.DeviceBasicInfoScanResponse, _ int) string {
 		return v.ManagementIp
 	})
-	if len(ips) == 0 {
+	if len(managementIPs) == 0 {
 		core.Logger.Info("[deviceBasicInfoScanCallback]: no scan devices found")
 		return nil
 	}
-	dbDevices, err := infra_biz.NewScanDeviceService().GetByScanResult(ips, basicInfo[0].OrganizationId)
+	dbDevices, err := infra_biz.NewScanDeviceService().GetByScanResult(managementIPs, scanResults[0].OrganizationId)
 	if err != nil {
 		core.Logger.Error("[deviceBasicInfoScanCallback]: get db scan devices failed", zap.Error(err))
 		return err
 	}
-	addedDevices := make([]*models.ScanDevice, 0)
-	for _, basicInfo := range basicInfo {
-		if _, ok := (*dbDevices)[basicInfo.ManagementIp]; !ok {
-			addedDevices = append(addedDevices, &models.ScanDevice{
-				OrganizationId: basicInfo.OrganizationId,
-				ManagementIp:   basicInfo.ManagementIp,
-				Platform:       basicInfo.Platform,
-				Manufacturer:   basicInfo.Manufacturer,
-				DeviceModel:    basicInfo.DeviceModel,
-				ChassisId:      basicInfo.ChassisId,
-				Name:           basicInfo.Name,
-				Description:    basicInfo.Description,
+
+	// find new devices
+	var newDevices []*models.ScanDevice
+	for _, scanResult := range scanResults {
+		if _, ok := (*dbDevices)[scanResult.ManagementIp]; !ok {
+			newDevices = append(newDevices, &models.ScanDevice{
+				OrganizationId: scanResult.OrganizationId,
+				ManagementIp:   scanResult.ManagementIp,
+				Platform:       scanResult.Platform,
+				Manufacturer:   scanResult.Manufacturer,
+				DeviceModel:    scanResult.DeviceModel,
+				ChassisId:      scanResult.ChassisId,
+				Name:           scanResult.Name,
+				Description:    scanResult.Description,
 			})
 		}
 	}
 
-	if len(addedDevices) > 0 {
-		err = gen.ScanDevice.CreateInBatches(addedDevices, len(addedDevices))
+	if len(newDevices) > 0 {
+		err = gen.ScanDevice.CreateInBatches(newDevices, len(newDevices))
 		if err != nil {
 			core.Logger.Error("[deviceBasicInfoScanCallback]: create scan devices failed", zap.Error(err))
 			return err
 		}
 	}
+
 	return nil
 }
 

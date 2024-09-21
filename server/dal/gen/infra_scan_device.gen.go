@@ -29,7 +29,6 @@ func newScanDevice(db *gorm.DB, opts ...gen.DOOption) scanDevice {
 	_scanDevice.Id = field.NewString(tableName, "id")
 	_scanDevice.CreatedAt = field.NewTime(tableName, "createdAt")
 	_scanDevice.Name = field.NewString(tableName, "name")
-	_scanDevice.Range = field.NewString(tableName, "range")
 	_scanDevice.ManagementIp = field.NewString(tableName, "managementIp")
 	_scanDevice.Platform = field.NewString(tableName, "platform")
 	_scanDevice.DeviceModel = field.NewString(tableName, "deviceModel")
@@ -55,7 +54,6 @@ type scanDevice struct {
 	Id             field.String
 	CreatedAt      field.Time
 	Name           field.String
-	Range          field.String
 	ManagementIp   field.String
 	Platform       field.String
 	DeviceModel    field.String
@@ -83,7 +81,6 @@ func (s *scanDevice) updateTableName(table string) *scanDevice {
 	s.Id = field.NewString(table, "id")
 	s.CreatedAt = field.NewTime(table, "createdAt")
 	s.Name = field.NewString(table, "name")
-	s.Range = field.NewString(table, "range")
 	s.ManagementIp = field.NewString(table, "managementIp")
 	s.Platform = field.NewString(table, "platform")
 	s.DeviceModel = field.NewString(table, "deviceModel")
@@ -107,11 +104,10 @@ func (s *scanDevice) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (s *scanDevice) fillFieldMap() {
-	s.fieldMap = make(map[string]field.Expr, 12)
+	s.fieldMap = make(map[string]field.Expr, 11)
 	s.fieldMap["id"] = s.Id
 	s.fieldMap["createdAt"] = s.CreatedAt
 	s.fieldMap["name"] = s.Name
-	s.fieldMap["range"] = s.Range
 	s.fieldMap["managementIp"] = s.ManagementIp
 	s.fieldMap["platform"] = s.Platform
 	s.fieldMap["deviceModel"] = s.DeviceModel

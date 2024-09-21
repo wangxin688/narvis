@@ -27,20 +27,20 @@ func (s *TopologyService) GetTopologyDevices(deviceIds []string) (*map[string]*m
 	return &deviceMap, nil
 }
 
-func (s *TopologyService) GetLldpNeighbors(siteId string) {
+// func (s *TopologyService) GetLldpNeighbors(siteId string) {
 
-	neighbors, err := gen.LLDPNeighbor.Where(gen.LLDPNeighbor.SiteId.Eq(siteId), gen.LLDPNeighbor.OrganizationId.Eq(global.OrganizationId.Get())).Find()
-	if err != nil {
-		return
-	}
-	deviceIds := make([]string, 0)
-	for _, neighbor := range neighbors {
-		deviceIds = append(deviceIds, neighbor.LocalDeviceId)
-		deviceIds = append(deviceIds, neighbor.RemoteDeviceId)
-	}
-	devices, err := s.GetTopologyDevices(deviceIds)
-	if err != nil {
-		return
-	}
+// 	neighbors, err := gen.LLDPNeighbor.Where(gen.LLDPNeighbor.SiteId.Eq(siteId), gen.LLDPNeighbor.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+// 	if err != nil {
+// 		return
+// 	}
+// 	deviceIds := make([]string, 0)
+// 	for _, neighbor := range neighbors {
+// 		deviceIds = append(deviceIds, neighbor.LocalDeviceId)
+// 		deviceIds = append(deviceIds, neighbor.RemoteDeviceId)
+// 	}
+// 	devices, err := s.GetTopologyDevices(deviceIds)
+// 	if err != nil {
+// 		return
+// 	}
 
-}
+// }

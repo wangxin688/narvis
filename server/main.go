@@ -8,6 +8,7 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/core/config"
 	"github.com/wangxin688/narvis/server/middleware"
+
 	// "github.com/wangxin688/narvis/server/pkg/rmq"
 	"github.com/wangxin688/narvis/server/register"
 	"github.com/wangxin688/narvis/server/tools/helpers"
@@ -30,7 +31,11 @@ func main() {
 	setupConfig()
 	setupLogger()
 	initializeSentry()
-	infra.InitDB()
+	err := infra.InitDB()
+	if err != nil {
+		core.Logger.Fatal("[mainStartHttpServer]: failed to initialize database", zap.Error(err))
+		panic(err)
+	}
 	gen.SetDefault(infra.DB)
 	router := gin.New()
 	configureRouter(router)

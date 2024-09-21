@@ -60,8 +60,12 @@ func CircuitCreateHooks(circuitId string) {
 	}
 	core.Logger.Info(fmt.Sprintf("[circuitCreateHooks]: create host success for circuit %s", circuitId),
 		zap.String("hostId", hostId))
-	gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId)).Update(gen.Circuit.MonitorId, hostId)
-
+	_, err = gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId)).Update(gen.Circuit.MonitorId, hostId)
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: update circuit monitorId failed for circuit %s", circuitId),
+			zap.Error(err))
+		return
+	}
 	circuitDeviceCreateHooks(circuit, proxy)
 }
 
@@ -119,7 +123,11 @@ func circuitDeviceCreateHooks(circuit *models.Circuit, proxy string) {
 		return
 	}
 	core.Logger.Info(fmt.Sprintf("[circuitHostCreateHooks]: create host success for circuit %s", circuit.Id), zap.String("hostId", hostId))
-	gen.Circuit.Where(gen.Circuit.Id.Eq(circuit.Id)).Update(gen.Circuit.MonitorHostId, hostId)
+	_, err = gen.Circuit.Where(gen.Circuit.Id.Eq(circuit.Id)).Update(gen.Circuit.MonitorHostId, hostId)
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: update circuit monitorHostId failed for circuit %s", circuit.Id), zap.Error(err))
+		return
+	}
 }
 
 func CircuitUpdateHooks(circuitId string, diff map[string]*ts.OrmDiff) {

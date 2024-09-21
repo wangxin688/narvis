@@ -34,6 +34,11 @@ func getQueries() map[string]string {
 }
 
 func queryResults(queries map[string]string) (deviceVectors, apVectors map[string][]*vtm.VectorResponse, err error) {
+	if queries == nil {
+		core.Logger.Error("[device360Task]: getQueries result is nil")
+		return nil, nil, fmt.Errorf("queries is nil")
+	}
+
 	vectorRequests := make([]vtm.VectorRequest, 0)
 	for _, v := range queries {
 		vectorRequests = append(vectorRequests, vtm.VectorRequest{
@@ -45,30 +50,54 @@ func queryResults(queries map[string]string) (deviceVectors, apVectors map[strin
 		return nil, nil, err
 	}
 
+	if resp == nil {
+		return nil, nil, fmt.Errorf("vtm response is nil")
+	}
+
 	for _, v := range resp {
 		metricName := v.Metric["__name__"]
-		if _, ok := v.Metric["deviceId"]; ok {
-			if _, ok := v.Metric["apName"]; ok {
-				apVectors[metricName] = append(apVectors[metricName], v)
-			} else {
-				deviceVectors[metricName] = append(deviceVectors[metricName], v)
-			}
-		} else {
+		if _, ok := v.Metric["deviceId"]; !ok {
 			continue
+		}
+
+		if _, ok := v.Metric["apName"]; ok {
+			if apVectors == nil {
+				apVectors = make(map[string][]*vtm.VectorResponse)
+			}
+
+			if _, ok := apVectors[metricName]; !ok {
+				apVectors[metricName] = make([]*vtm.VectorResponse, 0)
+			}
+
+			apVectors[metricName] = append(apVectors[metricName], v)
+		} else {
+			if deviceVectors == nil {
+				deviceVectors = make(map[string][]*vtm.VectorResponse)
+			}
+
+			if _, ok := deviceVectors[metricName]; !ok {
+				deviceVectors[metricName] = make([]*vtm.VectorResponse, 0)
+			}
+
+			deviceVectors[metricName] = append(deviceVectors[metricName], v)
 		}
 	}
 	return deviceVectors, apVectors, nil
 }
 
-func aggregateApMetrics(vectors map[string][]*vtm.VectorResponse) (
-	apMetrics map[string]map[string]*ApSchema) {
+func aggregateApMetrics(vectors map[string][]*vtm.VectorResponse) map[string]map[string]*ApSchema {
+	apMetrics := make(map[string]map[string]*ApSchema)
 	for metricName, metricList := range vectors {
 		if len(metricList) == 0 {
 			continue
 		}
 		for _, item := range metricList {
-			siteId := item.Metric["siteId"] // apName is unique under the same site
+			siteId := item.Metric["siteId"]
 			apName := item.Metric["apName"]
+			if siteId == "" || apName == "" {
+				core.Logger.Warn("[device360Task]: siteId or apName is empty", zap.Any("metric", item))
+				continue
+			}
 			delete(item.Metric, "__name__")
 			delete(item.Metric, "deviceId")
 			delete(item.Metric, "deviceName")
@@ -94,11 +123,13 @@ func aggregateApMetrics(vectors map[string][]*vtm.VectorResponse) (
 			}
 		}
 	}
-	return
+	return apMetrics
 }
 
 func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 	deviceMetrics map[string]*DeviceSchema) {
+
+	deviceMetrics = make(map[string]*DeviceSchema)
 
 	for metricName, metricList := range vectors {
 		if len(metricList) == 0 {
@@ -106,7 +137,14 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 		}
 		for _, item := range metricList {
 			deviceId := item.Metric["deviceId"]
+
+			if deviceId == "" {
+				core.Logger.Warn("[device360Task]: deviceId is empty", zap.Any("metric", item))
+				continue
+			}
+
 			delete(item.Metric, "__name__")
+
 			if _, ok := deviceMetrics[deviceId]; !ok {
 				deviceMetrics[deviceId] = &DeviceSchema{
 					ICMPPing:          -1,
@@ -124,34 +162,35 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 					OperationalStatus: make([]float64, 0),
 					Labels:            item.Metric,
 				}
-				switch metricName {
-				case string(metrics.ICMPPing):
-					deviceMetrics[deviceId].ICMPPing = stringToFloat64(item.Value[1])
-				case string(metrics.CpuUsage):
-					deviceMetrics[deviceId].CpuUsage = append(deviceMetrics[deviceId].CpuUsage, stringToFloat64(item.Value[1]))
-				case string(metrics.MemoryUsage):
-					deviceMetrics[deviceId].MemoryUsage = append(deviceMetrics[deviceId].MemoryUsage, stringToFloat64(item.Value[1]))
-				case string(metrics.Temperature):
-					deviceMetrics[deviceId].Temperature = append(deviceMetrics[deviceId].Temperature, stringToFloat64(item.Value[1]))
-				case string(metrics.FanStatus):
-					deviceMetrics[deviceId].FanStatus = append(deviceMetrics[deviceId].FanStatus, stringToFloat64(item.Value[1]))
-				case string(metrics.PowerSupplyStatus):
-					deviceMetrics[deviceId].PowerSupplyStatus = append(deviceMetrics[deviceId].PowerSupplyStatus, stringToFloat64(item.Value[1]))
-				case string(metrics.RxDiscards):
-					deviceMetrics[deviceId].RxDiscards = append(deviceMetrics[deviceId].RxDiscards, stringToFloat64(item.Value[1]))
-				case string(metrics.TxDiscards):
-					deviceMetrics[deviceId].TxDiscards = append(deviceMetrics[deviceId].TxDiscards, stringToFloat64(item.Value[1]))
-				case string(metrics.RxErrors):
-					deviceMetrics[deviceId].RxErrors = append(deviceMetrics[deviceId].RxErrors, stringToFloat64(item.Value[1]))
-				case string(metrics.TxErrors):
-					deviceMetrics[deviceId].TxErrors = append(deviceMetrics[deviceId].TxErrors, stringToFloat64(item.Value[1]))
-				case string(metrics.RxRate):
-					deviceMetrics[deviceId].RxRate = append(deviceMetrics[deviceId].RxRate, stringToFloat64(item.Value[1]))
-				case string(metrics.TxRate):
-					deviceMetrics[deviceId].TxRate = append(deviceMetrics[deviceId].TxRate, stringToFloat64(item.Value[1]))
-				case string(metrics.OperationalStatus):
-					deviceMetrics[deviceId].OperationalStatus = append(deviceMetrics[deviceId].OperationalStatus, stringToFloat64(item.Value[1]))
-				}
+			}
+
+			switch metricName {
+			case string(metrics.ICMPPing):
+				deviceMetrics[deviceId].ICMPPing = stringToFloat64(item.Value[1])
+			case string(metrics.CpuUsage):
+				deviceMetrics[deviceId].CpuUsage = append(deviceMetrics[deviceId].CpuUsage, stringToFloat64(item.Value[1]))
+			case string(metrics.MemoryUsage):
+				deviceMetrics[deviceId].MemoryUsage = append(deviceMetrics[deviceId].MemoryUsage, stringToFloat64(item.Value[1]))
+			case string(metrics.Temperature):
+				deviceMetrics[deviceId].Temperature = append(deviceMetrics[deviceId].Temperature, stringToFloat64(item.Value[1]))
+			case string(metrics.FanStatus):
+				deviceMetrics[deviceId].FanStatus = append(deviceMetrics[deviceId].FanStatus, stringToFloat64(item.Value[1]))
+			case string(metrics.PowerSupplyStatus):
+				deviceMetrics[deviceId].PowerSupplyStatus = append(deviceMetrics[deviceId].PowerSupplyStatus, stringToFloat64(item.Value[1]))
+			case string(metrics.RxDiscards):
+				deviceMetrics[deviceId].RxDiscards = append(deviceMetrics[deviceId].RxDiscards, stringToFloat64(item.Value[1]))
+			case string(metrics.TxDiscards):
+				deviceMetrics[deviceId].TxDiscards = append(deviceMetrics[deviceId].TxDiscards, stringToFloat64(item.Value[1]))
+			case string(metrics.RxErrors):
+				deviceMetrics[deviceId].RxErrors = append(deviceMetrics[deviceId].RxErrors, stringToFloat64(item.Value[1]))
+			case string(metrics.TxErrors):
+				deviceMetrics[deviceId].TxErrors = append(deviceMetrics[deviceId].TxErrors, stringToFloat64(item.Value[1]))
+			case string(metrics.RxRate):
+				deviceMetrics[deviceId].RxRate = append(deviceMetrics[deviceId].RxRate, stringToFloat64(item.Value[1]))
+			case string(metrics.TxRate):
+				deviceMetrics[deviceId].TxRate = append(deviceMetrics[deviceId].TxRate, stringToFloat64(item.Value[1]))
+			case string(metrics.OperationalStatus):
+				deviceMetrics[deviceId].OperationalStatus = append(deviceMetrics[deviceId].OperationalStatus, stringToFloat64(item.Value[1]))
 			}
 		}
 	}
@@ -161,6 +200,10 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 func calcHealthScore(deviceMetrics map[string]*DeviceSchema, timestamp int64) []*vtm.Metric {
 	var results []*vtm.Metric
 	for _, device := range deviceMetrics {
+		if device == nil {
+			core.Logger.Warn("[device360Task]: device is nil")
+			continue
+		}
 		icmpScore := calcIcmpScore(device.ICMPPing)
 		cpuScore := calcCpuScore(device.CpuUsage)
 		memoryScore := calcMemScore(device.MemoryUsage)
@@ -277,16 +320,15 @@ func calcHealthScore(deviceMetrics map[string]*DeviceSchema, timestamp int64) []
 			Value:     float64(operationalStatusAnomaly),
 			Timestamp: timestamp,
 		})
-		return results
 	}
 	return results
 }
 
 func calcAp360(apMetrics map[string]map[string]*ApSchema, timestamp int64) []*vtm.Metric {
 	results := make([]*vtm.Metric, 0)
-	for _, apItem := range apMetrics {
-		for _, ap := range apItem {
-			var score float64 = -1
+	for _, apsBySite := range apMetrics {
+		for _, ap := range apsBySite {
+			var score float64
 			if ap.ApStatus == 0 && ap.ChannelUtilization == nil && ap.ChannelAssociationClients == nil {
 				score = -1
 			} else {
@@ -302,29 +344,36 @@ func calcAp360(apMetrics map[string]map[string]*ApSchema, timestamp int64) []*vt
 			results = append(results, &vtm.Metric{
 				Metric:    string(metrics.HealthScore),
 				Labels:    ap.Labels,
-				Value:     float64(score),
+				Value:     score,
 				Timestamp: timestamp,
 			})
-
 		}
 	}
 	return results
 }
 
-func Device360OfflineTask() {
+func RunDevice360OfflineTask() {
 	timestamp := time.Now().UTC().Unix()
 	queries := getQueries()
 	deviceVectors, apVectors, err := queryResults(queries)
 	if err != nil {
-		core.Logger.Error("failed to get vector from victoriaMetrics", zap.Error(err))
+		core.Logger.Error("[device360OfflineTask]: failed to get vector from victoriaMetrics", zap.Error(err))
 		return
 	}
-	aggDevice := aggregateDeviceMetrics(deviceVectors)
-	aggAP := aggregateApMetrics(apVectors)
-	device360 := calcHealthScore(aggDevice, timestamp)
-	ap360 := calcAp360(aggAP, timestamp)
+
+	aggDeviceMetrics := aggregateDeviceMetrics(deviceVectors)
+	aggApMetrics := aggregateApMetrics(apVectors)
+
+	deviceHealthScores := calcHealthScore(aggDeviceMetrics, timestamp)
+	apHealthScores := calcAp360(aggApMetrics, timestamp)
 
 	vtmClient := vtm.NewVtmClient(core.Settings.Vtm.Url, core.Settings.Vtm.Username, core.Settings.Vtm.Password)
-	vtmClient.BulkImportMetrics(device360, nil)
-	vtmClient.BulkImportMetrics(ap360, nil)
+	err = vtmClient.BulkImportMetrics(deviceHealthScores, nil)
+	if err != nil {
+		core.Logger.Error("[device360OfflineTask]failed to import metrics to vtm", zap.Error(err))
+	}
+	err = vtmClient.BulkImportMetrics(apHealthScores, nil)
+	if err != nil {
+		core.Logger.Error("[device360OfflineTask]failed to import metrics to vtm", zap.Error(err))
+	}
 }

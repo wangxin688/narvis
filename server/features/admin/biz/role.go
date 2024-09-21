@@ -109,11 +109,17 @@ func (r *RoleService) CreateRole(role *schemas.RoleCreate) (string, error) {
 		Description:    role.Description,
 		OrganizationId: global.OrganizationId.Get(),
 	}
-	err = gen.Role.Create(roleModel)
-	if err != nil {
-		return "", err
-	}
-	gen.Role.Menus.Model(roleModel).Replace(menus...)
+	gen.Role.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
+		err = gen.Role.Create(roleModel)
+		if err != nil {
+			return err
+		}
+		err = gen.Role.Menus.Model(roleModel).Replace(menus...)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	return roleModel.Id, nil
 }
 
@@ -135,13 +141,19 @@ func (r *RoleService) UpdateRole(RoleId string, role *schemas.RoleUpdate) error 
 		}
 		if role.Menus != nil {
 			if len(*role.Menus) == 0 {
-				gen.Role.Menus.Model(dbRole).Clear()
+				err = gen.Role.Menus.Model(dbRole).Clear()
+				if err != nil {
+					return err
+				}
 			} else {
 				dbMenus, err := gen.Menu.Where(gen.Menu.Id.In(*role.Menus...)).Find()
 				if err != nil {
 					return err
 				}
-				gen.Role.Menus.Model(dbRole).Replace(dbMenus...)
+				err = gen.Role.Menus.Model(dbRole).Replace(dbMenus...)
+				if err != nil {
+					return err
+				}
 			}
 		}
 		gen.Role.UnderlyingDB().Save(updateFields)

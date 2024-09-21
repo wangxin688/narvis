@@ -2,7 +2,6 @@ package audit
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"reflect"
 
@@ -96,7 +95,7 @@ func getSnapshot(data any, fields []*schema.Field) (*snapshot, error) {
 			tmp = reflect.Indirect(tmp)
 		}
 		if tmp.Kind() != reflect.Struct {
-			return nil, errors.New(fmt.Sprintf("unsupported type: %v", tmp.Kind()))
+			return nil, fmt.Errorf("unsupported type: %v", tmp.Kind())
 		}
 
 		id := tmp.FieldByName("Id").String()

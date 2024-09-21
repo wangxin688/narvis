@@ -55,7 +55,11 @@ func DeviceCreateHooks(deviceId string) {
 	}
 	core.Logger.Info(fmt.Sprintf("[deviceCreateHooks]: create host success for device %s with hostId %s", deviceId, hostId))
 	// ignore potential db update error here because of MVP version, it will be fixed in future version
-	gen.Device.Where(gen.Device.Id.Eq(deviceId)).Update(gen.Device.MonitorId, hostId)
+	_, err = gen.Device.Where(gen.Device.Id.Eq(deviceId)).Update(gen.Device.MonitorId, hostId)
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[deviceCreateHooks]: update hostId failed for device %s", deviceId), zap.Error(err))
+		return
+	}
 }
 
 func DeviceUpdateHooks(deviceId string, diff map[string]*ts.OrmDiff) {

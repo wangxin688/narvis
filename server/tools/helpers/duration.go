@@ -28,9 +28,8 @@ func HumanReadableDuration(seconds int64) string {
 		return fmt.Sprintf("%d hours %d minutes %d seconds", hours, minutes, seconds)
 	} else if minutes > 0 {
 		return fmt.Sprintf("%d minutes %d seconds", minutes, seconds)
-	} else {
-		return fmt.Sprintf("%d seconds", seconds)
 	}
+	return fmt.Sprintf("%d seconds", seconds)
 }
 
 // ShortDuration converts seconds to string with shorten string: `25h1m1s“

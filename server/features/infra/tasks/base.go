@@ -79,7 +79,11 @@ func CreateScanTask(sd *schemas.ScanDeviceCreate, orgId string) ([]string, error
 			core.Logger.Error("[CreateScanTask]: marshal task failed", zap.Error(err))
 			continue
 		}
-		rmq.PublishProxyMessage(taskByte, orgId)
+		err = rmq.PublishProxyMessage(taskByte, orgId)
+		if err != nil {
+			core.Logger.Error("[CreateScanTask]: publish task failed", zap.Error(err))
+			continue
+		}
 	}
 
 	return taskIds, nil

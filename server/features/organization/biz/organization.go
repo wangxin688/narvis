@@ -121,10 +121,10 @@ func (o *OrganizationService) DeleteOrganization(orgId string) error {
 	return nil
 }
 
-func (o *OrganizationService) ListOrganizations(organization *schemas.OrganizationQuery) (*schemas.OrganizationUpdate, error) {
+// func (o *OrganizationService) ListOrganizations(organization *schemas.OrganizationQuery) (*schemas.OrganizationUpdate, error) {
 
-	return nil, nil
-}
+// 	return nil, nil
+// }
 
 func (o *OrganizationService) validateExist(organization *schemas.OrganizationCreate) bool {
 

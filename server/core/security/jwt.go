@@ -3,11 +3,12 @@ package security
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/wangxin688/narvis/server/core"
-	"github.com/wangxin688/narvis/server/tools/errors"
+	te "github.com/wangxin688/narvis/server/tools/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -70,37 +71,37 @@ func GenerateTokenResponse(userID string, username string) *AccessToken {
 }
 
 // verify token and return true if token is valid access token
-func VerifyAccessToken(tokenString string) (errors.ErrorCode, *Claims) {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+func VerifyAccessToken(tokenString string) (te.ErrorCode, *Claims) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(_ *jwt.Token) (interface{}, error) {
 		return []byte(core.Settings.Jwt.SecretKey), nil
 	})
 	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			return errors.CodeAccessTokenInvalid, nil
+		if errors.Is(err, jwt.ErrSignatureInvalid) {
+			return te.CodeAccessTokenInvalid, nil
 		}
 	}
 	claims, ok := token.Claims.(*Claims)
 	if !ok || !token.Valid {
 		if claims.ExpiresAt < time.Now().Unix() {
-			return errors.CodeAccessTokenExpired, nil
+			return te.CodeAccessTokenExpired, nil
 		}
 		if claims.IssuedAt > time.Now().Unix() {
-			return errors.CodeAccessTokenInvalid, nil
+			return te.CodeAccessTokenInvalid, nil
 		}
 		if claims.Refreshed {
-			return errors.CodeAccessTokenInvalidForRefresh, nil
+			return te.CodeAccessTokenInvalidForRefresh, nil
 		}
 	}
-	return errors.ErrorOk, claims
+	return te.ErrorOk, claims
 }
 
 // Verify token and return true if token is valid refresh token
 func verifyRefreshToken(tokenString string) bool {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(_ *jwt.Token) (interface{}, error) {
 		return []byte(core.Settings.Jwt.SecretKey), nil
 	})
 	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
+		if errors.Is(err, jwt.ErrSignatureInvalid) {
 			return false
 		}
 	}
@@ -120,7 +121,7 @@ func GenerateRefreshTokenResponse(tokenString string) *AccessToken {
 		return &AccessToken{}
 	}
 	claims := &Claims{}
-	_, _ = jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+	_, _ = jwt.ParseWithClaims(tokenString, claims, func(_ *jwt.Token) (interface{}, error) {
 		return []byte(core.Settings.Jwt.SecretKey), nil
 	})
 	return GenerateTokenResponse(claims.UserId, claims.Username)

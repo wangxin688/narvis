@@ -31,7 +31,12 @@ func SnmpCredCreateHooks(credId string) {
 			return
 		}
 		core.Logger.Info(fmt.Sprintf("[snmpCredCreateHooks]: create global macro success with cred %s", credId))
-		gen.SnmpV2Credential.Where(gen.SnmpV2Credential.Id.Eq(credId)).UpdateColumn(gen.SnmpV2Credential.GlobalMacroId, umId)
+		_, err = gen.SnmpV2Credential.Where(gen.SnmpV2Credential.Id.Eq(credId)).UpdateColumn(gen.SnmpV2Credential.GlobalMacroId, umId)
+		if err != nil {
+			core.Logger.Error(fmt.Sprintf("[snmpCredCreateHooks]: update snmp cred failed with cred %s", credId), zap.Error(err))
+			return
+		}
+		core.Logger.Info(fmt.Sprintf("[snmpCredCreateHooks]: update snmp cred success with cred %s", credId))
 		return
 	}
 
@@ -128,7 +133,6 @@ func SnmpCredUpdateHooks(credId string, diff map[string]*ts.OrmDiff) {
 		}
 	}
 }
-
 
 // when delete host cred, use global cred as default
 // global cred will not be deleted

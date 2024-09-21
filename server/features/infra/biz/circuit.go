@@ -252,7 +252,7 @@ func (c *CircuitService) GetCircuitShortMap(cIds []string) (map[string]*schemas.
 }
 
 func (d *CircuitService) SearchCircuitByKeyword(keyword string, orgId string) ([]string, error) {
-	var result []string
+	result := make([]string, 0)
 	stmt := gen.Circuit.Select(gen.Circuit.Id).Where(gen.Circuit.OrganizationId.Eq(orgId))
 	keyword = "%" + keyword + "%"
 	stmt = stmt.Where(gen.Circuit.Name.Like(keyword)).Or(

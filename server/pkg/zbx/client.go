@@ -40,7 +40,7 @@ func NewZbxClient() *Zbx {
 		zbxInstance = &Zbx{
 			Client: req.C().SetBaseURL(url).SetCommonContentType("application/json").
 				SetCommonBearerAuthToken(token).SetCommonRetryCount(2).SetTimeout(time.Duration(5) * time.Second).
-				OnAfterResponse(func(client *req.Client, resp *req.Response) error {
+				OnAfterResponse(func(_ *req.Client, resp *req.Response) error {
 					if resp.Err != nil {
 						return resp.Err
 					}
@@ -77,7 +77,7 @@ func (zbx *Zbx) Rpc(request *zs.ZbxRequest) (rsp *zs.ZbxResponse, err error) {
 	return rsp, nil
 }
 
-func (z *Zbx) HostGroupCreate(params *zs.HostGroupCreate) (groupID string, err error) {
+func (z *Zbx) HostGroupCreate(params *zs.HostGroupCreate) (string, error) {
 	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "hostgroup.create",
@@ -92,7 +92,7 @@ func (z *Zbx) HostGroupCreate(params *zs.HostGroupCreate) (groupID string, err e
 	return hgr.GroupIDs[0], nil
 }
 
-func (z *Zbx) HostGroupUpdate(params *zs.HostGroupUpdate) (groupID string, err error) {
+func (z *Zbx) HostGroupUpdate(params *zs.HostGroupUpdate) (string, error) {
 	req := &zs.ZbxRequest{
 		Params: params,
 		Method: "hostgroup.update",
@@ -107,7 +107,7 @@ func (z *Zbx) HostGroupUpdate(params *zs.HostGroupUpdate) (groupID string, err e
 	return hgr.GroupIDs[0], nil
 }
 
-func (z *Zbx) HostGroupDelete(hostGroupIDs []string) (groupID []string, err error) {
+func (z *Zbx) HostGroupDelete(hostGroupIDs []string) ([]string, error) {
 	req := &zs.ZbxRequest{
 		Params: hostGroupIDs,
 		Method: "hostgroup.delete",

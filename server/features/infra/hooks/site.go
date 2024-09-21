@@ -21,7 +21,11 @@ func SiteHookCreate(siteId string) (string, error) {
 		return "", err
 	}
 	// ignore potential db update error here because of MVP version, it will be fixed in future version
-	gen.Site.Where(gen.Site.Id.Eq(siteId)).UpdateColumn(gen.Site.MonitorId, groupId)
+	_, err = gen.Site.Where(gen.Site.Id.Eq(siteId)).UpdateColumn(gen.Site.MonitorId, groupId)
+	if err != nil {
+		core.Logger.Error("[siteCreateHooks]: update site monitorId failed", zap.Error(err))
+		return "", err
+	}
 	core.Logger.Info("[siteCreateHooks]: create host group success", zap.String("groupId", groupId))
 	return groupId, nil
 }

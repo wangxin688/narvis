@@ -21,7 +21,7 @@ func main() {
 	InitMacAddress()
 }
 
-func connectDb() *gorm.DB {
+func connectDB() *gorm.DB {
 	core.SetUpConfig()
 	dsn := core.Settings.Postgres.BuildPgDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -32,7 +32,7 @@ func connectDb() *gorm.DB {
 }
 
 func InitOrganization() string {
-	gen.SetDefault(connectDb())
+	gen.SetDefault(connectDB())
 	core.SetUpLogger()
 	service := biz.NewOrganizationService()
 
@@ -68,7 +68,7 @@ func InitOrganization() string {
 
 func InitMacAddress() {
 
-	gen.SetDefault(connectDb())
+	gen.SetDefault(connectDB())
 	core.SetUpLogger()
 	core.SetUpConfig()
 	mac, err := gen.MacAddress.Count()

@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-func connectDb() *gorm.DB {
+func connectDB() *gorm.DB {
 	core.SetUpConfig()
 	dsn := core.Settings.Postgres.BuildPgDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
@@ -49,7 +49,7 @@ func main() {
 		FieldNullable:  true,
 		FieldCoverable: true,
 	})
-	g.UseDB(connectDb())
+	g.UseDB(connectDB())
 	g.ApplyBasic(
 		&models.Organization{},
 		&models.Proxy{},

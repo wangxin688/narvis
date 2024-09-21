@@ -125,7 +125,7 @@ func NewPromQLBuilder(metricName string) *PromQLBuilder {
 }
 
 // see prometheus functions: https://prometheus.io/docs/prometheus/latest/querying/functions/
-// WithFuncName, basicQL will be format as "funcName(basicql)"
+// WithFuncName, basicQL will be format as "funcName(basicQL)"
 func (pb *PromQLBuilder) WithFuncName(funcName string) *PromQLBuilder {
 	pb.funcName = funcName
 	return pb
@@ -158,54 +158,54 @@ func (pb *PromQLBuilder) WithComp(comp Compare) *PromQLBuilder {
 	return pb
 }
 
-// WithAgg basicQL will be format as "agg(basicql) by/without (labelName1,labelName2,...,labelNameN)"
+// WithAgg basicQL will be format as "agg(basicQL) by/without (labelName1,labelName2,...,labelNameN)"
 func (pb *PromQLBuilder) WithAgg(agg Aggregation) *PromQLBuilder {
 	pb.agg = agg
 	return pb
 }
 
-// Build build basicql
+// Build build basicQL
 func (pb *PromQLBuilder) Build() (string, error) {
 	if pb.metricName == "" {
 		return "", fmt.Errorf("metric name is required")
 	}
-	basicql := fmt.Sprintf(pb.metricName)
+	basicQL :=pb.metricName
 	if len(pb.labels) > 0 {
 		tmp := make([]string, len(pb.labels))
 		for index, label := range pb.labels {
 			tmp[index] = fmt.Sprintf("%s%s%s", label.Name, label.Matcher, label.Value)
 		}
-		basicql += fmt.Sprintf("{%s}", strings.Join(tmp, ","))
+		basicQL += fmt.Sprintf("{%s}", strings.Join(tmp, ","))
 	}
 
 	if pb.window != "" {
-		basicql += fmt.Sprintf("[%s]", pb.window)
+		basicQL += fmt.Sprintf("[%s]", pb.window)
 	}
 	if len(pb.compOps) > 0 {
 		tmp := make([]string, len(pb.compOps))
 		for index, comp := range pb.compOps {
-			tmp[index] = fmt.Sprintf("%s%s%.0f", basicql, comp.Op, comp.Value)
+			tmp[index] = fmt.Sprintf("%s%s%.0f", basicQL, comp.Op, comp.Value)
 		}
 		fmt.Println(tmp)
 		fmt.Println(len(tmp))
-		basicql = fmt.Sprintf(" %s", strings.Join(tmp, " and "))
+		basicQL = fmt.Sprintf(" %s", strings.Join(tmp, " and "))
 
 	}
 	if pb.funcName != "" {
-		basicql = fmt.Sprintf("%s(%s)", pb.funcName, basicql)
+		basicQL = fmt.Sprintf("%s(%s)", pb.funcName, basicQL)
 	}
 
 	if pb.offset != "" {
-		basicql += fmt.Sprintf(" offset %s", pb.offset)
+		basicQL += fmt.Sprintf(" offset %s", pb.offset)
 	}
 
 	if !reflect.DeepEqual(pb.agg, Aggregation{}) {
 		if pb.agg.Op != "" {
-			basicql = fmt.Sprintf("%s(%s)", pb.agg.Op, basicql)
+			basicQL = fmt.Sprintf("%s(%s)", pb.agg.Op, basicQL)
 		}
 		if pb.agg.AggWay != "" && pb.agg.By != nil {
-			basicql = fmt.Sprintf("%s %s (%s)", basicql, pb.agg.AggWay, strings.Join(pb.agg.By, ","))
+			basicQL = fmt.Sprintf("%s %s (%s)", basicQL, pb.agg.AggWay, strings.Join(pb.agg.By, ","))
 		}
 	}
-	return basicql, nil
+	return basicQL, nil
 }

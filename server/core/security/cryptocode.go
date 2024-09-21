@@ -10,12 +10,11 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/wangxin688/narvis/server/core"
 )
 
-var secretKey string = "21474bc721d0f8806cd2a76680e7b3c9"
-
 func PskEncrypt(psk string) (string, error) {
-	block, err := aes.NewCipher([]byte(secretKey))
+	block, err := aes.NewCipher([]byte(core.Settings.Jwt.SecretKey))
 	if err != nil {
 		return "", err
 	}
@@ -34,7 +33,7 @@ func PskDecrypt(encrypted string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	block, err := aes.NewCipher([]byte(secretKey))
+	block, err := aes.NewCipher([]byte(core.Settings.Jwt.SecretKey))
 	if err != nil {
 		return "", err
 	}

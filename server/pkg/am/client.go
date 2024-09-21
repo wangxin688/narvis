@@ -31,7 +31,7 @@ func NewAlertManager(url, username, password string) *AlertManager {
 		amInstance = &AlertManager{
 			Client: req.C().SetBaseURL(url).SetCommonContentType("application/json").
 				SetCommonBasicAuth(username, password).SetCommonRetryCount(2).SetTimeout(time.Duration(2) * time.Second).
-				OnAfterResponse(func(client *req.Client, resp *req.Response) error {
+				OnAfterResponse(func(_ *req.Client, resp *req.Response) error {
 					if resp.Err != nil {
 						return resp.Err
 					}
@@ -63,8 +63,8 @@ func (am *AlertManager) CreateAlerts(alert []*Alert) error {
 	return nil
 }
 
-func (am *AlertManager) GetAlerts(query *AlertRequest) (alerts []*AlertResponse, err error) {
-
+func (am *AlertManager) GetAlerts(query *AlertRequest) ([]*AlertResponse, error) {
+	results := make([]*AlertResponse, 0)
 	path := "/api/v2/alerts"
 	requestParams := map[string]any{}
 	if query.Active != nil {
@@ -93,14 +93,15 @@ func (am *AlertManager) GetAlerts(query *AlertRequest) (alerts []*AlertResponse,
 	if query.Filter != nil {
 		requestParams["filter"] = query.Filter
 	}
-	_, err = am.R().SetQueryParamsAnyType(requestParams).SetSuccessResult(&alerts).Get(path)
+	_, err := am.R().SetQueryParamsAnyType(requestParams).SetSuccessResult(&results).Get(path)
 	if err != nil {
-		return nil, err
+		return results, err
 	}
-	return
+	return results, nil
 }
 
-func (am *AlertManager) GetAlertGroups(query *AlertRequest) (alerts []*AlertGroupResponse, err error) {
+func (am *AlertManager) GetAlertGroups(query *AlertRequest) ([]*AlertGroupResponse, error) {
+	results := make([]*AlertGroupResponse, 0)
 	path := "/api/v2/alerts/groups"
 	requestParams := map[string]any{}
 	if query.Active != nil {
@@ -129,9 +130,9 @@ func (am *AlertManager) GetAlertGroups(query *AlertRequest) (alerts []*AlertGrou
 	if query.Filter != nil {
 		requestParams["filter"] = query.Filter
 	}
-	_, err = am.R().SetQueryParamsAnyType(requestParams).SetSuccessResult(&alerts).Get(path)
+	_, err := am.R().SetQueryParamsAnyType(requestParams).SetSuccessResult(&results).Get(path)
 	if err != nil {
-		return nil, err
+		return results, err
 	}
-	return
+	return results, nil
 }

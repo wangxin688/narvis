@@ -133,7 +133,7 @@ func (s *ApService) GetApShortMap(apIds []string) (map[string]*schemas.APShort, 
 }
 
 func (d *ApService) SearchApByKeyword(keyword string, orgId string) ([]string, error) {
-	var result []string
+	result := make([]string, 0)
 	stmt := gen.AP.Select(gen.AP.Id).Where(gen.AP.OrganizationId.Eq(orgId))
 	keyword = "%" + keyword + "%"
 	stmt = stmt.Where(gen.AP.Name.Like(keyword)).Or(gen.AP.ManagementIp.Like(keyword))

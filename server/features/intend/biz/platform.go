@@ -12,14 +12,14 @@ import (
 func GetPlatforms(query *schemas.PlatformQuery) (int64, []string) {
 	list := platform.SupportedPlatform()
 	count := len(list)
-	listString := lo.Map(list, func(item platform.Platform, index int) string {
+	listString := lo.Map(list, func(item platform.Platform, _ int) string {
 		return string(item)
 	})
 	if query == nil {
 		return int64(count), listString
 	}
 	if query.Platform != nil {
-		listString = lo.Filter(listString, func(item string, index int) bool {
+		listString = lo.Filter(listString, func(item string, _ int) bool {
 			return strings.EqualFold(item, *query.Platform)
 		})
 	}

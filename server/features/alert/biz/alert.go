@@ -79,7 +79,10 @@ func (a *AlertService) CreateAlert(alert *schemas.AlertCreate) (*models.Alert, e
 		tools.BackgroundTask(func() {
 			postAlert := a.AlertManagerMessage(dbAlert)
 			amApi := am.NewAlertManager(core.Settings.Atm.Url, core.Settings.Atm.Username, core.Settings.Atm.Password)
-			amApi.CreateAlerts(postAlert)
+			err = amApi.CreateAlerts(postAlert)
+			if err != nil {
+				core.Logger.Error("[createAlert]post alert to alertmanager error", zap.Error(err))
+			}
 		})
 	}
 	return dbAlert, nil

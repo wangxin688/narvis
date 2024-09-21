@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wangxin688/narvis/server/core"
 	biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
@@ -11,6 +12,7 @@ import (
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
+	"go.uber.org/zap"
 )
 
 // @Tags Infra
@@ -38,7 +40,10 @@ func createSite(c *gin.Context) {
 		return
 	}
 	tools.BackgroundTask(func() {
-		hooks.SiteHookCreate(newSite)
+		_, err = hooks.SiteHookCreate(newSite)
+		if err != nil {
+			core.Logger.Error("[siteCreateHooks]:create host group failed", zap.Error(err))
+		}
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newSite})
 }

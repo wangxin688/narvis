@@ -12,7 +12,7 @@ import (
 func GetManufacturers(query *schemas.ManufacturerQuery) (int64, []string) {
 	list := manufacturer.SupportedManufacturer()
 	count := len(list)
-	listString := lo.Map(list, func(item manufacturer.Manufacturer, index int) string {
+	listString := lo.Map(list, func(item manufacturer.Manufacturer, _ int) string {
 		return string(item)
 	})
 	if query == nil {

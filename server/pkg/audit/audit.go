@@ -142,7 +142,7 @@ func (a *AuditLogMixin) enableAuditing(tx *gorm.DB) bool {
 
 func getDBObjectBeforeOperation(tx *gorm.DB) (*snapshot, error) {
 	if tx.DryRun || tx.Error != nil {
-		return nil, nil
+		return nil, nil //nolint:nilerr
 	}
 	var targetObj interface{}
 	if getItemType(tx.Statement.ReflectValue.Type()) == tx.Statement.Schema.ModelType {

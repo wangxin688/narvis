@@ -155,10 +155,9 @@ func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
 		RackPosition: func() *[]uint8 {
 			if device.RackPosition == nil {
 				return nil
-			} else {
-				position, _ := infra_utils.ParseUint8s(*device.RackPosition)
-				return &position
 			}
+			position, _ := infra_utils.ParseUint8s(*device.RackPosition)
+			return &position
 		}(),
 		SiteId: device.SiteId,
 	}, nil

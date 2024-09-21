@@ -28,7 +28,7 @@ func NewVtmClient(url, username, password string) *VtmClient {
 	once.Do(func() {
 		vtmInstance = &VtmClient{
 			Client: req.C().SetBaseURL(url).SetCommonBasicAuth(username, password).
-				OnAfterResponse(func(client *req.Client, resp *req.Response) error {
+				OnAfterResponse(func(_ *req.Client, resp *req.Response) error {
 					if resp.Err != nil {
 						return resp.Err
 					}
@@ -126,67 +126,70 @@ func (c *VtmClient) GetMatrix(query MatrixRequest, OrganizationId *string) (resu
 	return
 }
 
-func (v *VtmClient) GetBulkVector(query []VectorRequest, OrganizationId *string) (results []*VectorResponse, err error) {
+func (v *VtmClient) GetBulkVector(queries []VectorRequest, organizationID *string) ([]*VectorResponse, error) {
+	results := make([]*VectorResponse, 0, len(queries))
+	resultChan := make(chan []*VectorResponse, len(queries))
 	var wg sync.WaitGroup
-	resultsChan := make(chan []*VectorResponse, len(query))
-	for _, q := range query {
+
+	for _, query := range queries {
 		wg.Add(1)
 		go func(q VectorRequest) {
 			defer wg.Done()
-			matrix, err := v.GetVector(q, OrganizationId)
+			vectors, err := v.GetVector(q, organizationID)
 			if err != nil {
-				resultsChan <- nil
+				resultChan <- nil
 				return
 			}
-			resultsChan <- matrix
-		}(q)
+			resultChan <- vectors
+		}(query)
 	}
+
 	go func() {
 		wg.Wait()
-		close(resultsChan)
+		close(resultChan)
 	}()
 
-	for r := range resultsChan {
-		if r == nil {
-			err = fmt.Errorf("error occurred while getting vector response")
-			return
+	for result := range resultChan {
+		if result == nil {
+			return nil, fmt.Errorf("error occurred while getting vector response")
 		}
-		results = append(results, r...)
+		results = append(results, result...)
 	}
 
-	return
+	return results, nil
 }
 
-func (v *VtmClient) GetBulkMatrix(query []MatrixRequest, OrganizationId *string) (results []*MatrixResponse, err error) {
-
+func (v *VtmClient) GetBulkMatrix(requests []MatrixRequest, organizationID *string) ([]*MatrixResponse, error) {
+	results := make([]*MatrixResponse, 0)
+	resultChan := make(chan []*MatrixResponse, len(requests))
 	var wg sync.WaitGroup
-	resultsChan := make(chan []*MatrixResponse, len(query))
-	for _, q := range query {
+
+	for _, request := range requests {
 		wg.Add(1)
-		go func(q MatrixRequest) {
+		go func(req MatrixRequest) {
 			defer wg.Done()
-			matrix, err := v.GetMatrix(q, OrganizationId)
+			matrix, err := v.GetMatrix(req, organizationID)
 			if err != nil {
-				resultsChan <- nil
+				resultChan <- nil
 				return
 			}
-			resultsChan <- matrix
-		}(q)
+			resultChan <- matrix
+		}(request)
 	}
+
 	go func() {
 		wg.Wait()
-		close(resultsChan)
+		close(resultChan)
 	}()
 
-	for r := range resultsChan {
-		if r == nil {
-			err = fmt.Errorf("error occurred while getting vector response")
-			return
+	for result := range resultChan {
+		if result == nil {
+			return results, fmt.Errorf("error occurred while getting matrix response")
 		}
-		results = append(results, r...)
+		results = append(results, result...)
 	}
 
-	return
+	return results, nil
 }
 
 func (c *VtmClient) BulkImportMetrics(metrics []*Metric, OrganizationId *string) (err error) {

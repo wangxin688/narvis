@@ -34,7 +34,7 @@ type AlertCreate struct {
 func (a *AlertCreate) validateStartTime() error {
 	if a.StartedAt != nil {
 		if a.StartedAt.After(time.Now()) {
-			errors.NewError(errors.CodeAlertStartTimeInFuture, errors.MsgAlertStartTimeInFuture)
+			return errors.NewError(errors.CodeAlertStartTimeInFuture, errors.MsgAlertStartTimeInFuture)
 		}
 	}
 	return nil
@@ -143,7 +143,7 @@ type Alert struct {
 }
 
 func (a *Alert) GetDuration() string {
-	duration := "0s"
+	var duration string
 	if a.ResolvedAt != nil {
 		duration = helpers.HumanReadableDuration(int64(a.ResolvedAt.Sub(a.StartedAt).Seconds()))
 	} else {
@@ -172,7 +172,7 @@ type AlertDetail struct {
 }
 
 func (a *AlertDetail) GetDuration() string {
-	duration := "0s"
+	var duration string
 	if a.ResolvedAt != nil {
 		duration = helpers.HumanReadableDuration(int64(a.ResolvedAt.Sub(a.StartedAt).Seconds()))
 	} else {

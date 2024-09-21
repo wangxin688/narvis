@@ -60,46 +60,39 @@ func ZapLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 	}
 }
 
-// GinRecovery recover掉项目可能出现的panic
-func GinRecovery(logger *zap.Logger, stack bool) gin.HandlerFunc {
+// GinRecovery recovers from panics in the gin framework.
+func GinRecovery(logger *zap.Logger, logStack bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				// Check for a broken connection, as it is not really a
-				// condition that warrants a panic stack trace.
-				var brokenPipe bool
+				var brokenConn bool
 				if ne, ok := err.(*net.OpError); ok {
 					if se, ok := ne.Err.(*os.SyscallError); ok {
-						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
-							brokenPipe = true
-						}
+						brokenConn = strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer")
 					}
 				}
 
-				httpRequest, _ := httputil.DumpRequest(c.Request, false)
-				if brokenPipe {
+				dump, _ := httputil.DumpRequest(c.Request, false)
+				if brokenConn {
 					logger.Error(c.Request.URL.Path,
 						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
+						zap.String("request", string(dump)),
 					)
-					// If the connection is dead, we can't write a status to it.
 					c.Error(err.(error)) // nolint: errcheck
 					c.Abort()
 					return
 				}
 
-				if stack {
-					logger.Error("[Recovery from panic]",
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-						zap.String("stack", string(debug.Stack())),
-					)
-				} else {
-					logger.Error("[Recovery from panic]",
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-					)
+				stack := ""
+				if logStack {
+					stack = string(debug.Stack())
 				}
+
+				logger.Error("[Recovery from panic]",
+					zap.Any("error", err),
+					zap.String("request", string(dump)),
+					zap.String("stack", stack),
+				)
 				c.AbortWithStatus(http.StatusInternalServerError)
 			}
 		}()
