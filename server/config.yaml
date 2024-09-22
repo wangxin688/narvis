@@ -1,6 +1,6 @@
 jwt:
   secret_key: '9fdee1b8a3f18b7f86673938beec96e6'
-  public_auth_key: ""
+  public_auth_key: '32fd7b3e502186a69b09bfad6eeb014b'
   algorithm: 'HS256'
   access_token_expired_minutes: 1440
   refresh_token_expired_minutes: 10080
@@ -16,9 +16,9 @@ zap:
 postgres:
   host: localhost
   port: 5432
-  username: netty
-  password: netty
-  db_name: netty
+  username: narvis
+  password: 215de447698a2397c9bb878f54f175d4
+  db_name: narvis
   max_idle_conns: 10
   max_open_conns: 100
   log_mode: "silent" # debug, silent
@@ -26,7 +26,7 @@ postgres:
 redis:
   user_cluster: false
   addr: 127.0.0.1:6379
-  password: ""
+  password: 14adbad48f023d00b7223860f057a886
   db: 0
   cluster_addrs:
     # - 127.0.0.1:6379
@@ -62,7 +62,7 @@ env: dev
 
 zbx:
   url: "http://127.0.0.1:8088"
-  token: f9454ee305be33d134c68054ef96ec8ec010e472aa94663a8f186e5a585dfd05 // replace after init
+  token: 9c89bc0ebfbabcbfb4c93a3c139932496ed3699b2c03f40130bece6178264f3f # replace after init
 
 vtm:
   url: "http://127.0.0.1:8428"

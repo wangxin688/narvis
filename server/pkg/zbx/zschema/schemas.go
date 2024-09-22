@@ -46,6 +46,21 @@ type Macro struct {
 	Value string
 }
 
+type LoginResponse struct {
+	JsonRpc string       `json:"jsonrpc"`
+	Result  string       `json:"result"`
+	Error   *ZbxApiError `json:"error,omitempty"`
+	ID      uint64       `json:"id"`
+}
+
+type AlertMediaTypeResponse struct {
+	MediaTypeIds []string `json:"mediatypeids"`
+}
+
+type UserResponse struct {
+	UserIds []string `json:"userids"`
+}
+
 type GlobalMacroCreateResult struct {
 	GlobalMacroIDs []string `json:"globalmacroids"`
 }

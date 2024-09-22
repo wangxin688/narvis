@@ -10,10 +10,10 @@ const ScanDeviceCallback = "ScanDeviceCallback"
 const ScanMacAddressTableCallback = "ScanMacAddressTableCallback"
 const ScanApCallback = "ScanApCallback"
 
-const DeviceBasicInfoCbUrl = "/api/infra/scan-device-basic"
-const DeviceCbUrl = "/api/infra/scan-device"
-const MacAddressTableCbUrl = "/api/infra/scan-mac"
-const ApCbUrl = "/api/infra/scan-ap"
+const DeviceBasicInfoCbUrl = "/api/v1/task/scan-device-basic"
+const DeviceCbUrl = "/api/v1/task/scan-device"
+const MacAddressTableCbUrl = "/api/v1/task/scan-mac"
+const ApCbUrl = "/api/v1/task/scan-ap"
 
 // 正式落库后的数据扫描schema
 type BaseSnmpTask struct {

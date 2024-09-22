@@ -26,6 +26,9 @@ var RestconfCredentialTableName = "infra_restconf_credential"
 var MacAddressTableName = "mac_address"
 var ScanDeviceTableName = "infra_scan_device"
 
+// var MaVendorTableName = "infra_ma_vendor"
+// var DeviceMATableName = "infra_device_ma"
+
 type Site struct {
 	BaseDbModel
 	Name           string       `gorm:"column:name;uniqueIndex:idx_name_organization_id;not null"`
@@ -294,3 +297,28 @@ type ScanDevice struct {
 func (ScanDevice) TableName() string {
 	return ScanDeviceTableName
 }
+
+// TODO: add MA information in future
+// type MAVendor struct {
+// 	BaseDbSingleModel
+// 	VendorName     string       `gorm:"column:vendorName;not null;uniqueIndex:idx_vendor_name_organization_id"`
+// 	Contact        *string      `gorm:"column:contact;default:null"`
+// 	Portal         *string      `gorm:"column:portal;default:null"`
+// 	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_vendor_name_organization_id;index"`
+// 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+// }
+
+// // device/AP MA information
+// type DeviceMA struct {
+// 	BaseDbModel
+// 	DeviceId       *string      `gorm:"column:deviceId;type:uuid;default:null;unique;index"`
+// 	Device         Device       `gorm:"constraint:Ondelete:CASCADE"`
+// 	APId           *string      `gorm:"column:apId;type:uuid;default:null;unique;index"`
+// 	AP             AP           `gorm:"constraint:Ondelete:CASCADE"`
+// 	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
+// 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+// 	MaVendorId     string       `gorm:"column:maVendorId;type:uuid;not null;uniqueIndex:idx_device_id_organization_id;index"`
+// 	MaVendor       MAVendor     `gorm:"constraint:Ondelete:CASCADE"`
+// 	StartDate      time.Time    `gorm:"column:startDate;not null"`
+// 	EndDate        time.Time    `gorm:"column:endDate;default:null"`
+// }

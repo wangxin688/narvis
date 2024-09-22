@@ -31,10 +31,8 @@ type Proxy struct {
 	BaseDbModel
 	Name           string       `gorm:"column:name;uniqueIndex:idx_name_organization_id;not null"`
 	Active         bool         `gorm:"column:active;type:bool;default:true"`
-	SecretKey      string       `gorm:"column:secretKey;not null"`
-	IpAddress      string       `gorm:"column:ipAddress;uniqueIndex:idx_ip_address_organization_id;not null"`
 	ProxyId        *string      `gorm:"column:proxyId"`
 	LastSeen       *time.Time   `gorm:"column:lastSeen;default:null"`
-	OrganizationId string       `gorm:"column:organizationId;uniqueIndex:idx_ip_address_organization_id;uniqueIndex:idx_name_organization_id;not null"`
+	OrganizationId string       `gorm:"column:organizationId;uniqueIndex:idx_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }

@@ -9,7 +9,6 @@ import (
 type ProxyCreate struct {
 	Name           string `json:"name" binding:"required"`
 	Active         bool   `json:"active" binding:"required"`
-	SecretKey      string `json:"secretKey" binding:"required;len=32"`
 	OrganizationId string `json:"organizationId" binding:"required;uuid"`
 }
 
@@ -33,7 +32,6 @@ type Proxy struct {
 	UpdatedAt    time.Time         `json:"UpdatedAt"`
 	Name         string            `json:"name" binding:"required"`
 	Active       bool              `json:"active" binding:"required"`
-	SecretKey    string            `json:"secretKey" binding:"required;len=32"`
 	Organization OrganizationShort `json:"organization"`
 }
 
