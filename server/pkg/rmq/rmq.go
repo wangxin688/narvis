@@ -45,11 +45,11 @@ func PublishProxyMessage(message []byte, orgId string) error {
 			return err
 		}
 	}
-	defer publisher.Close()
+	// defer publisher.Close()
 	err = publisher.Publish(
 		message,
 		[]string{orgId},
-		rabbitmq.WithPublishOptionsContentType("application/json"),
+		// rabbitmq.WithPublishOptionsContentType("application/json"),
 		rabbitmq.WithPublishOptionsExpiration("180000"), // 180s
 	)
 	return err

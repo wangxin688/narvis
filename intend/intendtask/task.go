@@ -65,14 +65,15 @@ type DeviceInterface struct {
 }
 
 type DeviceBasicInfoScanResponse struct {
-	Name           string `json:"name"`
-	Description    string `json:"description"`
-	ChassisId      string `json:"chassisId"`
-	ManagementIp   string `json:"managementIp"`
-	Manufacturer   string `json:"manufacturer"`
-	DeviceModel    string `json:"deviceModel"`
-	Platform       string `json:"platform"`
-	OrganizationId string `json:"organizationId"`
+	Name           string   `json:"name"`
+	Description    string   `json:"description"`
+	ChassisId      string   `json:"chassisId"`
+	ManagementIp   string   `json:"managementIp"`
+	Manufacturer   string   `json:"manufacturer"`
+	DeviceModel    string   `json:"deviceModel"`
+	Platform       string   `json:"platform"`
+	OrganizationId string   `json:"organizationId"`
+	Errors         []string `json:"errors"`
 }
 
 type DeviceScanResponse struct{}

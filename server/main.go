@@ -42,7 +42,7 @@ func main() {
 	helpers.RegisterCustomValidator()
 	middleware.RegisterOpenAPI(router)
 	// rmq.GetMqConn()
-	if err := router.Run(":8080"); err != nil {
+	if err := router.Run(":8000"); err != nil {
 		core.Logger.Fatal("[mainStartHttpServer]: failed to run server", zap.Error(err))
 	}
 }

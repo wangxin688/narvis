@@ -2,7 +2,9 @@ package biz
 
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
+	"github.com/wangxin688/narvis/server/features/organization/schemas"
 	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/models"
 )
 
 type ProxyService struct{}
@@ -22,5 +24,20 @@ func (p *ProxyService) VerifyProxy(proxyId string) bool {
 		return false
 	}
 	global.OrganizationId.Set(proxy.OrganizationId)
+	global.ProxyId.Set(proxyId)
 	return true
+}
+
+func (p *ProxyService) CreateProxy(proxy *schemas.ProxyCreate) (*models.Proxy, error) {
+	newProxy := &models.Proxy{
+		OrganizationId: proxy.OrganizationId,
+		Name:           proxy.Name,
+		Active:         proxy.Active,
+	}
+
+	err := gen.Proxy.Create(newProxy)
+	if err != nil {
+		return nil, err
+	}
+	return newProxy, nil
 }

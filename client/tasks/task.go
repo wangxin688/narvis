@@ -37,17 +37,19 @@ func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse
 	result := dispatcher.DispatchBasic()
 	if len(result) != 0 {
 		for _, r := range result {
-			if len(r.Data.Errors) > 0 {
+			if !r.SnmpReachable || (r.Data != nil && len(r.Data.Errors) > 0) {
 				continue
 			}
 			results = append(results, &intendtask.DeviceBasicInfoScanResponse{
 				Name:           r.Data.Hostname,
 				ManagementIp:   r.IpAddress,
+				ChassisId:      r.Data.ChassisId,
 				Manufacturer:   string(r.DeviceModel.Manufacturer),
 				Platform:       string(r.DeviceModel.Platform),
 				DeviceModel:    string(r.DeviceModel.DeviceModel),
 				Description:    r.Data.SysDescr,
 				OrganizationId: config.Settings.ORGANIZATION_ID,
+				Errors:         r.Data.Errors,
 			})
 
 		}

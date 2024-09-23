@@ -11,6 +11,7 @@ import (
 	"github.com/wangxin688/narvis/server/core/config"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/organization/biz"
+	"github.com/wangxin688/narvis/server/features/organization/hooks"
 	"github.com/wangxin688/narvis/server/features/organization/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
@@ -23,14 +24,20 @@ import (
 )
 
 func main() {
-	initOrganization()
+	core.SetUpConfig()
+	core.SetUpLogger()
+	gen.SetDefault(connectDB())
 	initMacAddress()
 	initZbx()
 	initRabbitMQ()
+	if core.Settings.Env == "dev" {
+		orgId := initOrganization()
+		core.SetUpConfig()
+		initProxy(orgId)
+	}
 }
 
 func connectDB() *gorm.DB {
-	core.SetUpConfig()
 	dsn := core.Settings.Postgres.BuildPgDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -40,8 +47,6 @@ func connectDB() *gorm.DB {
 }
 
 func initOrganization() string {
-	gen.SetDefault(connectDB())
-	core.SetUpLogger()
 	service := biz.NewOrganizationService()
 
 	org, err := gen.Organization.Where(gen.Organization.Name.Eq("NarvisDemo")).Find()
@@ -57,13 +62,13 @@ func initOrganization() string {
 	}
 
 	newOrg, err := service.CreateOrganization(&schemas.OrganizationCreate{
-		Name:           "NarvisDemo",
-		EnterpriseCode: "narvis-demo",
-		DomainName:     "navis-demo@narvis.com",
+		Name:           core.Settings.BootstrapConfig.Organization,
+		EnterpriseCode: core.Settings.BootstrapConfig.EnterpriseCode,
+		DomainName:     core.Settings.BootstrapConfig.DomainName,
 		Active:         true,
 		LicenseCount:   100000,
 		AuthType:       0,
-		AdminPassword:  "admin123456",
+		AdminPassword:  core.Settings.BootstrapConfig.AdminPassword,
 	})
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to create organization", zap.Error(err))
@@ -74,11 +79,30 @@ func initOrganization() string {
 	return newOrg.Id
 }
 
-func initMacAddress() {
+func initProxy(orgId string) {
+	dbProxy, err := gen.Proxy.Where(gen.Proxy.Name.Eq(core.Settings.BootstrapConfig.EnterpriseCode)).Find()
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to get proxy", zap.Error(err))
+		panic(err)
+	}
+	if len(dbProxy) > 0 {
+		core.Logger.Info("[bootstrap]: proxy already exists", zap.String("id", dbProxy[0].Id))
+		return
+	}
+	proxy, err := biz.NewProxyService().CreateProxy(&schemas.ProxyCreate{
+		OrganizationId: orgId,
+		Name:           core.Settings.BootstrapConfig.EnterpriseCode,
+		Active:         true,
+	})
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to create proxy", zap.Error(err))
+		panic(err)
+	}
+	core.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
+	hooks.CreateZbxProxy(proxy)
+}
 
-	gen.SetDefault(connectDB())
-	core.SetUpLogger()
-	core.SetUpConfig()
+func initMacAddress() {
 	mac, err := gen.MacAddress.Count()
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to get mac address", zap.Error(err))
@@ -504,7 +528,7 @@ func writeTokenToYamlConfig(token string) {
 		core.Logger.Error("[bootstrap]: failed to marshal config file", zap.Error(err))
 		return
 	}
-	err = os.WriteFile(core.ProjectPath+"config.yaml", yamlConfig, 0644)
+	err = os.WriteFile(core.ProjectPath+"/config.yaml", yamlConfig, 0644)
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to write config file", zap.Error(err))
 		return

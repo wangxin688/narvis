@@ -8,6 +8,7 @@ import (
 
 	"github.com/gosnmp/gosnmp"
 	"github.com/samber/lo"
+	"github.com/wangxin688/narvis/client/utils/logger"
 )
 
 type SnmpDiscovery struct {
@@ -29,43 +30,43 @@ type SnmpConfig struct {
 	BaseSnmpConfig
 }
 
-func NewSnmpSession(sc SnmpConfig) (*gosnmp.GoSNMP, error) {
-	var instance *gosnmp.GoSNMP
-	if !sc.validate() {
-		return nil, fmt.Errorf("invalid snmp config parameters for %s", sc.IpAddress)
-	} else if sc.Version == gosnmp.Version2c {
-		instance = &gosnmp.GoSNMP{
-			Target:    sc.IpAddress,
-			Port:      sc.Port,
-			Timeout:   time.Duration(sc.Timeout) * time.Second,
-			Retries:   2,
-			MaxOids:   int(sc.MaxRepetitions),
-			Version:   sc.Version,
-			Community: *sc.Community,
-		}
-	} else {
-		instance = &gosnmp.GoSNMP{
-			Target:   sc.IpAddress,
-			Port:     sc.Port,
-			Timeout:  time.Duration(sc.Timeout) * time.Second,
-			Retries:  2,
-			MaxOids:  int(sc.MaxRepetitions),
-			Version:  sc.Version,
-			MsgFlags: gosnmp.AuthPriv,
-			SecurityParameters: &gosnmp.UsmSecurityParameters{
-				UserName:                 *sc.V3Params.SecurityName,
-				AuthenticationProtocol:   sc.V3Params.AuthProtocol,
-				AuthenticationPassphrase: *sc.V3Params.AuthPassword,
-				PrivacyProtocol:          sc.V3Params.PrivProtocol,
-				PrivacyPassphrase:        *sc.V3Params.PrivPassword,
-			},
-		}
+func NewSnmpSession(config SnmpConfig) (*gosnmp.GoSNMP, error) {
+	var snmpSession *gosnmp.GoSNMP
+	if !config.validate() {
+		return nil, fmt.Errorf("invalid snmp config parameters for %s", config.IpAddress)
 	}
-	err := instance.Connect()
+	snmpSession = &gosnmp.GoSNMP{
+		Target:   config.IpAddress,
+		Port:     config.Port,
+		Timeout:  time.Duration(config.Timeout) * time.Second,
+		Retries:  2,
+		MaxOids:  int(config.MaxRepetitions),
+		Version:  config.Version,
+		MsgFlags: gosnmp.AuthPriv,
+	}
+
+	switch config.Version {
+	case gosnmp.Version2c:
+		snmpSession.Community = *config.Community
+	case gosnmp.Version3:
+		snmpSession.SecurityParameters = &gosnmp.UsmSecurityParameters{
+			UserName:                 *config.V3Params.SecurityName,
+			AuthenticationProtocol:   config.V3Params.AuthProtocol,
+			AuthenticationPassphrase: *config.V3Params.AuthPassword,
+			PrivacyProtocol:          config.V3Params.PrivProtocol,
+			PrivacyPassphrase:        *config.V3Params.PrivPassword,
+		}
+	default:
+		return nil, fmt.Errorf("unsupported snmp version: %d", config.Version)
+	}
+
+	err := snmpSession.Connect()
 	if err != nil {
+		snmpSession.Conn.Close()
+		logger.Logger.Info("snmp connect error", config.IpAddress, err)
 		return nil, err
 	}
-	return instance, nil
+	return snmpSession, nil
 }
 
 func NewSnmpDiscovery(sc SnmpConfig) (*SnmpDiscovery, error) {

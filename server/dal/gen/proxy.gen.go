@@ -31,8 +31,6 @@ func newProxy(db *gorm.DB, opts ...gen.DOOption) proxy {
 	_proxy.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_proxy.Name = field.NewString(tableName, "name")
 	_proxy.Active = field.NewBool(tableName, "active")
-	_proxy.SecretKey = field.NewString(tableName, "secretKey")
-	_proxy.IpAddress = field.NewString(tableName, "ipAddress")
 	_proxy.ProxyId = field.NewString(tableName, "proxyId")
 	_proxy.LastSeen = field.NewTime(tableName, "lastSeen")
 	_proxy.OrganizationId = field.NewString(tableName, "organizationId")
@@ -56,8 +54,6 @@ type proxy struct {
 	UpdatedAt      field.Time
 	Name           field.String
 	Active         field.Bool
-	SecretKey      field.String
-	IpAddress      field.String
 	ProxyId        field.String
 	LastSeen       field.Time
 	OrganizationId field.String
@@ -83,8 +79,6 @@ func (p *proxy) updateTableName(table string) *proxy {
 	p.UpdatedAt = field.NewTime(table, "updatedAt")
 	p.Name = field.NewString(table, "name")
 	p.Active = field.NewBool(table, "active")
-	p.SecretKey = field.NewString(table, "secretKey")
-	p.IpAddress = field.NewString(table, "ipAddress")
 	p.ProxyId = field.NewString(table, "proxyId")
 	p.LastSeen = field.NewTime(table, "lastSeen")
 	p.OrganizationId = field.NewString(table, "organizationId")
@@ -104,14 +98,12 @@ func (p *proxy) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (p *proxy) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 11)
+	p.fieldMap = make(map[string]field.Expr, 9)
 	p.fieldMap["id"] = p.Id
 	p.fieldMap["createdAt"] = p.CreatedAt
 	p.fieldMap["updatedAt"] = p.UpdatedAt
 	p.fieldMap["name"] = p.Name
 	p.fieldMap["active"] = p.Active
-	p.fieldMap["secretKey"] = p.SecretKey
-	p.fieldMap["ipAddress"] = p.IpAddress
 	p.fieldMap["proxyId"] = p.ProxyId
 	p.fieldMap["lastSeen"] = p.LastSeen
 	p.fieldMap["organizationId"] = p.OrganizationId

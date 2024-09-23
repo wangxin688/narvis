@@ -13,18 +13,19 @@ import (
 
 var once sync.Once
 var server *req.Client
+var xTaskID = "X-Task-ID"
 
 type ServerResponse struct {
 	TaskId string `json:"taskId"`
 }
 
-func scanDeviceBasicInfoCallback(data []*intendtask.DeviceBasicInfoScanResponse) {
+func scanDeviceBasicInfoCallback(data []*intendtask.DeviceBasicInfoScanResponse, taskId string) {
 	server := newServer()
 	if server == nil {
 		logger.Logger.Error("[scanDeviceBasicInfoCallback]: failed to create server")
 		return
 	}
-	resp, err := server.R().SetBody(data).Post(intendtask.DeviceBasicInfoCbUrl)
+	resp, err := server.R().SetBody(data).SetHeader(xTaskID, taskId).Post(intendtask.DeviceBasicInfoCbUrl)
 	if err != nil {
 		logger.Logger.Error("[scanDeviceBasicInfoCallback]: failed to post", err)
 		return
@@ -32,15 +33,16 @@ func scanDeviceBasicInfoCallback(data []*intendtask.DeviceBasicInfoScanResponse)
 	if !resp.IsSuccessState() {
 		logger.Logger.Error("[scanDeviceBasicInfoCallback]: failed to post result to server", resp.Status)
 	}
+	logger.Logger.Info("[scanDeviceBasicInfoCallback] post result to server success")
 }
 
-func scanDeviceCallback(data []*intendtask.DeviceScanResponse) {
+func scanDeviceCallback(data []*intendtask.DeviceScanResponse, taskId string) {
 	server := newServer()
 	if server == nil {
 		logger.Logger.Error("[scanDeviceCallback]: failed to create server")
 		return
 	}
-	resp, err := server.R().SetBody(data).Post(intendtask.DeviceCbUrl)
+	resp, err := server.R().SetBody(data).SetHeader(xTaskID, taskId).Post(intendtask.DeviceCbUrl)
 	if err != nil {
 		logger.Logger.Error("[scanDeviceCallback]: failed to post", err)
 		return
@@ -48,16 +50,18 @@ func scanDeviceCallback(data []*intendtask.DeviceScanResponse) {
 	if !resp.IsSuccessState() {
 		logger.Logger.Error("[scanDeviceCallback]: failed to post result to server", resp.Status)
 	}
+
+	logger.Logger.Info("[scanDeviceCallback] post result to server success")
 }
 
-func scanApCallback(data []*intendtask.ApScanResponse) {
+func scanApCallback(data []*intendtask.ApScanResponse, taskId string) {
 	server := newServer()
 	if server == nil {
 		logger.Logger.Error("[scanApCallback]: failed to create server")
 		return
 	}
 
-	resp, err := server.R().SetBody(data).Post(intendtask.ApCbUrl)
+	resp, err := server.R().SetBody(data).SetHeader(xTaskID, taskId).Post(intendtask.ApCbUrl)
 	if err != nil {
 		logger.Logger.Error("[scanApCallback]: failed to post", err)
 		return
@@ -66,16 +70,18 @@ func scanApCallback(data []*intendtask.ApScanResponse) {
 	if !resp.IsSuccessState() {
 		logger.Logger.Error("[scanApCallback]: failed to post result to server", resp.Status)
 	}
+
+	logger.Logger.Info("[scanApCallback] post result to server success")
 }
 
-func scanMacAddressTableCallback(data []*intendtask.MacAddressTableScanResponse) {
+func scanMacAddressTableCallback(data []*intendtask.MacAddressTableScanResponse, taskId string) {
 	server := newServer()
 	if server == nil {
 		logger.Logger.Error("[ScanMacAddressTableCallback]: failed to create server")
 		return
 	}
 
-	resp, err := server.R().SetBody(data).Post(intendtask.MacAddressTableCbUrl)
+	resp, err := server.R().SetBody(data).SetHeader(xTaskID, taskId).Post(intendtask.MacAddressTableCbUrl)
 	if err != nil {
 		logger.Logger.Error("[ScanMacAddressTableCallback]: failed to post", err)
 		return
@@ -84,6 +90,8 @@ func scanMacAddressTableCallback(data []*intendtask.MacAddressTableScanResponse)
 	if !resp.IsSuccessState() {
 		logger.Logger.Error("[ScanMacAddressTableCallback]: failed to post result to server", resp.Status)
 	}
+
+	logger.Logger.Info("[ScanMacAddressTableCallback] post result to server success")
 }
 
 func newServer() *req.Client {

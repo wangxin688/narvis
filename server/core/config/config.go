@@ -11,18 +11,19 @@ const (
 )
 
 type Settings struct {
-	Zap      ZapConfig      `mapstructure:"zap" json:"zap" yaml:"zap"`
-	Postgres PostgresConfig `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
-	Jwt      JwtConfig      `mapstructure:"jwt" json:"jwt" yaml:"jwt"`
-	Redis    RedisConfig    `mapstructure:"redis" json:"redis" yaml:"redis"`
-	Cors     CORS           `mapstructure:"cors" json:"cors" yaml:"cors"`
-	System   SystemConfig   `mapstructure:"sys" json:"sys" yaml:"sys"`
-	Sentry   SentryConfig   `mapstructure:"sentry" json:"sentry" yaml:"sentry"`
-	Env      Env            `mapstructure:"env" json:"env" yaml:"env"`
-	Zbx      ZbxConfig      `mapstructure:"zbx" json:"zbx" yaml:"zbx"`
-	Vtm      VtmConfig      `mapstructure:"vtm" json:"vtm" yaml:"vtm"`
-	Atm      AtmConfig      `mapstructure:"atm" json:"atm" yaml:"atm"`
-	RabbitMQ RabbitMQConfig `mapstructure:"rmq" json:"rmq" yaml:"rmq"`
+	Zap             ZapConfig       `mapstructure:"zap" json:"zap" yaml:"zap"`
+	Postgres        PostgresConfig  `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
+	Jwt             JwtConfig       `mapstructure:"jwt" json:"jwt" yaml:"jwt"`
+	Redis           RedisConfig     `mapstructure:"redis" json:"redis" yaml:"redis"`
+	Cors            CORS            `mapstructure:"cors" json:"cors" yaml:"cors"`
+	System          SystemConfig    `mapstructure:"sys" json:"sys" yaml:"sys"`
+	Sentry          SentryConfig    `mapstructure:"sentry" json:"sentry" yaml:"sentry"`
+	Env             Env             `mapstructure:"env" json:"env" yaml:"env"`
+	Zbx             ZbxConfig       `mapstructure:"zbx" json:"zbx" yaml:"zbx"`
+	Vtm             VtmConfig       `mapstructure:"vtm" json:"vtm" yaml:"vtm"`
+	Atm             AtmConfig       `mapstructure:"atm" json:"atm" yaml:"atm"`
+	RabbitMQ        RabbitMQConfig  `mapstructure:"rmq" json:"rmq" yaml:"rmq"`
+	BootstrapConfig BootstrapConfig `mapstructure:"bootstrap" json:"bootstrap" yaml:"bootstrap"`
 }
 
 // alertManager config
@@ -107,4 +108,11 @@ type ZbxConfig struct {
 type RabbitMQConfig struct {
 	ServerUrl string `mapstructure:"server_url" json:"server_url" yaml:"server_url"`
 	ProxyUrl  string `mapstructure:"proxy_url" json:"proxy_url" yaml:"proxy_url"`
+}
+
+type BootstrapConfig struct {
+	Organization   string `mapstructure:"organization" json:"organization" yaml:"organization"`
+	EnterpriseCode string `mapstructure:"enterprise_code" json:"enterprise_code" yaml:"enterprise_code"`
+	DomainName     string `mapstructure:"domain_name" json:"domain_name" yaml:"domain_name"`
+	AdminPassword  string `mapstructure:"admin_password" json:"admin_password" yaml:"admin_password"`
 }

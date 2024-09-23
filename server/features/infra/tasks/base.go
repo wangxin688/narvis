@@ -6,9 +6,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/wangxin688/narvis/intend/intendtask"
 	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/server/dal/gen"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
+	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/pkg/rmq"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
@@ -65,15 +67,17 @@ func generateScanDeviceTask(ipRange, community string, port uint16, timeout uint
 }
 
 func CreateScanTask(sd *schemas.ScanDeviceCreate, orgId string) ([]string, error) {
-	taskIds := make([]string, 0)
+	taskLen := len(sd.Range)
+	taskIds := make([]string, taskLen)
 	if len(sd.Range) == 0 {
 		return taskIds, errors.NewError(errors.CodeIpRangeNotProvided, errors.MsgIpRangeNotProvided)
 	}
-	for _, ipRange := range sd.Range {
+	newTasks := make([]*models.TaskResult, taskLen)
+	for index, ipRange := range sd.Range {
 		task := generateScanDeviceTask(
 			ipRange, *sd.Community, *sd.Port, *sd.Timeout, *sd.MaxRepetitions,
 		)
-		taskIds = append(taskIds, task.TaskId)
+		taskIds[index] = task.TaskId
 		taskByte, err := json.Marshal(task)
 		if err != nil {
 			core.Logger.Error("[CreateScanTask]: marshal task failed", zap.Error(err))
@@ -84,7 +88,18 @@ func CreateScanTask(sd *schemas.ScanDeviceCreate, orgId string) ([]string, error
 			core.Logger.Error("[CreateScanTask]: publish task failed", zap.Error(err))
 			continue
 		}
+		newTasks[index] = &models.TaskResult{
+			BaseDbModel: models.BaseDbModel{
+				Id: task.TaskId,
+			},
+			Name:           intendtask.ScanDeviceBasicInfo,
+			Status:         "InProgress",
+			OrganizationId: orgId,
+		}
 	}
-
+	err := gen.TaskResult.CreateInBatches(newTasks, taskLen)
+	if err != nil {
+		core.Logger.Error("[CreateScanTask]: create task result to db failed", zap.Error(err))
+	}
 	return taskIds, nil
 }

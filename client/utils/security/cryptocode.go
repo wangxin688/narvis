@@ -15,7 +15,7 @@ import (
 
 
 func PskEncrypt(psk string) (string, error) {
-	block, err := aes.NewCipher([]byte(config.Settings.SECRET_KEY))
+	block, err := aes.NewCipher([]byte(config.Settings.SECRET_KEY[:32]))
 	if err != nil {
 		return "", err
 	}
@@ -34,7 +34,7 @@ func PskDecrypt(encrypted string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	block, err := aes.NewCipher([]byte(config.Settings.SECRET_KEY))
+	block, err := aes.NewCipher([]byte(config.Settings.SECRET_KEY[:32]))
 	if err != nil {
 		return "", err
 	}

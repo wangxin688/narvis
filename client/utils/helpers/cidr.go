@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"net"
 )
 
@@ -14,7 +13,7 @@ func CIDRToIPStrings(cidrStr string) ([]string, error) {
 
 	var ips []string
 	for ip := ipNet.IP.Mask(ipNet.Mask); ipNet.Contains(ip); inc(ip) {
-		ips = append(ips, ip.String()+"/"+fmt.Sprintf("%d", size))
+		ips = append(ips, ip.String())
 	}
 	if size >= 30 {
 		return ips, nil

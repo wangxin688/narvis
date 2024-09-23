@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -9,51 +8,42 @@ import (
 	"github.com/wagslane/go-rabbitmq"
 	"github.com/wangxin688/narvis/client/config"
 	"github.com/wangxin688/narvis/client/tasks"
-	"github.com/wangxin688/narvis/client/utils/helpers"
 	"github.com/wangxin688/narvis/client/utils/logger"
 )
 
 func main() {
-	err := config.SetupConfig()
-	if err != nil {
-		panic(err)
+	if err := config.SetupConfig(); err != nil {
+		logger.Logger.Error(err)
+		os.Exit(1)
 	}
-	conn, err := rabbitmq.NewConn(
-		config.Settings.AMQP_URL,
-		rabbitmq.WithConnectionOptionsLogging,
-	)
+	conn, err := rabbitmq.NewConn(config.Settings.AMQP_URL, rabbitmq.WithConnectionOptionsLogging)
 	if err != nil {
 		logger.Logger.Error(err)
+		os.Exit(1)
 	}
 	defer conn.Close()
 
-	consumer, err := rabbitmq.NewConsumer(
-		conn,
-		config.Settings.ORGANIZATION_ID,
-	)
+	consumer, err := rabbitmq.NewConsumer(conn, config.Settings.ORGANIZATION_ID)
 	if err != nil {
 		logger.Logger.Error(err)
+		os.Exit(1)
 	}
+
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
-		logger.Logger.Info(" [startConsumer] Waiting for logs. To exit press CTRL+C")
 		sig := <-sigs
-		logger.Logger.Info()
-		logger.Logger.Info(" [consumer] Received signal:", sig)
+		logger.Logger.Info("[proxyConsumer]: Received signal:", sig)
 		consumer.Close()
 		os.Exit(0)
 	}()
 
 	// block main thread - wait for shutdown signal
-	err = consumer.Run(func(delivery rabbitmq.Delivery) rabbitmq.Action {
-		logger.Logger.Info(fmt.Sprintf(" [consumer] received new message %s", delivery.Body))
-		helpers.BackgroundTask(func() {
-			tasks.TaskDispatcher(delivery.Body)
-		})
+	if err := consumer.Run(func(delivery rabbitmq.Delivery) rabbitmq.Action {
+		logger.Logger.Info("[proxyConsumer]: Received message:", string(delivery.Body))
+		go tasks.TaskDispatcher(delivery.Body)
 		return rabbitmq.Ack
-	})
-	if err != nil {
+	}); err != nil {
 		logger.Logger.Error(err)
 	}
 }

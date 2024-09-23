@@ -14,7 +14,7 @@ import (
 )
 
 func PskEncrypt(psk string) (string, error) {
-	block, err := aes.NewCipher([]byte(core.Settings.Jwt.SecretKey))
+	block, err := aes.NewCipher([]byte(core.Settings.Jwt.PublicAuthKey[:32]))
 	if err != nil {
 		return "", err
 	}
@@ -33,7 +33,7 @@ func PskDecrypt(encrypted string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	block, err := aes.NewCipher([]byte(core.Settings.Jwt.SecretKey))
+	block, err := aes.NewCipher([]byte(core.Settings.Jwt.PublicAuthKey[:32]))
 	if err != nil {
 		return "", err
 	}

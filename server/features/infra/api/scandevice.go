@@ -101,7 +101,7 @@ func batchUpdateScanDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdsResponse{Ids: ids})
 }
 
-// Tags Infra
+// @Tags Infra
 // @Summary Scan Device List
 // @Description Scan Device List
 // @Security BearerAuth

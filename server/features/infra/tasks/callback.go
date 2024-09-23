@@ -1,8 +1,6 @@
 package infra_tasks
 
 import (
-	"encoding/json"
-
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/intendtask"
 	"github.com/wangxin688/narvis/server/core"
@@ -12,12 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func deviceBasicInfoScanCallback(data []byte) error {
-	var scanResults []*intendtask.DeviceBasicInfoScanResponse
-	if err := json.Unmarshal(data, &scanResults); err != nil {
-		return err
-	}
-
+func DeviceBasicInfoScanCallback(scanResults []*intendtask.DeviceBasicInfoScanResponse) error {
 	managementIPs := lo.Map(scanResults, func(v *intendtask.DeviceBasicInfoScanResponse, _ int) string {
 		return v.ManagementIp
 	})

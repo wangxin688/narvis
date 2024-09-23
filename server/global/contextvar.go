@@ -7,6 +7,8 @@ import (
 
 var OrganizationId = routine.NewThreadLocal[string]()
 
+var ProxyId = routine.NewThreadLocal[string]()
+
 var XRequestId = routine.NewThreadLocal[string]()
 
 var UserId = routine.NewThreadLocal[string]()

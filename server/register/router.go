@@ -7,6 +7,7 @@ import (
 	infra_api "github.com/wangxin688/narvis/server/features/infra/api"
 	intend_api "github.com/wangxin688/narvis/server/features/intend/api"
 	organization_api "github.com/wangxin688/narvis/server/features/organization/api"
+	task_api "github.com/wangxin688/narvis/server/features/task/api"
 )
 
 func RegisterRouter(e *gin.Engine) {
@@ -17,4 +18,5 @@ func RegisterRouter(e *gin.Engine) {
 	admin_api.RegisterLoginRoutes(e)
 	infra_api.RegisterInfraRoutes(e)
 	alert_api.RegisterAlertRoutes(e)
+	task_api.RegisterTaskRoutes(e)
 }

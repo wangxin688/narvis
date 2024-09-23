@@ -370,3 +370,17 @@ func (z *Zbx) UserMacroUpdateGlobal(params *zs.GlobalMacroUpdate) (res string, e
 	rsp.GetResult(&result)
 	return result.GlobalMacroIDs[0], nil
 }
+
+func (z *Zbx) ProxyCreate(params *zs.ProxyCreate) (res string, err error) {
+	req := &zs.ZbxRequest{
+		Params: params,
+		Method: "proxy.create",
+	}
+	resp, err := z.Rpc(req)
+	if err != nil {
+		return "", err
+	}
+	result := zs.ProxyCreateResult{}
+	resp.GetResult(&result)
+	return result.ProxyIDs[0], nil
+}

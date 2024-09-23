@@ -3,7 +3,6 @@ package tasks
 import (
 	"encoding/json"
 
-	"github.com/wangxin688/narvis/client/utils/helpers"
 	"github.com/wangxin688/narvis/client/utils/logger"
 	"github.com/wangxin688/narvis/intend/intendtask"
 )
@@ -23,39 +22,33 @@ func TaskDispatcher(data []byte) {
 		logger.Logger.Error("taskDispatcher]: received wrong task: no callback")
 	}
 	taskName := task["taskName"].(string)
+	taskId := task["taskId"].(string)
 	switch taskName {
 	case intendtask.ScanDeviceBasicInfo:
-		helpers.BackgroundTask(func() {
-			results, err := scanDeviceBasicInfo(data)
-			if err != nil {
-				logger.Logger.Error("taskDispatcher]: scanDeviceBasicInfo err: ", err)
-			}
-			scanDeviceBasicInfoCallback(results)
-		})
+		results, err := scanDeviceBasicInfo(data)
+		if err != nil {
+			logger.Logger.Error("taskDispatcher]: scanDeviceBasicInfo err: ", err)
+		}
+		scanDeviceBasicInfoCallback(results, taskId)
 	case intendtask.ScanDevice:
-		helpers.BackgroundTask(func() {
-			results, err := scanDevice(data)
-			if err != nil {
-				logger.Logger.Error("taskDispatcher]: scanDevice err: ", err)
-			}
-			scanDeviceCallback(results)
-		})
+		results, err := scanDevice(data)
+		if err != nil {
+			logger.Logger.Error("taskDispatcher]: scanDevice err: ", err)
+		}
+		scanDeviceCallback(results, taskId)
 	case intendtask.ScanAp:
-		helpers.BackgroundTask(func() {
-			results, err := scanAp(data)
-			if err != nil {
-				logger.Logger.Error("taskDispatcher]: scanAp err: ", err)
-			}
-			scanApCallback(results)
-		})
+		results, err := scanAp(data)
+		if err != nil {
+			logger.Logger.Error("taskDispatcher]: scanAp err: ", err)
+		}
+		scanApCallback(results, taskId)
+
 	case intendtask.ScanMacAddressTable:
-		helpers.BackgroundTask(func() {
-			results, err := scanMacAddressTable(data)
-			if err != nil {
-				logger.Logger.Error("taskDispatcher]: scanMacAddressTable err: ", err)
-			}
-			scanMacAddressTableCallback(results)
-		})
+		results, err := scanMacAddressTable(data)
+		if err != nil {
+			logger.Logger.Error("taskDispatcher]: scanMacAddressTable err: ", err)
+		}
+		scanMacAddressTableCallback(results, taskId)
 
 	}
 

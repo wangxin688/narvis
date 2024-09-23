@@ -8,6 +8,8 @@ import (
 
 var OrganizationSearchFields = []string{"name", "enterpriseCode", "domainName"}
 var ProxySearchFields = []string{"name", "ipAddress"}
+var OrganizationTableName = "organization"
+var ProxyTableName = "proxy"
 
 type AuthConfig struct {
 	ClientId     string `json:"clientId"`
@@ -27,6 +29,10 @@ type Organization struct {
 	MarkAsDeletedAt *time.Time                      `gorm:"column:markAsDeletedAt;default:null"` // when the organization is marked as deleted after 1 months, it will be permanently deleted with all data
 }
 
+func (o Organization) TableName() string {
+	return OrganizationTableName
+}
+
 type Proxy struct {
 	BaseDbModel
 	Name           string       `gorm:"column:name;uniqueIndex:idx_name_organization_id;not null"`
@@ -35,4 +41,8 @@ type Proxy struct {
 	LastSeen       *time.Time   `gorm:"column:lastSeen;default:null"`
 	OrganizationId string       `gorm:"column:organizationId;uniqueIndex:idx_name_organization_id;not null"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+}
+
+func (p Proxy) TableName() string {
+	return ProxyTableName
 }

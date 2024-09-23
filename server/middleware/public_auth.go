@@ -37,7 +37,7 @@ func ProxyAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		proxyId, secretKey, err := security.VerifyProxyToken(parts[1])
-		if err != nil || secretKey != core.Settings.Jwt.SecretKey {
+		if err != nil || secretKey != core.Settings.Jwt.PublicAuthKey {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, errors.GenericError{
 					Code:    errors.CodeAccessTokenInvalid,

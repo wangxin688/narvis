@@ -13,9 +13,7 @@ type ProxyCreate struct {
 }
 
 type ProxyUpdate struct {
-	Name           *string `json:"name" binding:"omitempty"`
-	Active         *bool   `json:"active" binding:"omitempty,bool"`
-	OrganizationId *string `json:"organizationId" binding:"omitempty,uuid"`
+	Active *bool `json:"active" binding:"omitempty,bool"`
 }
 
 type ProxyQuery struct {

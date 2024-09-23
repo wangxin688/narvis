@@ -263,7 +263,7 @@ type TemplateGroupGet struct {
 
 type ProxyCreate struct {
 	Name           string `json:"name"`
-	OperationMode  uint8  `json:"operation_mode"`   // 0: active 1:passive
+	OperatingMode  uint8  `json:"operating_mode"`   // 0: active 1:passive
 	TlsConnect     uint8  `json:"tls_connect"`      // 1: No encryption.2: PSK.3: certificate
 	TlsPskIDentity string `json:"tls_psk_identity"` // proxy config, can keep it as host
 	TlsAccept      uint8  `json:"tls_accept"`       // 1: No encryption.2: PSK.3: certificate

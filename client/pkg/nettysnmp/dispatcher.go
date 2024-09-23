@@ -13,6 +13,7 @@ import (
 	s "github.com/wangxin688/narvis/client/pkg/nettysnmp/devicemodel/sysobjectid"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/driver"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+	"github.com/wangxin688/narvis/client/utils/logger"
 	"github.com/wangxin688/narvis/intend/manufacturer"
 	"github.com/wangxin688/narvis/intend/platform"
 )
@@ -147,8 +148,9 @@ func (d *Dispatcher) getFactory(platformType platform.Platform, snmpConfig facto
 }
 
 func (d *Dispatcher) SnmpReachable(session *gosnmp.GoSNMP) bool {
-	result, err := session.GetNext([]string{factory.SysName})
-	if err != nil {
+	result, err := session.Get([]string{factory.SysName})
+	if err != nil || result == nil {
+		logger.Logger.Info("[dispatcher]: SnmpReachable failed", err)
 		return false
 	}
 	return len(result.Variables) > 0
@@ -158,10 +160,12 @@ func (d *Dispatcher) SnmpReachable(session *gosnmp.GoSNMP) bool {
 func (d *Dispatcher) IcmpReachable(address string) bool {
 	pinger, err := ping.NewPinger(address)
 	if err != nil {
+		logger.Logger.Info("[dispatcher]: IcmpReachable failed", err)
 		return false
 	}
 	pinger.Count = 2
 	pinger.Interval = time.Duration(100) * time.Millisecond
+	pinger.Timeout = time.Second
 	err = pinger.Run()
 	if err != nil {
 		return false
@@ -173,6 +177,7 @@ func (d *Dispatcher) SshReachable(address string) bool {
 	timeout := time.Second
 	conn, err := net.DialTimeout("tcp", address+":22", timeout)
 	if err != nil {
+		logger.Logger.Info("[dispatcher]: SshReachable failed", err)
 		return false
 	}
 	defer conn.Close()
@@ -206,14 +211,18 @@ func (d *Dispatcher) dispatch(config factory.SnmpConfig) *factory.DispatchRespon
 	var response = &factory.DispatchResponse{}
 	response.IpAddress = config.IpAddress
 	session, err := d.Session(&config)
-	if err != nil {
+	if err != nil || session == nil {
 		response.SnmpReachable = false
+	} else {
+		response.SnmpReachable = d.SnmpReachable(session)
 	}
 	icmp := d.IcmpReachable(config.IpAddress)
 	ssh := d.SshReachable(config.IpAddress)
 	response.IcmpReachable = icmp
 	response.SshReachable = ssh
-	response.SnmpReachable = d.SnmpReachable(session)
+	if !response.SnmpReachable {
+		return response
+	}
 
 	sysObjectId := d.SysObjectID(session)
 	if sysObjectId == "" {
@@ -260,15 +269,18 @@ func (d *Dispatcher) dispatchBasic(config factory.SnmpConfig) *factory.DispatchB
 	var response = &factory.DispatchBasicResponse{}
 	response.IpAddress = config.IpAddress
 	session, err := d.Session(&config)
-	if err != nil {
+	if err != nil || session == nil {
 		response.SnmpReachable = false
+	} else {
+		response.SnmpReachable = d.SnmpReachable(session)
 	}
 	icmp := d.IcmpReachable(config.IpAddress)
 	ssh := d.SshReachable(config.IpAddress)
 	response.IcmpReachable = icmp
 	response.SshReachable = ssh
-	response.SnmpReachable = d.SnmpReachable(session)
-
+	if !response.SnmpReachable {
+		return response
+	}
 	sysObjectId := d.SysObjectID(session)
 	if sysObjectId == "" {
 		return response

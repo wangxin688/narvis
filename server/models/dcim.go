@@ -284,13 +284,13 @@ func (MacAddress) TableName() string {
 type ScanDevice struct {
 	BaseDbSingleModel
 	Name           string       `gorm:"column:name;not null"`
-	ManagementIp   string       `gorm:"column:managementIp;uniqueIndex:idx_management_ip_organization_id;not null"`
+	ManagementIp   string       `gorm:"column:managementIp;uniqueIndex:idx_s_management_ip_organization_id;not null"`
 	Platform       string       `gorm:"column:platform;not null"`
 	DeviceModel    string       `gorm:"column:deviceModel;not null"`
 	Manufacturer   string       `gorm:"column:manufacturer;not null"`
 	ChassisId      string       `gorm:"column:chassisId;not null"`
 	Description    string       `gorm:"column:description;not null"`
-	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_management_ip_organization_id;index"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_s_management_ip_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
