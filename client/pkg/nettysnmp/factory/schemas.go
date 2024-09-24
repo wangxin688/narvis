@@ -87,13 +87,13 @@ type MacAddressItem struct {
 }
 
 type ApItem struct {
-	Name         string `json:"name"`
-	OperStatus   string `json:"operStatus"`
-	MacAddress   string `json:"macAddress"`
-	SerialNumber string `json:"serialNumber"`
-	ManagementIp string `json:"managementIp"`
-	GroupName    string `json:"groupName"`
-	ActiveWacIp  string `json:"activeWacIp"`
+	Name            string `json:"name"`
+	MacAddress      string `json:"macAddress"`
+	SerialNumber    string `json:"serialNumber"`
+	ManagementIp    string `json:"managementIp"`
+	GroupName       string `json:"groupName"`
+	DeviceModel     string `json:"deviceModel"`
+	WlanACIpAddress string `json:"wlanACIpAddress"`
 }
 
 type DiscoveryResponse struct {
@@ -136,4 +136,15 @@ type DispatchBasicResponse struct {
 	SshReachable  bool                     `json:"sshReachable"`
 	SysObjectId   string                   `json:"sysObjectId"`
 	DeviceModel   *devicemodel.DeviceModel `json:"deviceModel"`
+}
+
+type DispatchApScanResponse struct {
+	IpAddress     string                   `json:"ipAddress"`
+	Data          []*ApItem                `json:"data"`
+	SnmpReachable bool                     `json:"snmpReachable"`
+	IcmpReachable bool                     `json:"icmpReachable"`
+	SshReachable  bool                     `json:"sshReachable"`
+	SysObjectId   string                   `json:"sysObjectId"`
+	DeviceModel   *devicemodel.DeviceModel `json:"deviceModel"`
+	Errors        []string                 `json:"errors"`
 }

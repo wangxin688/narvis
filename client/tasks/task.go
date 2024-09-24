@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/gosnmp/gosnmp"
@@ -62,7 +63,48 @@ func scanDevice(data []byte) ([]*intendtask.DeviceScanResponse, error) {
 }
 
 func scanAp(data []byte) ([]*intendtask.ApScanResponse, error) {
-	return nil, nil
+	results := make([]*intendtask.ApScanResponse, 0)
+	task := &intendtask.BaseSnmpTask{}
+	err := json.Unmarshal(data, task)
+	if err != nil {
+		logger.Logger.Error("[ScanAp]: Unmarshal err: ", err)
+		return nil, err
+	}
+	snmpConfig := factory.BaseSnmpConfig{
+		Port:           task.SnmpConfig.Port,
+		Version:        gosnmp.Version2c,
+		Timeout:        task.SnmpConfig.Timeout,
+		MaxRepetitions: int(task.SnmpConfig.MaxRepetitions),
+		Community:      &task.SnmpConfig.Community,
+	}
+	dispatcher := nettysnmp.NewDispatcher([]string{task.ManagementIp}, snmpConfig)
+	result := dispatcher.DispatchApScan()
+	if len(result) != 0 {
+		for _, r := range result {
+			if !r.SnmpReachable || len(r.Errors) > 0 || r.Data == nil {
+				continue
+			}
+			for _, ap := range r.Data {
+				results = append(results, &intendtask.ApScanResponse{
+					Name:            ap.Name,
+					ManagementIp:    task.ManagementIp,
+					SerialNumber:    StringToPtrString(ap.SerialNumber),
+					GroupName:       StringToPtrString(ap.GroupName),
+					SiteId:          task.SiteId,
+					OrganizationId:  config.Settings.ORGANIZATION_ID,
+					DeviceModel:     ap.DeviceModel,
+					WlanACIpAddress: StringToPtrString(ap.WlanACIpAddress),
+					MacAddress:      StringToPtrString(ap.MacAddress),
+					Manufacturer:    string(r.DeviceModel.Manufacturer),
+				})
+			}
+		}
+	}
+	if len(results) == 0 {
+		return results, errors.New("no ap found")
+	}
+	return results, nil
+
 }
 
 func scanMacAddressTable(data []byte) ([]*intendtask.MacAddressTableScanResponse, error) {

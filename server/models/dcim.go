@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/lib/pq"
 	"gorm.io/datatypes"
 )
 
@@ -258,7 +257,7 @@ type AP struct {
 	OsVersion       *string                           `gorm:"column:osVersion;default:null"`
 	GroupName       *string                           `gorm:"column:groupName;default:null"`
 	Coordinate      *datatypes.JSONType[ApCoordinate] `gorm:"column:coordinate;type:json;default:null"`
-	WlanACIpAddress *pq.StringArray                   `gorm:"column:wlanACIpAddress;type:text[];default:null"`
+	WlanACIpAddress *string                           `gorm:"column:wlanACIpAddress;type:string;default:null"`
 	Floor           *string                           `gorm:"column:floor;default:null"`
 	SiteId          string                            `gorm:"column:siteId;type:uuid;uniqueIndex:idx_name_site_id;uniqueIndex:idx_management_ip_site_id;not null"`
 	Site            Site                              `gorm:"constraint:Ondelete:RESTRICT"`

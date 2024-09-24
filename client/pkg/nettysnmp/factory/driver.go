@@ -13,6 +13,7 @@ type SnmpDriver interface {
 	MacAddressTable() (macTable *map[uint64][]string, errors []string)
 	ArpTable() (arp []*ArpItem, errors []string)
 	Vlans() (vlans []*VlanItem, errors []string)
+	APs() (ap []*ApItem, errors []string)
 	Discovery() *DiscoveryResponse
 	DiscoveryBasicInfo() *DiscoveryBasicResponse
 }

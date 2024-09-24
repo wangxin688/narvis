@@ -30,7 +30,7 @@ type AP struct {
 	Floor           *string       `json:"floor"`
 	GroupName       *string       `json:"groupName"`
 	Coordinate      *ApCoordinate `json:"coordinate"`
-	WlanACIpAddress *[]string     `json:"wlanACIpAddress"`
+	WlanACIpAddress *string       `json:"wlanACIpAddress"`
 	SiteId          string        `json:"siteId"`
 }
 

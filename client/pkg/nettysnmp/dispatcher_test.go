@@ -33,3 +33,21 @@ func TestDispatcher(t *testing.T) {
 	}
 	fmt.Printf("%s\n", result1)
 }
+
+func TestDispatchScanAp(t *testing.T) {
+	community := "public"
+	dispatcher := NewDispatcher([]string{"127.0.0.1"}, factory.BaseSnmpConfig{
+		Port:           161,
+		Version:        gosnmp.Version2c,
+		Timeout:        2,
+		MaxRepetitions: 50,
+		Community:      &community,
+	},
+	)
+	response := dispatcher.DispatchApScan()
+	result, err := json.Marshal(response)
+	if err != nil {
+		t.Fatalf("failed to marshal response: %s", err)
+	}
+	fmt.Printf("%s\n", result)
+}

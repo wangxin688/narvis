@@ -1,5 +1,13 @@
 package intendtask
 
+import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
+
+	. "github.com/wangxin688/narvis/intend/utils"
+)
+
 const ScanDeviceBasicInfo = "ScanDeviceBasicInfo"
 const ScanDevice = "ScanDevice"
 const ScanMacAddressTable = "ScanMacAddressTable"
@@ -20,6 +28,7 @@ type BaseSnmpTask struct {
 	TaskId       string            `json:"taskId"`
 	SubTaskId    string            `json:"subTaskId"`
 	TaskName     string            `json:"taskName"`
+	SiteId       string            `json:"siteId"`
 	DeviceId     string            `json:"deviceId"`
 	ManagementIp string            `json:"managementIp"`
 	Callback     string            `json:"callback"`
@@ -78,4 +87,31 @@ type DeviceBasicInfoScanResponse struct {
 
 type DeviceScanResponse struct{}
 type MacAddressTableScanResponse struct{}
-type ApScanResponse struct{}
+
+type ApScanResponse struct {
+	Name            string  `json:"name"`
+	MacAddress      *string `json:"macAddress"`
+	SerialNumber    *string `json:"serialNumber"`
+	ManagementIp    string  `json:"managementIp"`
+	GroupName       *string `json:"groupName"`
+	DeviceModel     string  `json:"deviceModel"`
+	Manufacturer    string  `json:"manufacturer"`
+	WlanACIpAddress *string `json:"wlanACIpAddress"`
+	SiteId          string  `json:"siteId"`
+	OrganizationId  string  `json:"organizationId"`
+}
+
+func (a *ApScanResponse) CalApHash() string {
+	hashString := fmt.Sprintf(
+		"%s-%s-%s-%s-%s-%s",
+		a.Name,
+		a.ManagementIp,
+		PtrStringToString(a.MacAddress),
+		PtrStringToString(a.GroupName),
+		PtrStringToString(a.WlanACIpAddress),
+		PtrStringToString(a.SerialNumber),
+	)
+	hash := md5.New()
+	_, _ = hash.Write([]byte(hashString))
+	return hex.EncodeToString(hash.Sum(nil))
+}

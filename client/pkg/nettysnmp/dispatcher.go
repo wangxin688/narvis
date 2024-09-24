@@ -321,6 +321,67 @@ func (d *Dispatcher) DispatchBasic() []*factory.DispatchBasicResponse {
 	return responses
 }
 
+func (d *Dispatcher) dispatchApScan(config factory.SnmpConfig) *factory.DispatchApScanResponse {
+	var response = &factory.DispatchApScanResponse{}
+	response.IpAddress = config.IpAddress
+	session, err := d.Session(&config)
+	if err != nil || session == nil {
+		response.SnmpReachable = false
+	} else {
+		response.SnmpReachable = d.SnmpReachable(session)
+	}
+	icmp := d.IcmpReachable(config.IpAddress)
+	ssh := d.SshReachable(config.IpAddress)
+	response.IcmpReachable = icmp
+	response.SshReachable = ssh
+	if !response.SnmpReachable {
+		return response
+	}
+	sysObjectId := d.SysObjectID(session)
+	if sysObjectId == "" {
+		return response
+	}
+	response.SysObjectId = sysObjectId
+	deviceType := GetDeviceModel(sysObjectId)
+	driver, err := d.getFactory(deviceType.Platform, config)
+	if err != nil {
+		return response
+	}
+	discoveryResponse, errors := driver.APs()
+	response.DeviceModel = deviceType
+	if len(errors) > 0 {
+		response.Errors = errors
+		return response
+	}
+
+	response.Data = discoveryResponse
+	return response
+}
+
+func (d *Dispatcher) DispatchApScan() []*factory.DispatchApScanResponse {
+	var responses []*factory.DispatchApScanResponse
+	var wg sync.WaitGroup
+	ch := make(chan struct{}, 100)
+	for _, target := range d.Targets {
+		ch <- struct{}{}
+		wg.Add(1)
+		go func(target string) {
+			defer wg.Done()
+
+			targetResponse := d.dispatchApScan(factory.SnmpConfig{
+				IpAddress:      target,
+				BaseSnmpConfig: d.Config,
+			})
+
+			responses = append(responses, targetResponse)
+			<-ch
+		}(target)
+	}
+
+	wg.Wait()
+	return responses
+}
+
 func NewDispatcher(targets []string, config factory.BaseSnmpConfig) *Dispatcher {
 	return &Dispatcher{
 		Targets: targets,

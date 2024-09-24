@@ -104,6 +104,34 @@ func hex2mac(hex []byte) string {
 	return strings.Join(hexParts, ":")
 }
 
+func StringToHexMac(snmpIndex string) string {
+	parts := strings.Split(strings.TrimPrefix(snmpIndex, "."), ".")
+	if len(parts) != 6 {
+		return ""
+	}
+	var macAddress strings.Builder
+	for i, part := range parts {
+		decimal, err := strconv.Atoi(part)
+		if err != nil {
+			return ""
+		}
+		hex := decimalToHex(decimal)
+		macAddress.WriteString(hex)
+		if i < 5 {
+			macAddress.WriteString(":")
+		}
+	}
+	return macAddress.String()
+}
+
+func decimalToHex(decimal int) string {
+	hex := strconv.FormatInt(int64(decimal), 16)
+	if len(hex) == 1 {
+		hex = "0" + hex
+	}
+	return hex
+}
+
 func buildOidWithIndex(oid string, index []string) []string {
 	results := make([]string, len(index))
 	for i, v := range index {

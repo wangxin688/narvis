@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -9,6 +10,17 @@ import (
 
 const vtpVlanName = ".1.3.6.1.4.1.9.9.46.1.3.1.1.4"
 const vtpVlanIfIndex = ".1.3.6.1.4.1.9.9.46.1.3.1.1.18"
+
+// https://pastebin.com/PaP5yfYU
+// https://mibs.observium.org/mib/AIRESPACE-WIRELESS-MIB/
+const bsnAPDot3MacAddress = ".1.3.6.1.4.1.14179.2.2.1.1.1"
+
+// const bsnAPEthernetMacAddress  = ".1.3.6.1.4.1.14179.2.2.1.1.33" // which one to use?
+const bsnApIpAddress = ".1.3.6.1.4.1.14179.2.2.1.1.19"
+const bsnAPName = ".1.3.6.1.4.1.14179.2.2.1.1.3"
+const bsnAPType = ".1.3.6.1.4.1.14179.2.2.1.1.22"
+const bsnAPSerialNumber = ".1.3.6.1.4.1.14179.2.2.1.1.17"
+const bsnAPPrimaryMwarName = ".1.3.6.1.4.1.14179.2.2.1.1.10"
 
 type CiscoBaseDriver struct {
 	factory.SnmpDiscovery
@@ -108,6 +120,43 @@ func (cd *CiscoBaseDriver) Vlans() (vlan []*factory.VlanItem, errors []string) {
 	}
 
 	return vlan, errors
+}
+
+func (cd *CiscoBaseDriver) APs() (ap []*factory.ApItem, errors []string) {
+	apIP, errApIP := cd.Session.BulkWalkAll(bsnApIpAddress)
+	if len(apIP) == 0 || errApIP != nil {
+		return nil, []string{fmt.Sprintf("failed to get ap ipAddress from %s", cd.IpAddress)}
+	}
+	apMac, errApMac := cd.Session.BulkWalkAll(bsnAPDot3MacAddress)
+	apName, errApName := cd.Session.BulkWalkAll(bsnAPName)
+	apType, errApType := cd.Session.BulkWalkAll(bsnAPType)
+	apSerialNumber, errApSerialNumber := cd.Session.BulkWalkAll(bsnAPSerialNumber)
+	apPrimaryMwarName, errApPrimaryMwarName := cd.Session.BulkWalkAll(bsnAPPrimaryMwarName)
+	if errApMac != nil || errApName != nil || errApType != nil || errApSerialNumber != nil || errApPrimaryMwarName != nil {
+		errors = append(errors, errApMac.Error())
+		errors = append(errors, errApName.Error())
+		errors = append(errors, errApType.Error())
+		errors = append(errors, errApSerialNumber.Error())
+		errors = append(errors, errApPrimaryMwarName.Error())
+	}
+	indexApIP := factory.ExtractString(bsnApIpAddress, apIP)
+	indexApMac := factory.ExtractString(bsnAPDot3MacAddress, apMac)
+	indexApName := factory.ExtractString(bsnAPName, apName)
+	indexApType := factory.ExtractString(bsnAPType, apType)
+	indexApSerialNumber := factory.ExtractString(bsnAPSerialNumber, apSerialNumber)
+	indexApPrimaryMwarName := factory.ExtractString(bsnAPPrimaryMwarName, apPrimaryMwarName)
+	for i, v := range indexApIP {
+		ap = append(ap, &factory.ApItem{
+			Name:            indexApName[i],
+			ManagementIp:    v,
+			MacAddress:      indexApMac[i],
+			DeviceModel:     indexApType[i],
+			SerialNumber:    indexApSerialNumber[i],
+			WlanACIpAddress: indexApPrimaryMwarName[i],
+		})
+	}
+	return ap, errors
+
 }
 
 func (cd *CiscoBaseDriver) Discovery() *factory.DiscoveryResponse {

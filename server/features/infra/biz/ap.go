@@ -1,9 +1,13 @@
 package infra_biz
 
 import (
+	"fmt"
+
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/tools/helpers"
 )
 
 type ApService struct{}
@@ -70,7 +74,7 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 				Y: ap.Coordinate.Data().Y,
 				Z: ap.Coordinate.Data().Z,
 			},
-			WlanACIpAddress: (*[]string)(ap.WlanACIpAddress),
+			WlanACIpAddress: ap.WlanACIpAddress,
 			SiteId:          ap.SiteId,
 		})
 	}
@@ -106,7 +110,7 @@ func (s *ApService) GetById(id string) (*schemas.AP, error) {
 			Y: ap.Coordinate.Data().Y,
 			Z: ap.Coordinate.Data().Z,
 		},
-		WlanACIpAddress: (*[]string)(ap.WlanACIpAddress),
+		WlanACIpAddress: ap.WlanACIpAddress,
 		SiteId:          ap.SiteId,
 	}, nil
 }
@@ -132,11 +136,40 @@ func (s *ApService) GetApShortMap(apIds []string) (map[string]*schemas.APShort, 
 	return res, nil
 }
 
-func (d *ApService) SearchApByKeyword(keyword string, orgId string) ([]string, error) {
+func (s *ApService) SearchApByKeyword(keyword string, orgId string) ([]string, error) {
 	result := make([]string, 0)
 	stmt := gen.AP.Select(gen.AP.Id).Where(gen.AP.OrganizationId.Eq(orgId))
 	keyword = "%" + keyword + "%"
 	stmt = stmt.Where(gen.AP.Name.Like(keyword)).Or(gen.AP.ManagementIp.Like(keyword))
 	err := stmt.Scan(&result)
 	return result, err
+}
+
+func (s *ApService) GetByIpsAndSiteId(ips []string, siteId string, orgId string) (map[string]*models.AP, error) {
+
+	aps, err := gen.AP.Where(
+		gen.AP.OrganizationId.Eq(orgId),
+		gen.AP.ManagementIp.In(ips...),
+		gen.AP.SiteId.Eq(siteId),
+	).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	res := make(map[string]*models.AP)
+	for _, ap := range aps {
+		res[ap.ManagementIp] = ap
+	}
+	return res, nil
+}
+
+func (s *ApService) CalApHash(ap *models.AP) string {
+	hashString := fmt.Sprintf(
+		"%s-%s-%s-%s-%s-%s", ap.Name, ap.ManagementIp,
+		helpers.PtrStringToString(ap.MacAddress),
+		helpers.PtrStringToString(ap.GroupName),
+		helpers.PtrStringToString(ap.WlanACIpAddress),
+		helpers.PtrStringToString(ap.SerialNumber),
+	)
+	return helpers.StringToMd5(hashString)
 }

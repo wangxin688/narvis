@@ -1,6 +1,7 @@
 package driver
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -55,6 +56,43 @@ func (hd *HuaweiDriver) Vlans() (vlan []*factory.VlanItem, errors []string) {
 	}
 
 	return vlan, errors
+}
+
+func (hd *HuaweiDriver) APs() (ap []*factory.ApItem, errors []string) {
+	apIp, errApIp := hd.Session.BulkWalkAll(hwWlanApIpAddress)
+	if len(apIp) == 0 || errApIp != nil {
+		return nil, []string{fmt.Sprintf("failed to get ap ipAddress from %s", hd.IpAddress)}
+	}
+	apName, errApName := hd.Session.BulkWalkAll(hwWlanApName)
+	apGroupName, errApGroupName := hd.Session.BulkWalkAll(hwWlanAPGroup)
+	apModel, errApModel := hd.Session.BulkWalkAll(hwWlanApTypeInfo)
+	apSerialNumber, errApSerialNumber := hd.Session.BulkWalkAll(hwWlanApSn)
+	apMac, errApMac := hd.Session.BulkWalkAll(hwWlanApMac)
+	if errApName != nil || errApGroupName != nil || errApModel != nil || errApSerialNumber != nil ||  errApMac != nil {
+		errors = append(errors, errApName.Error())
+		errors = append(errors, errApGroupName.Error())
+		errors = append(errors, errApModel.Error())
+		errors = append(errors, errApSerialNumber.Error())
+		errors = append(errors, errApMac.Error())
+	}
+	indexApIP := factory.ExtractString(hwWlanApIpAddress, apIp)
+	indexApMac := factory.ExtractString(hwWlanApMac, apMac)
+	indexApName := factory.ExtractString(hwWlanApName, apName)
+	indexApGroupName := factory.ExtractString(hwWlanAPGroup, apGroupName)
+	indexApModel := factory.ExtractString(hwWlanApTypeInfo, apModel)
+	indexApSerialNumber := factory.ExtractString(hwWlanApSn, apSerialNumber)
+	for i, v := range indexApIP {
+		ap = append(ap, &factory.ApItem{
+			Name:            indexApName[i],
+			ManagementIp:    v,
+			MacAddress:      indexApMac[i],
+			DeviceModel:     indexApModel[i],
+			SerialNumber:    indexApSerialNumber[i],
+			GroupName:       indexApGroupName[i],
+			WlanACIpAddress: hd.IpAddress,
+		})
+	}
+	return ap, errors
 }
 
 func (hd *HuaweiDriver) Discovery() *factory.DiscoveryResponse {

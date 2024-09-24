@@ -435,7 +435,8 @@ func (sd *SnmpDiscovery) Vlans() (vlan []*VlanItem, errors []string) {
 	return results, nil
 }
 
-func (sd *SnmpDiscovery) ScanAp() (ap []*ApItem, errors []string) {
+func (sd *SnmpDiscovery) APs() (ap []*ApItem, errors []string) {
+	// need implement in vendor driver 
 	results := make([]*ApItem, 0)
 	return results, nil
 }

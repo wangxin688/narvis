@@ -42,6 +42,7 @@ func GenerateTask(siteId, taskName, callback string) ([]*intendtask.BaseSnmpTask
 				Timeout:        snmpConfig.Timeout,
 				MaxRepetitions: snmpConfig.MaxRepetitions,
 			},
+			SiteId:       siteId,
 			DeviceId:     deviceId,
 			ManagementIp: deviceManagementIp[deviceId],
 			Callback:     callback,
