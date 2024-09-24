@@ -40,7 +40,7 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 	_aP.OsVersion = field.NewString(tableName, "osVersion")
 	_aP.GroupName = field.NewString(tableName, "groupName")
 	_aP.Coordinate = field.NewField(tableName, "coordinate")
-	_aP.WlanACIpAddress = field.NewField(tableName, "wlanACIpAddress")
+	_aP.WlanACIpAddress = field.NewString(tableName, "wlanACIpAddress")
 	_aP.Floor = field.NewString(tableName, "floor")
 	_aP.SiteId = field.NewString(tableName, "siteId")
 	_aP.OrganizationId = field.NewString(tableName, "organizationId")
@@ -84,7 +84,7 @@ type aP struct {
 	OsVersion       field.String
 	GroupName       field.String
 	Coordinate      field.Field
-	WlanACIpAddress field.Field
+	WlanACIpAddress field.String
 	Floor           field.String
 	SiteId          field.String
 	OrganizationId  field.String
@@ -121,7 +121,7 @@ func (a *aP) updateTableName(table string) *aP {
 	a.OsVersion = field.NewString(table, "osVersion")
 	a.GroupName = field.NewString(table, "groupName")
 	a.Coordinate = field.NewField(table, "coordinate")
-	a.WlanACIpAddress = field.NewField(table, "wlanACIpAddress")
+	a.WlanACIpAddress = field.NewString(table, "wlanACIpAddress")
 	a.Floor = field.NewString(table, "floor")
 	a.SiteId = field.NewString(table, "siteId")
 	a.OrganizationId = field.NewString(table, "organizationId")

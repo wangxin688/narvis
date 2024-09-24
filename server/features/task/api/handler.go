@@ -11,5 +11,6 @@ func RegisterTaskRoutes(e *gin.Engine) {
 	router := e.Group(basePath+"/task", middleware.ProxyAuthMiddleware())
 	{
 		router.POST("scan-device-basic", scanDeviceBasicInfoCallback)
+		router.POST("scan-ap", scanApCallback)
 	}
 }

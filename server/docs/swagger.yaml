@@ -96,6 +96,52 @@ definitions:
       zh:
         type: string
     type: object
+  intendtask.ApScanResponse:
+    properties:
+      deviceModel:
+        type: string
+      groupName:
+        type: string
+      macAddress:
+        type: string
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      name:
+        type: string
+      organizationId:
+        type: string
+      serialNumber:
+        type: string
+      siteId:
+        type: string
+      wlanACIpAddress:
+        type: string
+    type: object
+  intendtask.DeviceBasicInfoScanResponse:
+    properties:
+      chassisId:
+        type: string
+      description:
+        type: string
+      deviceModel:
+        type: string
+      errors:
+        items:
+          type: string
+        type: array
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      name:
+        type: string
+      organizationId:
+        type: string
+      platform:
+        type: string
+    type: object
   schemas.AP:
     properties:
       coordinate:
@@ -135,9 +181,7 @@ definitions:
       updatedAt:
         type: string
       wlanACIpAddress:
-        items:
-          type: string
-        type: array
+        type: string
     type: object
   schemas.ActionLogCreate:
     properties:
@@ -1476,6 +1520,11 @@ definitions:
         type: integer
       sendResolved:
         type: boolean
+    type: object
+  schemas.SuccessResponse:
+    properties:
+      status:
+        type: string
     type: object
   schemas.Transition:
     properties:
@@ -3530,6 +3579,8 @@ paths:
       security:
       - BearerAuth: []
       summary: Scan Device List
+      tags:
+      - Infra
     post:
       consumes:
       - application/json
@@ -4282,6 +4333,58 @@ paths:
       summary: Create organization
       tags:
       - Organization
+  /task/scan-ap:
+    post:
+      consumes:
+      - application/json
+      description: Scan AP callback
+      parameters:
+      - description: resp
+        in: body
+        name: resp
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/intendtask.ApScanResponse'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.SuccessResponse'
+      security:
+      - BearerAuth: []
+      summary: ScanAP Callback
+      tags:
+      - Task
+  /task/scan-device-basic:
+    post:
+      consumes:
+      - application/json
+      description: Scan device basic information callback
+      parameters:
+      - description: resp
+        in: body
+        name: resp
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/intendtask.DeviceBasicInfoScanResponse'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.SuccessResponse'
+      security:
+      - BearerAuth: []
+      summary: ScanDevice BasicInfo Callback
+      tags:
+      - Task
 securityDefinitions:
   BearerAuth:
     in: header

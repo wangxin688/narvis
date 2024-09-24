@@ -2983,6 +2983,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Infra"
+                ],
                 "summary": "Scan Device List",
                 "parameters": [
                     {
@@ -4350,6 +4353,90 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/task/scan-ap": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Scan AP callback",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "ScanAP Callback",
+                "parameters": [
+                    {
+                        "description": "resp",
+                        "name": "resp",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/intendtask.ApScanResponse"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/task/scan-device-basic": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Scan device basic information callback",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "ScanDevice BasicInfo Callback",
+                "parameters": [
+                    {
+                        "description": "resp",
+                        "name": "resp",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/intendtask.DeviceBasicInfoScanResponse"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SuccessResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -4477,6 +4564,76 @@ const docTemplate = `{
                 }
             }
         },
+        "intendtask.ApScanResponse": {
+            "type": "object",
+            "properties": {
+                "deviceModel": {
+                    "type": "string"
+                },
+                "groupName": {
+                    "type": "string"
+                },
+                "macAddress": {
+                    "type": "string"
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organizationId": {
+                    "type": "string"
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "wlanACIpAddress": {
+                    "type": "string"
+                }
+            }
+        },
+        "intendtask.DeviceBasicInfoScanResponse": {
+            "type": "object",
+            "properties": {
+                "chassisId": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "deviceModel": {
+                    "type": "string"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organizationId": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.AP": {
             "type": "object",
             "properties": {
@@ -4535,10 +4692,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "wlanACIpAddress": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                    "type": "string"
                 }
             }
         },
@@ -6522,6 +6676,14 @@ const docTemplate = `{
                 },
                 "sendResolved": {
                     "type": "boolean"
+                }
+            }
+        },
+        "schemas.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
                 }
             }
         },
