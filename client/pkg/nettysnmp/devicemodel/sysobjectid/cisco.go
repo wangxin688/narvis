@@ -1315,7 +1315,7 @@ func CiscoDeviceModel(sysObjId string) *devicemodel.DeviceModel {
 		".1.3.6.1.4.1.9.1.2528":            {"platform": stringPlatform, "model": "C1117-4PMLTEEA ROUTER"},
 		".1.3.6.1.4.1.9.1.2529":            {"platform": stringPlatform, "model": "C1117-4PMWE ROUTER WITH WLAN E DOMAIN"},
 		".1.3.6.1.4.1.9.1.253":             {"platform": stringPlatform, "model": "6260"},
-		".1.3.6.1.4.1.9.1.2530":            {"platform": stringPlatform, "model": "9800 WIRELESS CONTROLLER"},
+		".1.3.6.1.4.1.9.1.2530":            {"platform": stringPlatform, "model": "C9800-40-K9"},
 		".1.3.6.1.4.1.9.1.2532":            {"platform": stringPlatform, "model": "C1112-8P ROUTER"},
 		".1.3.6.1.4.1.9.1.2533":            {"platform": stringPlatform, "model": "C1112-8PLTEEA ROUTER"},
 		".1.3.6.1.4.1.9.1.2534":            {"platform": stringPlatform, "model": "C1113-8P ROUTER"},

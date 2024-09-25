@@ -5,16 +5,18 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	. "github.com/wangxin688/narvis/intend/utils"
+	"github.com/wangxin688/narvis/intend/utils"
 )
 
 const ScanDeviceBasicInfo = "ScanDeviceBasicInfo"
 const ScanDevice = "ScanDevice"
+const ScanIPAM = "ScanIPAM"
 const ScanMacAddressTable = "ScanMacAddressTable"
 const ScanAp = "ScanAp"
 
 const ScanDeviceBasicInfoCallback = "ScanDeviceBasicInfoCallback"
 const ScanDeviceCallback = "ScanDeviceCallback"
+const ScanIPAMCallback = "ScanIPAMCallback"
 const ScanMacAddressTableCallback = "ScanMacAddressTableCallback"
 const ScanApCallback = "ScanApCallback"
 
@@ -97,6 +99,7 @@ type ApScanResponse struct {
 	DeviceModel     string  `json:"deviceModel"`
 	Manufacturer    string  `json:"manufacturer"`
 	WlanACIpAddress *string `json:"wlanACIpAddress"`
+	OsVersion       *string `json:"osVersion"`
 	SiteId          string  `json:"siteId"`
 	OrganizationId  string  `json:"organizationId"`
 }
@@ -106,10 +109,10 @@ func (a *ApScanResponse) CalApHash() string {
 		"%s-%s-%s-%s-%s-%s",
 		a.Name,
 		a.ManagementIp,
-		PtrStringToString(a.MacAddress),
-		PtrStringToString(a.GroupName),
-		PtrStringToString(a.WlanACIpAddress),
-		PtrStringToString(a.SerialNumber),
+		utils.PtrStringToString(a.MacAddress),
+		utils.PtrStringToString(a.GroupName),
+		utils.PtrStringToString(a.WlanACIpAddress),
+		utils.PtrStringToString(a.SerialNumber),
 	)
 	hash := md5.New()
 	_, _ = hash.Write([]byte(hashString))

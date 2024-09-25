@@ -1,9 +1,5 @@
 package models
 
-import (
-	"gorm.io/datatypes"
-)
-
 var SiteSearchFields = []string{"name", "siteCode", "address", "region"}
 var DeviceSearchFields = []string{"name", "managementIp", "chassisId", "serialNumber"}
 var APSearchFields = []string{"name", "macAddress", "serialNumber", "managementIp"}
@@ -246,23 +242,25 @@ type ApCoordinate struct {
 
 type AP struct {
 	BaseDbModel
-	Name            string                            `gorm:"column:name;not null;uniqueIndex:idx_name_site_id"`
-	Status          string                            `gorm:"column:status;default:Active"`
-	MacAddress      *string                           `gorm:"column:macAddress;type:macaddr;default:null"`
-	SerialNumber    *string                           `gorm:"column:serialNumber;default:null"`
-	ManagementIp    string                            `gorm:"column:managementIp;not null;uniqueIndex:idx_management_ip_site_id"`
-	DeviceModel     string                            `gorm:"column:deviceModel;default:Unknown"`
-	Manufacturer    string                            `gorm:"column:manufacturer;default:Unknown"`
-	DeviceRole      string                            `gorm:"column:deviceRole;default:WlanAP"`
-	OsVersion       *string                           `gorm:"column:osVersion;default:null"`
-	GroupName       *string                           `gorm:"column:groupName;default:null"`
-	Coordinate      *datatypes.JSONType[ApCoordinate] `gorm:"column:coordinate;type:json;default:null"`
-	WlanACIpAddress *string                           `gorm:"column:wlanACIpAddress;type:string;default:null"`
-	Floor           *string                           `gorm:"column:floor;default:null"`
-	SiteId          string                            `gorm:"column:siteId;type:uuid;uniqueIndex:idx_name_site_id;uniqueIndex:idx_management_ip_site_id;not null"`
-	Site            Site                              `gorm:"constraint:Ondelete:RESTRICT"`
-	OrganizationId  string                            `gorm:"column:organizationId;type:uuid;index"`
-	Organization    Organization                      `gorm:"constraint:Ondelete:CASCADE"`
+	Name            string       `gorm:"column:name;not null;uniqueIndex:idx_name_site_id"`
+	Status          string       `gorm:"column:status;default:Active"`
+	MacAddress      *string      `gorm:"column:macAddress;type:macaddr;default:null"`
+	SerialNumber    *string      `gorm:"column:serialNumber;default:null"`
+	ManagementIp    string       `gorm:"column:managementIp;not null;uniqueIndex:idx_management_ip_site_id"`
+	DeviceModel     string       `gorm:"column:deviceModel;default:Unknown"`
+	Manufacturer    string       `gorm:"column:manufacturer;default:Unknown"`
+	DeviceRole      string       `gorm:"column:deviceRole;default:WlanAP"`
+	OsVersion       *string      `gorm:"column:osVersion;default:null"`
+	GroupName       *string      `gorm:"column:groupName;default:null"`
+	WlanACIpAddress *string      `gorm:"column:wlanACIpAddress;type:string;default:null"`
+	Floor           *string      `gorm:"column:floor;default:null"`
+	CoordinateX     *float32     `gorm:"column:coordinateX;type:float;default:null"`
+	CoordinateY     *float32     `gorm:"column:coordinateY;type:float;default:null"`
+	CoordinateZ     *float32     `gorm:"column:coordinateZ;type:float;default:null"`
+	SiteId          string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_name_site_id;uniqueIndex:idx_management_ip_site_id;not null"`
+	Site            Site         `gorm:"constraint:Ondelete:RESTRICT"`
+	OrganizationId  string       `gorm:"column:organizationId;type:uuid;index"`
+	Organization    Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 
 func (AP) TableName() string {

@@ -49,6 +49,7 @@ func scanDeviceCallback(data []*intendtask.DeviceScanResponse, taskId string) {
 	}
 	if !resp.IsSuccessState() {
 		logger.Logger.Error("[scanDeviceCallback]: failed to post result to server", resp.Status)
+		logger.Logger.Info("[scanDeviceCallback]", resp.String())
 	}
 
 	logger.Logger.Info("[scanDeviceCallback] post result to server success")
@@ -69,6 +70,7 @@ func scanApCallback(data []*intendtask.ApScanResponse, taskId string) {
 
 	if !resp.IsSuccessState() {
 		logger.Logger.Error("[scanApCallback]: failed to post result to server", resp.Status)
+		logger.Logger.Info("[scanApCallback]", resp.String())
 	}
 
 	logger.Logger.Info("[scanApCallback] post result to server success")
@@ -89,6 +91,7 @@ func scanMacAddressTableCallback(data []*intendtask.MacAddressTableScanResponse,
 
 	if !resp.IsSuccessState() {
 		logger.Logger.Error("[ScanMacAddressTableCallback]: failed to post result to server", resp.Status)
+		logger.Logger.Info("[ScanMacAddressTableCallback]", resp.String())
 	}
 
 	logger.Logger.Info("[ScanMacAddressTableCallback] post result to server success")

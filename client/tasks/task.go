@@ -87,7 +87,7 @@ func scanAp(data []byte) ([]*intendtask.ApScanResponse, error) {
 			for _, ap := range r.Data {
 				results = append(results, &intendtask.ApScanResponse{
 					Name:            ap.Name,
-					ManagementIp:    task.ManagementIp,
+					ManagementIp:    ap.ManagementIp,
 					SerialNumber:    StringToPtrString(ap.SerialNumber),
 					GroupName:       StringToPtrString(ap.GroupName),
 					SiteId:          task.SiteId,
@@ -96,6 +96,7 @@ func scanAp(data []byte) ([]*intendtask.ApScanResponse, error) {
 					WlanACIpAddress: StringToPtrString(ap.WlanACIpAddress),
 					MacAddress:      StringToPtrString(ap.MacAddress),
 					Manufacturer:    string(r.DeviceModel.Manufacturer),
+					OsVersion:       StringToPtrString(ap.OsVersion),
 				})
 			}
 		}

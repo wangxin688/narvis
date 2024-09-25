@@ -14,6 +14,7 @@ const wlanAPGroupName string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.4"
 const wlanAPModel string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.5"
 const wlanAPSerialNumber string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.6"
 const wlanAPSwitchIpAddress string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.39"
+const wlanAPSwVersion string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.34"
 
 type ArubaDriver struct {
 	factory.SnmpDiscovery
@@ -57,13 +58,15 @@ func (ad *ArubaDriver) APs() (ap []*factory.ApItem, errors []string) {
 	apModel, errApModel := ad.Session.BulkWalkAll(wlanAPModel)
 	apSerialNumber, errApSerialNumber := ad.Session.BulkWalkAll(wlanAPSerialNumber)
 	switchIp, errSwitchIp := ad.Session.BulkWalkAll(wlanAPSwitchIpAddress)
+	apVersion, errApVersion := ad.Session.BulkWalkAll(wlanAPSwVersion)
 
-	if errApName != nil || errApGroupName != nil || errApModel != nil || errApSerialNumber != nil || errSwitchIp != nil {
+	if errApName != nil || errApGroupName != nil || errApModel != nil || errApSerialNumber != nil || errSwitchIp != nil || errApVersion != nil {
 		errors = append(errors, errApName.Error())
 		errors = append(errors, errApGroupName.Error())
 		errors = append(errors, errApModel.Error())
 		errors = append(errors, errApSerialNumber.Error())
 		errors = append(errors, errSwitchIp.Error())
+		errors = append(errors, errApVersion.Error())
 	}
 	indexApIp := factory.ExtractString(wlanAPIpAddress, apIp)
 	indexApName := factory.ExtractString(wlanAPName, apName)
@@ -71,6 +74,7 @@ func (ad *ArubaDriver) APs() (ap []*factory.ApItem, errors []string) {
 	indexApModel := factory.ExtractString(wlanAPModel, apModel)
 	indexApSerialNumber := factory.ExtractString(wlanAPSerialNumber, apSerialNumber)
 	indexSwitchIp := factory.ExtractString(wlanAPSwitchIpAddress, switchIp)
+	indexApVersion := factory.ExtractString(wlanAPSwVersion, apVersion)
 	for i, v := range indexApIp {
 		ap = append(ap, &factory.ApItem{
 			Name:            indexApName[i],
@@ -80,6 +84,7 @@ func (ad *ArubaDriver) APs() (ap []*factory.ApItem, errors []string) {
 			DeviceModel:     indexApModel[i],
 			SerialNumber:    indexApSerialNumber[i],
 			WlanACIpAddress: indexSwitchIp[i],
+			OsVersion:       indexApVersion[i],
 		})
 	}
 	return ap, errors

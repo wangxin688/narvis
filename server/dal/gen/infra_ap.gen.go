@@ -39,9 +39,11 @@ func newAP(db *gorm.DB, opts ...gen.DOOption) aP {
 	_aP.DeviceRole = field.NewString(tableName, "deviceRole")
 	_aP.OsVersion = field.NewString(tableName, "osVersion")
 	_aP.GroupName = field.NewString(tableName, "groupName")
-	_aP.Coordinate = field.NewField(tableName, "coordinate")
 	_aP.WlanACIpAddress = field.NewString(tableName, "wlanACIpAddress")
 	_aP.Floor = field.NewString(tableName, "floor")
+	_aP.CoordinateX = field.NewFloat32(tableName, "coordinateX")
+	_aP.CoordinateY = field.NewFloat32(tableName, "coordinateY")
+	_aP.CoordinateZ = field.NewFloat32(tableName, "coordinateZ")
 	_aP.SiteId = field.NewString(tableName, "siteId")
 	_aP.OrganizationId = field.NewString(tableName, "organizationId")
 	_aP.Site = aPBelongsToSite{
@@ -83,9 +85,11 @@ type aP struct {
 	DeviceRole      field.String
 	OsVersion       field.String
 	GroupName       field.String
-	Coordinate      field.Field
 	WlanACIpAddress field.String
 	Floor           field.String
+	CoordinateX     field.Float32
+	CoordinateY     field.Float32
+	CoordinateZ     field.Float32
 	SiteId          field.String
 	OrganizationId  field.String
 	Site            aPBelongsToSite
@@ -120,9 +124,11 @@ func (a *aP) updateTableName(table string) *aP {
 	a.DeviceRole = field.NewString(table, "deviceRole")
 	a.OsVersion = field.NewString(table, "osVersion")
 	a.GroupName = field.NewString(table, "groupName")
-	a.Coordinate = field.NewField(table, "coordinate")
 	a.WlanACIpAddress = field.NewString(table, "wlanACIpAddress")
 	a.Floor = field.NewString(table, "floor")
+	a.CoordinateX = field.NewFloat32(table, "coordinateX")
+	a.CoordinateY = field.NewFloat32(table, "coordinateY")
+	a.CoordinateZ = field.NewFloat32(table, "coordinateZ")
 	a.SiteId = field.NewString(table, "siteId")
 	a.OrganizationId = field.NewString(table, "organizationId")
 
@@ -141,7 +147,7 @@ func (a *aP) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *aP) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 20)
+	a.fieldMap = make(map[string]field.Expr, 22)
 	a.fieldMap["id"] = a.Id
 	a.fieldMap["createdAt"] = a.CreatedAt
 	a.fieldMap["updatedAt"] = a.UpdatedAt
@@ -155,9 +161,11 @@ func (a *aP) fillFieldMap() {
 	a.fieldMap["deviceRole"] = a.DeviceRole
 	a.fieldMap["osVersion"] = a.OsVersion
 	a.fieldMap["groupName"] = a.GroupName
-	a.fieldMap["coordinate"] = a.Coordinate
 	a.fieldMap["wlanACIpAddress"] = a.WlanACIpAddress
 	a.fieldMap["floor"] = a.Floor
+	a.fieldMap["coordinateX"] = a.CoordinateX
+	a.fieldMap["coordinateY"] = a.CoordinateY
+	a.fieldMap["coordinateZ"] = a.CoordinateZ
 	a.fieldMap["siteId"] = a.SiteId
 	a.fieldMap["organizationId"] = a.OrganizationId
 

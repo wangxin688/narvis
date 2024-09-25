@@ -94,6 +94,7 @@ type ApItem struct {
 	GroupName       string `json:"groupName"`
 	DeviceModel     string `json:"deviceModel"`
 	WlanACIpAddress string `json:"wlanACIpAddress"`
+	OsVersion       string `json:"osVersion"`
 }
 
 type DiscoveryResponse struct {

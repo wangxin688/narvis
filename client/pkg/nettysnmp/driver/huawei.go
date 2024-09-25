@@ -17,6 +17,7 @@ const hwWlanApName = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.4"
 const hwWlanAPGroup = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.5"
 const hwWlanApTypeInfo = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.3"
 const hwWlanApSn = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.2"
+const hwWlanApSoftwareVersion = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.7"
 
 type HuaweiDriver struct {
 	factory.SnmpDiscovery
@@ -68,7 +69,9 @@ func (hd *HuaweiDriver) APs() (ap []*factory.ApItem, errors []string) {
 	apModel, errApModel := hd.Session.BulkWalkAll(hwWlanApTypeInfo)
 	apSerialNumber, errApSerialNumber := hd.Session.BulkWalkAll(hwWlanApSn)
 	apMac, errApMac := hd.Session.BulkWalkAll(hwWlanApMac)
-	if errApName != nil || errApGroupName != nil || errApModel != nil || errApSerialNumber != nil ||  errApMac != nil {
+	apVersion, errApVersion := hd.Session.BulkWalkAll(hwWlanApSoftwareVersion)
+	if errApName != nil || errApGroupName != nil || errApModel != nil || errApSerialNumber != nil ||  errApMac != nil || errApVersion != nil {
+		errors = append(errors, errApVersion.Error())
 		errors = append(errors, errApName.Error())
 		errors = append(errors, errApGroupName.Error())
 		errors = append(errors, errApModel.Error())
@@ -81,6 +84,7 @@ func (hd *HuaweiDriver) APs() (ap []*factory.ApItem, errors []string) {
 	indexApGroupName := factory.ExtractString(hwWlanAPGroup, apGroupName)
 	indexApModel := factory.ExtractString(hwWlanApTypeInfo, apModel)
 	indexApSerialNumber := factory.ExtractString(hwWlanApSn, apSerialNumber)
+	indexApVersion := factory.ExtractString(hwWlanApSoftwareVersion, apVersion)
 	for i, v := range indexApIP {
 		ap = append(ap, &factory.ApItem{
 			Name:            indexApName[i],
@@ -90,6 +94,7 @@ func (hd *HuaweiDriver) APs() (ap []*factory.ApItem, errors []string) {
 			SerialNumber:    indexApSerialNumber[i],
 			GroupName:       indexApGroupName[i],
 			WlanACIpAddress: hd.IpAddress,
+			OsVersion:       indexApVersion[i],
 		})
 	}
 	return ap, errors
