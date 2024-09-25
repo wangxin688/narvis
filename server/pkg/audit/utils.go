@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/samber/lo"
 	"gorm.io/datatypes"
@@ -102,6 +103,10 @@ func getSnapshot(data any, fields []*schema.Field) (*snapshot, error) {
 		s.primaryKeyValues = append(s.primaryKeyValues, id)
 		tmtData := make(map[string]any)
 		for _, field := range fields {
+			tag := field.Tag.Get("gorm")
+			if strings.Contains(tag, "Ondelete") || strings.Contains(tag, "Onupdate") || strings.Contains(tag, "foreignKey") {
+				continue
+			}
 			tmtData[field.Name] = tmp.FieldByName(field.Name).Interface()
 		}
 		s.data[id] = tmtData

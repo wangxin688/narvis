@@ -10,31 +10,35 @@ import (
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
+	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/pkg/rmq"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
 )
 
-func GenerateTask(siteId, taskName, callback string) ([]*intendtask.BaseSnmpTask, error) {
-	results := make([]*intendtask.BaseSnmpTask, 0)
-
-	devices, err := infra_biz.NewDeviceService().GetActiveDevices(siteId)
+func GenerateTask(siteId, taskName, callback string) ([]string, error) {
+	taskIds := make([]string, 0)
+	orgId := global.OrganizationId.Get()
+	devices, err := getDevicesByTaskName(siteId, taskName)
 	if err != nil {
-		return results, err
+		return taskIds, err
 	}
 	if len(devices) == 0 {
-		return results, nil
+		core.Logger.Info("[taskGeneration]: no devices found", zap.String("task_name", taskName), zap.String("site_id", siteId))
+		return taskIds, nil
 	}
 	deviceIds := infra_utils.DevicesToIds(devices)
 	deviceManagementIp := infra_utils.DeviceManagementIpMap(devices)
 	snmpConfigs, err := infra_biz.NewSnmpCredentialService().GetCredentialByDeviceIds(deviceIds)
 	if err != nil {
-		return results, err
+		return taskIds, err
 	}
+	newTasks := make([]*models.TaskResult, 0)
 	for deviceId, snmpConfig := range snmpConfigs {
-		results = append(results, &intendtask.BaseSnmpTask{
-			TaskId:   uuid.New().String(),
+		taskId := uuid.New().String()
+		task := &intendtask.BaseSnmpTask{
+			TaskId:   taskId,
 			TaskName: taskName,
 			SnmpConfig: &intendtask.SnmpV2Credential{
 				Community:      snmpConfig.Community,
@@ -46,9 +50,45 @@ func GenerateTask(siteId, taskName, callback string) ([]*intendtask.BaseSnmpTask
 			DeviceId:     deviceId,
 			ManagementIp: deviceManagementIp[deviceId],
 			Callback:     callback,
+		}
+		taskBytes, err := json.Marshal(task)
+		if err != nil {
+			return taskIds, err
+		}
+		err = rmq.PublishProxyMessage(taskBytes, orgId)
+		if err != nil {
+			return taskIds, err
+		}
+		taskIds = append(taskIds, taskId)
+		newTasks = append(newTasks, &models.TaskResult{
+			BaseDbModel: models.BaseDbModel{
+				Id: taskId,
+			},
+			Name:           taskName,
+			Status:         "InProgress",
+			OrganizationId: orgId,
 		})
 	}
-	return results, nil
+	err = gen.TaskResult.CreateInBatches(newTasks, len(newTasks))
+	if err != nil {
+		return taskIds, err
+	}
+	return taskIds, nil
+}
+
+func getDevicesByTaskName(siteId, taskName string) ([]*models.Device, error) {
+	switch taskName {
+	case intendtask.ScanAp:
+		return infra_biz.NewDeviceService().GetActiveWlanAC(siteId)
+	case intendtask.ScanDevice:
+		return infra_biz.NewDeviceService().GetActiveDevices(siteId)
+	case intendtask.ScanMacAddressTable:
+		return infra_biz.NewDeviceService().GetAllAccessSwitches(siteId)
+	case intendtask.ScanIPAM:
+		return infra_biz.NewDeviceService().GetCoreSwitch(siteId)
+	default:
+		return nil, errors.NewError(errors.CodeTaskNameInvalid, errors.MsgTaskNameInvalid)
+	}
 }
 
 // use ip range to scan devices

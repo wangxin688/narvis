@@ -10,6 +10,7 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/core/config"
 	"github.com/wangxin688/narvis/server/dal/gen"
+	infra_hooks "github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/organization/biz"
 	"github.com/wangxin688/narvis/server/features/organization/hooks"
 	"github.com/wangxin688/narvis/server/features/organization/schemas"
@@ -34,6 +35,8 @@ func main() {
 		orgId := initOrganization()
 		core.SetUpConfig()
 		initProxy(orgId)
+		initNarvisCliCredential(orgId)
+		initNarvisSnmpCredential(orgId)
 	}
 }
 
@@ -552,5 +555,57 @@ func initZbxDisableDefaultAdmin(client *req.Client, token string) error {
 		return err
 	}
 	core.Logger.Info("[bootstrap]: init_zbx disable default admin success")
+	return nil
+}
+
+func initNarvisSnmpCredential(orgId string) error {
+	cred, err := gen.SnmpV2Credential.Where(gen.SnmpV2Credential.OrganizationId.Eq(orgId)).Find()
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to get snmp credential", zap.Error(err))
+		return err
+	}
+	if len(cred) > 0 {
+		core.Logger.Info("[bootstrap]: snmp credential already exists", zap.String("id", cred[0].Id))
+		return nil
+	}
+	snmpCred := &models.SnmpV2Credential{
+		OrganizationId: orgId,
+		Community:      core.Settings.BootstrapConfig.SnmpCommunity,
+		MaxRepetitions: 50,
+		Timeout:        core.Settings.BootstrapConfig.SnmpTimeout,
+		Port:           core.Settings.BootstrapConfig.SnmpPort,
+	}
+	err = gen.SnmpV2Credential.Create(snmpCred)
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to create snmp credential", zap.Error(err))
+		return err
+	}
+	core.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
+	return nil
+	infra_hooks.SnmpCredCreateHooks(snmpCred.Id)
+	return nil
+}
+
+func initNarvisCliCredential(orgId string) error {
+	cred, err := gen.CliCredential.Where(gen.CliCredential.OrganizationId.Eq(orgId)).Find()
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to get client credential", zap.Error(err))
+		return err
+	}
+	if len(cred) > 0 {
+		core.Logger.Info("[bootstrap]: client credential already exists", zap.String("id", cred[0].Id))
+		return nil
+	}
+	clientCred := &models.CliCredential{
+		OrganizationId: orgId,
+		Username:       core.Settings.BootstrapConfig.CliUser,
+		Password:       core.Settings.BootstrapConfig.CliPassword,
+	}
+	err = gen.CliCredential.Create(clientCred)
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to create client credential", zap.Error(err))
+		return err
+	}
+	core.Logger.Info("[bootstrap]: client credential created", zap.String("id", clientCred.Id))
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wangxin688/narvis/intend/intendtask"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_tasks "github.com/wangxin688/narvis/server/features/infra/tasks"
@@ -207,4 +208,33 @@ func batchDeleteScanDevice(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, ts.IdsResponse{Ids: ids})
+}
+
+
+// @Tags Infra
+// @Summary Scan AP
+// @Description Scan AP
+// @Security BearerAuth
+// @Accept  json
+// @Produce  json
+// @Param data body schemas.ScanApCreate true "data"
+// @Success 200 {object} ts.IdsResponse
+// @Router /infra/scan-aps [post]
+func createScanAP(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var scanAP schemas.ScanApCreate
+	if err = c.ShouldBindJSON(&scanAP); err != nil {
+		return
+	}
+	
+	taskIds, err := infra_tasks.GenerateTask(scanAP.SiteId, intendtask.ScanAp, intendtask.ScanApCallback)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdsResponse{Ids: taskIds})
 }

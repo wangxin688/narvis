@@ -9,8 +9,8 @@ import (
 type CircuitCreate struct {
 	Name        string  `json:"name" binding:"required"`
 	CId         *string `json:"cid" binding:"required"`
-	Status      string  `json:"status" binding:"required,oneof: Active Inactive"`
-	CircuitType string  `json:"circuitType" binding:"required,oneof: Internet MPLS IEPL DPLC DarkFiber ADSL"`
+	Status      string  `json:"status" binding:"required,oneof= Active Inactive"`
+	CircuitType string  `json:"circuitType" binding:"required,oneof= Internet MPLS IEPL DPLC DarkFiber ADSL"`
 	RxBandWidth uint32  `json:"rxBandWidth" binding:"required,gt=1, lt=800000"`
 	TxBandWidth uint32  `json:"txBandWidth" binding:"required,gt=1, lt=800000"`
 	Ipv4Address *string `json:"ipv4Address" binding:"ipv4"`
@@ -23,8 +23,8 @@ type CircuitCreate struct {
 type CircuitUpdate struct {
 	Name        *string `json:"name" binding:"omitempty"`
 	CId         *string `json:"cid" binding:"omitempty"`
-	Status      *string `json:"status" binding:"omitempty,oneof: Active Inactive"`
-	CircuitType *string `json:"circuitType" binding:"omitempty,oneof: Internet Intranet"`
+	Status      *string `json:"status" binding:"omitempty,oneof= Active Inactive"`
+	CircuitType *string `json:"circuitType" binding:"omitempty,oneof= Internet Intranet"`
 	RxBandWidth *uint32 `json:"rxBandWidth" binding:"omitempty,gt=1, lt=800000"`
 	TxBandWidth *uint32 `json:"txBandWidth" binding:"omitempty,gt=1, lt=800000"`
 	Ipv4Address *string `json:"ipv4Address" binding:"omitempty,ipv4"`
@@ -38,10 +38,10 @@ type CircuitQuery struct {
 	schemas.PageInfo
 	Name        *[]string `form:"name" binding:"omitempty"`
 	CId         *[]string `form:"cid" binding:"omitempty"`
-	Status      *string   `form:"status" binding:"omitempty,oneof: Active Inactive"`
+	Status      *string   `form:"status" binding:"omitempty,oneof= Active Inactive"`
 	Ipv4Address *[]string `form:"ipv4Address" binding:"omitempty,list_ip"`
 	Ipv6Address *[]string `form:"ipv6Address" binding:"omitempty,list_ip"`
-	CircuitType *[]string `form:"circuitType" binding:"omitempty,oneof: Internet MPLS IEPL DPLC DarkFiber ADSL"`
+	CircuitType *[]string `form:"circuitType" binding:"omitempty,oneof= Internet MPLS IEPL DPLC DarkFiber ADSL"`
 	Provider    *[]string `form:"provider" binding:"omitempty"`
 	SiteId      *[]string `form:"siteId" binding:"omitempty,list_uuid"`
 	DeviceId    *[]string `form:"deviceId" binding:"omitempty,list_uuid"`

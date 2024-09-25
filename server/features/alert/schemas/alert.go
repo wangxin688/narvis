@@ -26,9 +26,9 @@ type AlertCreate struct {
 	Labels    []*Label   `json:"tags" binding:"omitempty"`
 	EventId   string     `json:"eventId" binding:"required"`
 	TriggerId string     `json:"triggerId" binding:"required"`
-	Status    string     `json:"status" binding:"required,oneof: Problem OK"`
+	Status    string     `json:"status" binding:"required,oneof= Problem OK"`
 	StartedAt *time.Time `json:"startedAt" binding:"omitempty,datetime"`
-	Severity  string     `json:"severity" binding:"required,oneof: P1 P2 P3 P4"`
+	Severity  string     `json:"severity" binding:"required,oneof= P1 P2 P3 P4"`
 }
 
 func (a *AlertCreate) validateStartTime() error {

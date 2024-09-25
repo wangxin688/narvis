@@ -61,5 +61,7 @@ func RegisterInfraRoutes(e *gin.Engine) {
 		router.PUT("/scan-devices", batchUpdateScanDevice)
 		router.DELETE("/scan-devices/:id", deleteScanDevice)
 		router.DELETE("/scan-devices", batchDeleteScanDevice)
+
+		router.POST("/scan-aps", createScanAP)
 	}
 }

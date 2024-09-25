@@ -2,6 +2,7 @@ package infra_biz
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/wangxin688/narvis/intend/devicerole"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
@@ -327,5 +328,33 @@ func (d *DeviceService) GetActiveDevices(siteId string) ([]*models.Device, error
 		return nil, err
 	}
 
+	return devices, nil
+}
+
+func (d *DeviceService) GetActiveWlanAC(siteId string) ([]*models.Device, error) {
+	devices, err := gen.Device.Where(
+		gen.Device.SiteId.Eq(siteId), gen.Device.Status.Eq("Active"), gen.Device.DeviceRole.Eq(string(devicerole.WlanAC))).Find()
+	if err != nil {
+		return nil, err
+	}
+	return devices, nil
+}
+
+func (d *DeviceService) GetAllAccessSwitches(siteId string) ([]*models.Device, error) {
+	devices, err := gen.Device.Where(
+		gen.Device.SiteId.Eq(siteId), gen.Device.Status.Eq("Active"), gen.Device.DeviceRole.Eq(string(devicerole.AccessSwitch))).Find()
+	if err != nil {
+		return nil, err
+	}
+
+	return devices, nil
+}
+
+func (d *DeviceService) GetCoreSwitch(siteId string) ([]*models.Device, error) {
+	devices, err := gen.Device.Where(
+		gen.Device.SiteId.Eq(siteId), gen.Device.Status.Eq("Active"), gen.Device.DeviceRole.Eq(string(devicerole.CoreSwitch))).Find()
+	if err != nil {
+		return nil, err
+	}
 	return devices, nil
 }

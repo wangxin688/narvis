@@ -85,6 +85,8 @@ const (
 	MsgGlobalCredentialDeleteDeny   ErrorMsg  = "Organization-level credential is not allowed to be deleted"
 	CodeIpRangeNotProvided          ErrorCode = 500005
 	MsgIpRangeNotProvided           ErrorMsg  = "ip range not provided"
+	CodeTaskNameInvalid             ErrorCode = 500006
+	MsgTaskNameInvalid              ErrorMsg  = "task name invalid"
 )
 
 // ipam error codes (600000 - 700000)

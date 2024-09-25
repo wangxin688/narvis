@@ -1733,6 +1733,14 @@ const docTemplate = `{
                     {
                         "type": "array",
                         "items": {
+                            "enum": [
+                                "Internet",
+                                "MPLS",
+                                "IEPL",
+                                "DPLC",
+                                "DarkFiber",
+                                "ADSL"
+                            ],
                             "type": "string"
                         },
                         "collectionFormat": "csv",
@@ -1844,6 +1852,10 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "Active",
+                            "Inactive"
+                        ],
                         "type": "string",
                         "name": "status",
                         "in": "query"
@@ -2964,6 +2976,45 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/scan-aps": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Scan AP",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Scan AP",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ScanApCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdsResponse"
                         }
                     }
                 }
@@ -4588,6 +4639,9 @@ const docTemplate = `{
                 "organizationId": {
                     "type": "string"
                 },
+                "osVersion": {
+                    "type": "string"
+                },
                 "serialNumber": {
                     "type": "string"
                 },
@@ -4802,13 +4856,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "severity": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "P1",
+                        "P2",
+                        "P3",
+                        "P4"
+                    ]
                 },
                 "startedAt": {
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Problem",
+                        "OK"
+                    ]
                 },
                 "tags": {
                     "type": "array",
@@ -4973,7 +5037,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "circuitType": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Internet",
+                        "MPLS",
+                        "IEPL",
+                        "DPLC",
+                        "DarkFiber",
+                        "ADSL"
+                    ]
                 },
                 "description": {
                     "type": "string"
@@ -4997,7 +5069,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
                 },
                 "txBandWidth": {
                     "type": "integer"
@@ -5031,7 +5107,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "circuitType": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Internet",
+                        "Intranet"
+                    ]
                 },
                 "description": {
                     "type": "string"
@@ -5055,7 +5135,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
                 },
                 "txBandWidth": {
                     "type": "integer"
@@ -6141,6 +6225,17 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.ScanApCreate": {
+            "type": "object",
+            "required": [
+                "siteId"
+            ],
+            "properties": {
+                "siteId": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.ScanDevice": {
             "type": "object",
             "properties": {
@@ -6198,7 +6293,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
                 }
             }
         },
@@ -6269,7 +6368,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
                 }
             }
         },

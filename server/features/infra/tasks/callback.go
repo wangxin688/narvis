@@ -6,8 +6,10 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
+	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/models"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 func DeviceBasicInfoScanCallback(scanResults []*intendtask.DeviceBasicInfoScanResponse) error {
@@ -86,6 +88,7 @@ func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
 				GroupName:       scanResult.GroupName,
 				WlanACIpAddress: scanResult.WlanACIpAddress,
 				MacAddress:      scanResult.MacAddress,
+				OsVersion:       scanResult.OsVersion,
 				SiteId:          scanResult.SiteId,
 			})
 		} else if apService.CalApHash(ap) != scanResult.CalApHash() {
@@ -99,18 +102,20 @@ func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
 			updateAps = append(updateAps, ap)
 		}
 	}
+	tx := infra.DB.Session(&gorm.Session{SkipHooks: true})
 	if len(newAps) > 0 {
-		err = gen.AP.CreateInBatches(newAps, len(newAps))
+		err = tx.CreateInBatches(newAps, len(newAps)).Error
 		if err != nil {
 			core.Logger.Error("[apScanCallback]: failed to create new ap", zap.Error(err))
 			return err
 		}
 	}
 	if len(updateAps) > 0 {
-		err = gen.AP.Save(updateAps...)
-		if err != nil {
-			core.Logger.Error("[apScanCallback]: failed to update existed ap", zap.Error(err))
-			return err
+		for _, ap := range updateAps {
+			if err = tx.Save(ap).Error; err != nil {
+				core.Logger.Error("[apScanCallback]: failed to update existed ap", zap.Error(err))
+				return err
+			}
 		}
 	}
 	return nil

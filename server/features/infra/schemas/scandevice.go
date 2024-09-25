@@ -60,7 +60,7 @@ type ScanDeviceQuery struct {
 
 type ScanDeviceUpdate struct {
 	SiteId       string   `json:"siteId" binding:"required,uuid"`
-	Status       string   `json:"status" binding:"required,oneof: Active Inactive"`
+	Status       string   `json:"status" binding:"required,oneof= Active Inactive"`
 	DeviceRole   string   `json:"deviceRole" binding:"required"`
 	Floor        *string  `json:"floor" binding:"omitempty"`
 	RackId       *string  `json:"rackId" binding:"omitempty,uuid"`
@@ -70,7 +70,11 @@ type ScanDeviceUpdate struct {
 type ScanDeviceBatchUpdate struct {
 	Ids        []string `json:"ids" binding:"required,list_uuid"`
 	SiteId     string   `json:"siteId" binding:"required,uuid"`
-	Status     string   `json:"status" binding:"required,oneof: Active Inactive"`
+	Status     string   `json:"status" binding:"required,oneof= Active Inactive"`
 	DeviceRole string   `json:"deviceRole" binding:"required"`
 	Floor      *string  `json:"floor" binding:"omitempty"`
+}
+
+type ScanApCreate struct {
+	SiteId string `json:"siteId" binding:"required,uuid"`
 }

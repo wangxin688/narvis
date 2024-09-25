@@ -42,6 +42,10 @@ func (a *AuditLogMixin) afterCreate(tx *gorm.DB) {
 	if !a.enableAuditing(tx) || tx.RowsAffected <= 0 {
 		return
 	}
+	userId := global.UserId.Get()
+	if userId == "" {
+		return
+	}
 	target, err := getDBObjectBeforeOperation(tx)
 	if err != nil {
 		return
@@ -51,6 +55,10 @@ func (a *AuditLogMixin) afterCreate(tx *gorm.DB) {
 
 func (a *AuditLogMixin) afterUpdate(tx *gorm.DB) {
 	if !a.enableAuditing(tx) || tx.RowsAffected <= 0 {
+		return
+	}
+	userId := global.UserId.Get()
+	if userId == "" {
 		return
 	}
 	target, err := getDBObjectBeforeOperation(tx)
@@ -63,6 +71,10 @@ func (a *AuditLogMixin) afterUpdate(tx *gorm.DB) {
 
 func (a *AuditLogMixin) afterDelete(tx *gorm.DB) {
 	if !a.enableAuditing(tx) || tx.RowsAffected <= 0 {
+		return
+	}
+	userId := global.UserId.Get()
+	if userId == "" {
 		return
 	}
 	target, err := getDBObjectBeforeOperation(tx)
@@ -121,7 +133,7 @@ func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action str
 		return
 	}
 	auditLog := auditLogs
-	if err := tx.Session(&gorm.Session{SkipHooks: true, NewDB: true}).Create(auditLog).Error; err != nil {
+	if err := tx.Session(&gorm.Session{SkipHooks: true, NewDB: true}).CreateInBatches(auditLog, len(auditLog)).Error; err != nil {
 		core.Logger.Error("[createAuditLog]: commit create audit log error", zap.Error(err))
 	}
 

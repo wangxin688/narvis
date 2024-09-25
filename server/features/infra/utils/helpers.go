@@ -16,7 +16,7 @@ func DeviceManagementIpMap(devices []*models.Device) map[string]string {
 	result := make(map[string]string, len(devices))
 
 	for _, device := range devices {
-		result[device.ManagementIp] = device.Id
+		result[device.Id] = device.ManagementIp
 	}
 	return result
 }

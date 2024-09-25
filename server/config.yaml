@@ -20,8 +20,8 @@ jwt:
   access_token_expired_minutes: 1440
   refresh_token_expired_minutes: 10080
 redis:
-  host: ""
-  port: 0
+  host: localhost 
+  port: 6379
   password: 14adbad48f023d00b7223860f057a886
   db: 0
   use_cluster: false
@@ -69,3 +69,9 @@ bootstrap:
   enterprise_code: narvis
   domain_name: portal.narvis.com
   admin_password: admin123456
+  snmp_community: public
+  snmp_port: 161
+  snmp_timeout: 10
+  cli_user: admin
+  cli_password: admin123456
+

@@ -112,6 +112,8 @@ definitions:
         type: string
       organizationId:
         type: string
+      osVersion:
+        type: string
       serialNumber:
         type: string
       siteId:
@@ -248,10 +250,18 @@ definitions:
       hostId:
         type: string
       severity:
+        enum:
+        - P1
+        - P2
+        - P3
+        - P4
         type: string
       startedAt:
         type: string
       status:
+        enum:
+        - Problem
+        - OK
         type: string
       tags:
         items:
@@ -361,6 +371,13 @@ definitions:
       cid:
         type: string
       circuitType:
+        enum:
+        - Internet
+        - MPLS
+        - IEPL
+        - DPLC
+        - DarkFiber
+        - ADSL
         type: string
       description:
         type: string
@@ -377,6 +394,9 @@ definitions:
       rxBandWidth:
         type: integer
       status:
+        enum:
+        - Active
+        - Inactive
         type: string
       txBandWidth:
         type: integer
@@ -408,6 +428,9 @@ definitions:
       cid:
         type: string
       circuitType:
+        enum:
+        - Internet
+        - Intranet
         type: string
       description:
         type: string
@@ -424,6 +447,9 @@ definitions:
       rxBandWidth:
         type: integer
       status:
+        enum:
+        - Active
+        - Inactive
         type: string
       txBandWidth:
         type: integer
@@ -1155,6 +1181,13 @@ definitions:
       name:
         type: string
     type: object
+  schemas.ScanApCreate:
+    properties:
+      siteId:
+        type: string
+    required:
+    - siteId
+    type: object
   schemas.ScanDevice:
     properties:
       chassisId:
@@ -1189,6 +1222,9 @@ definitions:
       siteId:
         type: string
       status:
+        enum:
+        - Active
+        - Inactive
         type: string
     required:
     - deviceRole
@@ -1238,6 +1274,9 @@ definitions:
       siteId:
         type: string
       status:
+        enum:
+        - Active
+        - Inactive
         type: string
     required:
     - deviceRole
@@ -2701,6 +2740,13 @@ paths:
       - collectionFormat: csv
         in: query
         items:
+          enum:
+          - Internet
+          - MPLS
+          - IEPL
+          - DPLC
+          - DarkFiber
+          - ADSL
           type: string
         name: circuitType
         type: array
@@ -2773,7 +2819,10 @@ paths:
           type: string
         name: siteId
         type: array
-      - in: query
+      - enum:
+        - Active
+        - Inactive
+        in: query
         name: status
         type: string
       responses:
@@ -3478,6 +3527,30 @@ paths:
       security:
       - BearerAuth: []
       summary: Update rack
+      tags:
+      - Infra
+  /infra/scan-aps:
+    post:
+      consumes:
+      - application/json
+      description: Scan AP
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.ScanApCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdsResponse'
+      security:
+      - BearerAuth: []
+      summary: Scan AP
       tags:
       - Infra
   /infra/scan-devices:
