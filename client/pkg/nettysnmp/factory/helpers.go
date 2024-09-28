@@ -1,8 +1,6 @@
 package factory
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
 	"net"
 	"regexp"
@@ -308,9 +306,6 @@ func EnrichMacAddress(macAddresses *map[uint64][]string, interfaces []*DeviceInt
 			if !ok {
 				continue
 			}
-			if arpItem.IpAddress == "" {
-				arpItem.IpAddress = "0.0.0.0"
-			}
 			results = append(results, &MacAddressItem{
 				MacAddress: macAddress,
 				IfIndex:    index,
@@ -326,15 +321,4 @@ func EnrichMacAddress(macAddresses *map[uint64][]string, interfaces []*DeviceInt
 
 func shouldIncludeMacAddress(iface *DeviceInterface, lldpInterfaces []string) bool {
 	return iface.IfType == "ethernetCsmacd" && !lo.Contains(lldpInterfaces, iface.IfName)
-}
-
-func lldpHashValue(lldp *LldpNeighbor) string {
-	hashString := lldp.LocalChassisId + lldp.LocalIfName + lldp.RemoteChassisId + lldp.RemoteIfName
-	return stringToMd5(hashString)
-}
-
-func stringToMd5(str string) string {
-	h := md5.New()
-	h.Write([]byte(str))
-	return hex.EncodeToString(h.Sum(nil))
 }

@@ -295,17 +295,20 @@ func (sd *SnmpDiscovery) LldpNeighbors() (lldp []*LldpNeighbor, errors []string)
 	IndexRemoteIfDescr := ExtractStringWithShift(LldpRemPortDesc, -2, remoteIfDescr)
 
 	for i, v := range IndexRemChassisId {
+		remoteHostname := IndexRemoteHostname[i]
+		if remoteHostname == "" {
+			continue
+		}
 		neighbor := &LldpNeighbor{
 			LocalChassisId:  localChassisId,
 			LocalHostname:   hostname,
 			LocalIfName:     IndexIfName["."+i],
 			LocalIfDescr:    IndexIfDescr["."+i],
 			RemoteChassisId: v,
-			RemoteHostname:  IndexRemoteHostname[i],
+			RemoteHostname:  remoteHostname,
 			RemoteIfName:    IndexRemoteIfName[i],
 			RemoteIfDescr:   IndexRemoteIfDescr[i],
 		}
-		neighbor.HashValue = lldpHashValue(neighbor)
 		lldp = append(lldp, neighbor)
 	}
 	return lldp, errors
@@ -436,7 +439,7 @@ func (sd *SnmpDiscovery) Vlans() (vlan []*VlanItem, errors []string) {
 }
 
 func (sd *SnmpDiscovery) APs() (ap []*ApItem, errors []string) {
-	// need implement in vendor driver 
+	// need implement in vendor driver
 	results := make([]*ApItem, 0)
 	return results, nil
 }

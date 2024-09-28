@@ -19,6 +19,14 @@ const hwWlanApTypeInfo = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.3"
 const hwWlanApSn = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.2"
 const hwWlanApSoftwareVersion = ".1.3.6.1.4.1.2011.6.139.13.3.3.1.7"
 
+const hwStackRun = ".1.3.6.1.4.1.2011.5.25.183.1.1" // 0-8
+const hwMemberCurrentStackId = ".1.3.6.1.4.1.2011.5.25.183.1.20.1.1"
+const hwMemberStackPriority = ".1.3.6.1.4.1.2011.5.25.183.1.20.1.2" // 1-255, default 100
+const hwMemberStackRole = ".1.3.6.1.4.1.2011.5.25.183.1.20.1.3"
+const hwMemberStackMacAddress = ".1.3.6.1.4.1.2011.5.25.183.1.20.1.4"
+const hwStackPortName = ".1.3.6.1.4.1.2011.5.25.183.1.21.1.3"
+const hwStackPortStatus = ".1.3.6.1.4.1.2011.5.25.183.1.21.1.5"
+
 type HuaweiDriver struct {
 	factory.SnmpDiscovery
 }
@@ -70,7 +78,7 @@ func (hd *HuaweiDriver) APs() (ap []*factory.ApItem, errors []string) {
 	apSerialNumber, errApSerialNumber := hd.Session.BulkWalkAll(hwWlanApSn)
 	apMac, errApMac := hd.Session.BulkWalkAll(hwWlanApMac)
 	apVersion, errApVersion := hd.Session.BulkWalkAll(hwWlanApSoftwareVersion)
-	if errApName != nil || errApGroupName != nil || errApModel != nil || errApSerialNumber != nil ||  errApMac != nil || errApVersion != nil {
+	if errApName != nil || errApGroupName != nil || errApModel != nil || errApSerialNumber != nil || errApMac != nil || errApVersion != nil {
 		errors = append(errors, errApVersion.Error())
 		errors = append(errors, errApName.Error())
 		errors = append(errors, errApGroupName.Error())

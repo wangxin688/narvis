@@ -132,9 +132,9 @@ func (DeviceStack) TableName() string {
 type LLDPNeighbor struct {
 	BaseDbModel
 
-	LocalDeviceId  string       `gorm:"column:localDeviceId;type:uuid;not null;index"`
+	LocalDeviceId  string       `gorm:"column:localDeviceId;type:uuid;not null;index;uniqueIndex:idx_local_device_id_if_name_id;"`
 	LocalDevice    Device       `gorm:"constraint:Ondelete:CASCADE;foreignKey:LocalDeviceId"`
-	LocalIfName    string       `gorm:"column:localIfName;not null"`
+	LocalIfName    string       `gorm:"column:localIfName;not null;uniqueIndex:idx_local_device_id_if_name_id;"`
 	LocalIfDescr   string       `gorm:"column:localIfDescr;not null"`
 	RemoteDeviceId string       `gorm:"column:remoteDeviceId;type:uuid;not null"`
 	RemoteDevice   Device       `gorm:"constraint:Ondelete:CASCADE;foreignKey:RemoteDeviceId"`

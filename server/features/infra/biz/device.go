@@ -358,3 +358,17 @@ func (d *DeviceService) GetCoreSwitch(siteId string) ([]*models.Device, error) {
 	}
 	return devices, nil
 }
+
+// GetDeviceByChassisIds get device by chassis id, return map[ChassisId]Device
+func (d *DeviceService) GetDeviceByChassisIds(chassisIds []string, orgId string) (map[string]*models.Device, error) {
+
+	devices, err := gen.Device.Where(gen.Device.ChassisId.In(chassisIds...), gen.Device.OrganizationId.Eq(orgId)).Find()
+	if err != nil {
+		return nil, err
+	}
+	deviceMap := make(map[string]*models.Device)
+	for _, device := range devices {
+		deviceMap[*device.ChassisId] = device
+	}
+	return deviceMap, nil
+}

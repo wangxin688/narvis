@@ -61,18 +61,130 @@ type DeviceBasicInfo struct {
 }
 
 type DeviceInterface struct {
-	IfIndex       uint64 `json:"ifIndex"`
-	IfName        string `json:"ifName"`
-	IfDescr       string `json:"ifDescr"`
-	IfType        string `json:"ifType"`
-	IfMtu         uint64 `json:"ifMtu"`
-	IfSpeed       uint64 `json:"ifSpeed"`
-	IfPhysAddr    string `json:"ifPhysAddr"`
-	IfAdminStatus string `json:"ifAdminStatus"`
-	IfOperStatus  string `json:"ifOperStatus"`
-	IfLastChange  uint64 `json:"ifLastChange"`
-	IfHighSpeed   uint64 `json:"ifHighSpeed"`
-	IfIpAddress   string `json:"ifIpAddress"`
+	IfIndex       uint64  `json:"ifIndex"`
+	IfName        string  `json:"ifName"`
+	IfDescr       string  `json:"ifDescr"`
+	IfType        string  `json:"ifType"`
+	IfMtu         uint64  `json:"ifMtu"`
+	IfSpeed       uint64  `json:"ifSpeed"`
+	IfPhysAddr    *string `json:"ifPhysAddr"`
+	IfAdminStatus string  `json:"ifAdminStatus"`
+	IfOperStatus  string  `json:"ifOperStatus"`
+	IfLastChange  uint64  `json:"ifLastChange"`
+	IfHighSpeed   uint64  `json:"ifHighSpeed"`
+	IfIpAddress   *string `json:"ifIpAddress"`
+	HashValue     string  `json:"hashValue"`
+}
+
+func (d *DeviceInterface) CalHashValue() string {
+
+	hashString := fmt.Sprintf(
+		"%s-%s-%s-%d-%d-%d-%s-%s-%s-%d-%s",
+		d.IfName,
+		d.IfDescr,
+		d.IfType,
+		d.IfHighSpeed,
+		d.IfMtu,
+		d.IfSpeed,
+		utils.PtrStringToString(d.IfPhysAddr),
+		d.IfAdminStatus,
+		d.IfOperStatus,
+		d.IfLastChange,
+		utils.PtrStringToString(d.IfIpAddress))
+	hash := md5.New()
+	_, _ = hash.Write([]byte(hashString))
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+type LldpNeighbor struct {
+	LocalChassisId  string `json:"localChassisId"`
+	LocalHostname   string `json:"localHostname"`
+	LocalIfName     string `json:"localIfName"`
+	LocalIfDescr    string `json:"localIfDescr"`
+	RemoteChassisId string `json:"remoteChassisId"`
+	RemoteHostname  string `json:"remoteHostname"`
+	RemoteIfName    string `json:"remoteIfName"`
+	RemoteIfDescr   string `json:"remoteIfDescr"`
+	HashValue       string `json:"hashValue"`
+}
+
+func (l *LldpNeighbor) CalHashValue() string {
+	hashString := fmt.Sprintf(
+		"%s-%s-%s-%s-%s-%s",
+		l.LocalChassisId,
+		l.LocalIfName,
+		l.LocalIfDescr,
+		l.RemoteChassisId,
+		l.RemoteIfName,
+		l.RemoteIfDescr)
+	hash := md5.New()
+	_, _ = hash.Write([]byte(hashString))
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+func (l *LldpNeighbor) CalApHashValue() string {
+	hashString := fmt.Sprintf(
+		"%s-%s-%s-%s",
+		l.LocalChassisId,
+		l.LocalIfName,
+		l.LocalIfDescr,
+		l.RemoteChassisId)
+	hash := md5.New()
+	_, _ = hash.Write([]byte(hashString))
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+type Entity struct {
+	EntityPhysicalClass       string `json:"entityPhysicalClass"`
+	EntityPhysicalDescr       string `json:"entityPhysicalDescr"`
+	EntityPhysicalName        string `json:"entityPhysicalName"`
+	EntityPhysicalSoftwareRev string `json:"entityPhysicalSoftwareRev"`
+	EntityPhysicalSerialNum   string `json:"entityPhysicalSerialNum"`
+}
+
+type Stack struct {
+	Id         string `json:"id"`
+	Priority   uint32 `json:"priority"`
+	Role       string `json:"role"`
+	MacAddress string `json:"macAddress"`
+}
+
+type VlanItem struct {
+	VlanId   uint32 `json:"vlanId"`
+	VlanName string `json:"vlanName"`
+	IfIndex  uint64 `json:"ifIndex"`
+	Range    string `json:"range"`
+	Gateway  string `json:"gateway"`
+}
+
+type ArpItem struct {
+	IpAddress  string `json:"ipAddress"`
+	MacAddress string `json:"macAddress"`
+	Type       string `json:"type"`
+	IfIndex    uint64 `json:"ifIndex"`
+	VlanId     uint32 `json:"vlanId"`
+	Range      string `json:"range"`
+	HashValue  string `json:"hashValue"`
+}
+
+type DeviceScanResponse struct {
+	DeviceId       string             `json:"deviceId"`
+	SiteId         string             `json:"siteId"`
+	Name           string             `json:"name"`
+	Description    string             `json:"description"`
+	ChassisId      *string            `json:"chassisId"`
+	ManagementIp   string             `json:"managementIp"`
+	Manufacturer   string             `json:"manufacturer"`
+	DeviceModel    string             `json:"deviceModel"`
+	Platform       string             `json:"platform"`
+	OrganizationId string             `json:"organizationId"`
+	Interfaces     []*DeviceInterface `json:"interfaces"`
+	LldpNeighbors  []*LldpNeighbor    `json:"lldpNeighbors"`
+	Entities       []*Entity          `json:"entities"`
+	Stacks         []*Stack           `json:"stacks"`
+	Vlans          []*VlanItem        `json:"vlans"`
+	ArpTable       []*ArpItem         `json:"arpTable"`
+	Errors         []string           `json:"errors"`
 }
 
 type DeviceBasicInfoScanResponse struct {
@@ -87,7 +199,6 @@ type DeviceBasicInfoScanResponse struct {
 	Errors         []string `json:"errors"`
 }
 
-type DeviceScanResponse struct{}
 type MacAddressTableScanResponse struct{}
 
 type ApScanResponse struct {

@@ -88,24 +88,24 @@ func (s *ApService) GetById(id string) (*schemas.AP, error) {
 	}
 
 	return &schemas.AP{
-		Id:           ap.Id,
-		CreatedAt:    ap.CreatedAt,
-		UpdatedAt:    ap.UpdatedAt,
-		Name:         ap.Name,
-		Status:       ap.Status,
-		OperStatus:   "",
-		MacAddress:   ap.MacAddress,
-		SerialNumber: ap.SerialNumber,
-		ManagementIp: ap.ManagementIp,
-		DeviceRole:   ap.DeviceRole,
-		Manufacturer: ap.Manufacturer,
-		DeviceModel:  ap.DeviceModel,
-		OsVersion:    ap.OsVersion,
-		Floor:        ap.Floor,
-		GroupName:    ap.GroupName,
-		CoordinateX:  ap.CoordinateX,
-		CoordinateY:  ap.CoordinateY,
-		CoordinateZ:  ap.CoordinateZ,
+		Id:              ap.Id,
+		CreatedAt:       ap.CreatedAt,
+		UpdatedAt:       ap.UpdatedAt,
+		Name:            ap.Name,
+		Status:          ap.Status,
+		OperStatus:      "",
+		MacAddress:      ap.MacAddress,
+		SerialNumber:    ap.SerialNumber,
+		ManagementIp:    ap.ManagementIp,
+		DeviceRole:      ap.DeviceRole,
+		Manufacturer:    ap.Manufacturer,
+		DeviceModel:     ap.DeviceModel,
+		OsVersion:       ap.OsVersion,
+		Floor:           ap.Floor,
+		GroupName:       ap.GroupName,
+		CoordinateX:     ap.CoordinateX,
+		CoordinateY:     ap.CoordinateY,
+		CoordinateZ:     ap.CoordinateZ,
 		WlanACIpAddress: ap.WlanACIpAddress,
 		SiteId:          ap.SiteId,
 	}, nil
@@ -155,6 +155,22 @@ func (s *ApService) GetByIpsAndSiteId(ips []string, siteId string, orgId string)
 	res := make(map[string]*models.AP)
 	for _, ap := range aps {
 		res[ap.ManagementIp] = ap
+	}
+	return res, nil
+}
+
+// CetApByMacAddresses: get ap by mac address, return map[ap.macAddress]apModel
+func (s *ApService) CetApByMacAddresses(macAddresses []string, orgId string) (map[string]*models.AP, error) {
+	aps, err := gen.AP.Where(
+		gen.AP.OrganizationId.Eq(orgId),
+		gen.AP.MacAddress.In(macAddresses...),
+	).Find()
+	if err != nil {
+		return nil, err
+	}
+	res := make(map[string]*models.AP)
+	for _, ap := range aps {
+		res[*ap.MacAddress] = ap
 	}
 	return res, nil
 }

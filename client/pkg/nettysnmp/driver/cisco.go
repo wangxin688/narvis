@@ -20,9 +20,10 @@ const bsnApIpAddress = ".1.3.6.1.4.1.14179.2.2.1.1.19"
 const bsnAPName = ".1.3.6.1.4.1.14179.2.2.1.1.3"
 const bsnAPModel = ".1.3.6.1.4.1.14179.2.2.1.1.16"
 const bsnAPSerialNumber = ".1.3.6.1.4.1.14179.2.2.1.1.17"
-
 // const bsnAPPrimaryMwarName = ".1.3.6.1.4.1.14179.2.2.1.1.10"
 const bsnAPSoftwareVersion = ".1.3.6.1.4.1.14179.2.2.1.1.8"
+
+
 
 type CiscoBaseDriver struct {
 	factory.SnmpDiscovery
@@ -143,7 +144,7 @@ func (cd *CiscoBaseDriver) APs() (ap []*factory.ApItem, errors []string) {
 		errors = append(errors, errApVersion.Error())
 	}
 	indexApIP := factory.ExtractString(bsnApIpAddress, apIP)
-	indexApMac := factory.ExtractString(bsnAPEthernetMacAddress, apMac)
+	indexApMac := factory.ExtractMacAddress(bsnAPEthernetMacAddress, apMac)
 	indexApName := factory.ExtractString(bsnAPName, apName)
 	indexApType := factory.ExtractString(bsnAPModel, apType)
 	indexApSerialNumber := factory.ExtractString(bsnAPSerialNumber, apSerialNumber)

@@ -354,3 +354,20 @@ func GetArpTypeValue(arpType uint64) string {
 	}
 	return IpNetToMediaTypeValueMapping[arpType]
 }
+
+func GetHuaweiStackRunValue(stackRun uint64) string {
+	huaweiStackRunValueMapping := map[uint64]string{
+		1: "enable",
+		2: "disable",
+	}
+	return huaweiStackRunValueMapping[stackRun]
+}
+
+func GetHuaweiStackRole(stackRole uint64) string {
+	huaweiStackRoleValueMapping := map[uint64]string{
+		1: "master switch",
+		2: "backup switch",
+		3: "slave switch",
+	}
+	return huaweiStackRoleValueMapping[stackRole]
+}

@@ -39,7 +39,6 @@ type LldpNeighbor struct {
 	RemoteHostname  string `json:"remoteHostname"`
 	RemoteIfName    string `json:"remoteIfName"`
 	RemoteIfDescr   string `json:"remoteIfDescr"`
-	HashValue       string `json:"hashValue"`
 }
 
 type Entity struct {
