@@ -33,6 +33,7 @@ const (
 	AbnormalFanStatus       AlertNameEnum = "AbnormalFanStatus"
 	AbnormalPowerStatus     AlertNameEnum = "AbnormalPowerStatus"
 	InterfaceDown           AlertNameEnum = "InterfaceDown"
+	InterfaceHalfDuplex     AlertNameEnum = "InterfaceHalfDuplex"
 	SnmpAgentTimeout        AlertNameEnum = "SnmpAgentTimeout"
 	NodePingTimeout         AlertNameEnum = "NodePingTimeout"
 	ApDown                  AlertNameEnum = "ApDown"
@@ -195,6 +196,16 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 			},
 			Severity: SeverityWarning,
 		},
+		InterfaceHalfDuplex: {
+			Name:  InterfaceHalfDuplex,
+			Title: common.I18n{En: "Interface mode in half duplex", Zh: "接口双工状态异常"},
+			Suggestion: common.I18n{
+				En: `1.check interface cable physical connection status\n
+                     2.check device interface hardware(interface/optical-transceiver)`,
+				Zh: "1. 检查设备物理连线状态\n2. 检查节点接口硬件(端口、光模块)状态",
+			},
+			Severity: SeverityWarning,
+		},
 		SnmpAgentTimeout: {
 			Name:  SnmpAgentTimeout,
 			Title: common.I18n{En: "SNMP agent timeout", Zh: "SNMP采集超时"},
@@ -274,6 +285,7 @@ func GetAlertEnumNames() []AlertNameEnum {
 		AbnormalFanStatus,
 		AbnormalPowerStatus,
 		InterfaceDown,
+		InterfaceHalfDuplex,
 		SnmpAgentTimeout,
 		NodePingTimeout,
 		ApDown,
@@ -284,6 +296,7 @@ func GetAlertEnumNames() []AlertNameEnum {
 func GetInterfaceAlertEnumNames() []AlertNameEnum {
 	return []AlertNameEnum{
 		InterfaceDown,
+		InterfaceHalfDuplex,
 		HighBandwidthUsage,
 		HighErrorRate,
 	}

@@ -8,7 +8,9 @@ const (
 	CiscoIosXR    Platform = "ciscoXr"
 	CiscoNexusOS  Platform = "ciscoNxos"
 	CiscoASA      Platform = "ciscoAsa"
-	Huawei        Platform = "huawei"
+	Huawei        Platform = "huaweiVrp"
+	HuaweiCE      Platform = "huaweiCE"
+	HuaweiFM      Platform = "huaweiFM"
 	Aruba         Platform = "arubaOs"
 	ArubaOSSwitch Platform = "arubaOsswitch"
 	Arista        Platform = "arista"
@@ -37,6 +39,8 @@ func SupportedPlatform() []Platform {
 		CiscoIosXR,
 		CiscoNexusOS,
 		Huawei,
+		HuaweiCE,
+		HuaweiFM,
 		Aruba,
 		ArubaOSSwitch,
 		Arista,

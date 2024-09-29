@@ -1,11 +1,11 @@
 package ipam_biz
 
 import (
-	"strings"
-
 	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/ipam/schemas"
+	ipam_utils "github.com/wangxin688/narvis/server/features/ipam/utils"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools/helpers"
@@ -26,6 +26,7 @@ func (p *PrefixService) CreatePrefix(prefix *schemas.PrefixCreate) (string, erro
 		Type:           prefix.Type,
 		SiteId:         prefix.SiteId,
 		OrganizationId: global.OrganizationId.Get(),
+		Version:        ipam_utils.CidrVersion(prefix.Range),
 	}
 
 	err := gen.Prefix.Create(&newPrefix)
@@ -81,13 +82,21 @@ func (p *PrefixService) GetById(id string) (*schemas.Prefix, error) {
 	if err != nil {
 		return nil, err
 	}
+	_prefix := []string{prefix.Range}
+	utilization, err := p.CalPrefixUsage(_prefix)
+	if err != nil {
+		return nil, err
+	}
 	return &schemas.Prefix{
-		Id:       prefix.Id,
-		Range:    prefix.Range,
-		VlanId:   prefix.VlanId,
-		VlanName: prefix.VlanName,
-		Type:     prefix.Type,
-		SiteId:   prefix.SiteId,
+		Id:          prefix.Id,
+		CreatedAt:   prefix.CreatedAt,
+		UpdatedAt:   prefix.UpdatedAt,
+		Range:       prefix.Range,
+		VlanId:      prefix.VlanId,
+		VlanName:    prefix.VlanName,
+		Type:        prefix.Type,
+		SiteId:      prefix.SiteId,
+		Utilization: utilization[prefix.Id],
 	}, nil
 }
 
@@ -125,55 +134,58 @@ func (p *PrefixService) ListPrefix(query *schemas.PrefixQuery) (int64, *[]*schem
 	if err != nil {
 		return 0, &res, err
 	}
+	ranges := lo.Map(list, func(item *models.Prefix, _ int) string {
+		return item.Range
+	})
+	utilization, err := p.CalPrefixUsage(ranges)
+	if err != nil {
+		return 0, &res, err
+	}
 	for _, prefix := range list {
 		res = append(res, &schemas.Prefix{
-			Id:       prefix.Id,
-			Range:    prefix.Range,
-			VlanId:   prefix.VlanId,
-			VlanName: prefix.VlanName,
-			Type:     prefix.Type,
-			SiteId:   prefix.SiteId,
+			Id:          prefix.Id,
+			CreatedAt:   prefix.CreatedAt,
+			UpdatedAt:   prefix.UpdatedAt,
+			Range:       prefix.Range,
+			VlanId:      prefix.VlanId,
+			VlanName:    prefix.VlanName,
+			Type:        prefix.Type,
+			SiteId:      prefix.SiteId,
+			Utilization: utilization[prefix.Range],
 		})
 	}
 	return total, &res, nil
 }
 
-func (p *PrefixService) CalPrefixUsage(prefix []string) (map[string]float32, error) {
-	rawSql := `
-	SELECT 
-		p.id AS prefix_id, 
-		p.range AS prefix_range, 
-		COUNT(ipa.ip) AS used_ips,
-		-- 计算CIDR范围内的IP总数。使用pg_catalog.broadcast() 获取CIDR的广播地址，减去网络地址
-		CASE 
-			WHEN family(p.range) = 4 THEN 
-				(2 ^ (32 - masklen(p.range)))  -- IPv4的总IP数
-			WHEN family(p.range) = 6 THEN 
-				(2 ^ (128 - masklen(p.range)))     -- IPv6总地址
-		END AS total_ips,
-		-- 计算利用率
-		CASE 
-			WHEN family(p.range) = 4 THEN 
-				ROUND((COUNT(ipa.ip)::decimal / ((2 ^ (32 - masklen(p.range))))) * 100, 2)
-			WHEN family(p.range) = 6 THEN 
-				ROUND((COUNT(ipa.ip)::decimal / (2 ^ (128 - masklen(p.range))) * 100), 2)
-		END AS utilization_percentage
-	FROM 
-		prefix p
-	WHERE
-		p.id IN ( ` + strings.Join(prefix, ",") + ` )
-	LEFT JOIN 
-		ip_address ipa ON ipa.ip << p.range  -- 使用<<操作符判断ip是否在cidr范围内
-	GROUP BY 
-		p.id, p.range
-	ORDER BY 
-		utilization_percentage DESC;
-	`
-
-	res := make(map[string]float32)
-	err := gen.Prefix.UnderlyingDB().Raw(rawSql).Scan(&res).Error
+func (p *PrefixService) CalPrefixUsage(prefix []string) (map[string]float64, error) {
+	type prefixCount struct {
+		Range string
+		Count int
+	}
+	dbResult := make([]*prefixCount, 0)
+	err := gen.IpAddress.Select(
+		gen.IpAddress.Range.As("Range"),
+		gen.IpAddress.Address.Count().As("Count"),
+	).Where(
+		gen.IpAddress.Range.In(prefix...),
+		gen.IpAddress.OrganizationId.Eq(global.OrganizationId.Get()),
+	).Group(gen.IpAddress.Range).Scan(&dbResult)
 	if err != nil {
 		return nil, err
 	}
-	return res, nil
+	prefixUsage := make(map[string]float64)
+	for _, count := range dbResult {
+		if count.Count == 0 {
+			prefixUsage[count.Range] = 0
+			continue
+		}
+		rangeSize := ipam_utils.CidrSize(count.Range)
+		if rangeSize == 0 {
+			// ignore ipv6 mask length < 64
+			prefixUsage[count.Range] = 0
+			continue
+		}
+		prefixUsage[count.Range] = (float64(count.Count) / float64(rangeSize)) * 100
+	}
+	return prefixUsage, nil
 }

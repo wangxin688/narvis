@@ -784,7 +784,7 @@
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Alert"
@@ -1212,7 +1212,7 @@
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Subscription"
@@ -1864,7 +1864,7 @@
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Circuit"
@@ -2024,7 +2024,7 @@
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Device"
@@ -3899,7 +3899,7 @@
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.IpAddress"
@@ -4141,7 +4141,17 @@
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "IPv4",
+                            "IPv6"
+                        ],
+                        "type": "string",
+                        "name": "version",
+                        "in": "query"
+                    },
+                    {
                         "maxItems": 4094,
+                        "minItems": 1,
                         "type": "array",
                         "items": {
                             "type": "integer"
@@ -4171,7 +4181,7 @@
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Prefix"
@@ -4522,6 +4532,7 @@
                 "AbnormalFanStatus",
                 "AbnormalPowerStatus",
                 "InterfaceDown",
+                "InterfaceHalfDuplex",
                 "SnmpAgentTimeout",
                 "NodePingTimeout",
                 "ApDown",
@@ -4544,6 +4555,7 @@
                 "AbnormalFanStatus",
                 "AbnormalPowerStatus",
                 "InterfaceDown",
+                "InterfaceHalfDuplex",
                 "SnmpAgentTimeout",
                 "NodePingTimeout",
                 "ApDown",
@@ -4683,8 +4695,14 @@
         "schemas.AP": {
             "type": "object",
             "properties": {
-                "coordinate": {
-                    "$ref": "#/definitions/schemas.ApCoordinate"
+                "coordinateX": {
+                    "type": "number"
+                },
+                "coordinateY": {
+                    "type": "number"
+                },
+                "coordinateZ": {
+                    "type": "number"
                 },
                 "createdAt": {
                     "type": "string"
@@ -4920,20 +4938,6 @@
                         "firing",
                         "resolved"
                     ]
-                }
-            }
-        },
-        "schemas.ApCoordinate": {
-            "type": "object",
-            "properties": {
-                "x": {
-                    "type": "number"
-                },
-                "y": {
-                    "type": "number"
-                },
-                "z": {
-                    "type": "number"
                 }
             }
         },
@@ -5946,6 +5950,7 @@
                     "type": "string"
                 },
                 "utilization": {
+                    "description": "percentage",
                     "type": "number"
                 },
                 "version": {
@@ -5983,7 +5988,8 @@
                 "vlanId": {
                     "description": "not support VxLAN now",
                     "type": "integer",
-                    "maximum": 4094
+                    "maximum": 4094,
+                    "minimum": 1
                 },
                 "vlanName": {
                     "type": "string"

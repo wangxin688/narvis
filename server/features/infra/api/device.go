@@ -140,7 +140,7 @@ func deleteDevice(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param query query schemas.DeviceQuery true "query"
-// @Success 200 {object} ts.ListResponse{data=[]schemas.Device}
+// @Success 200 {object} ts.ListResponse{results=[]schemas.Device}
 // @Router /infra/devices [get]
 func listDevices(c *gin.Context) {
 	var err error

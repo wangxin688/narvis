@@ -111,13 +111,16 @@ type RabbitMQConfig struct {
 }
 
 type BootstrapConfig struct {
-	Organization   string `mapstructure:"organization" json:"organization" yaml:"organization"`
-	EnterpriseCode string `mapstructure:"enterprise_code" json:"enterprise_code" yaml:"enterprise_code"`
-	DomainName     string `mapstructure:"domain_name" json:"domain_name" yaml:"domain_name"`
-	AdminPassword  string `mapstructure:"admin_password" json:"admin_password" yaml:"admin_password"`
-	SnmpCommunity  string `mapstructure:"snmp_community" json:"snmp_community" yaml:"snmp_community"`
-	SnmpPort       uint16    `mapstructure:"snmp_port" json:"snmp_port" yaml:"snmp_port"`
-	SnmpTimeout    uint8    `mapstructure:"snmp_timeout" json:"snmp_timeout" yaml:"snmp_timeout"`
-	CliUser        string `mapstructure:"cli_user" json:"cli_user" yaml:"cli_user"`
-	CliPassword    string `mapstructure:"cli_password" json:"cli_password" yaml:"cli_password"`
+	Organization      string `mapstructure:"organization" json:"organization" yaml:"organization"`
+	EnterpriseCode    string `mapstructure:"enterprise_code" json:"enterprise_code" yaml:"enterprise_code"`
+	DomainName        string `mapstructure:"domain_name" json:"domain_name" yaml:"domain_name"`
+	AdminPassword     string `mapstructure:"admin_password" json:"admin_password" yaml:"admin_password"`
+	SnmpCommunity     string `mapstructure:"snmp_community" json:"snmp_community" yaml:"snmp_community"`
+	SnmpPort          uint16 `mapstructure:"snmp_port" json:"snmp_port" yaml:"snmp_port"`
+	SnmpTimeout       uint8  `mapstructure:"snmp_timeout" json:"snmp_timeout" yaml:"snmp_timeout"`
+	CliUser           string `mapstructure:"cli_user" json:"cli_user" yaml:"cli_user"`
+	CliPassword       string `mapstructure:"cli_password" json:"cli_password" yaml:"cli_password"`
+	KafkaConnectorUrl string `mapstructure:"kafka_connector_url" json:"kafka_connector_url" yaml:"kafka_connector_url"`
+	KafkaUser         string `mapstructure:"kafka_user" json:"kafka_user" yaml:"kafka_user"`
+	KafkaPassword     string `mapstructure:"kafka_password" json:"kafka_password" yaml:"kafka_password"`
 }

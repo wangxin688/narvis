@@ -26,7 +26,7 @@ type IpAddressCreate struct {
 	MacAddress  *string `json:"macAddress" binding:"omitempty,mac"`
 	Type        string  `json:"type" binding:"required,oneof=Dynamic Static Gateway Broadcast NetworkId"`
 	Vlan        *uint32 `json:"vlan" binding:"omitempty"`
-	Range       *string `json:"range" binding:"omitempty,ip_range,cidr"`
+	Range       *string `json:"range" binding:"omitempty,cidr_v_any"`
 	Description *string `json:"description"`
 	SiteId      string  `json:"siteId" binding:"required,uuid"`
 }
@@ -37,17 +37,17 @@ type IpAddressUpdate struct {
 	MacAddress  *string `json:"macAddress" binding:"omitempty,mac"`
 	Type        *string `json:"type" binding:"omitempty,oneof=Dynamic Static Gateway Broadcast NetworkId"`
 	Vlan        *uint32 `json:"vlan" binding:"omitempty"`
-	Range       *string `json:"range" binding:"omitempty,ip_range,cidr"`
+	Range       *string `json:"range" binding:"omitempty,cidr_v_any"`
 	Description *string `json:"description" binding:"omitempty"`
 	SiteId      *string `json:"siteId" binding:"omitempty,uuid"`
 }
 
 type IpAddressQuery struct {
 	schemas.PageInfo
-	Address *[]string `json:"address" binding:"omitempty,ip_addr"`
-	Status  *[]string `json:"status" binding:"omitempty"` // Active, Reserved, Deprecated
-	Vlan    *[]uint32 `json:"vlan" binding:"omitempty"`
-	Type    *[]string `json:"type" binding:"omitempty"` // Dynamic, Static, Gateway, Broadcast, NetworkId
-	Range   *string   `json:"range" binding:"omitempty,ip_range,cidr"`
-	SiteId  *string   `json:"siteId" binding:"omitempty,uuid"`
+	Address *[]string `form:"address" binding:"omitempty,ip_addr"`
+	Status  *[]string `form:"status" binding:"omitempty"` // Active, Reserved, Deprecated
+	Vlan    *[]uint32 `form:"vlan" binding:"omitempty"`
+	Type    *[]string `form:"type" binding:"omitempty"` // Dynamic, Static, Gateway, Broadcast, NetworkId
+	Range   *string   `form:"range" binding:"omitempty,cidr_v_any"`
+	SiteId  *string   `form:"siteId" binding:"omitempty,uuid"`
 }

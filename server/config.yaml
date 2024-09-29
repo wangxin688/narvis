@@ -74,4 +74,7 @@ bootstrap:
   snmp_timeout: 10
   cli_user: admin
   cli_password: admin123456
+  kafka_connector_url: http://localhost:9094
+  kafka_user: narvis
+  kafka_password: 841583224e89fa8588261db81c2d2a99
 

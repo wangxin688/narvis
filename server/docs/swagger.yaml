@@ -30,6 +30,7 @@ definitions:
     - AbnormalFanStatus
     - AbnormalPowerStatus
     - InterfaceDown
+    - InterfaceHalfDuplex
     - SnmpAgentTimeout
     - NodePingTimeout
     - ApDown
@@ -52,6 +53,7 @@ definitions:
     - AbnormalFanStatus
     - AbnormalPowerStatus
     - InterfaceDown
+    - InterfaceHalfDuplex
     - SnmpAgentTimeout
     - NodePingTimeout
     - ApDown
@@ -146,8 +148,12 @@ definitions:
     type: object
   schemas.AP:
     properties:
-      coordinate:
-        $ref: '#/definitions/schemas.ApCoordinate'
+      coordinateX:
+        type: number
+      coordinateY:
+        type: number
+      coordinateZ:
+        type: number
       createdAt:
         type: string
       deviceRole:
@@ -307,15 +313,6 @@ definitions:
     required:
     - alerts
     - status
-    type: object
-  schemas.ApCoordinate:
-    properties:
-      x:
-        type: number
-      "y":
-        type: number
-      z:
-        type: number
     type: object
   schemas.AuthConfig:
     properties:
@@ -1001,6 +998,7 @@ definitions:
       updatedAt:
         type: string
       utilization:
+        description: percentage
         type: number
       version:
         type: string
@@ -1023,6 +1021,7 @@ definitions:
       vlanId:
         description: not support VxLAN now
         maximum: 4094
+        minimum: 1
         type: integer
       vlanName:
         type: string
@@ -2156,7 +2155,7 @@ paths:
             allOf:
             - $ref: '#/definitions/schemas.ListResponse'
             - properties:
-                data:
+                results:
                   items:
                     $ref: '#/definitions/schemas.Alert'
                   type: array
@@ -2422,7 +2421,7 @@ paths:
             allOf:
             - $ref: '#/definitions/schemas.ListResponse'
             - properties:
-                data:
+                results:
                   items:
                     $ref: '#/definitions/schemas.Subscription'
                   type: array
@@ -2832,7 +2831,7 @@ paths:
             allOf:
             - $ref: '#/definitions/schemas.ListResponse'
             - properties:
-                data:
+                results:
                   items:
                     $ref: '#/definitions/schemas.Circuit'
                   type: array
@@ -2932,7 +2931,7 @@ paths:
             allOf:
             - $ref: '#/definitions/schemas.ListResponse'
             - properties:
-                data:
+                results:
                   items:
                     $ref: '#/definitions/schemas.Device'
                   type: array
@@ -4094,7 +4093,7 @@ paths:
             allOf:
             - $ref: '#/definitions/schemas.ListResponse'
             - properties:
-                data:
+                results:
                   items:
                     $ref: '#/definitions/schemas.IpAddress'
                   type: array
@@ -4242,11 +4241,18 @@ paths:
         in: query
         name: type
         type: string
+      - enum:
+        - IPv4
+        - IPv6
+        in: query
+        name: version
+        type: string
       - collectionFormat: csv
         in: query
         items:
           type: integer
         maxItems: 4094
+        minItems: 1
         name: vlanId
         type: array
       - collectionFormat: csv
@@ -4264,7 +4270,7 @@ paths:
             allOf:
             - $ref: '#/definitions/schemas.ListResponse'
             - properties:
-                data:
+                results:
                   items:
                     $ref: '#/definitions/schemas.Prefix'
                   type: array

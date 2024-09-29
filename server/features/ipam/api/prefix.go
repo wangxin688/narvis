@@ -72,7 +72,7 @@ func getPrefix(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param object query schemas.PrefixQuery true "query prefix"
-// @Success 200 {object} ts.ListResponse{data=[]schemas.Prefix}
+// @Success 200 {object} ts.ListResponse{results=[]schemas.Prefix}
 // @Router /ipam/prefixes [get]
 func getPrefixList(c *gin.Context) {
 	var err error

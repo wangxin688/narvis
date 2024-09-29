@@ -53,6 +53,7 @@ func SupportedManufacturer() []Manufacturer {
 func GetManufacturerByEnterpriseId(etpId string) Manufacturer {
 	idMapping := map[string]Manufacturer{
 		"2011":  Huawei,
+		"56813": "Huawei",
 		"9":     Cisco,
 		"14823": Aruba,
 		"30065": Arista,
@@ -110,7 +111,6 @@ func GetManufacturerPlatform(mf Manufacturer) []platform.Platform {
 	meta := GetAllManufacturerPlatform()
 	return meta[mf]
 }
-
 
 func GetAllPlatformManufacturer(plt platform.Platform) map[platform.Platform]Manufacturer {
 	return map[platform.Platform]Manufacturer{

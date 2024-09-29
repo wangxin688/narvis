@@ -792,7 +792,7 @@ const docTemplate = `{
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Alert"
@@ -1220,7 +1220,7 @@ const docTemplate = `{
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Subscription"
@@ -1872,7 +1872,7 @@ const docTemplate = `{
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Circuit"
@@ -2032,7 +2032,7 @@ const docTemplate = `{
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Device"
@@ -3907,7 +3907,7 @@ const docTemplate = `{
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.IpAddress"
@@ -4149,7 +4149,17 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "IPv4",
+                            "IPv6"
+                        ],
+                        "type": "string",
+                        "name": "version",
+                        "in": "query"
+                    },
+                    {
                         "maxItems": 4094,
+                        "minItems": 1,
                         "type": "array",
                         "items": {
                             "type": "integer"
@@ -4179,7 +4189,7 @@ const docTemplate = `{
                                 {
                                     "type": "object",
                                     "properties": {
-                                        "data": {
+                                        "results": {
                                             "type": "array",
                                             "items": {
                                                 "$ref": "#/definitions/schemas.Prefix"
@@ -4530,6 +4540,7 @@ const docTemplate = `{
                 "AbnormalFanStatus",
                 "AbnormalPowerStatus",
                 "InterfaceDown",
+                "InterfaceHalfDuplex",
                 "SnmpAgentTimeout",
                 "NodePingTimeout",
                 "ApDown",
@@ -4552,6 +4563,7 @@ const docTemplate = `{
                 "AbnormalFanStatus",
                 "AbnormalPowerStatus",
                 "InterfaceDown",
+                "InterfaceHalfDuplex",
                 "SnmpAgentTimeout",
                 "NodePingTimeout",
                 "ApDown",
@@ -4691,8 +4703,14 @@ const docTemplate = `{
         "schemas.AP": {
             "type": "object",
             "properties": {
-                "coordinate": {
-                    "$ref": "#/definitions/schemas.ApCoordinate"
+                "coordinateX": {
+                    "type": "number"
+                },
+                "coordinateY": {
+                    "type": "number"
+                },
+                "coordinateZ": {
+                    "type": "number"
                 },
                 "createdAt": {
                     "type": "string"
@@ -4928,20 +4946,6 @@ const docTemplate = `{
                         "firing",
                         "resolved"
                     ]
-                }
-            }
-        },
-        "schemas.ApCoordinate": {
-            "type": "object",
-            "properties": {
-                "x": {
-                    "type": "number"
-                },
-                "y": {
-                    "type": "number"
-                },
-                "z": {
-                    "type": "number"
                 }
             }
         },
@@ -5954,6 +5958,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "utilization": {
+                    "description": "percentage",
                     "type": "number"
                 },
                 "version": {
@@ -5991,7 +5996,8 @@ const docTemplate = `{
                 "vlanId": {
                     "description": "not support VxLAN now",
                     "type": "integer",
-                    "maximum": 4094
+                    "maximum": 4094,
+                    "minimum": 1
                 },
                 "vlanName": {
                     "type": "string"

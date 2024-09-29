@@ -105,7 +105,7 @@ func updateSubscription(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param object query schemas.SubscriptionQuery true "query"
-// @Success 200 {object} ts.ListResponse{data=[]schemas.Subscription}
+// @Success 200 {object} ts.ListResponse{results=[]schemas.Subscription}
 // @Router /alert/subscriptions [get]
 func listSubscriptions(c *gin.Context) {
 	var err error

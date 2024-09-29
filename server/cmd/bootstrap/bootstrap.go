@@ -558,6 +558,29 @@ func initZbxDisableDefaultAdmin(client *req.Client, token string) error {
 	return nil
 }
 
+func initZbxConnector(client *req.Client) error {
+	newConnector := map[string]any{
+		"jsonrpc": "2.0",
+		"method":  "connector.create",
+		"params": []map[string]any{
+			{
+				"name":      "narvis_metrics_exporter",
+				"data_type": "0",
+				"url":       core.Settings.BootstrapConfig.KafkaConnectorUrl,
+				"username":  core.Settings.BootstrapConfig.KafkaUser,
+				"password":  core.Settings.BootstrapConfig.KafkaPassword,
+			},
+		},
+	}
+	resp, err := client.R().SetBody(newConnector).Post("/api_jsonrpc.php")
+	if err != nil || resp.IsSuccessState() {
+		core.Logger.Error("[bootstrap]: init_zbx failed to create connector", zap.Error(err))
+		return err
+	}
+	core.Logger.Info("[bootstrap]: init_zbx create connector success")
+	return nil
+}
+
 func initNarvisSnmpCredential(orgId string) error {
 	cred, err := gen.SnmpV2Credential.Where(gen.SnmpV2Credential.OrganizationId.Eq(orgId)).Find()
 	if err != nil {

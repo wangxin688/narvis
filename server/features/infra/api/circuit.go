@@ -77,7 +77,7 @@ func getCircuit(c *gin.Context) {
 // Accept json
 // Produce json
 // @Param object query schemas.CircuitQuery true "query"
-// @Success 200 {object} ts.ListResponse{data=[]schemas.Circuit}
+// @Success 200 {object} ts.ListResponse{results=[]schemas.Circuit}
 // @Router /infra/circuits [get]
 func listCircuit(c *gin.Context) {
 	var err error
@@ -161,5 +161,3 @@ func deleteCircuit(c *gin.Context) {
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
-
-

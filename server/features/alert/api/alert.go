@@ -70,9 +70,6 @@ func getAlert(c *gin.Context) {
 	c.JSON(http.StatusOK, alert)
 }
 
-
-
-
 // @Tags Alert
 // @Summary List Alerts
 // @Description List Alerts
@@ -80,7 +77,7 @@ func getAlert(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param object query schemas.AlertQuery true "query"
-// @Success 200 {object} ts.ListResponse{data=[]schemas.Alert}
+// @Success 200 {object} ts.ListResponse{results=[]schemas.Alert}
 // @Router /alert/alerts [get]
 func listAlerts(c *gin.Context) {
 	var err error

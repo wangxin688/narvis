@@ -29,9 +29,9 @@ type AP struct {
 	OsVersion       *string   `json:"osVersion"`
 	Floor           *string   `json:"floor"`
 	GroupName       *string   `json:"groupName"`
-	CoordinateX     *float32  `json:"coordinate"`
-	CoordinateY     *float32  `json:"coordinate"`
-	CoordinateZ     *float32  `json:"coordinate"`
+	CoordinateX     *float32  `json:"coordinateX"`
+	CoordinateY     *float32  `json:"coordinateY"`
+	CoordinateZ     *float32  `json:"coordinateZ"`
 	WlanACIpAddress *string   `json:"wlanACIpAddress"`
 	SiteId          string    `json:"siteId"`
 }

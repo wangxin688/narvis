@@ -31,7 +31,7 @@ func proxySelect(orgId string) string {
 func deviceTemplateSelect(device *models.Device) (string, error) {
 
 	template, err := gen.Template.Where(
-		gen.Template.Manufacturer.Eq(device.Manufacturer),
+		gen.Template.Manufacturer.Eq(device.Platform),
 		gen.Template.DeviceRole.Eq(device.DeviceRole),
 	).First()
 	if err != nil {

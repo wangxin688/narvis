@@ -31,7 +31,6 @@ type IpAddress struct {
 	BaseDbModel
 
 	Address        string       `gorm:"column:address;type:inet;not null;uniqueIndex:idx_address_site_id;index"`
-	Network        string       `gorm:"column:network;type:cidr;not null;index"`
 	Status         string       `gorm:"column:status;default:Active"` // Active or Reserved
 	MacAddress     *string      `gorm:"column:macAddress;type:macaddr"`
 	Vlan           *uint32      `gorm:"column:vlan;default:null"`

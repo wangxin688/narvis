@@ -35,7 +35,7 @@ func createIpAddress(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, schemas.IpAddress{Id: ipId})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: ipId})
 }
 
 // @Tags IPAM
@@ -72,7 +72,7 @@ func getIpAddress(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param object query schemas.IpAddressQuery true "query ip"
-// @Success 200 {object} ts.ListResponse{data=[]schemas.IpAddress}
+// @Success 200 {object} ts.ListResponse{results=[]schemas.IpAddress}
 // @Router /ipam/ip-addresses [get]
 func getIpAddressList(c *gin.Context) {
 	var err error

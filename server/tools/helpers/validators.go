@@ -26,6 +26,28 @@ func RegisterCustomValidator() {
 	if err := v.RegisterValidation("list_mac", ListMacAddressValidator); err != nil {
 		panic(err)
 	}
+	if err := v.RegisterValidation("cidr_v_any", IPvAnyNetworkValidator); err != nil {
+		panic(err)
+	}
+}
+
+func IPvAnyNetworkValidator(level validator.FieldLevel) bool {
+	address := level.Field().String()
+	if isCidrV4(address) || isCidrV6(address) {
+		return true
+	}
+	return false
+
+}
+
+func isCidrV4(fl string) bool {
+	ip, net, err := net.ParseCIDR(fl)
+	return err == nil && ip.To4() == nil && net.IP.Equal(ip)
+}
+
+func isCidrV6(fl string) bool {
+	ip, net, err := net.ParseCIDR(fl)
+	return err == nil && ip.To4() == nil && net.IP.Equal(ip)
 }
 
 func MacAddressValidator(mac string) (string, error) {
