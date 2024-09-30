@@ -210,7 +210,6 @@ func batchDeleteScanDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdsResponse{Ids: ids})
 }
 
-
 // @Tags Infra
 // @Summary Scan AP
 // @Description Scan AP
@@ -231,8 +230,35 @@ func createScanAP(c *gin.Context) {
 	if err = c.ShouldBindJSON(&scanAP); err != nil {
 		return
 	}
-	
+
 	taskIds, err := infra_tasks.GenerateTask(scanAP.SiteId, intendtask.ScanAp, intendtask.ScanApCallback)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdsResponse{Ids: taskIds})
+}
+
+// @Tags Infra
+// @Summary Scan device details
+// @Description Scan device details
+// @Security BearerAuth
+// @Accept  json
+// @Produce  json
+// @Param data body schemas.ScanDeviceDetailTask true "data"
+// @Success 200 {object} ts.IdsResponse
+// @Router /infra/scan-device-details [post]
+func scanDeviceDetails(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var scanDeviceDetailTask schemas.ScanDeviceDetailTask
+	if err = c.ShouldBindJSON(&scanDeviceDetailTask); err != nil {
+		return
+	}
+	taskIds, err := infra_tasks.GenerateTask(scanDeviceDetailTask.SiteId, intendtask.ScanDevice, intendtask.ScanDeviceCallback)
 	if err != nil {
 		return
 	}

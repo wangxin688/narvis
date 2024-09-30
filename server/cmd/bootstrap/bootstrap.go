@@ -209,18 +209,23 @@ func initZbx() {
 	if client == nil {
 		return
 	}
-	medieTypeId, err := initZbxMediaType(client)
+	mediaTypeId, err := initZbxMediaType(client)
 	if err != nil {
 		core.Logger.Info("[bootstrap]: failed to init zbx media type", zap.Error(err))
 		return
 	}
 	initZbxGlobalMacro(client)
-	superUserId, err := initZbxSuperUser(client, medieTypeId)
+	err = initZbxConnector(client)
+	if err != nil {
+		core.Logger.Info("[bootstrap]: failed to init zbx connector", zap.Error(err))
+		return
+	}
+	superUserId, err := initZbxSuperUser(client, mediaTypeId)
 	if err != nil {
 		core.Logger.Info("[bootstrap]: failed to init zbx super user", zap.Error(err))
 		return
 	}
-	initZbxAction(client, medieTypeId, superUserId)
+	initZbxAction(client, mediaTypeId, superUserId)
 	token, err := initZbxSuperToken(client, superUserId)
 	if err != nil {
 		core.Logger.Info("[bootstrap]: failed to init zbx super token", zap.Error(err))
@@ -566,11 +571,13 @@ func initZbxConnector(client *req.Client) error {
 			{
 				"name":      "narvis_metrics_exporter",
 				"data_type": "0",
+				"authtype":  "1",
 				"url":       core.Settings.BootstrapConfig.KafkaConnectorUrl,
 				"username":  core.Settings.BootstrapConfig.KafkaUser,
 				"password":  core.Settings.BootstrapConfig.KafkaPassword,
 			},
 		},
+		"id": 1,
 	}
 	resp, err := client.R().SetBody(newConnector).Post("/api_jsonrpc.php")
 	if err != nil || resp.IsSuccessState() {
@@ -604,7 +611,6 @@ func initNarvisSnmpCredential(orgId string) error {
 		return err
 	}
 	core.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
-	return nil
 	infra_hooks.SnmpCredCreateHooks(snmpCred.Id)
 	return nil
 }

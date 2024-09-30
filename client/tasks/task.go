@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/gosnmp/gosnmp"
+	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/client/config"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
@@ -38,7 +39,8 @@ func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse
 	result := dispatcher.DispatchBasic()
 	if len(result) != 0 {
 		for _, r := range result {
-			if !r.SnmpReachable || (r.Data != nil && len(r.Data.Errors) > 0) {
+			if !r.SnmpReachable || r.Data == nil || len(r.Data.Errors) == 0 {
+				logger.Logger.Error("[ScanDeviceBasicInfo]: device snmp not reachable", r.IpAddress)
 				continue
 			}
 			results = append(results, &intendtask.DeviceBasicInfoScanResponse{
@@ -58,8 +60,113 @@ func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse
 	return results, nil
 }
 
-func scanDevice(data []byte) ([]*intendtask.DeviceScanResponse, error) {
-	return nil, nil
+func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
+	task := &intendtask.BaseSnmpTask{}
+	err := json.Unmarshal(data, task)
+	if err != nil {
+		logger.Logger.Error("[ScanDevice]: Unmarshal err: ", err)
+		return nil, err
+	}
+	snmpConfig := factory.BaseSnmpConfig{
+		Port:           task.SnmpConfig.Port,
+		Version:        gosnmp.Version2c,
+		Timeout:        task.SnmpConfig.Timeout,
+		MaxRepetitions: int(task.SnmpConfig.MaxRepetitions),
+		Community:      &task.SnmpConfig.Community,
+	}
+	dispatcher := nettysnmp.NewDispatcher([]string{task.ManagementIp}, snmpConfig)
+	result := dispatcher.Dispatch()
+	if len(result) != 1 {
+		return nil, errors.New("no device found")
+	}
+	r := result[0]
+	resp := &intendtask.DeviceScanResponse{
+		SiteId:         task.SiteId,
+		DeviceId:       task.DeviceId,
+		OrganizationId: config.Settings.ORGANIZATION_ID,
+		ManagementIp:   task.ManagementIp,
+		SshReachable:   r.SshReachable,
+		IcmpReachable:  r.IcmpReachable,
+		SnmpReachable:  r.SnmpReachable,
+	}
+	if !r.SnmpReachable {
+		resp.Errors = []string{"device snmp not reachable"}
+		return resp, nil
+	}
+	if r.Data == nil || len(r.Data.Errors) > 0 {
+		return &intendtask.DeviceScanResponse{
+			SiteId:         task.SiteId,
+			DeviceId:       task.DeviceId,
+			OrganizationId: config.Settings.ORGANIZATION_ID,
+			ManagementIp:   task.ManagementIp,
+			Errors:         r.Data.Errors,
+			SnmpReachable:  r.SnmpReachable,
+			SshReachable:   r.SshReachable,
+			IcmpReachable:  r.IcmpReachable,
+		}, nil
+	}
+	resp.Manufacturer = string(r.DeviceModel.Manufacturer)
+	resp.Platform = string(r.DeviceModel.Platform)
+	resp.DeviceModel = string(r.DeviceModel.DeviceModel)
+	resp.Description = r.Data.SysDescr
+	resp.ChassisId = &r.Data.ChassisId
+	resp.Name = r.Data.Hostname
+	resp.Interfaces = lo.Map(r.Data.Interfaces, func(item *factory.DeviceInterface, _ int) *intendtask.DeviceInterface {
+		return &intendtask.DeviceInterface{
+			IfIndex:       item.IfIndex,
+			IfName:        item.IfName,
+			IfDescr:       item.IfDescr,
+			IfType:        item.IfType,
+			IfMtu:         item.IfMtu,
+			IfSpeed:       item.IfSpeed,
+			IfAdminStatus: item.IfAdminStatus,
+			IfOperStatus:  item.IfOperStatus,
+			IfLastChange:  item.IfLastChange,
+			IfPhysAddr:    &item.IfPhysAddr,
+			IfHighSpeed:   item.IfHighSpeed,
+			IfIpAddress:   &item.IfIpAddress,
+		}
+	})
+	resp.LldpNeighbors = lo.Map(r.Data.LldpNeighbors, func(item *factory.LldpNeighbor, _ int) *intendtask.LldpNeighbor {
+		return &intendtask.LldpNeighbor{
+			LocalChassisId:  item.LocalChassisId,
+			LocalHostname:   item.LocalHostname,
+			LocalIfName:     item.LocalIfName,
+			LocalIfDescr:    item.LocalIfDescr,
+			RemoteChassisId: item.RemoteChassisId,
+			RemoteHostname:  item.RemoteHostname,
+			RemoteIfName:    item.RemoteIfName,
+			RemoteIfDescr:   item.RemoteIfDescr,
+		}
+	})
+	resp.Entities = lo.Map(r.Data.Entities, func(item *factory.Entity, _ int) *intendtask.Entity {
+		return &intendtask.Entity{
+			EntityPhysicalClass:       item.EntityPhysicalClass,
+			EntityPhysicalDescr:       item.EntityPhysicalDescr,
+			EntityPhysicalName:        item.EntityPhysicalName,
+			EntityPhysicalSoftwareRev: item.EntityPhysicalSoftwareRev,
+			EntityPhysicalSerialNum:   item.EntityPhysicalSerialNum,
+		}
+	})
+	resp.Stacks = lo.Map(r.Data.Stacks, func(item *factory.Stack, _ int) *intendtask.Stack {
+		return &intendtask.Stack{
+			Id:         item.Id,
+			Priority:   item.Priority,
+			Role:       item.Role,
+			MacAddress: item.MacAddress,
+		}
+	})
+	resp.ArpTable = lo.Map(r.Data.ArpTable, func(item *factory.ArpItem, _ int) *intendtask.ArpItem {
+		return &intendtask.ArpItem{
+			IpAddress:  item.IpAddress,
+			MacAddress: item.MacAddress,
+			Type:       item.Type,
+			IfIndex:    item.IfIndex,
+			VlanId:     item.VlanId,
+			Range:      item.Range,
+		}
+	})
+	return resp, nil
 }
 
 func scanAp(data []byte) ([]*intendtask.ApScanResponse, error) {
@@ -107,7 +214,6 @@ func scanAp(data []byte) ([]*intendtask.ApScanResponse, error) {
 	return results, nil
 
 }
-
 func scanMacAddressTable(data []byte) ([]*intendtask.MacAddressTableScanResponse, error) {
 	return nil, nil
 }

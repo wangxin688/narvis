@@ -83,7 +83,7 @@ func getDevicesByTaskName(siteId, taskName string) ([]*models.Device, error) {
 	case intendtask.ScanDevice:
 		return infra_biz.NewDeviceService().GetActiveDevices(siteId)
 	case intendtask.ScanMacAddressTable:
-		return infra_biz.NewDeviceService().GetAllAccessSwitches(siteId)
+		return infra_biz.NewDeviceService().GetActiveDevices(siteId)
 	case intendtask.ScanIPAM:
 		return infra_biz.NewDeviceService().GetCoreSwitch(siteId)
 	default:

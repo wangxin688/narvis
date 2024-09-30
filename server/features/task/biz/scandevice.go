@@ -2,42 +2,57 @@ package task_biz
 
 import (
 	"github.com/wangxin688/narvis/intend/intendtask"
-	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
-	"go.uber.org/zap"
 	"gorm.io/datatypes"
 )
 
 func UpdateScanDeviceBasicResult(taskId string, scanDevices []*intendtask.DeviceBasicInfoScanResponse) error {
-	var status string
-	var errors []string
-	var updateValues models.Result
-
-	for _, scanDevice := range scanDevices {
-		if len(scanDevice.Errors) > 0 {
-			errors = append(errors, scanDevice.Errors...)
-		}
-	}
-	if len(errors) == 0 {
-		status = "Success"
-		updateValues = models.Result{
-			Data:   nil,
-			Errors: errors,
-		}
-	} else {
+	result := models.Result{}
+	status := "Success"
+	if scanDevices == nil {
 		status = "Failed"
-		updateValues = models.Result{
-			Data:   scanDevices,
-			Errors: errors,
+		result.Errors = append(result.Errors, "scanDevices receive empty response from proxy")
+	} else {
+		for _, scanDevice := range scanDevices {
+			result.Errors = append(result.Errors, scanDevice.Errors...)
 		}
 	}
+	if len(result.Errors) > 0 {
+		status = "Failed"
+		result.Data = scanDevices
+	}
+
 	_, err := gen.TaskResult.Where(gen.TaskResult.Id.Eq(taskId)).UpdateColumns(map[string]any{
 		"Status": status,
-		"result": datatypes.NewJSONType(updateValues),
+		"result": datatypes.NewJSONType(result),
 	})
 	if err != nil {
-		core.Logger.Error("[updateTaskResult]: update scan device basic info task failed", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
+func UpdateScanDeviceResult(taskId string, device *intendtask.DeviceScanResponse) error {
+	result := models.Result{}
+	status := "Success"
+	if device == nil {
+		status = "Failed"
+		result.Errors = append(result.Errors, "device receive empty response from proxy")
+	} else {
+		result.Errors = append(result.Errors, device.Errors...)
+	}
+	if len(result.Errors) > 0 {
+		status = "Failed"
+		result.Data = device
+	}
+
+	_, err := gen.TaskResult.Where(gen.TaskResult.Id.Eq(taskId)).UpdateColumns(map[string]any{
+		"Status": status,
+		"result": datatypes.NewJSONType(result),
+	})
+	if err != nil {
+		return err
 	}
 	return nil
 }

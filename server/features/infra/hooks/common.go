@@ -31,7 +31,7 @@ func proxySelect(orgId string) string {
 func deviceTemplateSelect(device *models.Device) (string, error) {
 
 	template, err := gen.Template.Where(
-		gen.Template.Manufacturer.Eq(device.Platform),
+		gen.Template.Platform.Eq(device.Platform),
 		gen.Template.DeviceRole.Eq(device.DeviceRole),
 	).First()
 	if err != nil {
@@ -44,7 +44,7 @@ func deviceTemplateSelect(device *models.Device) (string, error) {
 
 func circuitTemplateSelect() (string, error) {
 	template, err := gen.Template.Where(
-		gen.Template.Name.Eq("template_icmp_ping_30s"),
+		gen.Template.TemplateName.Eq("template_icmp_ping_30s"),
 	).First()
 	if err != nil {
 		core.Logger.Error("templateChoice failed", zap.Error(err))
@@ -55,7 +55,7 @@ func circuitTemplateSelect() (string, error) {
 
 func circuitHostTemplateSelect() (string, error) {
 	template, err := gen.Template.Where(
-		gen.Template.Name.Eq("template_interface_circuit"),
+		gen.Template.TemplateName.Eq("template_interface_circuit"),
 	).First()
 	if err != nil {
 		core.Logger.Error("templateChoice failed", zap.Error(err))

@@ -123,6 +123,23 @@ definitions:
       wlanACIpAddress:
         type: string
     type: object
+  intendtask.ArpItem:
+    properties:
+      hashValue:
+        type: string
+      ifIndex:
+        type: integer
+      ipAddress:
+        type: string
+      macAddress:
+        type: string
+      range:
+        type: string
+      type:
+        type: string
+      vlanId:
+        type: integer
+    type: object
   intendtask.DeviceBasicInfoScanResponse:
     properties:
       chassisId:
@@ -144,6 +161,150 @@ definitions:
       organizationId:
         type: string
       platform:
+        type: string
+    type: object
+  intendtask.DeviceInterface:
+    properties:
+      hashValue:
+        type: string
+      ifAdminStatus:
+        type: string
+      ifDescr:
+        type: string
+      ifHighSpeed:
+        type: integer
+      ifIndex:
+        type: integer
+      ifIpAddress:
+        type: string
+      ifLastChange:
+        type: integer
+      ifMtu:
+        type: integer
+      ifName:
+        type: string
+      ifOperStatus:
+        type: string
+      ifPhysAddr:
+        type: string
+      ifSpeed:
+        type: integer
+      ifType:
+        type: string
+    type: object
+  intendtask.DeviceScanResponse:
+    properties:
+      arpTable:
+        items:
+          $ref: '#/definitions/intendtask.ArpItem'
+        type: array
+      chassisId:
+        type: string
+      description:
+        type: string
+      deviceId:
+        type: string
+      deviceModel:
+        type: string
+      entities:
+        items:
+          $ref: '#/definitions/intendtask.Entity'
+        type: array
+      errors:
+        items:
+          type: string
+        type: array
+      icmpReachable:
+        type: boolean
+      interfaces:
+        items:
+          $ref: '#/definitions/intendtask.DeviceInterface'
+        type: array
+      lldpNeighbors:
+        items:
+          $ref: '#/definitions/intendtask.LldpNeighbor'
+        type: array
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      name:
+        type: string
+      organizationId:
+        type: string
+      platform:
+        type: string
+      siteId:
+        type: string
+      snmpReachable:
+        type: boolean
+      sshReachable:
+        type: boolean
+      stacks:
+        items:
+          $ref: '#/definitions/intendtask.Stack'
+        type: array
+      vlans:
+        items:
+          $ref: '#/definitions/intendtask.VlanItem'
+        type: array
+    type: object
+  intendtask.Entity:
+    properties:
+      entityPhysicalClass:
+        type: string
+      entityPhysicalDescr:
+        type: string
+      entityPhysicalName:
+        type: string
+      entityPhysicalSerialNum:
+        type: string
+      entityPhysicalSoftwareRev:
+        type: string
+    type: object
+  intendtask.LldpNeighbor:
+    properties:
+      hashValue:
+        type: string
+      localChassisId:
+        type: string
+      localHostname:
+        type: string
+      localIfDescr:
+        type: string
+      localIfName:
+        type: string
+      remoteChassisId:
+        type: string
+      remoteHostname:
+        type: string
+      remoteIfDescr:
+        type: string
+      remoteIfName:
+        type: string
+    type: object
+  intendtask.Stack:
+    properties:
+      id:
+        type: string
+      macAddress:
+        type: string
+      priority:
+        type: integer
+      role:
+        type: string
+    type: object
+  intendtask.VlanItem:
+    properties:
+      gateway:
+        type: string
+      ifIndex:
+        type: integer
+      range:
+        type: string
+      vlanId:
+        type: integer
+      vlanName:
         type: string
     type: object
   schemas.AP:
@@ -1257,6 +1418,13 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  schemas.ScanDeviceDetailTask:
+    properties:
+      siteId:
+        type: string
+    required:
+    - siteId
     type: object
   schemas.ScanDeviceUpdate:
     properties:
@@ -3552,6 +3720,30 @@ paths:
       summary: Scan AP
       tags:
       - Infra
+  /infra/scan-device-details:
+    post:
+      consumes:
+      - application/json
+      description: Scan device details
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.ScanDeviceDetailTask'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdsResponse'
+      security:
+      - BearerAuth: []
+      summary: Scan device details
+      tags:
+      - Infra
   /infra/scan-devices:
     delete:
       consumes:
@@ -4436,6 +4628,30 @@ paths:
       security:
       - BearerAuth: []
       summary: ScanAP Callback
+      tags:
+      - Task
+  /task/scan-device:
+    post:
+      consumes:
+      - application/json
+      description: Scan device detail callback
+      parameters:
+      - description: resp
+        in: body
+        name: resp
+        required: true
+        schema:
+          $ref: '#/definitions/intendtask.DeviceScanResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.SuccessResponse'
+      security:
+      - BearerAuth: []
+      summary: ScanDeviceDetail Callback
       tags:
       - Task
   /task/scan-device-basic:

@@ -78,3 +78,7 @@ type ScanDeviceBatchUpdate struct {
 type ScanApCreate struct {
 	SiteId string `json:"siteId" binding:"required,uuid"`
 }
+
+type ScanDeviceDetailTask struct {
+	SiteId string `json:"siteId" binding:"required,uuid"`
+}

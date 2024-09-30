@@ -154,9 +154,9 @@ func (LLDPNeighbor) TableName() string {
 type ApLLDPNeighbor struct {
 	BaseDbModel
 
-	LocalDeviceId  string       `gorm:"column:localDeviceId;type:uuid;not null;index"`
+	LocalDeviceId  string       `gorm:"column:localDeviceId;type:uuid;not null;index;uniqueIndex:idx_local_device_id_if_name"`
 	LocalDevice    Device       `gorm:"constraint:Ondelete:CASCADE;foreignKey:LocalDeviceId"`
-	LocalIfName    string       `gorm:"column:localIfName;not null"`
+	LocalIfName    string       `gorm:"column:localIfName;not null;uniqueIndex:idx_local_device_id_if_name"`
 	LocalIfDescr   string       `gorm:"column:localIfDescr;not null"`
 	RemoteApId     string       `gorm:"column:remoteApId;type:uuid;not null"`
 	RemoteAp       AP           `gorm:"constraint:Ondelete:CASCADE;foreignKey:RemoteApId"`

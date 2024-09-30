@@ -185,6 +185,9 @@ type DeviceScanResponse struct {
 	Vlans          []*VlanItem        `json:"vlans"`
 	ArpTable       []*ArpItem         `json:"arpTable"`
 	Errors         []string           `json:"errors"`
+	SnmpReachable  bool               `json:"snmpReachable"`
+	SshReachable   bool               `json:"sshReachable"`
+	IcmpReachable  bool               `json:"icmpReachable"`
 }
 
 type DeviceBasicInfoScanResponse struct {

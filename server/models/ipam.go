@@ -12,10 +12,10 @@ type Prefix struct {
 	Range          string       `gorm:"column:range;type:cidr;index;not null"`
 	Version        string       `gorm:"column:version;not null"`     // IPv4 or IPv6
 	Type           string       `gorm:"column:type;default:Dynamic"` // Dynamic or Static
-	VlanId         *uint32      `gorm:"column:vlanId;default:null"`
+	VlanId         *uint32      `gorm:"column:vlanId;default:null;uniqueIndex:idx_pvlan_id_site_id;index"`
 	VlanName       *string      `gorm:"column:vlanName;default:null"`
 	SiteId         string       `gorm:"column:siteId;type:uuid;index"`
-	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
+	Site           Site         `gorm:"constraint:Ondelete:CASCADE";uniqueIndex:idx_pvlan_id_site_id;index`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 	// TODO: Add utilization
@@ -30,14 +30,14 @@ func (Prefix) TableName() string {
 type IpAddress struct {
 	BaseDbModel
 
-	Address        string       `gorm:"column:address;type:inet;not null;uniqueIndex:idx_address_site_id;index"`
+	Address        string       `gorm:"column:address;type:inet;not null;uniqueIndex:idx_ip_address_site_id;index"`
 	Status         string       `gorm:"column:status;default:Active"` // Active or Reserved
 	MacAddress     *string      `gorm:"column:macAddress;type:macaddr"`
 	Vlan           *uint32      `gorm:"column:vlan;default:null"`
 	Range          *string      `gorm:"column:range;type:cidr;default:null;index"`
 	Description    *string      `gorm:"column:description;default:null"`
 	Type           string       `gorm:"column:type;default:Dynamic"` // Dynamic or Static or Gateway or Broadcast or NetworkId
-	SiteId         string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_address_site_id;index"`
+	SiteId         string       `gorm:"column:siteId;type:uuid;uniqueIndex:idx_ip_address_site_id;index"`
 	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`

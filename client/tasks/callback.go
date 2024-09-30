@@ -28,6 +28,7 @@ func scanDeviceBasicInfoCallback(data []*intendtask.DeviceBasicInfoScanResponse,
 	resp, err := server.R().SetBody(data).SetHeader(xTaskID, taskId).Post(intendtask.DeviceBasicInfoCbUrl)
 	if err != nil {
 		logger.Logger.Error("[scanDeviceBasicInfoCallback]: failed to post", err)
+		logger.Logger.Error("[scanDeviceBasicInfoCallback]: server response", resp.String())
 		return
 	}
 	if !resp.IsSuccessState() {
@@ -36,7 +37,7 @@ func scanDeviceBasicInfoCallback(data []*intendtask.DeviceBasicInfoScanResponse,
 	logger.Logger.Info("[scanDeviceBasicInfoCallback] post result to server success")
 }
 
-func scanDeviceCallback(data []*intendtask.DeviceScanResponse, taskId string) {
+func scanDeviceCallback(data *intendtask.DeviceScanResponse, taskId string) {
 	server := newServer()
 	if server == nil {
 		logger.Logger.Error("[scanDeviceCallback]: failed to create server")
@@ -45,11 +46,12 @@ func scanDeviceCallback(data []*intendtask.DeviceScanResponse, taskId string) {
 	resp, err := server.R().SetBody(data).SetHeader(xTaskID, taskId).Post(intendtask.DeviceCbUrl)
 	if err != nil {
 		logger.Logger.Error("[scanDeviceCallback]: failed to post", err)
+		logger.Logger.Error("[scanDeviceCallback]: server response", resp.String())
 		return
 	}
 	if !resp.IsSuccessState() {
 		logger.Logger.Error("[scanDeviceCallback]: failed to post result to server", resp.Status)
-		logger.Logger.Info("[scanDeviceCallback]", resp.String())
+		logger.Logger.Info("[scanDeviceCallback]: server response", resp.String())
 	}
 
 	logger.Logger.Info("[scanDeviceCallback] post result to server success")
@@ -65,6 +67,7 @@ func scanApCallback(data []*intendtask.ApScanResponse, taskId string) {
 	resp, err := server.R().SetBody(data).SetHeader(xTaskID, taskId).Post(intendtask.ApCbUrl)
 	if err != nil {
 		logger.Logger.Error("[scanApCallback]: failed to post", err)
+		logger.Logger.Error("[scanApCallback]: server response", resp.String())
 		return
 	}
 

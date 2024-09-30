@@ -3020,6 +3020,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/infra/scan-device-details": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Scan device details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Scan device details",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ScanDeviceDetailTask"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdsResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/infra/scan-devices": {
             "get": {
                 "security": [
@@ -4457,6 +4496,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/task/scan-device": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Scan device detail callback",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "ScanDeviceDetail Callback",
+                "parameters": [
+                    {
+                        "description": "resp",
+                        "name": "resp",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/intendtask.DeviceScanResponse"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/task/scan-device-basic": {
             "post": {
                 "security": [
@@ -4665,6 +4743,32 @@ const docTemplate = `{
                 }
             }
         },
+        "intendtask.ArpItem": {
+            "type": "object",
+            "properties": {
+                "hashValue": {
+                    "type": "string"
+                },
+                "ifIndex": {
+                    "type": "integer"
+                },
+                "ipAddress": {
+                    "type": "string"
+                },
+                "macAddress": {
+                    "type": "string"
+                },
+                "range": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "vlanId": {
+                    "type": "integer"
+                }
+            }
+        },
         "intendtask.DeviceBasicInfoScanResponse": {
             "type": "object",
             "properties": {
@@ -4696,6 +4800,225 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "platform": {
+                    "type": "string"
+                }
+            }
+        },
+        "intendtask.DeviceInterface": {
+            "type": "object",
+            "properties": {
+                "hashValue": {
+                    "type": "string"
+                },
+                "ifAdminStatus": {
+                    "type": "string"
+                },
+                "ifDescr": {
+                    "type": "string"
+                },
+                "ifHighSpeed": {
+                    "type": "integer"
+                },
+                "ifIndex": {
+                    "type": "integer"
+                },
+                "ifIpAddress": {
+                    "type": "string"
+                },
+                "ifLastChange": {
+                    "type": "integer"
+                },
+                "ifMtu": {
+                    "type": "integer"
+                },
+                "ifName": {
+                    "type": "string"
+                },
+                "ifOperStatus": {
+                    "type": "string"
+                },
+                "ifPhysAddr": {
+                    "type": "string"
+                },
+                "ifSpeed": {
+                    "type": "integer"
+                },
+                "ifType": {
+                    "type": "string"
+                }
+            }
+        },
+        "intendtask.DeviceScanResponse": {
+            "type": "object",
+            "properties": {
+                "arpTable": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/intendtask.ArpItem"
+                    }
+                },
+                "chassisId": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "deviceId": {
+                    "type": "string"
+                },
+                "deviceModel": {
+                    "type": "string"
+                },
+                "entities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/intendtask.Entity"
+                    }
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "icmpReachable": {
+                    "type": "boolean"
+                },
+                "interfaces": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/intendtask.DeviceInterface"
+                    }
+                },
+                "lldpNeighbors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/intendtask.LldpNeighbor"
+                    }
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organizationId": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "snmpReachable": {
+                    "type": "boolean"
+                },
+                "sshReachable": {
+                    "type": "boolean"
+                },
+                "stacks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/intendtask.Stack"
+                    }
+                },
+                "vlans": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/intendtask.VlanItem"
+                    }
+                }
+            }
+        },
+        "intendtask.Entity": {
+            "type": "object",
+            "properties": {
+                "entityPhysicalClass": {
+                    "type": "string"
+                },
+                "entityPhysicalDescr": {
+                    "type": "string"
+                },
+                "entityPhysicalName": {
+                    "type": "string"
+                },
+                "entityPhysicalSerialNum": {
+                    "type": "string"
+                },
+                "entityPhysicalSoftwareRev": {
+                    "type": "string"
+                }
+            }
+        },
+        "intendtask.LldpNeighbor": {
+            "type": "object",
+            "properties": {
+                "hashValue": {
+                    "type": "string"
+                },
+                "localChassisId": {
+                    "type": "string"
+                },
+                "localHostname": {
+                    "type": "string"
+                },
+                "localIfDescr": {
+                    "type": "string"
+                },
+                "localIfName": {
+                    "type": "string"
+                },
+                "remoteChassisId": {
+                    "type": "string"
+                },
+                "remoteHostname": {
+                    "type": "string"
+                },
+                "remoteIfDescr": {
+                    "type": "string"
+                },
+                "remoteIfName": {
+                    "type": "string"
+                }
+            }
+        },
+        "intendtask.Stack": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "macAddress": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "intendtask.VlanItem": {
+            "type": "object",
+            "properties": {
+                "gateway": {
+                    "type": "string"
+                },
+                "ifIndex": {
+                    "type": "integer"
+                },
+                "range": {
+                    "type": "string"
+                },
+                "vlanId": {
+                    "type": "integer"
+                },
+                "vlanName": {
                     "type": "string"
                 }
             }
@@ -6344,6 +6667,17 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "schemas.ScanDeviceDetailTask": {
+            "type": "object",
+            "required": [
+                "siteId"
+            ],
+            "properties": {
+                "siteId": {
+                    "type": "string"
                 }
             }
         },

@@ -43,9 +43,11 @@ func scanDeviceBasicInfoCallback(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	err = infra_tasks.DeviceBasicInfoScanCallback(scanDevices)
-	if err != nil {
-		return
+	if scanDevices != nil {
+		err = infra_tasks.DeviceBasicInfoScanCallback(scanDevices)
+		if err != nil {
+			return
+		}
 	}
 	c.JSON(http.StatusOK, ts.SuccessResponse{Status: "ok"})
 }
@@ -75,13 +77,53 @@ func scanApCallback(c *gin.Context) {
 	if err = c.ShouldBindJSON(&scanAp); err != nil {
 		return
 	}
-	err = task_biz.UpdateApScanResult(taskId)
+	err = task_biz.UpdateApScanResult(taskId, scanAp)
 	if err != nil {
 		return
 	}
-	err = infra_tasks.ScanApCallback(scanAp)
+	if scanAp != nil {
+		err = infra_tasks.ScanApCallback(scanAp)
+		if err != nil {
+			return
+		}
+	}
+	c.JSON(http.StatusOK, ts.SuccessResponse{Status: "ok"})
+}
+
+// @Tags Task
+// @Summary ScanDeviceDetail Callback
+// @Description Scan device detail callback
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param resp body intendtask.DeviceScanResponse true "resp"
+// @Success 200 {object} ts.SuccessResponse
+// @Router /task/scan-device [post]
+func scanDeviceDetailCallback(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var scanDevices *intendtask.DeviceScanResponse
+	taskId := c.GetHeader(xTaskID)
+	err = helpers.ValidateUuidString(taskId)
 	if err != nil {
 		return
+	}
+	if err = c.ShouldBindJSON(&scanDevices); err != nil {
+		return
+	}
+	err = task_biz.UpdateScanDeviceResult(taskId, scanDevices)
+	if err != nil {
+		return
+	}
+	if scanDevices != nil && len(scanDevices.Errors) == 0 {
+		err = infra_tasks.DeviceScanCallback(scanDevices)
+		if err != nil {
+			return
+		}
 	}
 	c.JSON(http.StatusOK, ts.SuccessResponse{Status: "ok"})
 }
