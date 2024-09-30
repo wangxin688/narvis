@@ -14,6 +14,7 @@ type Prefix struct {
 	Version     string    `json:"version"`
 	VlanId      *uint32   `json:"vlanId"`
 	VlanName    *string   `json:"vlanName"`
+	Gateway     *string   `json:"gateway"`
 	Type        string    `json:"type"`
 	SiteId      string    `json:"siteId"`
 	Utilization float64   `json:"utilization"` // percentage
@@ -21,6 +22,7 @@ type Prefix struct {
 
 type PrefixCreate struct {
 	Range    string  `json:"range" binding:"required,cidr_v_any"`
+	Gateway  *string `json:"gateway" binding:"omitempty,ip_addr"`
 	VlanId   *uint32 `json:"vlanId" binding:"omitempty,gte=1,lte=4094"` // not support VxLAN now
 	VlanName *string `json:"vlanName" binding:"omitempty"`
 	Type     string  `json:"type" binding:"required,oneof=Dynamic Static"`
@@ -29,6 +31,7 @@ type PrefixCreate struct {
 
 type PrefixUpdate struct {
 	Range    *string `json:"range" binding:"omitempty,cidr"`
+	Gateway  *string `json:"gateway" binding:"omitempty,ip_addr"`
 	VlanId   *uint32 `json:"vlanId" binding:"omitempty,gt=1,lte=4094"`
 	VlanName *string `json:"vlanName" binding:"omitempty"`
 	Type     *string `json:"type" binding:"omitempty,oneof=Dynamic Static"`

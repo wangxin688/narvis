@@ -21,6 +21,7 @@ func NewPrefixService() *PrefixService {
 func (p *PrefixService) CreatePrefix(prefix *schemas.PrefixCreate) (string, error) {
 	newPrefix := models.Prefix{
 		Range:          prefix.Range,
+		Gateway:        prefix.Gateway,
 		VlanId:         prefix.VlanId,
 		VlanName:       prefix.VlanName,
 		Type:           prefix.Type,
@@ -62,6 +63,10 @@ func (p *PrefixService) UpdatePrefix(g *gin.Context, id string, prefix *schemas.
 		updateFields["siteId"] = &ts.OrmDiff{Before: dbPrefix.SiteId, After: *prefix.SiteId}
 		dbPrefix.SiteId = *prefix.SiteId
 	}
+	if prefix.Gateway != nil && prefix.Gateway != dbPrefix.Gateway {
+		updateFields["gateway"] = &ts.OrmDiff{Before: dbPrefix.Gateway, After: *prefix.Gateway}
+		dbPrefix.Gateway = prefix.Gateway
+	}
 	if len(updateFields) == 0 {
 		return nil
 	}
@@ -92,6 +97,8 @@ func (p *PrefixService) GetById(id string) (*schemas.Prefix, error) {
 		CreatedAt:   prefix.CreatedAt,
 		UpdatedAt:   prefix.UpdatedAt,
 		Range:       prefix.Range,
+		Version:     prefix.Version,
+		Gateway:     prefix.Gateway,
 		VlanId:      prefix.VlanId,
 		VlanName:    prefix.VlanName,
 		Type:        prefix.Type,
@@ -146,6 +153,8 @@ func (p *PrefixService) ListPrefix(query *schemas.PrefixQuery) (int64, *[]*schem
 			Id:          prefix.Id,
 			CreatedAt:   prefix.CreatedAt,
 			UpdatedAt:   prefix.UpdatedAt,
+			Version:     prefix.Version,
+			Gateway:     prefix.Gateway,
 			Range:       prefix.Range,
 			VlanId:      prefix.VlanId,
 			VlanName:    prefix.VlanName,

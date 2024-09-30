@@ -8,6 +8,7 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
+	ipam_utils "github.com/wangxin688/narvis/server/features/ipam/utils"
 	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools"
@@ -224,6 +225,8 @@ func vlanCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Vlan
 			SiteId:         siteId,
 			OrganizationId: orgId,
 			Range:          vlan.Range,
+			Version:        ipam_utils.CidrVersion(vlan.Range),
+			Gateway:        &vlan.Gateway,
 			VlanId:         &vlan.VlanId,
 			VlanName:       &vlan.VlanName,
 		})
@@ -265,7 +268,7 @@ func arpTableCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.
 		err := gen.IpAddress.UnderlyingDB().Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "address"}, {Name: "siteId"}},
 			UpdateAll: true,
-		}).CreateInBatches(createArps, 1000).Error
+		}).CreateInBatches(createArps, 100).Error
 		if err != nil {
 			core.Logger.Error("[deviceScanCallback.arp]: failed to insert arp to ipAddress table", zap.Error(err))
 			return err

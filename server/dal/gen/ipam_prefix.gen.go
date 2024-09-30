@@ -34,6 +34,7 @@ func newPrefix(db *gorm.DB, opts ...gen.DOOption) prefix {
 	_prefix.Type = field.NewString(tableName, "type")
 	_prefix.VlanId = field.NewUint32(tableName, "vlanId")
 	_prefix.VlanName = field.NewString(tableName, "vlanName")
+	_prefix.Gateway = field.NewString(tableName, "gateway")
 	_prefix.SiteId = field.NewString(tableName, "siteId")
 	_prefix.OrganizationId = field.NewString(tableName, "organizationId")
 	_prefix.Site = prefixBelongsToSite{
@@ -70,6 +71,7 @@ type prefix struct {
 	Type           field.String
 	VlanId         field.Uint32
 	VlanName       field.String
+	Gateway        field.String
 	SiteId         field.String
 	OrganizationId field.String
 	Site           prefixBelongsToSite
@@ -99,6 +101,7 @@ func (p *prefix) updateTableName(table string) *prefix {
 	p.Type = field.NewString(table, "type")
 	p.VlanId = field.NewUint32(table, "vlanId")
 	p.VlanName = field.NewString(table, "vlanName")
+	p.Gateway = field.NewString(table, "gateway")
 	p.SiteId = field.NewString(table, "siteId")
 	p.OrganizationId = field.NewString(table, "organizationId")
 
@@ -117,7 +120,7 @@ func (p *prefix) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (p *prefix) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 12)
+	p.fieldMap = make(map[string]field.Expr, 13)
 	p.fieldMap["id"] = p.Id
 	p.fieldMap["createdAt"] = p.CreatedAt
 	p.fieldMap["updatedAt"] = p.UpdatedAt
@@ -126,6 +129,7 @@ func (p *prefix) fillFieldMap() {
 	p.fieldMap["type"] = p.Type
 	p.fieldMap["vlanId"] = p.VlanId
 	p.fieldMap["vlanName"] = p.VlanName
+	p.fieldMap["gateway"] = p.Gateway
 	p.fieldMap["siteId"] = p.SiteId
 	p.fieldMap["organizationId"] = p.OrganizationId
 

@@ -5701,7 +5701,7 @@
                     "type": "string"
                 },
                 "ifLastChange": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "ifMtu": {
                     "type": "integer"
@@ -6257,6 +6257,9 @@
                 "createdAt": {
                     "type": "string"
                 },
+                "gateway": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -6295,6 +6298,9 @@
                 "type"
             ],
             "properties": {
+                "gateway": {
+                    "type": "string"
+                },
                 "range": {
                     "type": "string"
                 },
@@ -6322,6 +6328,9 @@
         "schemas.PrefixUpdate": {
             "type": "object",
             "properties": {
+                "gateway": {
+                    "type": "string"
+                },
                 "range": {
                     "type": "string"
                 },

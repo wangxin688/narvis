@@ -14,8 +14,9 @@ type Prefix struct {
 	Type           string       `gorm:"column:type;default:Dynamic"` // Dynamic or Static
 	VlanId         *uint32      `gorm:"column:vlanId;default:null;uniqueIndex:idx_pvlan_id_site_id;index"`
 	VlanName       *string      `gorm:"column:vlanName;default:null"`
-	SiteId         string       `gorm:"column:siteId;type:uuid;index"`
-	Site           Site         `gorm:"constraint:Ondelete:CASCADE";uniqueIndex:idx_pvlan_id_site_id;index`
+	Gateway        *string      `gorm:"column:gateway;default:null"`
+	SiteId         string       `gorm:"column:siteId;type:uuid;index;uniqueIndex:idx_pvlan_id_site_id;index"`
+	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 	// TODO: Add utilization

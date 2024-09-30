@@ -5709,7 +5709,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "ifLastChange": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "ifMtu": {
                     "type": "integer"
@@ -6265,6 +6265,9 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "gateway": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -6303,6 +6306,9 @@ const docTemplate = `{
                 "type"
             ],
             "properties": {
+                "gateway": {
+                    "type": "string"
+                },
                 "range": {
                     "type": "string"
                 },
@@ -6330,6 +6336,9 @@ const docTemplate = `{
         "schemas.PrefixUpdate": {
             "type": "object",
             "properties": {
+                "gateway": {
+                    "type": "string"
+                },
                 "range": {
                     "type": "string"
                 },

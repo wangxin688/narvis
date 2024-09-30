@@ -772,7 +772,7 @@ definitions:
       ifIpAddress:
         type: string
       ifLastChange:
-        type: integer
+        type: string
       ifMtu:
         type: integer
       ifName:
@@ -1148,6 +1148,8 @@ definitions:
     properties:
       createdAt:
         type: string
+      gateway:
+        type: string
       id:
         type: string
       range:
@@ -1170,6 +1172,8 @@ definitions:
     type: object
   schemas.PrefixCreate:
     properties:
+      gateway:
+        type: string
       range:
         type: string
       siteId:
@@ -1193,6 +1197,8 @@ definitions:
     type: object
   schemas.PrefixUpdate:
     properties:
+      gateway:
+        type: string
       range:
         type: string
       siteId:
