@@ -23,9 +23,9 @@ func HumanReadableDuration(seconds int64) string {
 	seconds %= secondsInMinute
 
 	if days > 0 {
-		return fmt.Sprintf("%d days %d hours %d minutes %d seconds", days, hours, minutes, seconds)
+		return fmt.Sprintf("%d days %d hours", days, hours)
 	} else if hours > 0 {
-		return fmt.Sprintf("%d hours %d minutes %d seconds", hours, minutes, seconds)
+		return fmt.Sprintf("%d hours %d minutes", hours, minutes)
 	} else if minutes > 0 {
 		return fmt.Sprintf("%d minutes %d seconds", minutes, seconds)
 	}
@@ -37,4 +37,9 @@ func ShortDuration(seconds int) string {
 	seconds_ := int64(seconds)
 	duration := time.Duration(seconds_) * time.Second
 	return duration.String()
+}
+
+func TimeTicksToDuration(ticks uint64) string {
+	seconds := int64(ticks) / 100
+	return HumanReadableDuration(seconds)
 }
