@@ -223,12 +223,13 @@ func vlanCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Vlan
 			continue
 		}
 		setOfRange = append(setOfRange, vlan.Range)
+		gateway := ipam_utils.TrimGatewayMask(vlan.Gateway)
 		createPrefixes = append(createPrefixes, &models.Prefix{
 			SiteId:         siteId,
 			OrganizationId: orgId,
 			Range:          vlan.Range,
 			Version:        ipam_utils.CidrVersion(vlan.Range),
-			Gateway:        &vlan.Gateway,
+			Gateway:        &gateway,
 			VlanId:         &vlan.VlanId,
 			VlanName:       &vlan.VlanName,
 		})

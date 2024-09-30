@@ -3,6 +3,7 @@ package ipam_utils
 import (
 	"net"
 	"net/netip"
+	"strings"
 )
 
 const IPv4 = "IPv4"
@@ -28,4 +29,16 @@ func CidrSize(cidr string) int64 {
 	}
 	// when netmask < 64, ignore size as 0
 	return 1 << (prefixLength - maskSize)
+}
+
+func TrimGatewayMask(gateway string) string {
+	if gateway == "" {
+		return ""
+	}
+	if strings.Contains(gateway, "/") {
+		gateway = strings.Split(gateway, "/")[0]
+	} else if strings.Contains(gateway, "::") {
+		gateway = strings.Split(gateway, "::")[0]
+	}
+	return gateway
 }

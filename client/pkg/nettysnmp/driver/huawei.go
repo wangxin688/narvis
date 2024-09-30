@@ -54,7 +54,7 @@ func (hd *HuaweiDriver) Vlans() (vlan []*factory.VlanItem, errors []string) {
 	indexVlanIndex := factory.ExtractInteger(hwL2VlanIfIndex, l2VlanIfIndex)
 
 	for i, v := range indexL2Vlan {
-		vlanIdString := strings.TrimPrefix(v, ".")
+		vlanIdString := strings.TrimPrefix(i, ".")
 		vlanId, _ := strconv.Atoi(vlanIdString)
 		_vlan := &factory.VlanItem{
 			VlanId:   uint32(vlanId),
