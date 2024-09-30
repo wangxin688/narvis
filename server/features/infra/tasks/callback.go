@@ -217,10 +217,12 @@ func vlanCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Vlan
 		return nil
 	}
 	createPrefixes := make([]*models.Prefix, 0)
+	setOfRange := make([]string, 0)
 	for _, vlan := range data {
-		if vlan.Range == "" {
+		if vlan.Range == "" || lo.Contains(setOfRange, vlan.Range) {
 			continue
 		}
+		setOfRange = append(setOfRange, vlan.Range)
 		createPrefixes = append(createPrefixes, &models.Prefix{
 			SiteId:         siteId,
 			OrganizationId: orgId,
