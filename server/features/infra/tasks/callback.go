@@ -395,7 +395,12 @@ func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
 	}
 	tx := infra.DB.Session(&gorm.Session{SkipHooks: true})
 	if len(newAps) > 0 {
-		err = tx.CreateInBatches(newAps, len(newAps)).Error
+		err = tx.Clauses(
+			clause.OnConflict{
+				Columns:   []clause.Column{{Name: "managementIp"}, {Name: "siteId"}},
+				UpdateAll: true,
+			},
+		).CreateInBatches(newAps, len(newAps)).Error
 		if err != nil {
 			core.Logger.Error("[apScanCallback]: failed to create new ap", zap.Error(err))
 			return err
