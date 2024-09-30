@@ -2,6 +2,7 @@ package infra_tasks
 
 import (
 	"strings"
+	"time"
 
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/intendtask"
@@ -13,6 +14,7 @@ import (
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools"
 	"go.uber.org/zap"
+	"golang.org/x/exp/rand"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -268,10 +270,13 @@ func arpTableCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.
 		})
 	}
 	if len(createArps) > 0 {
+		// add jitter to avoid race condition
+		jitter := time.Duration(rand.Intn(500)) * time.Millisecond
+		time.Sleep(jitter)
 		err := gen.IpAddress.UnderlyingDB().Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "address"}, {Name: "siteId"}},
 			UpdateAll: true,
-		}).CreateInBatches(createArps, 100).Error
+		}).CreateInBatches(createArps, 50).Error
 		if err != nil {
 			core.Logger.Error("[deviceScanCallback.arp]: failed to insert arp to ipAddress table", zap.Error(err))
 			return err
@@ -279,7 +284,6 @@ func arpTableCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.
 	}
 	return nil
 }
-
 func interfacesCallbackHandler(deviceId string, siteId string, data []*intendtask.DeviceInterface) error {
 	interfaces, err := infra_biz.NewDeviceInterfaceService().GetDeviceInterfaces(deviceId)
 	if err != nil {
