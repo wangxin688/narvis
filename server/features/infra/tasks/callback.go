@@ -233,7 +233,7 @@ func vlanCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Vlan
 	}
 	if len(createPrefixes) > 0 {
 		err := gen.Prefix.UnderlyingDB().Clauses(clause.OnConflict{
-			Columns:   []clause.Column{{Name: "vlanId"}, {Name: "SiteId"}},
+			Columns:   []clause.Column{{Name: "vlanId"}, {Name: "siteId"}},
 			UpdateAll: true,
 		}).CreateInBatches(createPrefixes, len(createPrefixes)).Error
 		if err != nil {
