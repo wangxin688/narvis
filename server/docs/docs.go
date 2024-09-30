@@ -171,7 +171,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "role id",
+                        "description": "uuid formatted role id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -206,7 +206,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "role id",
+                        "description": "uuid formatted role id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -250,7 +250,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "role id",
+                        "description": "uuid formatted role id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -451,7 +451,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user id",
+                        "description": "uuid formatted user id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -485,7 +485,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user id",
+                        "description": "uuid formatted user id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -528,7 +528,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "user id",
+                        "description": "uuid formatted user id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -859,7 +859,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "alertId",
+                        "description": "uuid formatted alertId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1292,7 +1292,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "subscriptionId",
+                        "description": "uuid formatted subscriptionId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1327,7 +1327,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "subscriptionId",
+                        "description": "uuid formatted subscriptionId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1368,7 +1368,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "subscriptionId",
+                        "description": "uuid formatted subscriptionId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1538,8 +1538,8 @@ const docTemplate = `{
                 "summary": "Get ap",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "id",
+                        "type": "string",
+                        "description": "uuid formatted ap id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1615,7 +1615,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "circuitId",
+                        "description": "uuid formatted circuitId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1650,7 +1650,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "circuitId",
+                        "description": "uuid formatted circuitId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1692,7 +1692,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "circuitId",
+                        "description": "uuid formatted circuitId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2103,8 +2103,8 @@ const docTemplate = `{
                 "summary": "Get device",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "id",
+                        "type": "string",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2139,7 +2139,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "id",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2182,8 +2182,8 @@ const docTemplate = `{
                 "summary": "Delete device",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "id",
+                        "type": "string",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2220,7 +2220,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "deviceId",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2255,7 +2255,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "deviceId",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2298,8 +2298,8 @@ const docTemplate = `{
                 "summary": "Create device new cli credential",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "DeviceId",
+                        "type": "string",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2343,7 +2343,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "deviceId",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2379,8 +2379,8 @@ const docTemplate = `{
                 "summary": "Get device interfaces",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "id",
+                        "type": "string",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2420,7 +2420,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "deviceId",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2455,7 +2455,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "deviceId",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2498,8 +2498,8 @@ const docTemplate = `{
                 "summary": "Create new device restconf credential",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "deviceId",
+                        "type": "string",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2543,7 +2543,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "deviceId",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2580,7 +2580,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "deviceId",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2615,7 +2615,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "deviceId",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2658,8 +2658,8 @@ const docTemplate = `{
                 "summary": "Create new device snmpV2 credential",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "deviceId",
+                        "type": "string",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2703,7 +2703,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "deviceId",
+                        "description": "uuid formatted deviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3316,7 +3316,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "id",
+                        "description": "uuid formatted scanDeviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3351,7 +3351,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "id",
+                        "description": "uuid formatted scanDeviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3395,7 +3395,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "id",
+                        "description": "uuid formatted scanDeviceId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3591,7 +3591,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "site id",
+                        "description": "uuid formatted siteId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3626,7 +3626,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "site id",
+                        "description": "uuid formatted siteId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3670,7 +3670,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "site id",
+                        "description": "uuid formatted siteId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -4018,7 +4018,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ipId",
+                        "description": "uuid formatted ipAddressId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -4053,7 +4053,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ipId",
+                        "description": "uuid formatted ipAddressId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -4097,7 +4097,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ipId",
+                        "description": "uuid formatted ipAddressId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -4300,7 +4300,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "prefixId",
+                        "description": "uuid formatted prefixId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -4335,7 +4335,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "prefixId",
+                        "description": "uuid formatted prefixId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -4379,7 +4379,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "prefixId",
+                        "description": "uuid formatted prefixId",
                         "name": "id",
                         "in": "path",
                         "required": true

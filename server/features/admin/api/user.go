@@ -43,7 +43,7 @@ func createUser(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "user id"
+// @Param id path string true "uuid formatted user id"
 // @Success 200 {object} schemas.User
 // @Router /admin/users/{id} [get]
 func getUser(c *gin.Context) {
@@ -98,7 +98,7 @@ func listUsers(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "user id"
+// @Param id path string true "uuid formatted user id"
 // @Param user body schemas.UserUpdate true "user"
 // @Success 200 {object} ts.IdResponse
 // @Router /admin/users/{id} [put]
@@ -129,7 +129,7 @@ func updateUser(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "user id"
+// @Param id path string true "uuid formatted user id"
 // @Success 200 {object} ts.IdResponse
 // @Router /admin/users/{id} [delete]
 func deleteUser(c *gin.Context) {

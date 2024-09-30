@@ -50,7 +50,7 @@ func createDevice(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "id"
+// @Param id path string true "uuid formatted deviceId"
 // @Param device body schemas.DeviceUpdate true "device"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id} [put]
@@ -82,7 +82,7 @@ func updateDevice(c *gin.Context) {
 // @Security BearerAuth
 // @Accept  json
 // @Produce  json
-// @Param id path int true "id"
+// @Param id path string true "uuid formatted deviceId"
 // @Success 200 {object} schemas.Device
 // @Router /infra/devices/{id} [get]
 func getDevice(c *gin.Context) {
@@ -109,7 +109,7 @@ func getDevice(c *gin.Context) {
 // @Security BearerAuth
 // @Accept  json
 // @Produce  json
-// @Param id path int true "id"
+// @Param id path string true "uuid formatted deviceId"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id} [delete]
 func deleteDevice(c *gin.Context) {
@@ -166,7 +166,7 @@ func listDevices(c *gin.Context) {
 // @Security BearerAuth
 // @Accept  json
 // @Produce  json
-// @Param id path int true "id"
+// @Param id path string true "uuid formatted deviceId"
 // @Success 200 {object} []schemas.DeviceInterface
 // @Router /infra/devices/{id}/interfaces [get]
 func getDeviceInterfaces(c *gin.Context) {
@@ -193,7 +193,7 @@ func getDeviceInterfaces(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path int true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Param credential body schemas.RestconfCredentialCreate true "Credential"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id}/restconf [post]
@@ -225,7 +225,7 @@ func createRestconfCredential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Success 200 {object} schemas.RestconfCredential
 // @Router /infra/devices/{id}/restconf [get]
 func getRestconfCredential(c *gin.Context) {
@@ -252,7 +252,7 @@ func getRestconfCredential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Param credential body schemas.RestconfCredentialUpdate true "Credential"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id}/restconf [put]
@@ -284,7 +284,7 @@ func updateRestconfCredential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id}/restconf [delete]
 func deleteRestconfCredential(c *gin.Context) {
@@ -311,7 +311,7 @@ func deleteRestconfCredential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path int true "DeviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Param credential body schemas.CliCredentialCreate true "Credential"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id}/cli [post]
@@ -343,7 +343,7 @@ func createCliCredential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Success 200 {object} schemas.CliCredential
 // @Router /infra/devices/{id}/cli [get]
 func getCliCredential(c *gin.Context) {
@@ -370,7 +370,7 @@ func getCliCredential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Param credential body schemas.CliCredentialUpdate true "Credential"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id}/cli [put]
@@ -402,7 +402,7 @@ func updateCliCredential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id}/cli [delete]
 func deleteCliCredential(c *gin.Context) {
@@ -429,7 +429,7 @@ func deleteCliCredential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path int true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Param credential body schemas.SnmpV2CredentialCreate true "Credential"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id}/snmpv2 [post]
@@ -462,7 +462,7 @@ func createSnmpV2Credential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Success 200 {object} schemas.SnmpV2Credential
 // @Router /infra/devices/{id}/snmpv2 [get]
 func getSnmpV2Credential(c *gin.Context) {
@@ -489,7 +489,7 @@ func getSnmpV2Credential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Param credential body schemas.SnmpV2CredentialUpdate true "Credential"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id}/snmpv2 [put]
@@ -524,7 +524,7 @@ func updateSnmpV2Credential(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "deviceId"
+// @Param id path string true "uuid formatted deviceId"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/devices/{id}/snmpv2 [delete]
 func deleteSnmpV2Credential(c *gin.Context) {

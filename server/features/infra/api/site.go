@@ -54,7 +54,7 @@ func createSite(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "site id"
+// @Param id path string true "uuid formatted siteId"
 // @Success 200 {object} schemas.SiteDetail
 // @Router /infra/sites/{id} [get]
 func getSite(c *gin.Context) {
@@ -111,7 +111,7 @@ func listSites(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "site id"
+// @Param id path string true "uuid formatted siteId"
 // @Param site body schemas.SiteUpdate true "site"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/sites/{id} [put]
@@ -146,7 +146,7 @@ func updateSite(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "site id"
+// @Param id path string true "uuid formatted siteId"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/sites/{id} [delete]
 func deleteSite(c *gin.Context) {

@@ -45,7 +45,7 @@ func createRole(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "role id"
+// @Param id path string true "uuid formatted role id"
 // @Success 200 {object} schemas.RoleDetail
 // @Router /admin/roles/{id} [get]
 func getRole(c *gin.Context) {
@@ -102,7 +102,7 @@ func listRoles(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "role id"
+// @Param id path string true "uuid formatted role id"
 // @Param role body schemas.RoleUpdate true "role"
 // @Success 200 {object} schemas.Role
 // @Router /admin/roles/{id} [put]
@@ -134,7 +134,7 @@ func updateRole(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "role id"
+// @Param id path string true "uuid formatted role id"
 // @Success 200 {object} schemas.Role
 // @Router /admin/roles/{id} [delete]
 func deleteRole(c *gin.Context) {

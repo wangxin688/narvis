@@ -44,7 +44,7 @@ func createIpAddress(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "ipId"
+// @Param id path string true "uuid formatted ipAddressId"
 // @Success 200 {object} schemas.IpAddress
 // @Router /ipam/ip-addresses/{id} [get]
 func getIpAddress(c *gin.Context) {
@@ -98,7 +98,7 @@ func getIpAddressList(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "ipId"
+// @Param id path string true "uuid formatted ipAddressId"
 // @Success 200 {object} ts.IdResponse
 // @Router /ipam/ip-addresses/{id} [delete]
 func deleteIpAddress(c *gin.Context) {
@@ -125,7 +125,7 @@ func deleteIpAddress(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "ipId"
+// @Param id path string true "uuid formatted ipAddressId"
 // @Param ip body schemas.IpAddressUpdate true "ip"
 // @Success 200 {object} schemas.IpAddress
 // @Router /ipam/ip-addresses/{id} [put]

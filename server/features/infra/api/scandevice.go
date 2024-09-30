@@ -49,7 +49,7 @@ func createScanDevice(c *gin.Context) {
 // @Security BearerAuth
 // @Accept  json
 // @Produce  json
-// @Param id path string true "id"
+// @Param id path string true "uuid formatted scanDeviceId"
 // @Param data body schemas.ScanDeviceUpdate true "data"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/scan-devices/{id} [put]
@@ -135,7 +135,7 @@ func listScanDevices(c *gin.Context) {
 // @Security BearerAuth
 // @Accept  json
 // @Produce  json
-// @Param id path string true "id"
+// @Param id path string true "uuid formatted scanDeviceId"
 // @Success 200 {object} schemas.ScanDevice
 // @Router /infra/scan-devices/{id} [get]
 func getScanDevice(c *gin.Context) {
@@ -162,7 +162,7 @@ func getScanDevice(c *gin.Context) {
 // @Security BearerAuth
 // @Accept  json
 // @Produce  json
-// @Param id path string true "id"
+// @Param id path string true "uuid formatted scanDeviceId"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/scan-devices/{id} [delete]
 func deleteScanDevice(c *gin.Context) {

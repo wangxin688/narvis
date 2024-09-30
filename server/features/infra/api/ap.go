@@ -17,7 +17,7 @@ import (
 // @Security BearerAuth
 // @Accept  json
 // @Produce  json
-// @Param id path int true "id"
+// @Param id path string true "uuid formatted ap id"
 // @Success 200 {object} schemas.AP
 // @Router /infra/aps/{id} [get]
 func getAp(c *gin.Context) {

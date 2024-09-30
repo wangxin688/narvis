@@ -49,7 +49,7 @@ func createCircuit(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "circuitId"
+// @Param id path string true "uuid formatted circuitId"
 // @Success 200 {object} schemas.Circuit
 // @Router /infra/circuit/{id} [get]
 func getCircuit(c *gin.Context) {
@@ -103,7 +103,7 @@ func listCircuit(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "circuitId"
+// @Param id path string true "uuid formatted circuitId"
 // @Param circuit body schemas.CircuitUpdate true "Circuit"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/circuit/{id} [put]
@@ -138,7 +138,7 @@ func updateCircuit(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "circuitId"
+// @Param id path string true "uuid formatted circuitId"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/circuit/{id} [delete]
 func deleteCircuit(c *gin.Context) {

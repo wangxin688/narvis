@@ -1930,7 +1930,7 @@ paths:
       - application/json
       description: delete role
       parameters:
-      - description: role id
+      - description: uuid formatted role id
         in: path
         name: id
         required: true
@@ -1952,7 +1952,7 @@ paths:
       - application/json
       description: get role
       parameters:
-      - description: role id
+      - description: uuid formatted role id
         in: path
         name: id
         required: true
@@ -1974,7 +1974,7 @@ paths:
       - application/json
       description: update role
       parameters:
-      - description: role id
+      - description: uuid formatted role id
         in: path
         name: id
         required: true
@@ -2105,7 +2105,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: user id
+      - description: uuid formatted user id
         in: path
         name: id
         required: true
@@ -2126,7 +2126,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: user id
+      - description: uuid formatted user id
         in: path
         name: id
         required: true
@@ -2147,7 +2147,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: user id
+      - description: uuid formatted user id
         in: path
         name: id
         required: true
@@ -2360,7 +2360,7 @@ paths:
       - application/json
       description: Get Alert
       parameters:
-      - description: alertId
+      - description: uuid formatted alertId
         in: path
         name: id
         required: true
@@ -2628,7 +2628,7 @@ paths:
       - application/json
       description: Delete Subscription
       parameters:
-      - description: subscriptionId
+      - description: uuid formatted subscriptionId
         in: path
         name: id
         required: true
@@ -2648,7 +2648,7 @@ paths:
       - application/json
       description: Get Subscription
       parameters:
-      - description: subscriptionId
+      - description: uuid formatted subscriptionId
         in: path
         name: id
         required: true
@@ -2670,7 +2670,7 @@ paths:
       - application/json
       description: Update Subscription
       parameters:
-      - description: subscriptionId
+      - description: uuid formatted subscriptionId
         in: path
         name: id
         required: true
@@ -2782,11 +2782,11 @@ paths:
       - application/json
       description: get ap
       parameters:
-      - description: id
+      - description: uuid formatted ap id
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -2828,7 +2828,7 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: circuitId
+      - description: uuid formatted circuitId
         in: path
         name: id
         required: true
@@ -2849,7 +2849,7 @@ paths:
       - application/json
       description: Get circuit
       parameters:
-      - description: circuitId
+      - description: uuid formatted circuitId
         in: path
         name: id
         required: true
@@ -2871,7 +2871,7 @@ paths:
       - application/json
       description: Update circuit
       parameters:
-      - description: circuitId
+      - description: uuid formatted circuitId
         in: path
         name: id
         required: true
@@ -3138,11 +3138,11 @@ paths:
       - application/json
       description: Delete device
       parameters:
-      - description: id
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -3160,11 +3160,11 @@ paths:
       - application/json
       description: get device
       parameters:
-      - description: id
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -3182,7 +3182,7 @@ paths:
       - application/json
       description: Update device
       parameters:
-      - description: id
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3211,7 +3211,7 @@ paths:
       - application/json
       description: Delete device cli credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3233,7 +3233,7 @@ paths:
       - application/json
       description: Get device cli credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3255,11 +3255,11 @@ paths:
       - application/json
       description: Create device new cli credential
       parameters:
-      - description: DeviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Credential
         in: body
         name: credential
@@ -3283,7 +3283,7 @@ paths:
       - application/json
       description: Update device cli credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3312,11 +3312,11 @@ paths:
       - application/json
       description: Get device interfaces
       parameters:
-      - description: id
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -3337,7 +3337,7 @@ paths:
       - application/json
       description: Delete device restconf credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3359,7 +3359,7 @@ paths:
       - application/json
       description: Get device restconf credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3381,11 +3381,11 @@ paths:
       - application/json
       description: Create new device restconf credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Credential
         in: body
         name: credential
@@ -3409,7 +3409,7 @@ paths:
       - application/json
       description: Update device restconf credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3438,7 +3438,7 @@ paths:
       - application/json
       description: Delete device snmpV2 credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3460,7 +3460,7 @@ paths:
       - application/json
       description: Get device snmpV2 credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3482,11 +3482,11 @@ paths:
       - application/json
       description: Create device new snmpV2 credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Credential
         in: body
         name: credential
@@ -3510,7 +3510,7 @@ paths:
       - application/json
       description: Update device snmpV2 credential
       parameters:
-      - description: deviceId
+      - description: uuid formatted deviceId
         in: path
         name: id
         required: true
@@ -3897,7 +3897,7 @@ paths:
       - application/json
       description: Scan Device Delete
       parameters:
-      - description: id
+      - description: uuid formatted scanDeviceId
         in: path
         name: id
         required: true
@@ -3919,7 +3919,7 @@ paths:
       - application/json
       description: Scan Device Get
       parameters:
-      - description: id
+      - description: uuid formatted scanDeviceId
         in: path
         name: id
         required: true
@@ -3941,7 +3941,7 @@ paths:
       - application/json
       description: Scan Device Update
       parameters:
-      - description: id
+      - description: uuid formatted scanDeviceId
         in: path
         name: id
         required: true
@@ -4069,7 +4069,7 @@ paths:
       - application/json
       description: Delete site
       parameters:
-      - description: site id
+      - description: uuid formatted siteId
         in: path
         name: id
         required: true
@@ -4091,7 +4091,7 @@ paths:
       - application/json
       description: Get site
       parameters:
-      - description: site id
+      - description: uuid formatted siteId
         in: path
         name: id
         required: true
@@ -4113,7 +4113,7 @@ paths:
       - application/json
       description: Update site
       parameters:
-      - description: site id
+      - description: uuid formatted siteId
         in: path
         name: id
         required: true
@@ -4324,7 +4324,7 @@ paths:
       - application/json
       description: Delete ip address
       parameters:
-      - description: ipId
+      - description: uuid formatted ipAddressId
         in: path
         name: id
         required: true
@@ -4346,7 +4346,7 @@ paths:
       - application/json
       description: Get ip address
       parameters:
-      - description: ipId
+      - description: uuid formatted ipAddressId
         in: path
         name: id
         required: true
@@ -4368,7 +4368,7 @@ paths:
       - application/json
       description: Update ip address
       parameters:
-      - description: ipId
+      - description: uuid formatted ipAddressId
         in: path
         name: id
         required: true
@@ -4501,7 +4501,7 @@ paths:
       - application/json
       description: Delete prefix
       parameters:
-      - description: prefixId
+      - description: uuid formatted prefixId
         in: path
         name: id
         required: true
@@ -4523,7 +4523,7 @@ paths:
       - application/json
       description: Get prefix
       parameters:
-      - description: prefixId
+      - description: uuid formatted prefixId
         in: path
         name: id
         required: true
@@ -4545,7 +4545,7 @@ paths:
       - application/json
       description: Update prefix
       parameters:
-      - description: prefixId
+      - description: uuid formatted prefixId
         in: path
         name: id
         required: true

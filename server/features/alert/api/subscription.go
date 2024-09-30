@@ -46,7 +46,7 @@ func createSubscription(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "subscriptionId"
+// @Param id path string true "uuid formatted subscriptionId"
 // @Success 200 {object} schemas.Subscription
 // @Router /alert/subscriptions/{id} [get]
 func getSubscription(c *gin.Context) {
@@ -73,7 +73,7 @@ func getSubscription(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "subscriptionId"
+// @Param id path string true "uuid formatted subscriptionId"
 // @Param data body schemas.SubscriptionUpdate true "data"
 // @Success 200
 // @Router /alert/subscriptions/{id} [put]
@@ -132,7 +132,7 @@ func listSubscriptions(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "subscriptionId"
+// @Param id path string true "uuid formatted subscriptionId"
 // @Success 200
 // @Router /alert/subscriptions/{id} [delete]
 func deleteSubscription(c *gin.Context) {

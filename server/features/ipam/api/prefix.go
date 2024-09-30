@@ -44,7 +44,7 @@ func createPrefix(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "prefixId"
+// @Param id path string true "uuid formatted prefixId"
 // @Success 200 {object} schemas.Prefix
 // @Router /ipam/prefixes/{id} [get]
 func getPrefix(c *gin.Context) {
@@ -98,7 +98,7 @@ func getPrefixList(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "prefixId"
+// @Param id path string true "uuid formatted prefixId"
 // @Param prefix body schemas.PrefixUpdate true "Prefix"
 // @Success 200 {object} ts.IdResponse
 // @Router /ipam/prefixes/{id} [put]
@@ -130,7 +130,7 @@ func updatePrefix(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "prefixId"
+// @Param id path string true "uuid formatted prefixId"
 // @Success 200 {object} ts.IdResponse
 // @Router /ipam/prefixes/{id} [delete]
 func deletePrefix(c *gin.Context) {

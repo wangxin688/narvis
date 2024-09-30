@@ -49,7 +49,7 @@ func createAlert(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "alertId"
+// @Param id path string true "uuid formatted alertId"
 // @Success 200 {object} schemas.Alert
 // @Router /alert/alerts/{id} [get]
 func getAlert(c *gin.Context) {
