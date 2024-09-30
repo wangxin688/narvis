@@ -94,8 +94,8 @@ func (Device) TableName() string {
 
 type DeviceInterface struct {
 	BaseDbModel
-	IfName        string  `gorm:"column:ifName;uniqueIndex:idx_if_name_device_id;not null"`
-	IfIndex       uint64  `gorm:"column:ifIndex;uniqueIndex:idx_if_index_device_id;not null"`
+	IfName        string  `gorm:"column:ifName;not null"`
+	IfIndex       uint64  `gorm:"column:ifIndex;uniqueIndex:idx_if_index_device_id;index;not null"`
 	IfDescr       string  `gorm:"column:ifDescr;default:null"`
 	IfSpeed       uint64  `gorm:"column:ifSpeed;default:1000"`
 	IfType        string  `gorm:"column:ifType;default:ethernetCsmacd"`
@@ -106,7 +106,7 @@ type DeviceInterface struct {
 	IfHighSpeed   uint64  `gorm:"column:ifHighSpeed;default:1000"`
 	IfPhysAddr    *string `gorm:"column:ifPhysAddr;default:null"`
 	IfIpAddress   *string `gorm:"column:ifIpAddress;default:null"`
-	DeviceId      string  `gorm:"column:deviceId;type:uuid;index;uniqueIndex:idx_if_name_device_id;uniqueIndex:idx_if_index_device_id"`
+	DeviceId      string  `gorm:"column:deviceId;type:uuid;index;uniqueIndex:idx_if_index_device_id"`
 	Device        Device  `gorm:"constraint:Ondelete:CASCADE"`
 	SiteId        string  `gorm:"column:siteId;type:uuid;index"`
 	Site          Site    `gorm:"constraint:Ondelete:CASCADE"`

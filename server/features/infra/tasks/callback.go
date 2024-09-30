@@ -217,6 +217,9 @@ func vlanCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Vlan
 	}
 	createPrefixes := make([]*models.Prefix, 0)
 	for _, vlan := range data {
+		if vlan.Range == "" {
+			continue
+		}
 		createPrefixes = append(createPrefixes, &models.Prefix{
 			SiteId:         siteId,
 			OrganizationId: orgId,
@@ -245,6 +248,9 @@ func arpTableCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.
 	}
 	createArps := make([]*models.IpAddress, 0)
 	for _, arp := range data {
+		if arp.Range == "" {
+			continue
+		}
 		createArps = append(createArps, &models.IpAddress{
 			SiteId:         siteId,
 			OrganizationId: orgId,

@@ -323,7 +323,10 @@ func (d *DeviceService) SearchDeviceByKeyword(keyword string, orgId string) ([]s
 
 func (d *DeviceService) GetActiveDevices(siteId string) ([]*models.Device, error) {
 	devices, err := gen.Device.Where(
-		gen.Device.SiteId.Eq(siteId), gen.Device.Status.Eq("Active")).Find()
+		gen.Device.SiteId.Eq(siteId),
+		gen.Device.Status.Eq("Active"),
+		gen.Device.OrganizationId.Eq(global.OrganizationId.Get()),
+	).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -333,7 +336,11 @@ func (d *DeviceService) GetActiveDevices(siteId string) ([]*models.Device, error
 
 func (d *DeviceService) GetActiveWlanAC(siteId string) ([]*models.Device, error) {
 	devices, err := gen.Device.Where(
-		gen.Device.SiteId.Eq(siteId), gen.Device.Status.Eq("Active"), gen.Device.DeviceRole.Eq(string(devicerole.WlanAC))).Find()
+		gen.Device.SiteId.Eq(siteId),
+		gen.Device.Status.Eq("Active"),
+		gen.Device.DeviceRole.Eq(string(devicerole.WlanAC)),
+		gen.Device.OrganizationId.Eq(global.OrganizationId.Get()),
+	).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -342,7 +349,11 @@ func (d *DeviceService) GetActiveWlanAC(siteId string) ([]*models.Device, error)
 
 func (d *DeviceService) GetAllAccessSwitches(siteId string) ([]*models.Device, error) {
 	devices, err := gen.Device.Where(
-		gen.Device.SiteId.Eq(siteId), gen.Device.Status.Eq("Active"), gen.Device.DeviceRole.Eq(string(devicerole.AccessSwitch))).Find()
+		gen.Device.SiteId.Eq(siteId),
+		gen.Device.Status.Eq("Active"),
+		gen.Device.DeviceRole.Eq(string(devicerole.AccessSwitch)),
+		gen.Device.OrganizationId.Eq(global.OrganizationId.Get()),
+	).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -352,7 +363,11 @@ func (d *DeviceService) GetAllAccessSwitches(siteId string) ([]*models.Device, e
 
 func (d *DeviceService) GetCoreSwitch(siteId string) ([]*models.Device, error) {
 	devices, err := gen.Device.Where(
-		gen.Device.SiteId.Eq(siteId), gen.Device.Status.Eq("Active"), gen.Device.DeviceRole.Eq(string(devicerole.CoreSwitch))).Find()
+		gen.Device.SiteId.Eq(siteId),
+		gen.Device.Status.Eq("Active"),
+		gen.Device.DeviceRole.Eq(string(devicerole.CoreSwitch)),
+		gen.Device.OrganizationId.Eq(global.OrganizationId.Get()),
+	).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -362,7 +377,9 @@ func (d *DeviceService) GetCoreSwitch(siteId string) ([]*models.Device, error) {
 // GetDeviceByChassisIds get device by chassis id, return map[ChassisId]Device
 func (d *DeviceService) GetDeviceByChassisIds(chassisIds []string, orgId string) (map[string]*models.Device, error) {
 
-	devices, err := gen.Device.Where(gen.Device.ChassisId.In(chassisIds...), gen.Device.OrganizationId.Eq(orgId)).Find()
+	devices, err := gen.Device.Where(
+		gen.Device.ChassisId.In(chassisIds...),
+		gen.Device.OrganizationId.Eq(orgId)).Find()
 	if err != nil {
 		return nil, err
 	}
