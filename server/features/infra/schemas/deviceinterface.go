@@ -12,10 +12,10 @@ type DeviceInterface struct {
 	IfType        string    `json:"ifType"`
 	IfMtu         uint64    `json:"ifMtu"`
 	IfSpeed       uint64    `json:"ifSpeed"`
-	IfPhysAddr    string    `json:"ifPhysAddr"`
+	IfPhysAddr    *string   `json:"ifPhysAddr"`
 	IfAdminStatus string    `json:"ifAdminStatus"`
 	IfOperStatus  string    `json:"ifOperStatus"`
-	IfLastChange  uint64    `json:"ifLastChange"`
+	IfLastChange  string    `json:"ifLastChange"`
 	IfHighSpeed   uint64    `json:"ifHighSpeed"`
-	IfIpAddress   string    `json:"ifIpAddress"`
+	IfIpAddress   *string   `json:"ifIpAddress"`
 }

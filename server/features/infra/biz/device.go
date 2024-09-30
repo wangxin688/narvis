@@ -269,11 +269,12 @@ func (d *DeviceService) GetDeviceInterfaces(deviceId string) (*[]*schemas.Device
 			IfType:        item.IfType,
 			IfMtu:         item.IfMtu,
 			IfSpeed:       item.IfSpeed,
-			IfPhysAddr:    *item.IfPhysAddr,
+			IfPhysAddr:    item.IfPhysAddr,
 			IfAdminStatus: item.IfAdminStatus,
 			IfOperStatus:  item.IfOperStatus,
 			IfHighSpeed:   item.IfHighSpeed,
-			IfLastChange:  item.IfLastChange,
+			IfLastChange:  helpers.HumanReadableDuration(int64(item.IfLastChange)),
+			IfIpAddress:   item.IfIpAddress,
 		})
 	}
 	return &res, nil
