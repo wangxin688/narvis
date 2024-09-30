@@ -127,6 +127,15 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 			IfIpAddress:   &item.IfIpAddress,
 		}
 	})
+	resp.Vlans = lo.Map(r.Data.Vlans, func(item *factory.VlanItem, _ int) *intendtask.VlanItem {
+		return &intendtask.VlanItem{
+			VlanId:   item.VlanId,
+			VlanName: item.VlanName,
+			IfIndex:  item.IfIndex,
+			Range:    item.Range,
+			Gateway:  item.Gateway,
+		}
+	})
 	resp.LldpNeighbors = lo.Map(r.Data.LldpNeighbors, func(item *factory.LldpNeighbor, _ int) *intendtask.LldpNeighbor {
 		return &intendtask.LldpNeighbor{
 			LocalChassisId:  item.LocalChassisId,
