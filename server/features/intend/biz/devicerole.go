@@ -19,12 +19,6 @@ func GetDeviceRoles(query *schemas.DeviceRoleQuery) (int64, []devicerole.DeviceR
 			return strings.EqualFold(string(item.DeviceRole), *query.Name)
 		})
 	}
-
-	if query.Abbreviation != nil {
-		list = lo.Filter(list, func(item devicerole.DeviceRole, index int) bool {
-			return strings.EqualFold(string(item.DeviceRole), *query.Abbreviation)
-		})
-	}
 	if query.Keyword != nil {
 		list = lo.Filter(list, func(item devicerole.DeviceRole, index int) bool {
 			return helpers.FuzzySearch(item.ToMap(), *query.Keyword, true, nil)

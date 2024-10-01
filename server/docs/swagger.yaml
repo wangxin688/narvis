@@ -98,6 +98,55 @@ definitions:
       zh:
         type: string
     type: object
+  devicerole.DeviceRole:
+    properties:
+      description:
+        $ref: '#/definitions/common.I18n'
+      device_role:
+        $ref: '#/definitions/devicerole.DeviceRoleEnum'
+      product_family:
+        $ref: '#/definitions/devicerole.ProductFamilyEnum'
+      weight:
+        type: integer
+    type: object
+  devicerole.DeviceRoleEnum:
+    enum:
+    - WanRouter
+    - Firewall
+    - InternetSwitch
+    - CoreSwitch
+    - DistributionSwitch
+    - AccessSwitch
+    - WlanAC
+    - WlanAP
+    - Server
+    - Unknown
+    type: string
+    x-enum-varnames:
+    - WanRouter
+    - Firewall
+    - InternetSwitch
+    - CoreSwitch
+    - DistributionSwitch
+    - AccessSwitch
+    - WlanAC
+    - WlanAP
+    - Server
+    - UnknownDeviceRole
+  devicerole.ProductFamilyEnum:
+    enum:
+    - Gateway
+    - Switching
+    - Wireless
+    - Computing
+    - Unknown
+    type: string
+    x-enum-varnames:
+    - Gateway
+    - Switching
+    - Wireless
+    - Computing
+    - UnknownProductFamily
   intendtask.ApScanResponse:
     properties:
       deviceModel:
@@ -475,6 +524,44 @@ definitions:
     - alerts
     - status
     type: object
+  schemas.ApBatchUpdate:
+    properties:
+      coordinateX:
+        type: number
+      coordinateY:
+        type: number
+      coordinateZ:
+        type: number
+      floor:
+        type: string
+      ids:
+        items:
+          type: string
+        type: array
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
+    required:
+    - ids
+    type: object
+  schemas.ApUpdate:
+    properties:
+      coordinateX:
+        type: number
+      coordinateY:
+        type: number
+      coordinateZ:
+        type: number
+      floor:
+        type: string
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
+    type: object
   schemas.AuthConfig:
     properties:
       clientId:
@@ -788,19 +875,6 @@ definitions:
       updatedAt:
         type: string
     type: object
-  schemas.DeviceRole:
-    properties:
-      abbreviation:
-        type: string
-      description:
-        $ref: '#/definitions/schemas.I18n'
-      deviceRole:
-        type: string
-      productFamily:
-        type: string
-      weight:
-        type: integer
-    type: object
   schemas.DeviceUpdate:
     properties:
       description:
@@ -840,13 +914,6 @@ definitions:
       Name:
         type: string
       Type:
-        type: string
-    type: object
-  schemas.I18n:
-    properties:
-      en:
-        type: string
-      zh:
         type: string
     type: object
   schemas.IdResponse:
@@ -2698,6 +2765,31 @@ paths:
       tags:
       - Alert
   /infra/aps:
+    delete:
+      consumes:
+      - application/json
+      description: Batch Delete ap
+      parameters:
+      - description: ids
+        in: body
+        name: ids
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdsResponse'
+      security:
+      - BearerAuth: []
+      summary: Batch Delete ap
+      tags:
+      - Infra
     get:
       consumes:
       - application/json
@@ -2782,7 +2874,54 @@ paths:
       summary: List aps
       tags:
       - Infra
+    put:
+      consumes:
+      - application/json
+      description: Batch Update ap
+      parameters:
+      - description: aps
+        in: body
+        name: aps
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/schemas.ApBatchUpdate'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdsResponse'
+      security:
+      - BearerAuth: []
+      summary: Batch Update ap
+      tags:
+      - Infra
   /infra/aps/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete ap
+      parameters:
+      - description: uuid formatted ap id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete ap
+      tags:
+      - Infra
     get:
       consumes:
       - application/json
@@ -2805,89 +2944,22 @@ paths:
       summary: Get ap
       tags:
       - Infra
-  /infra/circuit:
-    post:
-      consumes:
-      - application/json
-      description: Create new circuit
-      parameters:
-      - description: Circuit
-        in: body
-        name: circuit
-        required: true
-        schema:
-          $ref: '#/definitions/schemas.CircuitCreate'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemas.IdResponse'
-      security:
-      - BearerAuth: []
-      summary: Create new circuit
-      tags:
-      - Infra
-  /infra/circuit/{id}:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: uuid formatted circuitId
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemas.IdResponse'
-      security:
-      - BearerAuth: []
-      tags:
-      - Infra
-    get:
-      consumes:
-      - application/json
-      description: Get circuit
-      parameters:
-      - description: uuid formatted circuitId
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemas.Circuit'
-      security:
-      - BearerAuth: []
-      summary: Get circuit
-      tags:
-      - Infra
     put:
       consumes:
       - application/json
-      description: Update circuit
+      description: Update ap
       parameters:
-      - description: uuid formatted circuitId
+      - description: uuid formatted ap id
         in: path
         name: id
         required: true
         type: string
-      - description: Circuit
+      - description: ap
         in: body
-        name: circuit
+        name: ap
         required: true
         schema:
-          $ref: '#/definitions/schemas.CircuitUpdate'
+          $ref: '#/definitions/schemas.ApUpdate'
       produces:
       - application/json
       responses:
@@ -2897,7 +2969,7 @@ paths:
             $ref: '#/definitions/schemas.IdResponse'
       security:
       - BearerAuth: []
-      summary: Update circuit
+      summary: Update ap
       tags:
       - Infra
   /infra/circuits:
@@ -3013,6 +3085,100 @@ paths:
       security:
       - BearerAuth: []
       summary: List circuits
+      tags:
+      - Infra
+    post:
+      consumes:
+      - application/json
+      description: Create new circuit
+      parameters:
+      - description: Circuit
+        in: body
+        name: circuit
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.CircuitCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new circuit
+      tags:
+      - Infra
+  /infra/circuits/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: uuid formatted circuitId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      tags:
+      - Infra
+    get:
+      consumes:
+      - application/json
+      description: Get circuit
+      parameters:
+      - description: uuid formatted circuitId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Circuit'
+      security:
+      - BearerAuth: []
+      summary: Get circuit
+      tags:
+      - Infra
+    put:
+      consumes:
+      - application/json
+      description: Update circuit
+      parameters:
+      - description: uuid formatted circuitId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Circuit
+        in: body
+        name: circuit
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.CircuitUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update circuit
       tags:
       - Infra
   /infra/devices:
@@ -4146,9 +4312,6 @@ paths:
     get:
       parameters:
       - in: query
-        name: abbreviation
-        type: string
-      - in: query
         name: keyword
         type: string
       - in: query
@@ -4163,7 +4326,7 @@ paths:
             - properties:
                 results:
                   items:
-                    $ref: '#/definitions/schemas.DeviceRole'
+                    $ref: '#/definitions/devicerole.DeviceRole'
                   type: array
               type: object
       security:

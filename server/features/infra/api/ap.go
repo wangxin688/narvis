@@ -67,3 +67,116 @@ func listAp(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, ts.ListResponse{Total: count, Results: aps})
 }
+
+// @Tags Infra
+// @Summary Update ap
+// @Description Update ap
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted ap id"
+// @Param ap body schemas.ApUpdate true "ap"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/aps/{id} [put]
+func updateAp(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	apId := c.Param("id")
+	if err = helpers.ValidateUuidString(apId); err != nil {
+		return
+	}
+	var ap schemas.ApUpdate
+	if err = c.ShouldBindJSON(&ap); err != nil {
+		return
+	}
+	err = infra_biz.NewApService().UpdateApById(apId, &ap)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdResponse{Id: apId})
+}
+
+// @Tags Infra
+// @Summary Batch Update ap
+// @Description Batch Update ap
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param aps body []schemas.ApBatchUpdate true "aps"
+// @Success 200 {object} ts.IdsResponse
+// @Router /infra/aps [put]
+func batchUpdateAp(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var ap schemas.ApBatchUpdate
+	if err = c.ShouldBindJSON(&ap); err != nil {
+		return
+	}
+	ids, err := infra_biz.NewApService().BatchUpdateAp(&ap)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdsResponse{Ids: ids})
+}
+
+// @Tags Infra
+// @Summary Batch Delete ap
+// @Description Batch Delete ap
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param ids body []string true "ids"
+// @Success 200 {object} ts.IdsResponse
+// @Router /infra/aps [delete]
+func batchDeleteAp(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var ids []string
+	if err = c.ShouldBindJSON(&ids); err != nil {
+		return
+	}
+	err = infra_biz.NewApService().DeleteApByIds(ids)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdsResponse{Ids: ids})
+}
+
+// @Tags Infra
+// @Summary Delete ap
+// @Description Delete ap
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted ap id"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/aps/{id} [delete]
+func deleteAp(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	apId := c.Param("id")
+	if err = helpers.ValidateUuidString(apId); err != nil {
+		return
+	}
+	err = infra_biz.NewApService().DeleteApById(apId)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdResponse{Id: apId})
+}

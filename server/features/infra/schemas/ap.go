@@ -57,3 +57,20 @@ type ApQuery struct {
 	SiteId       *string   `form:"siteId" binding:"omitempty,uuid"`
 	SerialNumber *string   `form:"serialNumber" binding:"omitempty"`
 }
+
+type ApUpdate struct {
+	Status      *string  `json:"status" binding:"omitempty,oneof=Active Inactive"`
+	Floor       *string  `json:"floor" binding:"omitempty"`
+	CoordinateX *float32 `json:"coordinateX" binding:"omitempty"`
+	CoordinateY *float32 `json:"coordinateY" binding:"omitempty"`
+	CoordinateZ *float32 `json:"coordinateZ" binding:"omitempty"`
+}
+
+type ApBatchUpdate struct {
+	Ids         []string `json:"ids" binding:"required"`
+	Status      *string  `json:"status" binding:"omitempty,oneof=Active Inactive"`
+	Floor       *string  `json:"floor" binding:"omitempty"`
+	CoordinateX *float32 `json:"coordinateX" binding:"omitempty"`
+	CoordinateY *float32 `json:"coordinateY" binding:"omitempty"`
+	CoordinateZ *float32 `json:"coordinateZ" binding:"omitempty"`
+}

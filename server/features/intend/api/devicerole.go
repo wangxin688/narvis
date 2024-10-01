@@ -14,7 +14,7 @@ import (
 // @Security BearerAuth
 // @Summary Get list of device roles
 // @Param object query schemas.DeviceRoleQuery false "query device roles"
-// @Success 200 {object} schemas.ListResponse{results=[]schemas.DeviceRole}
+// @Success 200 {object} schemas.ListResponse{results=[]devicerole.DeviceRole}
 // @Router /intend/device-roles [get]
 func deviceRoleList(c *gin.Context) {
 	var err error

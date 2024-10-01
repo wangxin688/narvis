@@ -45,5 +45,5 @@ type PrefixQuery struct {
 	Type     *string   `form:"type" binding:"omitempty,oneof=Dynamic Static"`
 	Version  string    `form:"version" binding:"omitempty,oneof=IPv4 IPv6"`
 	VlanId   *[]uint32 `form:"vlanId" binding:"omitempty,gte=1,lte=4094"`
-	VlanName *[]string `form:"vlanName" binding:"omitempty,"`
+	VlanName *[]string `form:"vlanName" binding:"omitempty"`
 }

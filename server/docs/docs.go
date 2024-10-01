@@ -1516,6 +1516,86 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Batch Update ap",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Batch Update ap",
+                "parameters": [
+                    {
+                        "description": "aps",
+                        "name": "aps",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/schemas.ApBatchUpdate"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdsResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Batch Delete ap",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Batch Delete ap",
+                "parameters": [
+                    {
+                        "description": "ids",
+                        "name": "ids",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdsResponse"
+                        }
+                    }
+                }
             }
         },
         "/infra/aps/{id}": {
@@ -1553,82 +1633,6 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/infra/circuit": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Create new circuit",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Infra"
-                ],
-                "summary": "Create new circuit",
-                "parameters": [
-                    {
-                        "description": "Circuit",
-                        "name": "circuit",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/schemas.CircuitCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.IdResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/infra/circuit/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get circuit",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Infra"
-                ],
-                "summary": "Get circuit",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "uuid formatted circuitId",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.Circuit"
-                        }
-                    }
-                }
             },
             "put": {
                 "security": [
@@ -1636,7 +1640,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update circuit",
+                "description": "Update ap",
                 "consumes": [
                     "application/json"
                 ],
@@ -1646,22 +1650,22 @@ const docTemplate = `{
                 "tags": [
                     "Infra"
                 ],
-                "summary": "Update circuit",
+                "summary": "Update ap",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "uuid formatted circuitId",
+                        "description": "uuid formatted ap id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Circuit",
-                        "name": "circuit",
+                        "description": "ap",
+                        "name": "ap",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/schemas.CircuitUpdate"
+                            "$ref": "#/definitions/schemas.ApUpdate"
                         }
                     }
                 ],
@@ -1680,6 +1684,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Delete ap",
                 "consumes": [
                     "application/json"
                 ],
@@ -1689,10 +1694,11 @@ const docTemplate = `{
                 "tags": [
                     "Infra"
                 ],
+                "summary": "Delete ap",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "uuid formatted circuitId",
+                        "description": "uuid formatted ap id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1881,6 +1887,157 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new circuit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Create new circuit",
+                "parameters": [
+                    {
+                        "description": "Circuit",
+                        "name": "circuit",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CircuitCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/circuits/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get circuit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Get circuit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted circuitId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Circuit"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update circuit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Update circuit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted circuitId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Circuit",
+                        "name": "circuit",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.CircuitUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted circuitId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
                 }
@@ -3700,11 +3857,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "abbreviation",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "name": "keyword",
                         "in": "query"
                     },
@@ -3728,7 +3880,7 @@ const docTemplate = `{
                                         "results": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/schemas.DeviceRole"
+                                                "$ref": "#/definitions/devicerole.DeviceRole"
                                             }
                                         }
                                     }
@@ -4705,6 +4857,67 @@ const docTemplate = `{
                 }
             }
         },
+        "devicerole.DeviceRole": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "$ref": "#/definitions/common.I18n"
+                },
+                "device_role": {
+                    "$ref": "#/definitions/devicerole.DeviceRoleEnum"
+                },
+                "product_family": {
+                    "$ref": "#/definitions/devicerole.ProductFamilyEnum"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "devicerole.DeviceRoleEnum": {
+            "type": "string",
+            "enum": [
+                "WanRouter",
+                "Firewall",
+                "InternetSwitch",
+                "CoreSwitch",
+                "DistributionSwitch",
+                "AccessSwitch",
+                "WlanAC",
+                "WlanAP",
+                "Server",
+                "Unknown"
+            ],
+            "x-enum-varnames": [
+                "WanRouter",
+                "Firewall",
+                "InternetSwitch",
+                "CoreSwitch",
+                "DistributionSwitch",
+                "AccessSwitch",
+                "WlanAC",
+                "WlanAP",
+                "Server",
+                "UnknownDeviceRole"
+            ]
+        },
+        "devicerole.ProductFamilyEnum": {
+            "type": "string",
+            "enum": [
+                "Gateway",
+                "Switching",
+                "Wireless",
+                "Computing",
+                "Unknown"
+            ],
+            "x-enum-varnames": [
+                "Gateway",
+                "Switching",
+                "Wireless",
+                "Computing",
+                "UnknownProductFamily"
+            ]
+        },
         "intendtask.ApScanResponse": {
             "type": "object",
             "properties": {
@@ -5272,6 +5485,63 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.ApBatchUpdate": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "coordinateX": {
+                    "type": "number"
+                },
+                "coordinateY": {
+                    "type": "number"
+                },
+                "coordinateZ": {
+                    "type": "number"
+                },
+                "floor": {
+                    "type": "string"
+                },
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
+                }
+            }
+        },
+        "schemas.ApUpdate": {
+            "type": "object",
+            "properties": {
+                "coordinateX": {
+                    "type": "number"
+                },
+                "coordinateY": {
+                    "type": "number"
+                },
+                "coordinateZ": {
+                    "type": "number"
+                },
+                "floor": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
+                }
+            }
+        },
         "schemas.AuthConfig": {
             "type": "object",
             "properties": {
@@ -5734,26 +6004,6 @@ const docTemplate = `{
                 }
             }
         },
-        "schemas.DeviceRole": {
-            "type": "object",
-            "properties": {
-                "abbreviation": {
-                    "type": "string"
-                },
-                "description": {
-                    "$ref": "#/definitions/schemas.I18n"
-                },
-                "deviceRole": {
-                    "type": "string"
-                },
-                "productFamily": {
-                    "type": "string"
-                },
-                "weight": {
-                    "type": "integer"
-                }
-            }
-        },
         "schemas.DeviceUpdate": {
             "type": "object",
             "properties": {
@@ -5812,17 +6062,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "Type": {
-                    "type": "string"
-                }
-            }
-        },
-        "schemas.I18n": {
-            "type": "object",
-            "properties": {
-                "en": {
-                    "type": "string"
-                },
-                "zh": {
                     "type": "string"
                 }
             }

@@ -21,7 +21,7 @@ import (
 // @Produce json
 // @Param circuit body schemas.CircuitCreate true "Circuit"
 // @Success 200 {object} ts.IdResponse
-// @Router /infra/circuit [post]
+// @Router /infra/circuits [post]
 func createCircuit(c *gin.Context) {
 	var err error
 	defer func() {
@@ -51,7 +51,7 @@ func createCircuit(c *gin.Context) {
 // @Produce json
 // @Param id path string true "uuid formatted circuitId"
 // @Success 200 {object} schemas.Circuit
-// @Router /infra/circuit/{id} [get]
+// @Router /infra/circuits/{id} [get]
 func getCircuit(c *gin.Context) {
 	var err error
 	defer func() {
@@ -106,7 +106,7 @@ func listCircuit(c *gin.Context) {
 // @Param id path string true "uuid formatted circuitId"
 // @Param circuit body schemas.CircuitUpdate true "Circuit"
 // @Success 200 {object} ts.IdResponse
-// @Router /infra/circuit/{id} [put]
+// @Router /infra/circuits/{id} [put]
 func updateCircuit(c *gin.Context) {
 	var err error
 	defer func() {
@@ -140,7 +140,7 @@ func updateCircuit(c *gin.Context) {
 // @Produce json
 // @Param id path string true "uuid formatted circuitId"
 // @Success 200 {object} ts.IdResponse
-// @Router /infra/circuit/{id} [delete]
+// @Router /infra/circuits/{id} [delete]
 func deleteCircuit(c *gin.Context) {
 	var err error
 	defer func() {

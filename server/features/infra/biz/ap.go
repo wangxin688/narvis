@@ -111,6 +111,71 @@ func (s *ApService) GetById(id string) (*schemas.AP, error) {
 	}, nil
 }
 
+func (s *ApService) UpdateApById(id string, ap *schemas.ApUpdate) error {
+
+	dbAp, err := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.Id.Eq(id)).First()
+	if err != nil {
+		return err
+	}
+	if ap.Status != nil {
+		dbAp.Status = *ap.Status
+	}
+
+	if ap.Floor != nil {
+		dbAp.Floor = ap.Floor
+	}
+	if ap.CoordinateX != nil {
+		dbAp.CoordinateX = ap.CoordinateX
+	}
+	if ap.CoordinateY != nil {
+		dbAp.CoordinateY = ap.CoordinateY
+	}
+	if ap.CoordinateZ != nil {
+		dbAp.CoordinateZ = ap.CoordinateZ
+	}
+	err = gen.AP.Save(dbAp)
+	return err
+}
+
+func (s *ApService) BatchUpdateAp(ap *schemas.ApBatchUpdate) ([]string, error) {
+	dbAps, err := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.Id.In(ap.Ids...)).Find()
+	if err != nil {
+		return nil, err
+	}
+	for _, dbAp := range dbAps {
+		if ap.Status != nil {
+			dbAp.Status = *ap.Status
+		}
+		if ap.Floor != nil {
+			dbAp.Floor = ap.Floor
+		}
+		if ap.CoordinateX != nil {
+			dbAp.CoordinateX = ap.CoordinateX
+		}
+		if ap.CoordinateY != nil {
+			dbAp.CoordinateY = ap.CoordinateY
+		}
+		if ap.CoordinateZ != nil {
+			dbAp.CoordinateZ = ap.CoordinateZ
+		}
+		err = gen.AP.Save(dbAp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return ap.Ids, nil
+}
+
+func (s *ApService) DeleteApByIds(ids []string) error {
+	_, err := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.Id.In(ids...)).Delete()
+	return err
+}
+
+func (s *ApService) DeleteApById(id string) error {
+	_, err := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.Id.Eq(id)).Delete()
+	return err
+}
+
 func (s *ApService) GetApShortMap(apIds []string) (map[string]*schemas.APShort, error) {
 	aps, err := gen.AP.Select(
 		gen.AP.Id,

@@ -47,6 +47,10 @@ func RegisterInfraRoutes(e *gin.Engine) {
 
 		router.GET("/aps/:id", getAp)
 		router.GET("/aps", listAp)
+		router.PUT("/aps/:id", updateAp)
+		router.PUT("/aps", batchUpdateAp)
+		router.DELETE("/aps/:id", deleteAp)
+		router.DELETE("/aps", batchDeleteAp)
 
 		router.POST("/circuits", createCircuit)
 		router.GET("/circuits", listCircuit)
