@@ -13,7 +13,7 @@ import (
 )
 
 func handleWebSSHRequest(c *gin.Context) error {
-	deviceId := c.Param("id")
+	deviceId := c.Param("deviceId")
 	deviceConnectionInfo, err := infra_biz.NewCliCredentialService().GetCredentialByDeviceId(deviceId)
 	if err != nil {
 		return err

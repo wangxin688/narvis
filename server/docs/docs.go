@@ -4743,12 +4743,15 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "WebSSH"
+                ],
                 "summary": "WebSSH Proxy",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "session id",
-                        "name": "id",
+                        "name": "sessionId",
                         "in": "path",
                         "required": true
                     }
@@ -4777,12 +4780,15 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "WebSSH"
+                ],
                 "summary": "WebSSH Server",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "device id",
-                        "name": "id",
+                        "name": "deviceId",
                         "in": "path",
                         "required": true
                     }

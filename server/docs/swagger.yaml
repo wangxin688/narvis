@@ -4857,7 +4857,7 @@ paths:
       parameters:
       - description: session id
         in: path
-        name: id
+        name: sessionId
         required: true
         type: string
       produces:
@@ -4870,6 +4870,8 @@ paths:
       security:
       - BearerAuth: []
       summary: WebSSH Proxy
+      tags:
+      - WebSSH
   /webssh/server/{deviceId}:
     get:
       consumes:
@@ -4878,7 +4880,7 @@ paths:
       parameters:
       - description: device id
         in: path
-        name: id
+        name: deviceId
         required: true
         type: string
       produces:
@@ -4891,6 +4893,8 @@ paths:
       security:
       - BearerAuth: []
       summary: WebSSH Server
+      tags:
+      - WebSSH
 securityDefinitions:
   BearerAuth:
     in: header

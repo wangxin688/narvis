@@ -7,13 +7,13 @@ import (
 	"go.uber.org/zap"
 )
 
-// @Tag WebSSH
+// @Tags WebSSH
 // @Summary WebSSH Server
 // @Description WebSSH Server
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "device id"
+// @Param deviceId path string true "device id"
 // @Success 200 {string} string "success"
 // @Router /webssh/server/{deviceId} [get]
 func webSSH(c *gin.Context) {
@@ -25,13 +25,13 @@ func webSSH(c *gin.Context) {
 	//c.String(http.StatusOK, "success")
 }
 
-// @Tag WebSSH
+// @Tags WebSSH
 // @Summary WebSSH Proxy
 // @Description WebSSH Proxy
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param id path string true "session id"
+// @Param sessionId path string true "session id"
 // @Success 200 {string} string "success"
 // @Router /webssh/proxy/{sessionId} [post]
 func proxyWebSSH(c *gin.Context) {
