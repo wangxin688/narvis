@@ -22,40 +22,43 @@ func TaskDispatcher(data []byte) {
 		logger.Logger.Error("taskDispatcher]: received wrong task: no callback")
 	}
 	taskName := task["taskName"].(string)
-	taskId := task["taskId"].(string)
-	switch taskName {
-	case intendtask.ScanDeviceBasicInfo:
-		results, err := scanDeviceBasicInfo(data)
-		if err != nil {
-			logger.Logger.Error("taskDispatcher]: scanDeviceBasicInfo err: ", err)
-		}
-		scanDeviceBasicInfoCallback(results, taskId)
-	case intendtask.ScanDevice:
-		results, err := scanDevice(data)
-		if err != nil {
-			logger.Logger.Error("taskDispatcher]: scanDevice err: ", err)
-		}
-		scanDeviceCallback(results, taskId)
-	case intendtask.ScanAp:
-		results, err := scanAp(data)
-		if err != nil {
-			logger.Logger.Error("taskDispatcher]: scanAp err: ", err)
-		}
-		scanApCallback(results, taskId)
-
-	case intendtask.ScanMacAddressTable:
-		results, err := scanMacAddressTable(data)
-		if err != nil {
-			logger.Logger.Error("taskDispatcher]: scanMacAddressTable err: ", err)
-		}
-		scanMacAddressTableCallback(results, taskId)
-
-	case intendtask.WebSSH:
+	if taskName == intendtask.WebSSH {
 		err = webSSHTask(data)
 		if err != nil {
 			logger.Logger.Error("taskDispatcher]: webSSHTask err: ", err)
 		}
+	} else {
+		if _, ok := task["callback"]; !ok {
+			logger.Logger.Error("taskDispatcher]: received wrong task: no callback")
+		}
+		taskId := task["taskId"].(string)
+		switch taskName {
+		case intendtask.ScanDeviceBasicInfo:
+			results, err := scanDeviceBasicInfo(data)
+			if err != nil {
+				logger.Logger.Error("taskDispatcher]: scanDeviceBasicInfo err: ", err)
+			}
+			scanDeviceBasicInfoCallback(results, taskId)
+		case intendtask.ScanDevice:
+			results, err := scanDevice(data)
+			if err != nil {
+				logger.Logger.Error("taskDispatcher]: scanDevice err: ", err)
+			}
+			scanDeviceCallback(results, taskId)
+		case intendtask.ScanAp:
+			results, err := scanAp(data)
+			if err != nil {
+				logger.Logger.Error("taskDispatcher]: scanAp err: ", err)
+			}
+			scanApCallback(results, taskId)
 
+		case intendtask.ScanMacAddressTable:
+			results, err := scanMacAddressTable(data)
+			if err != nil {
+				logger.Logger.Error("taskDispatcher]: scanMacAddressTable err: ", err)
+			}
+			scanMacAddressTableCallback(results, taskId)
+		}
 	}
 
 }

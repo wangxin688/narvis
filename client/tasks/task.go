@@ -247,7 +247,7 @@ func webSSHTask(data []byte) error {
 	header := http.Header{}
 	header.Add("Authorization", "Bearer "+token)
 	wsConn, _, err := websocket.DefaultDialer.Dial(
-		config.Settings.WebSocketUrl()+intendtask.WebSocketCbUrl+sessionId, header)
+		config.Settings.WebSocketUrl()+intendtask.WebSocketCbUrl+"/"+sessionId, header)
 	if err != nil {
 		logger.Logger.Error("[webSSHTask]: failed to dial to server", err)
 		return err
@@ -273,5 +273,5 @@ func webSSHTask(data []byte) error {
 	go terminal.Recv(wsConn, quit)
 	<-quit
 
-	return  nil
+	return nil
 }

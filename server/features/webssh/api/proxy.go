@@ -29,17 +29,17 @@ func handleProxyWebSocket(c *gin.Context) error {
 		return err
 	}
 	defer wsConn.Close()
-	sessionId := c.Query("sessionId")
+	sessionId := c.Param("sessionId")
 	if sessionId == "" {
 		core.Logger.Warn("[webssh]:received unknown empty sessionId")
 		wsConn.Close()
 		return errors.NewError(errors.CodeSessionIdEmpty, errors.MsgSessionIdEmpty)
 	}
 	if ch, ok := webssh_biz.SessionWMap.Load(sessionId); ok {
-		done := ch.(*chan *websocket.Conn)
-		*done <- wsConn
+		core.Logger.Info("[webssh]: received session", zap.String("sessionId", sessionId))
+		done := ch.(chan *websocket.Conn)
+		done <- wsConn
 		return nil
 	}
-	wsConn.Close()
-	return errors.NewError(errors.CodeSessionIdNotFound, errors.MsgSessionIdNotFound)
+	return nil
 }

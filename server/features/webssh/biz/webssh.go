@@ -10,18 +10,27 @@ import (
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/pkg/rmq"
+	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
 )
 
 var SessionWMap sync.Map
 
-func SendSignalToProxy(sessionId string, cred *schemas.CliCredential) error {
+func AddSession(sessionId string) {
+	if _, ok := SessionWMap.Load(sessionId); ok {
+		return
+	}
+	SessionWMap.Store(sessionId, nil)
+}
+
+func SendSignalToProxy(sessionId, managementIP string, cred *schemas.CliCredential) error {
 	signal := intendtask.WebSSHTask{
-		TaskName:  intendtask.WebSSH,
-		SessionId: sessionId,
-		Username:  cred.Username,
-		Password:  cred.Password,
-		Port:      cred.Port,
+		TaskName:     intendtask.WebSSH,
+		ManagementIP: managementIP,
+		SessionId:    sessionId,
+		Username:     cred.Username,
+		Password:     cred.Password,
+		Port:         cred.Port,
 	}
 	signalByte, err := json.Marshal(signal)
 	if err != nil {
@@ -35,12 +44,17 @@ func SendSignalToProxy(sessionId string, cred *schemas.CliCredential) error {
 	return nil
 }
 
-func WaitForProxyWebSocket(sessionId string) *websocket.Conn {
-	done := make(chan *websocket.Conn)
-	SessionWMap.Store(sessionId, done)
-	proxyWS := <-done
+func WaitForProxyWebSocket(sessionId string) (*websocket.Conn, error) {
+	done, ok := SessionWMap.Load(sessionId)
+	if !ok {
+		return nil, errors.NewError(errors.CodeSessionIdNotFound, errors.MsgSessionIdNotFound)
+	}
+	proxyWS, ok := done.(*websocket.Conn)
+	if !ok {
+		return nil, errors.NewError(errors.CodeSessionIdNotFound, errors.MsgSessionIdNotFound)
+	}
 	SessionWMap.Delete(sessionId)
-	return proxyWS
+	return proxyWS, nil
 }
 
 func RelaySSHData(browserWS *websocket.Conn, proxyWS *websocket.Conn) {

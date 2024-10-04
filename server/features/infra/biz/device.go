@@ -390,3 +390,14 @@ func (d *DeviceService) GetDeviceByChassisIds(chassisIds []string, orgId string)
 	}
 	return deviceMap, nil
 }
+
+func (d *DeviceService) GetManagementIP(deviceId string) (string, error) {
+
+	device, err := gen.Device.Select(gen.Device.ManagementIp).Where(gen.Device.Id.Eq(deviceId),
+		gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).First()
+
+	if err != nil {
+		return "", err
+	}
+	return device.ManagementIp, nil
+}

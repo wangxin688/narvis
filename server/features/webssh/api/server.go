@@ -13,11 +13,6 @@ import (
 )
 
 func handleWebSSHRequest(c *gin.Context) error {
-	deviceId := c.Param("deviceId")
-	deviceConnectionInfo, err := infra_biz.NewCliCredentialService().GetCredentialByDeviceId(deviceId)
-	if err != nil {
-		return err
-	}
 	upGrader := websocket.Upgrader{
 		// cross origin domain
 		CheckOrigin: func(r *http.Request) bool {
@@ -35,9 +30,24 @@ func handleWebSSHRequest(c *gin.Context) error {
 		return err
 	}
 	defer wsConn.Close()
+	deviceId := c.Param("deviceId")
+	deviceConnectionInfo, err := infra_biz.NewCliCredentialService().GetCredentialByDeviceId(deviceId)
+	if err != nil {
+		return err
+	}
+	managementIP, err := infra_biz.NewDeviceService().GetManagementIP(deviceId)
+	if err != nil {
+		return err
+	}
 	sessionId := uuid.New().String()
-	webssh_biz.SendSignalToProxy(sessionId, deviceConnectionInfo)
-	proxyWSConn := webssh_biz.WaitForProxyWebSocket(sessionId)
+
+	webssh_biz.AddSession(sessionId)
+	webssh_biz.SendSignalToProxy(sessionId, managementIP, deviceConnectionInfo)
+	proxyWSConn, err := webssh_biz.WaitForProxyWebSocket(sessionId)
+	if err != nil {
+		core.Logger.Error("[webssh]: failed to wait for proxy websocket", zap.Error(err))
+		return err
+	}
 	webssh_biz.RelaySSHData(wsConn, proxyWSConn)
 	return nil
 }
