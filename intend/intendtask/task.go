@@ -13,6 +13,7 @@ const ScanDevice = "ScanDevice"
 const ScanIPAM = "ScanIPAM"
 const ScanMacAddressTable = "ScanMacAddressTable"
 const ScanAp = "ScanAp"
+const WebSSH = "WebSSH"
 
 const ScanDeviceBasicInfoCallback = "ScanDeviceBasicInfoCallback"
 const ScanDeviceCallback = "ScanDeviceCallback"
@@ -24,6 +25,7 @@ const DeviceBasicInfoCbUrl = "/api/v1/task/scan-device-basic"
 const DeviceCbUrl = "/api/v1/task/scan-device"
 const MacAddressTableCbUrl = "/api/v1/task/scan-mac"
 const ApCbUrl = "/api/v1/task/scan-ap"
+const WebSocketCbUrl = "/api/v1/webssh/proxy"
 
 // 正式落库后的数据扫描schema
 type BaseSnmpTask struct {
@@ -44,6 +46,15 @@ type BaseSnmpScanTask struct {
 	Callback   string            `json:"callback"`
 	SnmpConfig *SnmpV2Credential `json:"snmpConfig"`
 	Range      string            `json:"range"` // CIDR
+}
+
+type WebSSHTask struct {
+	TaskName     string `json:"taskName"`
+	SessionId    string `json:"sessionId"`
+	ManagementIP string `json:"managementIp"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	Port         uint16 `json:"port"`
 }
 
 type SnmpV2Credential struct {

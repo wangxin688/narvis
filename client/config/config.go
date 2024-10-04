@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -27,6 +28,15 @@ type Config struct {
 	SECRET_KEY      string `mapstructure:"SECRET_KEY"`
 	SERVER_URL      string `mapstructure:"SERVER_URL"`
 	AMQP_URL        string `mapstructure:"AMQP_URL"`
+}
+
+func (c *Config) WebSocketUrl() string {
+	if strings.Contains(c.SERVER_URL, "https") {
+		return strings.Replace(c.SERVER_URL, "https", "wss", 1)
+	} else if strings.Contains(c.SERVER_URL, "http") {
+		return strings.Replace(c.SERVER_URL, "http", "ws", 1)
+	}
+	return c.SERVER_URL
 }
 
 // SetupConfig sets up the Config struct from the .env file in the root of the project.

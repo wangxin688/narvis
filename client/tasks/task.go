@@ -4,14 +4,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 
+	"github.com/gorilla/websocket"
 	"github.com/gosnmp/gosnmp"
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/client/config"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+	"github.com/wangxin688/narvis/client/pkg/webssh"
 	"github.com/wangxin688/narvis/client/utils/helpers"
 	"github.com/wangxin688/narvis/client/utils/logger"
+	"github.com/wangxin688/narvis/client/utils/security"
 	"github.com/wangxin688/narvis/intend/intendtask"
 )
 
@@ -225,4 +229,49 @@ func scanAp(data []byte) ([]*intendtask.ApScanResponse, error) {
 }
 func scanMacAddressTable(data []byte) ([]*intendtask.MacAddressTableScanResponse, error) {
 	return nil, nil
+}
+
+func webSSHTask(data []byte) error {
+	task := &intendtask.WebSSHTask{}
+	err := json.Unmarshal(data, task)
+	if err != nil {
+		logger.Logger.Error("[webSSHTask]: Unmarshal err: ", err)
+		return err
+	}
+	token, err := security.ProxyToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY)
+	if err != nil {
+		logger.Logger.Error("[webSSHTask]: failed to get token", err)
+		return err
+	}
+	sessionId := task.SessionId
+	header := http.Header{}
+	header.Add("Authorization", "Bearer "+token)
+	wsConn, _, err := websocket.DefaultDialer.Dial(
+		config.Settings.WebSocketUrl()+intendtask.WebSocketCbUrl+sessionId, header)
+	if err != nil {
+		logger.Logger.Error("[webSSHTask]: failed to dial to server", err)
+		return err
+	}
+	defer wsConn.Close()
+	// start ssh connection here
+	sshConn, err := webssh.CreateSSHClient(task.Username, task.Password, task.ManagementIP, task.Port)
+	if err != nil {
+		logger.Logger.Error("[webSSHTask]: failed to create ssh client", err)
+		webssh.WsSendText(wsConn, []byte(err.Error()))
+	}
+	defer sshConn.Close()
+
+	// start ssh tunnel
+	terminal, err := webssh.NewTerminal(sshConn, 80, 40)
+	if err != nil {
+		logger.Logger.Error("[webSSHTask]: failed to create terminal", err)
+		webssh.WsSendText(wsConn, []byte(err.Error()))
+		return err
+	}
+	quit := make(chan int)
+	go terminal.Send(wsConn, quit)
+	go terminal.Recv(wsConn, quit)
+	<-quit
+
+	return  nil
 }

@@ -4849,6 +4849,48 @@ paths:
       summary: ScanDevice BasicInfo Callback
       tags:
       - Task
+  /webssh/proxy/{sessionId}:
+    post:
+      consumes:
+      - application/json
+      description: WebSSH Proxy
+      parameters:
+      - description: session id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: WebSSH Proxy
+  /webssh/server/{deviceId}:
+    get:
+      consumes:
+      - application/json
+      description: WebSSH Server
+      parameters:
+      - description: device id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: WebSSH Server
 securityDefinitions:
   BearerAuth:
     in: header

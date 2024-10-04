@@ -110,3 +110,11 @@ const (
 	CodeAlertGroupMissingOrganizationId ErrorCode = 900005
 	MsgAlertGroupMissingOrganizationId  ErrorMsg  = "alert group missing organization id"
 )
+
+// webssh error codes (1000000 - 1100000)
+const (
+	CodeSessionIdEmpty    ErrorCode = 1000000
+	MsgSessionIdEmpty     ErrorMsg  = "sessionId empty"
+	CodeSessionIdNotFound ErrorCode = 1000001
+	MsgSessionIdNotFound  ErrorMsg  = "sessionId not found"
+)

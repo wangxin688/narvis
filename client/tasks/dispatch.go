@@ -50,6 +50,12 @@ func TaskDispatcher(data []byte) {
 		}
 		scanMacAddressTableCallback(results, taskId)
 
+	case intendtask.WebSSH:
+		err = webSSHTask(data)
+		if err != nil {
+			logger.Logger.Error("taskDispatcher]: webSSHTask err: ", err)
+		}
+
 	}
 
 }
