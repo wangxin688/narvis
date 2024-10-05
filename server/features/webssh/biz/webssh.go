@@ -16,13 +16,12 @@ import (
 
 var SessionWMap sync.Map
 
-func AddSession(sessionId string) {
+func AddSession(sessionId string, ws chan *websocket.Conn) {
 	if _, ok := SessionWMap.Load(sessionId); ok {
 		return
 	}
-	SessionWMap.Store(sessionId, nil)
+	SessionWMap.Store(sessionId, ws)
 }
-
 func SendSignalToProxy(sessionId, managementIP string, cred *schemas.CliCredential) error {
 	signal := intendtask.WebSSHTask{
 		TaskName:     intendtask.WebSSH,

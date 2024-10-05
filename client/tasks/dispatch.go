@@ -18,9 +18,6 @@ func TaskDispatcher(data []byte) {
 	if _, ok := task["taskName"]; !ok {
 		logger.Logger.Error("taskDispatcher]: received wrong task: no taskName")
 	}
-	if _, ok := task["callback"]; !ok {
-		logger.Logger.Error("taskDispatcher]: received wrong task: no callback")
-	}
 	taskName := task["taskName"].(string)
 	if taskName == intendtask.WebSSH {
 		err = webSSHTask(data)

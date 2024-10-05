@@ -36,10 +36,11 @@ func handleProxyWebSocket(c *gin.Context) error {
 		return errors.NewError(errors.CodeSessionIdEmpty, errors.MsgSessionIdEmpty)
 	}
 	if ch, ok := webssh_biz.SessionWMap.Load(sessionId); ok {
-		core.Logger.Info("[webssh]: received session", zap.String("sessionId", sessionId))
+		core.Logger.Info("[webssh]: received session from webssh socket", zap.String("sessionId", sessionId))
 		done := ch.(chan *websocket.Conn)
 		done <- wsConn
 		return nil
 	}
-	return nil
+	wsConn.Close()
+	return errors.NewError(errors.CodeSessionIdNotFound, errors.MsgSessionIdNotFound)
 }
