@@ -252,6 +252,7 @@ func webSSHTask(data []byte) error {
 		logger.Logger.Error("[webSSHTask]: failed to dial to server", err)
 		return err
 	}
+	logger.Logger.Info("[webSSHTask]: dial to server success with sessionId: ", sessionId)
 	defer wsConn.Close()
 	// start ssh connection here
 	sshConn, err := webssh.CreateSSHClient(task.Username, task.Password, task.ManagementIP, task.Port)
@@ -259,6 +260,7 @@ func webSSHTask(data []byte) error {
 		logger.Logger.Error("[webSSHTask]: failed to create ssh client", err)
 		webssh.WsSendText(wsConn, []byte(err.Error()))
 	}
+	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: create ssh client success with sessionId: %s, managementIp: %s", sessionId, task.ManagementIP))
 	defer sshConn.Close()
 
 	// start ssh tunnel
@@ -268,6 +270,7 @@ func webSSHTask(data []byte) error {
 		webssh.WsSendText(wsConn, []byte(err.Error()))
 		return err
 	}
+	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: create terminal success with sessionId: %s, managementIp: %s", sessionId, task.ManagementIP))
 	quit := make(chan int)
 	go terminal.Send(wsConn, quit)
 	go terminal.Recv(wsConn, quit)

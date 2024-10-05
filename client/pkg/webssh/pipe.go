@@ -13,6 +13,7 @@ type SSHConnection struct {
 	session *ssh.Session
 	stdin   io.WriteCloser
 	stdout  io.Reader
+	stderr  io.Reader
 }
 
 func (s *SSHConnection) Recv(conn *websocket.Conn, quit chan int) {
@@ -33,7 +34,6 @@ func (s *SSHConnection) Recv(conn *websocket.Conn, quit chan int) {
 		}
 	}
 }
-
 func (s *SSHConnection) Send(conn *websocket.Conn, quit chan int) {
 	defer Quit(quit)
 	var (
