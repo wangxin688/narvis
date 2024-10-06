@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	logger.SetUpLogger()
 	if err := config.SetupConfig(); err != nil {
 		logger.Logger.Error("[setupConfig]: failed to setup config ", zap.Error(err))
 		os.Exit(1)

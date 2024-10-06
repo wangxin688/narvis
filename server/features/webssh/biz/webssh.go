@@ -3,7 +3,6 @@ package webssh_biz
 import (
 	"encoding/json"
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/wangxin688/narvis/intend/intendtask"
@@ -11,7 +10,6 @@ import (
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/pkg/rmq"
-	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
 )
 
@@ -45,31 +43,36 @@ func SendSignalToProxy(sessionId, managementIP string, cred *schemas.CliCredenti
 }
 
 func WaitForProxyWebSocket(sessionId string) (*websocket.Conn, error) {
-	core.Logger.Info("[webssh.waitForProxyWebSocket]: waiting for proxy websocket", zap.String("sessionId", sessionId))
-	timer := time.NewTimer(10 * time.Second)
-	defer timer.Stop()
-	for {
-		select {
-		case <-timer.C:
-			core.Logger.Error("[webssh.waitForProxyWebSocket]: timeout waiting for proxy websocket", zap.String("sessionId", sessionId))
-			return nil, errors.NewError(errors.CodeSessionTimeout, errors.MsgSessionTimeout)
-		default:
-			done, ok := SessionWMap.Load(sessionId)
-			if !ok {
-				core.Logger.Error("[webssh.waitForProxyWebSocket]: session not found, continue waiting", zap.String("sessionId", sessionId))
-				time.Sleep(100 * time.Millisecond)
-				continue
-			}
-			proxyWS, ok := done.(chan *websocket.Conn)
-			if !ok || proxyWS == nil {
-				core.Logger.Error("[webssh.waitForProxyWebSocket]: proxy websocket not found and continue waiting", zap.String("sessionId", sessionId))
-				time.Sleep(100 * time.Millisecond)
-				continue
-			}
-			SessionWMap.Delete(sessionId)
-			return <-proxyWS, nil
-		}
-	}
+	done := make(chan *websocket.Conn)
+	SessionWMap.Store(sessionId, done)
+	proxyWS := <-done
+	SessionWMap.Delete(sessionId)
+	return proxyWS, nil
+	// core.Logger.Info("[webssh.waitForProxyWebSocket]: waiting for proxy websocket", zap.String("sessionId", sessionId))
+	// timer := time.NewTimer(10 * time.Second)
+	// defer timer.Stop()
+	// for {
+	// 	select {
+	// 	case <-timer.C:
+	// 		core.Logger.Error("[webssh.waitForProxyWebSocket]: timeout waiting for proxy websocket", zap.String("sessionId", sessionId))
+	// 		return nil, errors.NewError(errors.CodeSessionTimeout, errors.MsgSessionTimeout)
+	// 	default:
+	// 		done, ok := SessionWMap.Load(sessionId)
+	// 		if !ok {
+	// 			core.Logger.Error("[webssh.waitForProxyWebSocket]: session not found, continue waiting", zap.String("sessionId", sessionId))
+	// 			time.Sleep(100 * time.Millisecond)
+	// 			continue
+	// 		}
+	// 		proxyWS, ok := done.(chan *websocket.Conn)
+	// 		if !ok || proxyWS == nil {
+	// 			core.Logger.Error("[webssh.waitForProxyWebSocket]: proxy websocket not found and continue waiting", zap.String("sessionId", sessionId))
+	// 			time.Sleep(100 * time.Millisecond)
+	// 			continue
+	// 		}
+	// 		SessionWMap.Delete(sessionId)
+	// 		return <-proxyWS, nil
+	// 	}
+	// }
 }
 
 func RelaySSHData(browserWS *websocket.Conn, proxyWS *websocket.Conn) {

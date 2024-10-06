@@ -55,6 +55,20 @@ type WebSSHTask struct {
 	Username     string `json:"username"`
 	Password     string `json:"password"`
 	Port         uint16 `json:"port"`
+	Rows         int    `json:"rows"`
+	Cols         int    `json:"cols"`
+}
+
+func (t *WebSSHTask) SetDefault() {
+	if t.Rows == 0 {
+		t.Rows = 40
+	}
+	if t.Cols == 0 {
+		t.Cols = 180
+	}
+	if t.Port == 0 {
+		t.Port = 22
+	}
 }
 
 type SnmpV2Credential struct {

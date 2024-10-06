@@ -11,9 +11,9 @@ import (
 	"github.com/gosnmp/gosnmp"
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/client/config"
+	"github.com/wangxin688/narvis/client/pkg/gowebssh"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	"github.com/wangxin688/narvis/client/pkg/webssh"
 	"github.com/wangxin688/narvis/client/utils/helpers"
 	"github.com/wangxin688/narvis/client/utils/logger"
 	"github.com/wangxin688/narvis/client/utils/security"
@@ -260,36 +260,48 @@ func webSSHTask(data []byte) error {
 	defer wsConn.Close()
 	// Set the read deadline to 60 seconds
 	wsConn.SetReadDeadline(time.Now().Add(60 * time.Second))
+	terminal := gowebssh.NewTerminal(wsConn, gowebssh.Options{
+		Addr:     task.ManagementIP,
+		Port:     task.Port,
+		User:     task.Username,
+		Password: task.Password,
+		Rows:     task.Rows,
+		Cols:     task.Cols,
+	})
 
-	// Start the ssh connection here
-	sshConn, err := webssh.CreateSSHClient(task.Username, task.Password, task.ManagementIP, task.Port)
-	if err != nil {
-		logger.Logger.Error("[webSSHTask]: failed to create ssh client", zap.Error(err))
-		webssh.WsSendText(wsConn, []byte(err.Error()))
-	}
-	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: create ssh client success with sessionId: %s, managementIp: %s", sessionId, task.ManagementIP))
-	defer sshConn.Close()
-
-	// Start the ssh tunnel
-	terminal, err := webssh.NewTerminal(sshConn, 80, 40)
-	if err != nil {
-		logger.Logger.Error("[webSSHTask]: failed to create terminal", zap.Error(err))
-		webssh.WsSendText(wsConn, []byte(err.Error()))
-		return err
-	}
-	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: create terminal success with sessionId: %s, managementIp: %s", sessionId, task.ManagementIP))
-	// Start goroutines to send and receive data to/from the terminal
-	quit := make(chan int)
-	go terminal.Send(wsConn, quit)
-	go terminal.Recv(wsConn, quit)
-	// Wait for the quit signal
-	select {
-	case <-quit:
-		logger.Logger.Info(fmt.Sprintf("[webSSHTask]: quit signal received with ssh session: %s, managementIp: %s", sessionId, task.ManagementIP))
-	case <-time.After(60 * time.Second):
-		logger.Logger.Info(fmt.Sprintf("[webSSHTask]: timeout with ssh session: %s, close the websocket connection with managementIp: %s", sessionId, task.ManagementIP))
-		wsConn.Close()
-	}
-
+	// Start the session
+	terminal.Run()
 	return nil
+
+	// // Start the ssh connection here
+	// sshConn, err := webssh.CreateSSHClient(task.Username, task.Password, task.ManagementIP, task.Port)
+	// if err != nil {
+	// 	logger.Logger.Error("[webSSHTask]: failed to create ssh client", zap.Error(err))
+	// 	webssh.WsSendText(wsConn, []byte(err.Error()))
+	// }
+	// logger.Logger.Info(fmt.Sprintf("[webSSHTask]: create ssh client success with sessionId: %s, managementIp: %s", sessionId, task.ManagementIP))
+	// defer sshConn.Close()
+
+	// // Start the ssh tunnel
+	// terminal, err := webssh.NewTerminal(sshConn, 80, 40)
+	// if err != nil {
+	// 	logger.Logger.Error("[webSSHTask]: failed to create terminal", zap.Error(err))
+	// 	webssh.WsSendText(wsConn, []byte(err.Error()))
+	// 	return err
+	// }
+	// logger.Logger.Info(fmt.Sprintf("[webSSHTask]: create terminal success with sessionId: %s, managementIp: %s", sessionId, task.ManagementIP))
+	// // Start goroutines to send and receive data to/from the terminal
+	// quit := make(chan int)
+	// go terminal.Send(wsConn, quit)
+	// go terminal.Recv(wsConn, quit)
+	// // Wait for the quit signal
+	// select {
+	// case <-quit:
+	// 	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: quit signal received with ssh session: %s, managementIp: %s", sessionId, task.ManagementIP))
+	// case <-time.After(60 * time.Second):
+	// 	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: timeout with ssh session: %s, close the websocket connection with managementIp: %s", sessionId, task.ManagementIP))
+	// 	wsConn.Close()
+	// }
+
+	// return nil
 }

@@ -42,7 +42,6 @@ func handleWebSSHRequest(c *gin.Context) error {
 	}
 	sessionId := uuid.New().String()
 
-	webssh_biz.AddSession(sessionId, nil)
 	webssh_biz.SendSignalToProxy(sessionId, managementIP, deviceConnectionInfo)
 	proxyWSConn, err := webssh_biz.WaitForProxyWebSocket(sessionId)
 	if err != nil {
