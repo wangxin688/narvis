@@ -8,6 +8,11 @@ import (
 	"go.uber.org/zap"
 )
 
+type WebSSHServer struct {
+	Rows int `form:"rows"`
+	Cols int `form:"cols"`
+}
+
 // @Tags WebSSH
 // @Summary WebSSH Server
 // @Description WebSSH Server
@@ -15,6 +20,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param deviceId path string true "device id"
+// @Param obj query WebSSHServer true "web ssh query"
 // @Success 200 {string} string "success"
 // @Router /webssh/server/{deviceId} [get]
 func webSSH(c *gin.Context) {
@@ -29,7 +35,7 @@ func webSSH(c *gin.Context) {
 		core.Logger.Error("[webssh]: failed to handle webssh request", zap.Error(err))
 		return
 	}
-	
+
 }
 
 // @Tags WebSSH

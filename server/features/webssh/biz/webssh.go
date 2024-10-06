@@ -21,7 +21,7 @@ func AddSession(sessionId string, ws chan *websocket.Conn) {
 	}
 	SessionWMap.Store(sessionId, ws)
 }
-func SendSignalToProxy(sessionId, managementIP string, cred *schemas.CliCredential) error {
+func SendSignalToProxy(sessionId, managementIP string, cred *schemas.CliCredential, cols, rows int) error {
 	signal := intendtask.WebSSHTask{
 		TaskName:     intendtask.WebSSH,
 		ManagementIP: managementIP,
@@ -29,6 +29,8 @@ func SendSignalToProxy(sessionId, managementIP string, cred *schemas.CliCredenti
 		Username:     cred.Username,
 		Password:     cred.Password,
 		Port:         cred.Port,
+		Cols:         cols,
+		Rows:         rows,
 	}
 	signalByte, err := json.Marshal(signal)
 	if err != nil {

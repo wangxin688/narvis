@@ -32,6 +32,16 @@ func handleWebSSHRequest(c *gin.Context) error {
 	}
 	defer wsConn.Close()
 	deviceId := c.Param("deviceId")
+	var query WebSSHServer
+	if err = c.ShouldBindQuery(&query); err != nil {
+		return err
+	}
+	if query.Cols == 0 {
+		query.Cols = 80
+	}
+	if query.Rows == 0 {
+		query.Rows = 40
+	}
 	deviceConnectionInfo, err := infra_biz.NewCliCredentialService().GetCredentialByDeviceId(deviceId)
 	if err != nil {
 		return err
@@ -42,7 +52,7 @@ func handleWebSSHRequest(c *gin.Context) error {
 	}
 	sessionId := uuid.New().String()
 
-	webssh_biz.SendSignalToProxy(sessionId, managementIP, deviceConnectionInfo)
+	webssh_biz.SendSignalToProxy(sessionId, managementIP, deviceConnectionInfo, query.Cols, query.Rows)
 	proxyWSConn, err := webssh_biz.WaitForProxyWebSocket(sessionId)
 	if err != nil {
 		core.Logger.Error("[webssh]: failed to wait for proxy websocket", zap.Error(err))
