@@ -28,7 +28,6 @@ func handleProxyWebSocket(c *gin.Context) error {
 		core.Logger.Error("[webssh]: failed to upgrade", zap.Error(err))
 		return err
 	}
-	defer wsConn.Close()
 	sessionId := c.Param("sessionId")
 	if sessionId == "" {
 		core.Logger.Warn("[webssh]:received unknown empty sessionId")

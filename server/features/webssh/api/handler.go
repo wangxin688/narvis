@@ -29,7 +29,7 @@ func webSSH(c *gin.Context) {
 		core.Logger.Error("[webssh]: failed to handle webssh request", zap.Error(err))
 		return
 	}
-	//c.String(http.StatusOK, "success")
+	
 }
 
 // @Tags WebSSH

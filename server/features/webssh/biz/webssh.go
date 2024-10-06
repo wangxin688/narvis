@@ -45,7 +45,7 @@ func SendSignalToProxy(sessionId, managementIP string, cred *schemas.CliCredenti
 }
 
 func WaitForProxyWebSocket(sessionId string) (*websocket.Conn, error) {
-	timer := time.NewTimer(15 * time.Second)
+	timer := time.NewTimer(10 * time.Second)
 	defer timer.Stop()
 
 	for {
@@ -59,8 +59,9 @@ func WaitForProxyWebSocket(sessionId string) (*websocket.Conn, error) {
 				continue
 			}
 			proxyWS, ok := done.(*websocket.Conn)
-			if !ok {
-				return nil, errors.NewError(errors.CodeSessionIdNotFound, errors.MsgSessionIdNotFound)
+			if !ok || proxyWS == nil {
+				time.Sleep(100 * time.Millisecond)
+				continue
 			}
 			SessionWMap.Delete(sessionId)
 			return proxyWS, nil
