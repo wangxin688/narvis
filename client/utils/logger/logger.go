@@ -1,63 +1,37 @@
 package logger
 
 import (
-	"os"
+	"log"
 
-	"github.com/sirupsen/logrus"
-	"github.com/wangxin688/narvis/client/utils/logger/formatter"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
-var Logger = NewLog()
+var Logger *zap.Logger
 
-type Log struct {
-	log *logrus.Logger
-}
-
-func NewLog() *Log {
-	mLog := logrus.New()
-	mLog.SetOutput(os.Stderr)
-	mLog.SetReportCaller(true)
-	mLog.SetFormatter(&formatter.LogFormatter{})
-	mLog.SetLevel(logrus.DebugLevel)
-	return &Log{
-		log: mLog,
+func SetUpLogger() {
+	levels := make([]zapcore.Level, 0, 1)
+	level, err := zapcore.ParseLevel("info")
+	if err != nil {
+		level = zapcore.DebugLevel
 	}
-}
+	levels = append(levels, level)
+	encoderConfig := zapcore.EncoderConfig{
+		TimeKey:        "time",
+		NameKey:        "name",
+		LevelKey:       "level",
+		CallerKey:      "caller",
+		MessageKey:     "msg",
+		StacktraceKey:  "stacktrace",
+		LineEnding:     zapcore.DefaultLineEnding,
+		EncodeLevel:    zapcore.LowercaseLevelEncoder,
+		EncodeTime:     zapcore.ISO8601TimeEncoder,
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.FullCallerEncoder,
+	}
+	encoder := zapcore.NewConsoleEncoder(encoderConfig)
+	core := zapcore.NewCore(encoder, zapcore.AddSync(log.Writer()), levels[0])
 
-func (l *Log) Debug(args ...interface{}) {
-	l.log.Debugln(args...)
-}
-func (l *Log) Debugf(format string, args ...interface{}) {
-	l.log.Debugf(format, args...)
-}
-func (l *Log) Info(args ...interface{}) {
-	l.log.Infoln(args...)
-}
-func (l *Log) Infof(format string, args ...interface{}) {
-	l.log.Infof(format, args...)
-}
-func (l *Log) Error(args ...interface{}) {
-	l.log.Errorln(args...)
-}
-func (l *Log) Errorf(format string, args ...interface{}) {
-	l.log.Errorf(format, args...)
-}
-func (l *Log) Trace(args ...interface{}) {
-	l.log.Traceln()
-}
-func (l *Log) Tracef(format string, args ...interface{}) {
-	l.log.Tracef(format, args...)
-}
-func (l *Log) Panic(args ...interface{}) {
-	l.log.Panicln()
-}
-func (l *Log) Panicf(format string, args ...interface{}) {
-	l.log.Panicf(format, args...)
-}
-
-func (l *Log) Print(args ...interface{}) {
-	l.log.Println()
-}
-func (l *Log) Printf(format string, args ...interface{}) {
-	l.log.Printf(format, args...)
+	Logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+	zap.ReplaceGlobals(Logger)
 }

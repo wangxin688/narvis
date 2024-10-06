@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/wangxin688/narvis/client/utils/logger"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -26,7 +27,7 @@ func (s *SSHConnection) Recv(conn *websocket.Conn, quit chan int) {
 		messageType, message, err := conn.ReadMessage()
 		if err != nil {
 			// If there's an error reading from the websocket connection, log it and return
-			logger.Logger.Error("Failed to read from websocket connection", err)
+			logger.Logger.Error("[websshStdinPipe]: failed to read from websocket connection", zap.Error(err))
 			return
 		}
 
@@ -35,12 +36,12 @@ func (s *SSHConnection) Recv(conn *websocket.Conn, quit chan int) {
 			_, err = s.stdin.Write(message)
 			if err != nil {
 				// If there's an error writing to the stdin, log it and return
-				logger.Logger.Trace("Failed to write to stdin", err)
+				logger.Logger.Error("[websshStdinPipe]: failed to write to stdin", zap.Error(err))
 				return
 			}
 		} else {
 			// Log any unknown message types
-			logger.Logger.Info(fmt.Sprintf("Received unknown message type: %d", messageType))
+			logger.Logger.Info(fmt.Sprintf("[websshStdinPipe]: received unknown message type: %d", messageType))
 		}
 	}
 }
@@ -58,20 +59,21 @@ func (s *SSHConnection) Send(conn *websocket.Conn, quit chan int) {
 	for range ticker.C {
 		n, err := s.stdout.Read(buf)
 		if err != nil {
-			logger.Logger.Error("Failed to read from stdout", err)
+			logger.Logger.Error("[websshSendPipe]: failed to read from stdout", zap.Error(err))
 			break
 		}
 
 		// If the buffer is full, it's likely that there's more data to read.
 		// We'll keep reading until we've read all the available data.
 		for n == len(buf) {
+			logger.Logger.Info((""))
 			if err := WsSendText(conn, buf); err != nil {
-				logger.Logger.Error("Failed to send text message", err)
+				logger.Logger.Error("[websshSendPipe]: failed to send text message", zap.Error(err))
 				break
 			}
 			n, err = s.stdout.Read(buf)
 			if err != nil {
-				logger.Logger.Error("Failed to read from stdout", err)
+				logger.Logger.Error("[]websshSendPipe]: failed to read from stdout", zap.Error(err))
 				break
 			}
 		}
@@ -79,7 +81,7 @@ func (s *SSHConnection) Send(conn *websocket.Conn, quit chan int) {
 		// Send any remaining data
 		if n > 0 {
 			if err := WsSendText(conn, buf[:n]); err != nil {
-				logger.Logger.Error("Failed to send text message", err)
+				logger.Logger.Error("[]websshSendPipe]: failed to send text message", zap.Error(err))
 				break
 			}
 		}
@@ -91,6 +93,7 @@ func Quit(quit chan int) {
 }
 
 func WsSendText(conn *websocket.Conn, message []byte) error {
+	logger.Logger.Info("[websshSendPipe]: sending text message", zap.String("message", string(message)))
 	err := conn.WriteMessage(websocket.TextMessage, message)
 	return err
 }

@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"go.uber.org/zap"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -99,7 +100,7 @@ func (c *SSHConn) Disconnect() {
 
 	err := c.client.Close()
 	if err != nil {
-		log.Println("warning, device close failed: ", err)
+		log.Println("warning, device close failed: ", zap.Error(err))
 	}
 
 }

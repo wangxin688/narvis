@@ -56,17 +56,17 @@ func NewTerminal(client *ssh.Client, cols, rows int) (*SSHConnection, error) {
 	}
 	stdout, err := session.StdoutPipe()
 	if err != nil {
-		logger.Logger.Error(fmt.Sprintf("[NewSSHTerminal]: failed to get stdout from ip %s, err: %s", client.RemoteAddr().String(), err))
+		logger.Logger.Error(fmt.Sprintf("[newSSHTerminal]: failed to get stdout from ip %s, err: %s", client.RemoteAddr().String(), err))
 		return nil, err
 	}
 	stderr, err := session.StderrPipe()
 	if err != nil {
-		logger.Logger.Error(fmt.Sprintf("[NewSSHTerminal]: failed to get stderr from ip %s, err: %s", client.RemoteAddr().String(), err))
+		logger.Logger.Error(fmt.Sprintf("[newSSHTerminal]: failed to get stderr from ip %s, err: %s", client.RemoteAddr().String(), err))
 		return nil, err
 	}
 	stdin, err := session.StdinPipe()
 	if err != nil {
-		logger.Logger.Error(fmt.Sprintf("[NewSSHTerminal]: failed to get stdin from ip %s, err: %s", client.RemoteAddr().String(), err))
+		logger.Logger.Error(fmt.Sprintf("[newSSHTerminal]: failed to get stdin from ip %s, err: %s", client.RemoteAddr().String(), err))
 		return nil, err
 	}
 

@@ -18,6 +18,7 @@ import (
 	"github.com/wangxin688/narvis/client/utils/logger"
 	"github.com/wangxin688/narvis/client/utils/security"
 	"github.com/wangxin688/narvis/intend/intendtask"
+	"go.uber.org/zap"
 )
 
 func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse, error) {
@@ -25,12 +26,12 @@ func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse
 	task := &intendtask.BaseSnmpScanTask{}
 	err := json.Unmarshal(data, task)
 	if err != nil {
-		logger.Logger.Error("[ScanDeviceBasicInfo]: Unmarshal err: ", err)
+		logger.Logger.Error("[ScanDeviceBasicInfo]: Unmarshal err: ", zap.Error(err))
 		return nil, err
 	}
 	targets, err := helpers.CIDRToIPStrings(task.Range)
 	if err != nil {
-		logger.Logger.Error(fmt.Sprintf("[ScanDeviceBasicInfo]: received wrong ip range %s", task.Range), err)
+		logger.Logger.Error(fmt.Sprintf("[ScanDeviceBasicInfo]: received wrong ip range %s", task.Range), zap.Error(err))
 		return nil, err
 	}
 	snmpConfig := factory.BaseSnmpConfig{
@@ -45,7 +46,7 @@ func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse
 	if len(result) != 0 {
 		for _, r := range result {
 			if !r.SnmpReachable || r.Data == nil || len(r.Data.Errors) == 0 {
-				logger.Logger.Error("[ScanDeviceBasicInfo]: device snmp not reachable", r.IpAddress)
+				logger.Logger.Error("[ScanDeviceBasicInfo]: device snmp not reachable", zap.String("ip", r.IpAddress))
 				continue
 			}
 			results = append(results, &intendtask.DeviceBasicInfoScanResponse{
@@ -69,7 +70,7 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 	task := &intendtask.BaseSnmpTask{}
 	err := json.Unmarshal(data, task)
 	if err != nil {
-		logger.Logger.Error("[ScanDevice]: Unmarshal err: ", err)
+		logger.Logger.Error("[ScanDevice]: Unmarshal err: ", zap.Error(err))
 		return nil, err
 	}
 	snmpConfig := factory.BaseSnmpConfig{
@@ -188,7 +189,7 @@ func scanAp(data []byte) ([]*intendtask.ApScanResponse, error) {
 	task := &intendtask.BaseSnmpTask{}
 	err := json.Unmarshal(data, task)
 	if err != nil {
-		logger.Logger.Error("[ScanAp]: Unmarshal err: ", err)
+		logger.Logger.Error("[ScanAp]: Unmarshal err: ", zap.Error(err))
 		return nil, err
 	}
 	snmpConfig := factory.BaseSnmpConfig{
@@ -238,13 +239,13 @@ func webSSHTask(data []byte) error {
 	task := &intendtask.WebSSHTask{}
 	err := json.Unmarshal(data, task)
 	if err != nil {
-		logger.Logger.Error("[webSSHTask]: Unmarshal err: ", err)
+		logger.Logger.Error("[webSSHTask]: Unmarshal err: ", zap.Error(err))
 		return err
 	}
 	// Get the token from the proxy server
 	token, err := security.ProxyToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY)
 	if err != nil {
-		logger.Logger.Error("[webSSHTask]: failed to get token", err)
+		logger.Logger.Error("[webSSHTask]: failed to get token", zap.Error(err))
 		return err
 	}
 	sessionId := task.SessionId
@@ -252,10 +253,10 @@ func webSSHTask(data []byte) error {
 	wsConn, _, err := websocket.DefaultDialer.Dial(
 		config.Settings.WebSocketUrl()+intendtask.WebSocketCbUrl+"/"+sessionId, http.Header{"Authorization": {"Bearer " + token}})
 	if err != nil {
-		logger.Logger.Error("[webSSHTask]: failed to dial to server", err)
+		logger.Logger.Error("[webSSHTask]: failed to dial to server", zap.Error(err))
 		return err
 	}
-	logger.Logger.Info("[webSSHTask]: dial to server success with sessionId: ", sessionId)
+	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: dial to server success with sessionId: %s", sessionId))
 	defer wsConn.Close()
 	// Set the read deadline to 60 seconds
 	wsConn.SetReadDeadline(time.Now().Add(60 * time.Second))
@@ -263,7 +264,7 @@ func webSSHTask(data []byte) error {
 	// Start the ssh connection here
 	sshConn, err := webssh.CreateSSHClient(task.Username, task.Password, task.ManagementIP, task.Port)
 	if err != nil {
-		logger.Logger.Error("[webSSHTask]: failed to create ssh client", err)
+		logger.Logger.Error("[webSSHTask]: failed to create ssh client", zap.Error(err))
 		webssh.WsSendText(wsConn, []byte(err.Error()))
 	}
 	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: create ssh client success with sessionId: %s, managementIp: %s", sessionId, task.ManagementIP))
@@ -272,7 +273,7 @@ func webSSHTask(data []byte) error {
 	// Start the ssh tunnel
 	terminal, err := webssh.NewTerminal(sshConn, 80, 40)
 	if err != nil {
-		logger.Logger.Error("[webSSHTask]: failed to create terminal", err)
+		logger.Logger.Error("[webSSHTask]: failed to create terminal", zap.Error(err))
 		webssh.WsSendText(wsConn, []byte(err.Error()))
 		return err
 	}

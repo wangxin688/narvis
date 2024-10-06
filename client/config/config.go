@@ -68,7 +68,7 @@ func SetupConfig() (err error) {
 
 	// Attempt to read the config file
 	if err = viper.ReadInConfig(); err != nil {
-		// logger.Errorf("Error reading config file, %s", err)
+		// logger.Errorf("Error reading config file, %s", zap.Error(err)
 		return err
 	}
 

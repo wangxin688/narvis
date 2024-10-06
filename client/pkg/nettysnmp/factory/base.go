@@ -9,6 +9,7 @@ import (
 	"github.com/gosnmp/gosnmp"
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/client/utils/logger"
+	"go.uber.org/zap"
 )
 
 type SnmpDiscovery struct {
@@ -63,7 +64,7 @@ func NewSnmpSession(config SnmpConfig) (*gosnmp.GoSNMP, error) {
 	err := snmpSession.Connect()
 	if err != nil {
 		snmpSession.Conn.Close()
-		logger.Logger.Info("snmp connect error", config.IpAddress, err)
+		logger.Logger.Info("snmp connect error", zap.String("ip", config.IpAddress), zap.Error(err))
 		return nil, err
 	}
 	return snmpSession, nil

@@ -16,6 +16,7 @@ import (
 	"github.com/wangxin688/narvis/client/utils/logger"
 	"github.com/wangxin688/narvis/intend/manufacturer"
 	"github.com/wangxin688/narvis/intend/platform"
+	"go.uber.org/zap"
 )
 
 type Dispatcher struct {
@@ -150,7 +151,7 @@ func (d *Dispatcher) getFactory(platformType platform.Platform, snmpConfig facto
 func (d *Dispatcher) SnmpReachable(session *gosnmp.GoSNMP) bool {
 	result, err := session.Get([]string{factory.SysName})
 	if err != nil || result == nil {
-		logger.Logger.Info("[dispatcher]: SnmpReachable failed", err)
+		logger.Logger.Info("[dispatcher]: SnmpReachable failed", zap.Error(err))
 		return false
 	}
 	return len(result.Variables) > 0
@@ -160,7 +161,7 @@ func (d *Dispatcher) SnmpReachable(session *gosnmp.GoSNMP) bool {
 func (d *Dispatcher) IcmpReachable(address string) bool {
 	pinger, err := ping.NewPinger(address)
 	if err != nil {
-		logger.Logger.Info("[dispatcher]: IcmpReachable failed", err)
+		logger.Logger.Info("[dispatcher]: IcmpReachable failed", zap.Error(err))
 		return false
 	}
 	pinger.Count = 2
@@ -177,7 +178,7 @@ func (d *Dispatcher) SshReachable(address string) bool {
 	timeout := time.Second
 	conn, err := net.DialTimeout("tcp", address+":22", timeout)
 	if err != nil {
-		logger.Logger.Info("[dispatcher]: SshReachable failed", err)
+		logger.Logger.Info("[dispatcher]: SshReachable failed", zap.Error(err))
 		return false
 	}
 	defer conn.Close()

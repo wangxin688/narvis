@@ -5,6 +5,7 @@ import (
 
 	"github.com/wangxin688/narvis/client/utils/logger"
 	"github.com/wangxin688/narvis/intend/intendtask"
+	"go.uber.org/zap"
 )
 
 func TaskDispatcher(data []byte) {
@@ -13,7 +14,7 @@ func TaskDispatcher(data []byte) {
 
 	err := json.Unmarshal(data, &task)
 	if err != nil {
-		logger.Logger.Error("taskDispatcher]: received wrong task: unmarshal to map err: ", err)
+		logger.Logger.Error("taskDispatcher]: received wrong task: unmarshal to map err: ", zap.Error(err))
 	}
 	if _, ok := task["taskName"]; !ok {
 		logger.Logger.Error("taskDispatcher]: received wrong task: no taskName")
@@ -22,7 +23,7 @@ func TaskDispatcher(data []byte) {
 	if taskName == intendtask.WebSSH {
 		err = webSSHTask(data)
 		if err != nil {
-			logger.Logger.Error("taskDispatcher]: webSSHTask err: ", err)
+			logger.Logger.Error("taskDispatcher]: webSSHTask err: ", zap.Error(err))
 		}
 	} else {
 		if _, ok := task["callback"]; !ok {
@@ -33,26 +34,26 @@ func TaskDispatcher(data []byte) {
 		case intendtask.ScanDeviceBasicInfo:
 			results, err := scanDeviceBasicInfo(data)
 			if err != nil {
-				logger.Logger.Error("taskDispatcher]: scanDeviceBasicInfo err: ", err)
+				logger.Logger.Error("taskDispatcher]: scanDeviceBasicInfo err: ", zap.Error(err))
 			}
 			scanDeviceBasicInfoCallback(results, taskId)
 		case intendtask.ScanDevice:
 			results, err := scanDevice(data)
 			if err != nil {
-				logger.Logger.Error("taskDispatcher]: scanDevice err: ", err)
+				logger.Logger.Error("taskDispatcher]: scanDevice err: ", zap.Error(err))
 			}
 			scanDeviceCallback(results, taskId)
 		case intendtask.ScanAp:
 			results, err := scanAp(data)
 			if err != nil {
-				logger.Logger.Error("taskDispatcher]: scanAp err: ", err)
+				logger.Logger.Error("taskDispatcher]: scanAp err: ", zap.Error(err))
 			}
 			scanApCallback(results, taskId)
 
 		case intendtask.ScanMacAddressTable:
 			results, err := scanMacAddressTable(data)
 			if err != nil {
-				logger.Logger.Error("taskDispatcher]: scanMacAddressTable err: ", err)
+				logger.Logger.Error("taskDispatcher]: scanMacAddressTable err: ", zap.Error(err))
 			}
 			scanMacAddressTableCallback(results, taskId)
 		}
