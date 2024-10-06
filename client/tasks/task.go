@@ -231,6 +231,8 @@ func scanMacAddressTable(data []byte) ([]*intendtask.MacAddressTableScanResponse
 	return nil, nil
 }
 
+// webSSHTask starts a webssh session with the target device and
+// relays the input and output between the websocket and the ssh connection.
 func webSSHTask(data []byte) error {
 	task := &intendtask.WebSSHTask{}
 	err := json.Unmarshal(data, task)
@@ -238,23 +240,23 @@ func webSSHTask(data []byte) error {
 		logger.Logger.Error("[webSSHTask]: Unmarshal err: ", err)
 		return err
 	}
+	// Get the token from the proxy server
 	token, err := security.ProxyToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY)
 	if err != nil {
 		logger.Logger.Error("[webSSHTask]: failed to get token", err)
 		return err
 	}
 	sessionId := task.SessionId
-	header := http.Header{}
-	header.Add("Authorization", "Bearer "+token)
+	// Dial to the websocket server
 	wsConn, _, err := websocket.DefaultDialer.Dial(
-		config.Settings.WebSocketUrl()+intendtask.WebSocketCbUrl+"/"+sessionId, header)
+		config.Settings.WebSocketUrl()+intendtask.WebSocketCbUrl+"/"+sessionId, http.Header{"Authorization": {"Bearer " + token}})
 	if err != nil {
 		logger.Logger.Error("[webSSHTask]: failed to dial to server", err)
 		return err
-	}
+	} 
 	logger.Logger.Info("[webSSHTask]: dial to server success with sessionId: ", sessionId)
 	defer wsConn.Close()
-	// start ssh connection here
+	// Start the ssh connection here
 	sshConn, err := webssh.CreateSSHClient(task.Username, task.Password, task.ManagementIP, task.Port)
 	if err != nil {
 		logger.Logger.Error("[webSSHTask]: failed to create ssh client", err)
@@ -263,7 +265,7 @@ func webSSHTask(data []byte) error {
 	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: create ssh client success with sessionId: %s, managementIp: %s", sessionId, task.ManagementIP))
 	defer sshConn.Close()
 
-	// start ssh tunnel
+	// Start the ssh tunnel
 	terminal, err := webssh.NewTerminal(sshConn, 80, 40)
 	if err != nil {
 		logger.Logger.Error("[webSSHTask]: failed to create terminal", err)
@@ -271,9 +273,11 @@ func webSSHTask(data []byte) error {
 		return err
 	}
 	logger.Logger.Info(fmt.Sprintf("[webSSHTask]: create terminal success with sessionId: %s, managementIp: %s", sessionId, task.ManagementIP))
+	// Start goroutines to send and receive data to/from the terminal
 	quit := make(chan int)
 	go terminal.Send(wsConn, quit)
 	go terminal.Recv(wsConn, quit)
+	// Wait for the quit signal
 	<-quit
 
 	return nil
