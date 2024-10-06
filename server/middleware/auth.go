@@ -100,7 +100,7 @@ func checkUserPermission(userID string, path string) bool {
 // cookie auth middleware for websocket
 func CookieAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token, err := c.Request.Cookie(AuthorizationBearer)
+		token, err := c.Request.Cookie(AuthorizationString)
 		if err != nil {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, errors.GenericError{
