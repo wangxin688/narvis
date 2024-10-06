@@ -117,4 +117,8 @@ const (
 	MsgSessionIdEmpty     ErrorMsg  = "sessionId empty"
 	CodeSessionIdNotFound ErrorCode = 1000001
 	MsgSessionIdNotFound  ErrorMsg  = "sessionId not found"
+	CodeSessionTimeout    ErrorCode = 1000002
+	MsgSessionTimeout     ErrorMsg  = "timeout waiting for proxy websocket connection"
+	CodeWebSocketInitFail ErrorCode = 1000003
+	MsgWebSocketInitFail  ErrorMsg  = "failed to initialize websocket connection , error: %s"
 )

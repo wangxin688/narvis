@@ -9,6 +9,7 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	webssh_biz "github.com/wangxin688/narvis/server/features/webssh/biz"
+	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
 )
 
@@ -27,7 +28,7 @@ func handleWebSSHRequest(c *gin.Context) error {
 	wsConn, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		core.Logger.Error("[webssh]: failed to upgrade", zap.Error(err))
-		return err
+		return errors.NewError(errors.CodeWebSocketInitFail, errors.MsgWebSocketInitFail, err)
 	}
 	defer wsConn.Close()
 	deviceId := c.Param("deviceId")

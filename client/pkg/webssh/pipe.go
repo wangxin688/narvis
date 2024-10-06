@@ -54,19 +54,34 @@ func (s *SSHConnection) Send(conn *websocket.Conn, quit chan int) {
 	ticker := time.NewTicker(60 * time.Microsecond)
 	defer ticker.Stop()
 
+	buf := make([]byte, 4096) // add to buffer size to 4096 for network devices
 	for range ticker.C {
-		// Read from the stdout
-		buf := make([]byte, 1024)
 		n, err := s.stdout.Read(buf)
 		if err != nil {
 			logger.Logger.Error("Failed to read from stdout", err)
 			break
 		}
 
-		// Send the data to the client
-		if err = WsSendText(conn, buf[:n]); err != nil {
-			logger.Logger.Error("Failed to send text message", err)
-			break
+		// If the buffer is full, it's likely that there's more data to read.
+		// We'll keep reading until we've read all the available data.
+		for n == len(buf) {
+			if err := WsSendText(conn, buf); err != nil {
+				logger.Logger.Error("Failed to send text message", err)
+				break
+			}
+			n, err = s.stdout.Read(buf)
+			if err != nil {
+				logger.Logger.Error("Failed to read from stdout", err)
+				break
+			}
+		}
+
+		// Send any remaining data
+		if n > 0 {
+			if err := WsSendText(conn, buf[:n]); err != nil {
+				logger.Logger.Error("Failed to send text message", err)
+				break
+			}
 		}
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/gosnmp/gosnmp"
@@ -253,9 +254,12 @@ func webSSHTask(data []byte) error {
 	if err != nil {
 		logger.Logger.Error("[webSSHTask]: failed to dial to server", err)
 		return err
-	} 
+	}
 	logger.Logger.Info("[webSSHTask]: dial to server success with sessionId: ", sessionId)
 	defer wsConn.Close()
+	// Set the read deadline to 60 seconds
+	wsConn.SetReadDeadline(time.Now().Add(60 * time.Second))
+
 	// Start the ssh connection here
 	sshConn, err := webssh.CreateSSHClient(task.Username, task.Password, task.ManagementIP, task.Port)
 	if err != nil {
@@ -278,7 +282,13 @@ func webSSHTask(data []byte) error {
 	go terminal.Send(wsConn, quit)
 	go terminal.Recv(wsConn, quit)
 	// Wait for the quit signal
-	<-quit
+	select {
+	case <-quit:
+		logger.Logger.Info(fmt.Sprintf("[webSSHTask]: quit signal received with ssh session: %s, managementIp: %s", sessionId, task.ManagementIP))
+	case <-time.After(60 * time.Second):
+		logger.Logger.Info(fmt.Sprintf("[webSSHTask]: timeout with ssh session: %s, close the websocket connection with managementIp: %s", sessionId, task.ManagementIP))
+		wsConn.Close()
+	}
 
 	return nil
 }

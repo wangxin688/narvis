@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/middleware"
+	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
 )
 
@@ -17,7 +18,13 @@ import (
 // @Success 200 {string} string "success"
 // @Router /webssh/server/{deviceId} [get]
 func webSSH(c *gin.Context) {
-	err := handleWebSSHRequest(c)
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	err = handleWebSSHRequest(c)
 	if err != nil {
 		core.Logger.Error("[webssh]: failed to handle webssh request", zap.Error(err))
 		return
@@ -35,8 +42,14 @@ func webSSH(c *gin.Context) {
 // @Success 200 {string} string "success"
 // @Router /webssh/proxy/{sessionId} [post]
 func proxyWebSSH(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
 
-	err := handleProxyWebSocket(c)
+	err = handleProxyWebSocket(c)
 	if err != nil {
 		core.Logger.Error("[webssh]: failed to handle proxy webssh request", zap.Error(err))
 		return

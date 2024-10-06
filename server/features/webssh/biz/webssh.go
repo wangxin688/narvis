@@ -3,6 +3,7 @@ package webssh_biz
 import (
 	"encoding/json"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/wangxin688/narvis/intend/intendtask"
@@ -44,16 +45,27 @@ func SendSignalToProxy(sessionId, managementIP string, cred *schemas.CliCredenti
 }
 
 func WaitForProxyWebSocket(sessionId string) (*websocket.Conn, error) {
-	done, ok := SessionWMap.Load(sessionId)
-	if !ok {
-		return nil, errors.NewError(errors.CodeSessionIdNotFound, errors.MsgSessionIdNotFound)
+	timer := time.NewTimer(15 * time.Second)
+	defer timer.Stop()
+
+	for {
+		select {
+		case <-timer.C:
+			return nil, errors.NewError(errors.CodeSessionTimeout, errors.MsgSessionTimeout)
+		default:
+			done, ok := SessionWMap.Load(sessionId)
+			if !ok {
+				time.Sleep(100 * time.Millisecond)
+				continue
+			}
+			proxyWS, ok := done.(*websocket.Conn)
+			if !ok {
+				return nil, errors.NewError(errors.CodeSessionIdNotFound, errors.MsgSessionIdNotFound)
+			}
+			SessionWMap.Delete(sessionId)
+			return proxyWS, nil
+		}
 	}
-	proxyWS, ok := done.(*websocket.Conn)
-	if !ok {
-		return nil, errors.NewError(errors.CodeSessionIdNotFound, errors.MsgSessionIdNotFound)
-	}
-	SessionWMap.Delete(sessionId)
-	return proxyWS, nil
 }
 
 func RelaySSHData(browserWS *websocket.Conn, proxyWS *websocket.Conn) {
