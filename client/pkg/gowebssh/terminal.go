@@ -2,8 +2,6 @@ package gowebssh
 
 import (
 	"bytes"
-	"context"
-	"os"
 
 	"github.com/gorilla/websocket"
 	"github.com/wangxin688/narvis/client/utils/logger"
@@ -20,15 +18,15 @@ type Options struct {
 }
 
 type Terminal struct {
-	opts     Options
-	ip       string
-	ws       *websocket.Conn
-	stdin    *os.File
-	stdout   *os.File
-	session  *SshConn
-	conn     *ssh.Client
-	inited   int32
-	cancelFn context.CancelFunc
+	opts Options
+	// ip       string
+	ws *websocket.Conn
+	// stdin    *os.File
+	// stdout   *os.File
+	session *SshConn
+	conn    *ssh.Client
+	// inited   int32
+	// cancelFn context.CancelFunc
 }
 
 func NewTerminal(ws *websocket.Conn, opts Options) *Terminal {
@@ -63,5 +61,5 @@ func (t *Terminal) Run() {
 	go t.session.SessionWait(quitChan)
 
 	<-quitChan
-	logger.Logger.Info("websocket finished")
+	logger.Logger.Info("[webssh]: websocket finished")
 }
