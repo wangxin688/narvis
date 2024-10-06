@@ -159,9 +159,6 @@ func (s *SshConn) ReceiveWsMsg(wsConn *websocket.Conn, logBuff *bytes.Buffer, ex
 				}
 			case wsMsgCmd:
 				decodeBytes := []byte(msgObj.Cmd)
-				if err != nil {
-					logger.Logger.Error("websocket cmd string base64 decoding failed", zap.Error(err))
-				}
 				if _, err := s.StdinPipe.Write(decodeBytes); err != nil {
 					logger.Logger.Error("ws cmd bytes write to ssh.stdin pipe failed", zap.Error(err))
 				}
@@ -175,7 +172,7 @@ func (s *SshConn) ReceiveWsMsg(wsConn *websocket.Conn, logBuff *bytes.Buffer, ex
 func (s *SshConn) SendComboOutput(wsConn *websocket.Conn, exitCh chan bool) {
 	defer setQuit(exitCh)
 
-	tick := time.NewTicker(time.Millisecond * time.Duration(120))
+	tick := time.NewTicker(time.Millisecond * time.Duration(20))
 	defer tick.Stop()
 	for {
 		select {
@@ -192,7 +189,12 @@ func (s *SshConn) SendComboOutput(wsConn *websocket.Conn, exitCh chan bool) {
 
 func (s *SshConn) SessionWait(quitChan chan bool) {
 	if err := s.Session.Wait(); err != nil {
-		logger.Logger.Error("ssh session wait failed", zap.Error(err))
+		if ExitError, ok := err.(*ssh.ExitError); ok {
+			logger.Logger.Error("[websshConn]: Remote command exited with status", zap.Int("exit code", ExitError.ExitStatus()), zap.Error(err))
+		} else {
+			logger.Logger.Error("[websshConn]: Failed to run remote command", zap.Error(err))
+
+		}
 		setQuit(quitChan)
 	}
 }

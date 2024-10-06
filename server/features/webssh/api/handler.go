@@ -65,7 +65,7 @@ func proxyWebSSH(c *gin.Context) {
 
 func RegisterWebSSHRoutes(e *gin.Engine) {
 	basePath := core.Settings.System.RouterPrefix
-	router := e.Group(basePath+"/webssh", middleware.AuthMiddleware())
+	router := e.Group(basePath+"/webssh", middleware.CookieAuthMiddleware())
 	{
 		router.GET("/server/:deviceId", webSSH)
 	}
