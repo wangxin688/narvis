@@ -1,6 +1,9 @@
 package infra_biz
 
 import (
+	"slices"
+
+	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
@@ -171,6 +174,43 @@ func (r *RackService) ValidateDeviceCreateRackReservation(rackId string, uHeight
 		}
 	}
 	// check if all positions are available
-
+	for _, position := range positions {
+		if lo.Contains(usedPositions, position) {
+			return false
+		}
+	}
 	return true
+}
+
+func (r *RackService) ValidateDeviceUpdateRackReservation(rackId string, uHeight uint8, positions []uint8) bool {
+	return true
+}
+
+// get rack used positions and result sorted asc slice
+func (r *RackService) GetRackUsedPositions(rackId string) ([]uint8, error) {
+	result := make([]uint8, 0)
+	devices, err := gen.Device.Select(gen.Device.Id, gen.Device.RackPosition).Where(gen.Device.RackId.Eq(rackId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+	if err != nil {
+		return nil, err
+	}
+	for _, device := range devices {
+		if device.RackPosition != nil {
+			ps, _ := infra_utils.ParseUint8s(*device.RackPosition)
+			result = append(result, ps...)
+		}
+	}
+	slices.Sort(result)
+	return result, nil
+}
+
+func (r *RackService) GetRackDevices(rackIds []string) (map[string]*models.Device, error) {
+	devices, err := gen.Device.Select(gen.Device.Id, gen.Device.RackPosition).Where(gen.Device.RackId.In(rackIds...), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[string]*models.Device, 0)
+	for _, device := range devices {
+		result[device.Id] = device
+	}
+	return result, nil
 }

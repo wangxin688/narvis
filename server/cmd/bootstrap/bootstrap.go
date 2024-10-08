@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/imroc/req/v3"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
@@ -16,6 +18,7 @@ import (
 	"github.com/wangxin688/narvis/server/features/organization/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/zbx"
 	"github.com/wangxin688/narvis/server/pkg/zbx/zschema"
 	"gopkg.in/yaml.v2"
 
@@ -636,5 +639,36 @@ func initNarvisCliCredential(orgId string) error {
 		return err
 	}
 	core.Logger.Info("[bootstrap]: client credential created", zap.String("id", clientCred.Id))
+	return nil
+}
+
+func initZbxTemplates() error {
+	const templateDir = "cmd/bootstrap/appdata/templates"
+	files, err := os.ReadDir(filepath.Join(core.ProjectPath, templateDir))
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to read template dir", zap.Error(err))
+		return err
+	}
+	zbxClient := zbx.NewZbxClient()
+	for _, f := range files {
+		if !f.IsDir() {
+			continue
+		}
+		templateName := f.Name()
+		if !strings.Contains(templateName, ".yaml") {
+			continue
+		}
+		template, err := os.ReadFile(filepath.Join(core.ProjectPath, templateDir, templateName))
+		if err != nil {
+			core.Logger.Error("[bootstrap]: failed to read template file", zap.Error(err))
+			return err
+		}
+		_, err = zbxClient.ConfigurationImport(string(template))
+		if err != nil {
+			core.Logger.Error("[bootstrap]: failed to import template", zap.Error(err))
+			return err
+		}
+		core.Logger.Info("[bootstrap]: init zbx template", zap.String("name", templateName))
+	}
 	return nil
 }

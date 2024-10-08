@@ -17,27 +17,27 @@ const (
 )
 
 const (
-	HighCpuUsage            AlertNameEnum = "HighCpuUsage"
-	HighMemoryUsage         AlertNameEnum = "HighMemoryUsage"
-	HighDiskUsage           AlertNameEnum = "HighDiskUsage"
-	HighSystemLoad          AlertNameEnum = "HighSystemLoad"
-	HighChannelUsage        AlertNameEnum = "HighChannelUsage"
-	HighChannelInterference AlertNameEnum = "HighChannelInterference"
-	HighChannelNoise        AlertNameEnum = "HighChannelNoise"
-	HighClientNumber        AlertNameEnum = "HighClientNumber"
-	HighBandwidthUsage      AlertNameEnum = "HighBandwidthUsage"
-	HighErrorRate           AlertNameEnum = "HighErrorRate"
-	HighICMPLatency         AlertNameEnum = "HighICMPLatency"
-	HighICMPPacketLoss      AlertNameEnum = "HighICMPPacketLoss"
-	HighTemperature         AlertNameEnum = "HighTemperature"
-	AbnormalFanStatus       AlertNameEnum = "AbnormalFanStatus"
-	AbnormalPowerStatus     AlertNameEnum = "AbnormalPowerStatus"
-	InterfaceDown           AlertNameEnum = "InterfaceDown"
-	InterfaceHalfDuplex     AlertNameEnum = "InterfaceHalfDuplex"
-	SnmpAgentTimeout        AlertNameEnum = "SnmpAgentTimeout"
-	NodePingTimeout         AlertNameEnum = "NodePingTimeout"
-	ApDown                  AlertNameEnum = "ApDown"
-	Unknown                 AlertNameEnum = "unknown"
+	HighCpuUtilization       AlertNameEnum = "HighCpuUtilization"
+	HighMemoryUtilization    AlertNameEnum = "HighMemoryUtilization"
+	HighDiskUtilization      AlertNameEnum = "HighDiskUtilization"
+	HighSystemLoad           AlertNameEnum = "HighSystemLoad"
+	HighChannelUtilization   AlertNameEnum = "HighChannelUtilization"
+	HighChannelInterference  AlertNameEnum = "HighChannelInterference"
+	HighChannelNoise         AlertNameEnum = "HighChannelNoise"
+	HighClientNumber         AlertNameEnum = "HighClientNumber"
+	HighBandwidthUtilization AlertNameEnum = "HighBandwidthUtilization"
+	HighErrorRate            AlertNameEnum = "HighErrorRate"
+	HighICMPLatency          AlertNameEnum = "HighICMPLatency"
+	HighICMPPacketLoss       AlertNameEnum = "HighICMPPacketLoss"
+	HighTemperature          AlertNameEnum = "HighTemperature"
+	AbnormalFanStatus        AlertNameEnum = "AbnormalFanStatus"
+	AbnormalPowerStatus      AlertNameEnum = "AbnormalPowerStatus"
+	InterfaceDown            AlertNameEnum = "InterfaceDown"
+	InterfaceHalfDuplex      AlertNameEnum = "InterfaceHalfDuplex"
+	SnmpAgentTimeout         AlertNameEnum = "SnmpAgentTimeout"
+	NodePingTimeout          AlertNameEnum = "NodePingTimeout"
+	ApDown                   AlertNameEnum = "ApDown"
+	Unknown                  AlertNameEnum = "unknown"
 )
 
 type AlertName struct {
@@ -52,27 +52,27 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 
 	alertNameMeta := map[AlertNameEnum]AlertName{
 
-		HighCpuUsage: {
-			Name:  HighCpuUsage,
-			Title: common.I18n{En: "High CPU usage", Zh: "CPU利用率过高"},
+		HighCpuUtilization: {
+			Name:  HighCpuUtilization,
+			Title: common.I18n{En: "High CPU utilization", Zh: "CPU利用率过高"},
 			Suggestion: common.I18n{
 				En: "1. Check device load\n2. Check device process cpu utilization\n3. check network traffic load",
 				Zh: "检查设备负载\n2. 检查设备进程CPU利用率(cpu/memory)\n3. 检查网络流量"},
 			Severity: SeverityWarning,
 		},
 
-		HighMemoryUsage: {
-			Name:  HighMemoryUsage,
-			Title: common.I18n{En: "High memory usage", Zh: "内存利用率过高"},
+		HighMemoryUtilization: {
+			Name:  HighMemoryUtilization,
+			Title: common.I18n{En: "High memory utilization", Zh: "内存利用率过高"},
 			Suggestion: common.I18n{
 				En: "1.Check device load\n2.Check device process memory utilization\n3.check memory leak",
 				Zh: "检查设备负载\n2. 检查设备进程内存利用率(cpu/memory)\n3. 检查内存泄漏"},
 			Severity: SeverityWarning,
 		},
 
-		HighDiskUsage: {
-			Name:       HighDiskUsage,
-			Title:      common.I18n{En: "High disk usage", Zh: "磁盘利用率过高"},
+		HighDiskUtilization: {
+			Name:       HighDiskUtilization,
+			Title:      common.I18n{En: "High disk utilization", Zh: "磁盘利用率过高"},
 			Suggestion: common.I18n{En: "1. Check device process disk utilization", Zh: "1. 检查设备磁盘利用率"},
 			Severity:   SeverityWarning,
 		},
@@ -85,13 +85,13 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 			Severity: SeverityWarning,
 		},
 
-		HighChannelUsage: {
-			Name:  HighChannelUsage,
-			Title: common.I18n{En: "High channel usage", Zh: "信道利用率过高"},
+		HighChannelUtilization: {
+			Name:  HighChannelUtilization,
+			Title: common.I18n{En: "High channel utilization", Zh: "信道利用率过高"},
 			Suggestion: common.I18n{
 				En: `1.Check co-channel status for the access points in same area\n
-                 2.Check airtime usage for current ap\n
-                 3.Check history channel usage for the area and review wlan performance\n`,
+                 2.Check airtime utilization for current ap\n
+                 3.Check history channel utilization for the area and review wlan performance\n`,
 				Zh: `1. 检查AP是否存在同频干扰，确认相邻信道状态\n
                      2. 检查AP空口占用情况\n
                      3. 检查当前区域AP整体信道利用率和历史情况，确认是否是无线容量问题\n`,
@@ -120,11 +120,11 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 				Zh: "1. 检查AP发射功率是否设置合理\n2. 检查AP密度设计和WLAN点位设计是否合理\n"},
 			Severity: SeverityInfo,
 		},
-		HighBandwidthUsage: {
-			Name:  HighBandwidthUsage,
-			Title: common.I18n{En: "High bandwidth usage", Zh: "带宽利用率过高"},
+		HighBandwidthUtilization: {
+			Name:  HighBandwidthUtilization,
+			Title: common.I18n{En: "High bandwidth utilization", Zh: "带宽利用率过高"},
 			Suggestion: common.I18n{
-				En: `1.check netflow data to find out bandwidth usage\n
+				En: `1.check netflow data to find out bandwidth utilization\n
                      2.check history utilization data of the interface to check capacity plan)`,
 				Zh: `1. 查看netflow/sflow流量数据，查看带宽利用率使用情况\n
 					 2. 检查历史利用率数据，查看带宽利用计划`,
@@ -269,15 +269,15 @@ func GetAlertName(alertName string) AlertName {
 
 func GetAlertEnumNames() []AlertNameEnum {
 	return []AlertNameEnum{
-		HighCpuUsage,
-		HighMemoryUsage,
-		HighDiskUsage,
+		HighCpuUtilization,
+		HighMemoryUtilization,
+		HighDiskUtilization,
 		HighSystemLoad,
-		HighChannelUsage,
+		HighChannelUtilization,
 		HighChannelInterference,
 		HighChannelNoise,
 		HighClientNumber,
-		HighBandwidthUsage,
+		HighBandwidthUtilization,
 		HighErrorRate,
 		HighICMPLatency,
 		HighICMPPacketLoss,
@@ -297,7 +297,7 @@ func GetInterfaceAlertEnumNames() []AlertNameEnum {
 	return []AlertNameEnum{
 		InterfaceDown,
 		InterfaceHalfDuplex,
-		HighBandwidthUsage,
+		HighBandwidthUtilization,
 		HighErrorRate,
 	}
 }
@@ -305,7 +305,7 @@ func GetInterfaceAlertEnumNames() []AlertNameEnum {
 func GetApAlertEnumNames() []AlertNameEnum {
 	return []AlertNameEnum{
 		ApDown,
-		HighChannelUsage,
+		HighChannelUtilization,
 		HighChannelInterference,
 		HighChannelNoise,
 		HighClientNumber,

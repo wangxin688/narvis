@@ -43,15 +43,28 @@ func SliceUint8ToString(s []uint8) (string, error) {
 
 func isConsecutive(slice []uint8) bool {
 	if len(slice) <= 1 {
-		// 如果slice为空或只有一个元素，认为是连续递增的
-		return true
+		return true // 空切片或只有一个元素，视为既不递增也不递减
 	}
+
+	isIncreasing := true
+	isDecreasing := true
+
 	for i := 1; i < len(slice); i++ {
-		if slice[i] != slice[i-1]+1 {
-			// 如果发现不连续递增的情况，返回false
+		if slice[i] == slice[i-1]+1 {
+			isDecreasing = false
+		} else if slice[i] == slice[i-1]-1 {
+			isIncreasing = false
+		} else {
+			// 如果当前元素既不满足递增也不满足递减，则直接返回false
 			return false
 		}
 	}
-	// 如果遍历完没有发现不连续递增的情况，返回true
-	return true
+
+	if isIncreasing {
+		return true
+	} else if isDecreasing {
+		return true
+	}
+
+	return false
 }

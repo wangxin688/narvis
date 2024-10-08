@@ -1,0 +1,32 @@
+[
+    {"platform": "CiscoIos","deviceRole":"CoreSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "CiscoIos","deviceRole":"DistributionSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "CiscoIos","deviceRole":"AccessSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "CiscoIos","deviceRole":"WanRouter","basicTemplate":"template_cisco_basic"},
+
+    {"platform": "CiscoXe","deviceRole":"CoreSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "CiscoXe","deviceRole":"DistributionSwitch", "basicTemplate":"template_cisco_basic" },
+    {"platform": "CiscoXe","deviceRole":"AccessSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "CiscoXe","deviceRole":"WlanAC","basicTemplate":"template_cisco_wlan"},
+
+    {"platform": "CiscoXr","deviceRole":"WanRouter","basicTemplate":"template_cisco_basic"},
+
+    {"platform": "CiscoNxos","deviceRole":"CoreSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "CiscoNxos","deviceRole":"DistributionSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "CiscoNxos","deviceRole":"AccessSwitch","basicTemplate":"template_cisco_basic"},
+
+    {"platform": "HuaweiVrp","deviceRole":"CoreSwitch","basicTemplate":"template_huawei_basic"},
+    {"platform": "HuaweiVrp","deviceRole":"DistributionSwitch","basicTemplate":"template_huawei_basic"},
+    {"platform": "HuaweiVrp","deviceRole":"AccessSwitch","basicTemplate":"template_huawei_basic"},
+    {"platform": "HuaweiVrp","deviceRole":"WanRouter","basicTemplate":"template_huawei_basic"},
+    {"platform": "HuaweiVrp","deviceRole":"WlanAC","basicTemplate":"template_huawei_wlan"},
+
+    {"platform": "HuaweiCE","deviceRole":"CoreSwitch","basicTemplate":"template_huawei_ce_basic"},
+    {"platform": "HuaweiCE","deviceRole":"DistributionSwitch","basicTemplate":"template_huawei_ce_basic"},
+    {"platform": "HuaweiCE","deviceRole":"AccessSwitch","basicTemplate":"template_huawei_ce_basic"},
+
+    {"platform": "HuaweiFM","deviceRole":"CoreSwitch","basicTemplate":"template_huawei_fm_basic"},
+    {"platform": "HuaweiFM","deviceRole":"DistributionSwitch","basicTemplate":"template_huawei_fm_basic"},
+    {"platform": "HuaweiFM","deviceRole":"AccessSwitch","basicTemplate":"template_huawei_fm_basic"}
+    
+]

@@ -19,13 +19,13 @@ type Device360Metrics MetricNameEnum
 const (
 	ICMPPing         ICMPMetrics = "icmp_ping"
 	ICMPResponseTime ICMPMetrics = "icmp_response_time"
-	ICMPPacketLoss   ICMPMetrics = "icmp_packet_loss"
+	ICMPPacketLoss   ICMPMetrics = "icmp_loss"
 )
 
 const (
 	CircuitPing         CircuitMetrics = "circuit_icmp_ping"
 	CircuitResponseTime CircuitMetrics = "circuit_icmp_response_time"
-	CircuitPacketLoss   CircuitMetrics = "circuit_icmp_packet_loss"
+	CircuitPacketLoss   CircuitMetrics = "circuit_icmp_loss"
 	CircuitRxBytes      CircuitMetrics = "circuit_rx_bytes"
 	CircuitTxBytes      CircuitMetrics = "circuit_tx_bytes"
 	CircuitRxDiscards   CircuitMetrics = "circuit_rx_discards"

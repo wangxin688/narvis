@@ -8,6 +8,7 @@ import (
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
@@ -39,6 +40,14 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 		position, err := infra_utils.SliceUint8ToString(*device.RackPosition)
 		if err != nil {
 			return "", err
+		}
+		rackService := NewRackService()
+		rack, err := rackService.GetRackByID(*device.RackId)
+		if err != nil {
+			return "", err
+		}
+		if !NewRackService().ValidateDeviceCreateRackReservation(*device.RackId, rack.UHeight, *device.RackPosition) {
+			return "", errors.NewError(errors.CodeRackPositionOccupied, errors.MsgRackPositionOccupied)
 		}
 		newDevice.RackPosition = &position
 	}

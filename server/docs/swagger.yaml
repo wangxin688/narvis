@@ -14,15 +14,15 @@ definitions:
     type: object
   alerts.AlertNameEnum:
     enum:
-    - HighCpuUsage
-    - HighMemoryUsage
-    - HighDiskUsage
+    - HighCpuUtilization
+    - HighMemoryUtilization
+    - HighDiskUtilization
     - HighSystemLoad
-    - HighChannelUsage
+    - HighChannelUtilization
     - HighChannelInterference
     - HighChannelNoise
     - HighClientNumber
-    - HighBandwidthUsage
+    - HighBandwidthUtilization
     - HighErrorRate
     - HighICMPLatency
     - HighICMPPacketLoss
@@ -37,15 +37,15 @@ definitions:
     - unknown
     type: string
     x-enum-varnames:
-    - HighCpuUsage
-    - HighMemoryUsage
-    - HighDiskUsage
+    - HighCpuUtilization
+    - HighMemoryUtilization
+    - HighDiskUtilization
     - HighSystemLoad
-    - HighChannelUsage
+    - HighChannelUtilization
     - HighChannelInterference
     - HighChannelNoise
     - HighClientNumber
-    - HighBandwidthUsage
+    - HighBandwidthUtilization
     - HighErrorRate
     - HighICMPLatency
     - HighICMPPacketLoss

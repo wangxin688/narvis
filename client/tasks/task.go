@@ -273,3 +273,19 @@ func webSSHTask(data []byte) error {
 	terminal.Run()
 	return nil
 }
+
+// func configurationBackupTask(data []byte) error {
+// 	task := &intendtask.ConfigurationBackupTask{}
+// 	err := json.Unmarshal(data, task)
+// 	if err != nil {
+// 		logger.Logger.Error("[ConfigurationBackupTask]: Unmarshal err: ", zap.Error(err))
+// 		return err
+// 	}
+// 	// Get the token from the proxy server
+// 	token, err := security.ProxyToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY)
+// 	if err != nil {
+// 		logger.Logger.Error("[ConfigurationBackupTask]: failed to get token", zap.Error(err))
+// 		return err
+// 	}
+
+// }

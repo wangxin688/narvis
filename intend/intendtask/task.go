@@ -59,6 +59,23 @@ type WebSSHTask struct {
 	Cols         int    `json:"cols"`
 }
 
+type ConfigurationBackupTask struct {
+	TaskId       string `json:"taskId"`
+	TaskName     string `json:"taskName"`
+	Callback     string `json:"callback"`
+	ManagementIP string `json:"managementIp"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	Port         uint16 `json:"port"`
+}
+
+type ConfigurationBackupTaskResult struct {
+	Configuration string `json:"configuration"`
+	DeviceId      string `json:"deviceId"`
+	BackupTime    string `json:"backupTime"`
+	HashValue     string `json:"hashValue"`
+}
+
 
 type SnmpV2Credential struct {
 	Community      string `json:"community"`
