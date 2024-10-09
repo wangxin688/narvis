@@ -286,6 +286,21 @@ func (z *Zbx) TemplateDelete(templateIDs []string) (res []string, err error) {
 	return host.TemplateIDs, nil
 }
 
+func (z *Zbx) TemplateGet(params *zs.TemplateGet) (res []*zs.TemplateGetResult, err error) {
+	req := &zs.ZbxRequest{
+		Params: params,
+		Method: "template.get",
+	}
+
+	rsp, err := z.Rpc(req)
+	if err != nil {
+		return nil, err
+	}
+	rsp.GetResult(&res)
+	json.Unmarshal([]byte(rsp.Result), &res)
+	return
+}
+
 func (z *Zbx) ConfigurationImport(config string) (res bool, err error) {
 	params := make(map[string]any)
 	params["format"] = "yaml"

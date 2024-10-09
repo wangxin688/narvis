@@ -65,10 +65,6 @@ func GetDeviceModelFromManufacturer(mf manufacturer.Manufacturer, sysObjId strin
 		return s.JuniperDeviceModel(sysObjId)
 	case manufacturer.CheckPoint:
 		return s.CheckPointDeviceModel(sysObjId)
-	case manufacturer.Sangfor:
-		return s.SangforDeviceModel(sysObjId)
-	case manufacturer.A10:
-		return s.A10DeviceModel(sysObjId)
 	case manufacturer.F5:
 		return s.F5DeviceModel(sysObjId)
 	case manufacturer.Extreme:
@@ -121,16 +117,10 @@ func (d *Dispatcher) getFactory(platformType platform.Platform, snmpConfig facto
 		snmpDriver, err = driver.NewTPLinkDriver(snmpConfig)
 	case platform.Ruckus:
 		snmpDriver, err = driver.NewRuckusDriver(snmpConfig)
-	case platform.Sangfor:
-		snmpDriver, err = driver.NewSangforDriver(snmpConfig)
-	case platform.A10:
-		snmpDriver, err = driver.NewA10Driver(snmpConfig)
 	case platform.F5:
 		snmpDriver, err = driver.NewF5Driver(snmpConfig)
 	case platform.CheckPoint:
 		snmpDriver, err = driver.NewCheckPointDriver(snmpConfig)
-	case platform.ZTE:
-		snmpDriver, err = driver.NewZTEDriver(snmpConfig)
 	case platform.Extreme:
 		snmpDriver, err = driver.NewExtremeDriver(snmpConfig)
 	case platform.MikroTik:

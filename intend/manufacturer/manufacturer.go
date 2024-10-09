@@ -18,8 +18,6 @@ const (
 	Ruckus     Manufacturer = "Ruckus"
 	Juniper    Manufacturer = "Juniper"
 	CheckPoint Manufacturer = "Check Point"
-	Sangfor    Manufacturer = "Sangfor"
-	A10        Manufacturer = "A10 Networks"
 	F5         Manufacturer = "F5 Networks"
 	Extreme    Manufacturer = "Extreme"
 	MikroTik   Manufacturer = "MikroTik"
@@ -41,8 +39,6 @@ func SupportedManufacturer() []Manufacturer {
 		Ruckus,
 		Juniper,
 		CheckPoint,
-		Sangfor,
-		A10,
 		F5,
 		Extreme,
 		MikroTik,
@@ -66,9 +62,6 @@ func GetManufacturerByEnterpriseId(etpId string) Manufacturer {
 		"11863": TPLink,
 		"25053": Ruckus,
 		"2620":  CheckPoint,
-		"30547": Sangfor,
-		"22610": A10,
-		"40842": A10,
 		"12276": F5,
 		"1916":  Extreme,
 		"14988": MikroTik,
@@ -98,8 +91,6 @@ func GetAllManufacturerPlatform() map[Manufacturer][]platform.Platform {
 		Ruckus:     {platform.Ruckus},
 		Juniper:    {platform.Juniper},
 		CheckPoint: {platform.CheckPoint},
-		Sangfor:    {platform.Sangfor},
-		A10:        {platform.A10},
 		F5:         {platform.F5},
 		Extreme:    {platform.Extreme},
 		MikroTik:   {platform.MikroTik},
@@ -131,8 +122,6 @@ func GetAllPlatformManufacturer(plt platform.Platform) map[platform.Platform]Man
 		platform.Ruckus:        Ruckus,
 		platform.Juniper:       Juniper,
 		platform.CheckPoint:    CheckPoint,
-		platform.Sangfor:       Sangfor,
-		platform.A10:           A10,
 		platform.F5:            F5,
 		platform.Extreme:       Extreme,
 		platform.MikroTik:      MikroTik,

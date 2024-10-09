@@ -15,18 +15,15 @@ const (
 	ArubaOSSwitch Platform = "arubaOsswitch"
 	Arista        Platform = "arista"
 	RuiJie        Platform = "ruijie"
-	H3C           Platform = "hpComware"
+	H3C           Platform = "h3c"
 	FortiNet      Platform = "fortinet"
 	PaloAlto      Platform = "Panos"
 	Juniper       Platform = "juniper"
 	Netgear       Platform = "netgear"
 	TPLink        Platform = "tp_link"
 	Ruckus        Platform = "fastiron"
-	Sangfor       Platform = "sangfor"
-	A10           Platform = "a10"
 	F5            Platform = "bigip"
 	CheckPoint    Platform = "checkpoint"
-	ZTE           Platform = "zxrOs"
 	Extreme       Platform = "extreme"
 	MikroTik      Platform = "mikrotik"
 	Unknown       Platform = "unknown"
@@ -52,11 +49,8 @@ func SupportedPlatform() []Platform {
 		Netgear,
 		TPLink,
 		Ruckus,
-		Sangfor,
-		A10,
 		F5,
 		CheckPoint,
-		ZTE,
 		Extreme,
 		MikroTik,
 		Unknown,

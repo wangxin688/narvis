@@ -28,6 +28,12 @@ import (
 )
 
 func main() {
+	var err error
+	defer func() {
+		if err != nil {
+			panic(err)
+		}
+	}()
 	core.SetUpConfig()
 	core.SetUpLogger()
 	gen.SetDefault(connectDB())
@@ -41,6 +47,10 @@ func main() {
 		initNarvisCliCredential(orgId)
 		initNarvisSnmpCredential(orgId)
 	}
+	core.SetUpConfig()
+	err = initZbxTemplates()
+	err = initNarvisTemplates()
+	core.Logger.Info("[bootstrap]: bootstrap completed")
 }
 
 func connectDB() *gorm.DB {
@@ -669,6 +679,66 @@ func initZbxTemplates() error {
 			return err
 		}
 		core.Logger.Info("[bootstrap]: init zbx template", zap.String("name", templateName))
+	}
+	return nil
+}
+
+func initNarvisTemplates() error {
+	templateMeta := core.ProjectPath + "/cmd/bootstrap/appdata/template_meta.json"
+	file, err := os.Open(templateMeta)
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to open template meta file", zap.Error(err))
+		return err
+	}
+	defer file.Close()
+	var templates []map[string]string
+	if err := json.NewDecoder(file).Decode(&templates); err != nil {
+		core.Logger.Error("[bootstrap]: failed to decode template meta file", zap.Error(err))
+		return err
+	}
+	zbxClient := zbx.NewZbxClient()
+	for _, template := range templates {
+		templateName := template["platform"] + " " + template["deviceRole"]
+		dbTemplate, err := gen.Template.Where(
+			gen.Template.TemplateName.Eq(templateName),
+		).Find()
+		if err != nil {
+			core.Logger.Error("[bootstrap]: failed to get template", zap.Error(err))
+			return err
+		}
+		if len(dbTemplate) > 0 {
+			core.Logger.Info("[bootstrap]: template already exists", zap.String("id", dbTemplate[0].Id))
+			continue
+		}
+		output := "templateid"
+		templateId, err := zbxClient.TemplateGet(
+			&zschema.TemplateGet{
+				Output: &output,
+				Filter: &map[string]string{
+					"host": template["basicTemplate"],
+				},
+			},
+		)
+		if err != nil {
+			core.Logger.Error("[bootstrap]: failed to get template", zap.Error(err))
+			return err
+		}
+		if len(templateId) == 0 {
+			core.Logger.Error("[bootstrap]: failed to get template", zap.Error(err))
+			continue
+		}
+		newdbTemplate := &models.Template{
+			TemplateName: templateName,
+			DeviceRole:   template["deviceRole"],
+			Platform:     template["platform"],
+			TemplateId:   templateId[0].TemplateId,
+		}
+		err = gen.Template.Create(newdbTemplate)
+		if err != nil {
+			core.Logger.Error("[bootstrap]: failed to create db template", zap.Error(err))
+			return err
+		}
+		core.Logger.Info("[bootstrap]: template created", zap.String("id", newdbTemplate.Id))
 	}
 	return nil
 }

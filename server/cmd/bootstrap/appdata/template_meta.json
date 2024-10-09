@@ -1,32 +1,52 @@
 [
-    {"platform": "CiscoIos","deviceRole":"CoreSwitch","basicTemplate":"template_cisco_basic"},
-    {"platform": "CiscoIos","deviceRole":"DistributionSwitch","basicTemplate":"template_cisco_basic"},
-    {"platform": "CiscoIos","deviceRole":"AccessSwitch","basicTemplate":"template_cisco_basic"},
-    {"platform": "CiscoIos","deviceRole":"WanRouter","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoIos","deviceRole":"CoreSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoIos","deviceRole":"DistributionSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoIos","deviceRole":"AccessSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoIos","deviceRole":"WanRouter","basicTemplate":"template_cisco_basic"},
 
-    {"platform": "CiscoXe","deviceRole":"CoreSwitch","basicTemplate":"template_cisco_basic"},
-    {"platform": "CiscoXe","deviceRole":"DistributionSwitch", "basicTemplate":"template_cisco_basic" },
-    {"platform": "CiscoXe","deviceRole":"AccessSwitch","basicTemplate":"template_cisco_basic"},
-    {"platform": "CiscoXe","deviceRole":"WlanAC","basicTemplate":"template_cisco_wlan"},
+    {"platform": "ciscoXe","deviceRole":"CoreSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoXe","deviceRole":"DistributionSwitch", "basicTemplate":"template_cisco_basic" },
+    {"platform": "ciscoXe","deviceRole":"AccessSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoXe","deviceRole":"WlanAC","basicTemplate":"template_cisco_wlan"},
 
-    {"platform": "CiscoXr","deviceRole":"WanRouter","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoXr","deviceRole":"WanRouter","basicTemplate":"template_cisco_basic"},
 
-    {"platform": "CiscoNxos","deviceRole":"CoreSwitch","basicTemplate":"template_cisco_basic"},
-    {"platform": "CiscoNxos","deviceRole":"DistributionSwitch","basicTemplate":"template_cisco_basic"},
-    {"platform": "CiscoNxos","deviceRole":"AccessSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoNxos","deviceRole":"CoreSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoNxos","deviceRole":"DistributionSwitch","basicTemplate":"template_cisco_basic"},
+    {"platform": "ciscoNxos","deviceRole":"AccessSwitch","basicTemplate":"template_cisco_basic"},
 
-    {"platform": "HuaweiVrp","deviceRole":"CoreSwitch","basicTemplate":"template_huawei_basic"},
-    {"platform": "HuaweiVrp","deviceRole":"DistributionSwitch","basicTemplate":"template_huawei_basic"},
-    {"platform": "HuaweiVrp","deviceRole":"AccessSwitch","basicTemplate":"template_huawei_basic"},
-    {"platform": "HuaweiVrp","deviceRole":"WanRouter","basicTemplate":"template_huawei_basic"},
-    {"platform": "HuaweiVrp","deviceRole":"WlanAC","basicTemplate":"template_huawei_wlan"},
+    {"platform": "huaweiVrp","deviceRole":"CoreSwitch","basicTemplate":"template_huawei_basic"},
+    {"platform": "huaweiVrp","deviceRole":"DistributionSwitch","basicTemplate":"template_huawei_basic"},
+    {"platform": "huaweiVrp","deviceRole":"AccessSwitch","basicTemplate":"template_huawei_basic"},
+    {"platform": "huaweiVrp","deviceRole":"WanRouter","basicTemplate":"template_huawei_basic"},
+    {"platform": "huaweiVrp","deviceRole":"WlanAC","basicTemplate":"template_huawei_wlan"},
 
-    {"platform": "HuaweiCE","deviceRole":"CoreSwitch","basicTemplate":"template_huawei_ce_basic"},
-    {"platform": "HuaweiCE","deviceRole":"DistributionSwitch","basicTemplate":"template_huawei_ce_basic"},
-    {"platform": "HuaweiCE","deviceRole":"AccessSwitch","basicTemplate":"template_huawei_ce_basic"},
+    {"platform": "huaweiCE","deviceRole":"CoreSwitch","basicTemplate":"template_huawei_ce_basic"},
+    {"platform": "huaweiCE","deviceRole":"DistributionSwitch","basicTemplate":"template_huawei_ce_basic"},
+    {"platform": "huaweiCE","deviceRole":"AccessSwitch","basicTemplate":"template_huawei_ce_basic"},
 
-    {"platform": "HuaweiFM","deviceRole":"CoreSwitch","basicTemplate":"template_huawei_fm_basic"},
-    {"platform": "HuaweiFM","deviceRole":"DistributionSwitch","basicTemplate":"template_huawei_fm_basic"},
-    {"platform": "HuaweiFM","deviceRole":"AccessSwitch","basicTemplate":"template_huawei_fm_basic"}
+    {"platform": "huaweiFM","deviceRole":"CoreSwitch","basicTemplate":"template_huawei_fm_basic"},
+    {"platform": "huaweiFM","deviceRole":"DistributionSwitch","basicTemplate":"template_huawei_fm_basic"},
+    {"platform": "huaweiFM","deviceRole":"AccessSwitch","basicTemplate":"template_huawei_fm_basic"},
+
+    {"platform": "arubaOs","deviceRole":"WlanAC","basicTemplate":"template_aruba_wlan"},
+    {"platform": "h3c","deviceRole":"CoreSwitch","basicTemplate":"template_h3c_basic"},
+    {"platform": "h3c","deviceRole":"DistributionSwitch","basicTemplate":"template_h3c_basic"},
+    {"platform": "h3c","deviceRole":"AccessSwitch","basicTemplate":"template_h3c_basic"},
+    {"platform": "h3c","deviceRole":"WanRouter","basicTemplate":"template_h3c_basic"},
+    {"platform": "h3c","deviceRole":"WlanAC","basicTemplate":"template_h3c_wlan"},
+
+    {"platform": "ruijie","deviceRole":"CoreSwitch","basicTemplate":"template_ruijie_basic"},
+    {"platform": "ruijie","deviceRole":"DistributionSwitch","basicTemplate":"template_ruijie_basic"},
+    {"platform": "ruijie","deviceRole":"AccessSwitch","basicTemplate":"template_ruijie_basic"},
+    {"platform": "ruijie","deviceRole":"WanRouter","basicTemplate":"template_ruijie_basic"},
+    {"platform": "ruijie","deviceRole":"WlanAC","basicTemplate":"template_ruijie_wlan"},
+
+    {"platform": "juniper","deviceRole":"CoreSwitch","basicTemplate":"template_juniper_basic"},
+    {"platform": "juniper","deviceRole":"DistributionSwitch","basicTemplate":"template_juniper_basic"},
+    {"platform": "juniper","deviceRole":"AccessSwitch","basicTemplate":"template_juniper_basic"},
+    {"platform": "juniper","deviceRole":"WanRouter","basicTemplate":"template_juniper_basic"},
+    {"platform": "juniper","deviceRole":"WlanAC","basicTemplate":"template_juniper_wlan"}
+
     
 ]

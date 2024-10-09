@@ -227,9 +227,14 @@ type TemplateCreateResult struct {
 }
 
 type TemplateGet struct {
-	TemplateIDs *[]string `json:"templateids,omitempty"`
-	GroupIDs    *[]string `json:"groupids,omitempty"`
-	Output      *string   `json:"output,omitempty"`
+	TemplateIDs *[]string          `json:"templateids,omitempty"`
+	GroupIDs    *[]string          `json:"groupids,omitempty"`
+	Output      *string            `json:"output,omitempty"`
+	Filter      *map[string]string `json:"filter,omitempty"`
+}
+
+type TemplateGetResult struct {
+	TemplateId string `json:"templateid"`
 }
 
 type TemplateUpdate struct {
