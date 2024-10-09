@@ -289,6 +289,7 @@ func (d *DeviceService) GetDeviceInterfaces(deviceId string) (*[]*schemas.Device
 	return &res, nil
 }
 
+// GetDeviceShortMap get device by pk id, return map[pkId]Device
 func (d *DeviceService) GetDeviceShortMap(deviceIds []string) (map[string]*schemas.DeviceShort, error) {
 	devices, err := gen.Device.Select(
 		gen.Device.Id,
@@ -409,4 +410,10 @@ func (d *DeviceService) GetManagementIP(deviceId string) (string, error) {
 		return "", err
 	}
 	return device.ManagementIp, nil
+}
+
+func (d *DeviceService) GetAllDeviceIdsBySiteId(siteId string) ([]string, error) {
+	var deviceIds []string
+	err := gen.Device.Where(gen.Device.SiteId.Eq(siteId)).Select(gen.Device.Id).Scan(&deviceIds)
+	return deviceIds, err
 }

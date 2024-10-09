@@ -100,7 +100,7 @@ type Matcher string
 const (
 	EqualMatcher    Matcher = "="
 	NotEqualMatcher Matcher = "!="
-	LikeMatcher     Matcher = "!="
+	LikeMatcher     Matcher = "=~"
 	NotLikeMatcher  Matcher = "!~"
 )
 

@@ -10,22 +10,19 @@ type QueryLabelRequest struct {
 	Match     string  `json:"match"` // query string
 	LabelName string  `json:"label_name"`
 }
-
-type BaseRequest struct {
+type VectorRequest struct {
 	Step         uint64  `json:"step"`
 	Query        string  `json:"query"`
 	LegendFormat *string `json:"legend_format,omitempty"`
-}
-
-type VectorRequest struct {
-	BaseRequest
-	Time *uint `json:"time,omitempty"`
+	Time         *uint   `json:"time,omitempty"`
 }
 
 type MatrixRequest struct {
-	BaseRequest
-	Start uint64 `json:"start"`
-	End   uint64 `json:"end"`
+	Step         uint64  `json:"step"`
+	Query        string  `json:"query"`
+	LegendFormat *string `json:"legend_format,omitempty"`
+	Start        uint64  `json:"start"`
+	End          uint64  `json:"end"`
 }
 
 type VectorResponse struct {

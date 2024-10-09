@@ -123,8 +123,9 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 	var dBm string = "dBm"
 
 	var opStatus map[int]string = map[int]string{
-		0: "down",
-		1: "up",
+		-1: "nodata",
+		0:  "down",
+		1:  "up",
 	}
 
 	var duplexStatus map[int]string = map[int]string{
@@ -134,6 +135,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 	}
 
 	var entityStatus map[int]string = map[int]string{
+		-1: "nodata",
 		1: "normal",
 		2: "abnormal",
 	}

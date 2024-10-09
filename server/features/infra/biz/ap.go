@@ -250,3 +250,26 @@ func (s *ApService) CalApHash(ap *models.AP) string {
 	)
 	return helpers.StringToMd5(hashString)
 }
+
+func (s *ApService) GetApIdsByNames(apNames []string, siteId string) ([]string, error) {
+	result := make([]string, 0)
+	err := gen.AP.Select(gen.AP.Id).Where(
+		gen.AP.Name.In(apNames...),
+		gen.AP.SiteId.Eq(siteId),
+	).Scan(&result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (s *ApService) GetAllApIdsBySiteId(siteId string) ([]string, error) {
+	result := make([]string, 0)
+	err := gen.AP.Select(gen.AP.Id).Where(
+		gen.AP.SiteId.Eq(siteId),
+	).Scan(&result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

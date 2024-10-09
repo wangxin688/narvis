@@ -42,10 +42,9 @@ func queryResults(queries map[string]string) (deviceVectors, apVectors map[strin
 	vectorRequests := make([]vtm.VectorRequest, 0)
 	for _, v := range queries {
 		vectorRequests = append(vectorRequests, vtm.VectorRequest{
-			BaseRequest: vtm.BaseRequest{Step: 180, Query: v},
-		})
+			Step: 180, Query: v})
 	}
-	resp, err := vtm.NewVtmClient(core.Settings.Vtm.Url, core.Settings.Vtm.Username, core.Settings.Vtm.Password).GetBulkVector(vectorRequests, nil)
+	resp, err := vtm.NewVtmClient().GetBulkVector(vectorRequests, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -367,7 +366,7 @@ func RunDevice360OfflineTask() {
 	deviceHealthScores := calcHealthScore(aggDeviceMetrics, timestamp)
 	apHealthScores := calcAp360(aggApMetrics, timestamp)
 
-	vtmClient := vtm.NewVtmClient(core.Settings.Vtm.Url, core.Settings.Vtm.Username, core.Settings.Vtm.Password)
+	vtmClient := vtm.NewVtmClient()
 	err = vtmClient.BulkImportMetrics(deviceHealthScores, nil)
 	if err != nil {
 		core.Logger.Error("[device360OfflineTask]failed to import metrics to vtm", zap.Error(err))
