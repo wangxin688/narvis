@@ -39,9 +39,9 @@ func queryResults(queries map[string]string) (deviceVectors, apVectors map[strin
 		return nil, nil, fmt.Errorf("queries is nil")
 	}
 
-	vectorRequests := make([]vtm.VectorRequest, 0)
+	vectorRequests := make([]*vtm.VectorRequest, 0)
 	for _, v := range queries {
-		vectorRequests = append(vectorRequests, vtm.VectorRequest{
+		vectorRequests = append(vectorRequests, &vtm.VectorRequest{
 			Step: 180, Query: v})
 	}
 	resp, err := vtm.NewVtmClient().GetBulkVector(vectorRequests, nil)
@@ -114,11 +114,11 @@ func aggregateApMetrics(vectors map[string][]*vtm.VectorResponse) map[string]map
 				}
 			}
 			if metricName == string(metrics.ApStatus) {
-				apMetrics[siteId][apName].ApStatus = stringToFloat64(item.Value[1])
+				apMetrics[siteId][apName].ApStatus = stringToFloat64(item.Value[1].(string))
 			} else if metricName == string(metrics.ChannelUtilization) {
-				apMetrics[siteId][apName].ChannelUtilization = append(apMetrics[siteId][apName].ChannelUtilization, stringToFloat64(item.Value[1]))
+				apMetrics[siteId][apName].ChannelUtilization = append(apMetrics[siteId][apName].ChannelUtilization, stringToFloat64(item.Value[1].(string)))
 			} else if metricName == string(metrics.ChannelAssociationClients) {
-				apMetrics[siteId][apName].ChannelAssociationClients = append(apMetrics[siteId][apName].ChannelAssociationClients, stringToFloat64(item.Value[1]))
+				apMetrics[siteId][apName].ChannelAssociationClients = append(apMetrics[siteId][apName].ChannelAssociationClients, stringToFloat64(item.Value[1].(string)))
 			}
 		}
 	}
@@ -165,31 +165,31 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 
 			switch metricName {
 			case string(metrics.ICMPPing):
-				deviceMetrics[deviceId].ICMPPing = stringToFloat64(item.Value[1])
+				deviceMetrics[deviceId].ICMPPing = stringToFloat64(item.Value[1].(string))
 			case string(metrics.CpuUsage):
-				deviceMetrics[deviceId].CpuUsage = append(deviceMetrics[deviceId].CpuUsage, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].CpuUsage = append(deviceMetrics[deviceId].CpuUsage, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.MemoryUsage):
-				deviceMetrics[deviceId].MemoryUsage = append(deviceMetrics[deviceId].MemoryUsage, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].MemoryUsage = append(deviceMetrics[deviceId].MemoryUsage, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.Temperature):
-				deviceMetrics[deviceId].Temperature = append(deviceMetrics[deviceId].Temperature, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].Temperature = append(deviceMetrics[deviceId].Temperature, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.FanStatus):
-				deviceMetrics[deviceId].FanStatus = append(deviceMetrics[deviceId].FanStatus, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].FanStatus = append(deviceMetrics[deviceId].FanStatus, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.PowerSupplyStatus):
-				deviceMetrics[deviceId].PowerSupplyStatus = append(deviceMetrics[deviceId].PowerSupplyStatus, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].PowerSupplyStatus = append(deviceMetrics[deviceId].PowerSupplyStatus, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.RxDiscards):
-				deviceMetrics[deviceId].RxDiscards = append(deviceMetrics[deviceId].RxDiscards, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].RxDiscards = append(deviceMetrics[deviceId].RxDiscards, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.TxDiscards):
-				deviceMetrics[deviceId].TxDiscards = append(deviceMetrics[deviceId].TxDiscards, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].TxDiscards = append(deviceMetrics[deviceId].TxDiscards, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.RxErrors):
-				deviceMetrics[deviceId].RxErrors = append(deviceMetrics[deviceId].RxErrors, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].RxErrors = append(deviceMetrics[deviceId].RxErrors, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.TxErrors):
-				deviceMetrics[deviceId].TxErrors = append(deviceMetrics[deviceId].TxErrors, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].TxErrors = append(deviceMetrics[deviceId].TxErrors, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.RxRate):
-				deviceMetrics[deviceId].RxRate = append(deviceMetrics[deviceId].RxRate, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].RxRate = append(deviceMetrics[deviceId].RxRate, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.TxRate):
-				deviceMetrics[deviceId].TxRate = append(deviceMetrics[deviceId].TxRate, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].TxRate = append(deviceMetrics[deviceId].TxRate, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.OperationalStatus):
-				deviceMetrics[deviceId].OperationalStatus = append(deviceMetrics[deviceId].OperationalStatus, stringToFloat64(item.Value[1]))
+				deviceMetrics[deviceId].OperationalStatus = append(deviceMetrics[deviceId].OperationalStatus, stringToFloat64(item.Value[1].(string)))
 			}
 		}
 	}

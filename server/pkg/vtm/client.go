@@ -54,7 +54,7 @@ func (rsp *VtmResponse) getResult(v any) {
 	json.Unmarshal(rsp.Data.Result, &v)
 }
 
-func (c *VtmClient) GetLabelValues(label QueryLabelRequest, OrganizationId *string) (result []string, err error) {
+func (c *VtmClient) GetLabelValues(label *QueryLabelRequest, OrganizationId *string) (result []string, err error) {
 	label_query_path := fmt.Sprintf("/api/v1/label/%s/values", label.LabelName)
 	if label.Match != "" {
 		c.R().SetQueryParam("match", label.Match)
@@ -78,7 +78,7 @@ func (c *VtmClient) GetLabelValues(label QueryLabelRequest, OrganizationId *stri
 	return
 }
 
-func (c *VtmClient) GetVector(query VectorRequest, OrganizationId *string) (results []*VectorResponse, err error) {
+func (c *VtmClient) GetVector(query *VectorRequest, OrganizationId *string) (results []*VectorResponse, err error) {
 
 	vector_query_path := "/api/v1/query"
 	if query.Time != nil {
@@ -100,7 +100,7 @@ func (c *VtmClient) GetVector(query VectorRequest, OrganizationId *string) (resu
 	return
 }
 
-func (c *VtmClient) GetMatrix(query MatrixRequest, OrganizationId *string) (results []*MatrixResponse, err error) {
+func (c *VtmClient) GetMatrix(query *MatrixRequest, OrganizationId *string) (results []*MatrixResponse, err error) {
 
 	matrix_query_path := "/api/v1/query_range"
 
@@ -130,14 +130,14 @@ func (c *VtmClient) GetMatrix(query MatrixRequest, OrganizationId *string) (resu
 	return
 }
 
-func (v *VtmClient) GetBulkVector(queries []VectorRequest, organizationID *string) ([]*VectorResponse, error) {
+func (v *VtmClient) GetBulkVector(queries []*VectorRequest, organizationID *string) ([]*VectorResponse, error) {
 	results := make([]*VectorResponse, 0, len(queries))
 	resultChan := make(chan []*VectorResponse, len(queries))
 	var wg sync.WaitGroup
 
 	for _, query := range queries {
 		wg.Add(1)
-		go func(q VectorRequest) {
+		go func(q *VectorRequest) {
 			defer wg.Done()
 			vectors, err := v.GetVector(q, organizationID)
 			if err != nil {
@@ -163,14 +163,14 @@ func (v *VtmClient) GetBulkVector(queries []VectorRequest, organizationID *strin
 	return results, nil
 }
 
-func (v *VtmClient) GetBulkMatrix(requests []MatrixRequest, organizationID *string) ([]*MatrixResponse, error) {
+func (v *VtmClient) GetBulkMatrix(requests []*MatrixRequest, organizationID *string) ([]*MatrixResponse, error) {
 	results := make([]*MatrixResponse, 0)
 	resultChan := make(chan []*MatrixResponse, len(requests))
 	var wg sync.WaitGroup
 
 	for _, request := range requests {
 		wg.Add(1)
-		go func(req MatrixRequest) {
+		go func(req *MatrixRequest) {
 			defer wg.Done()
 			matrix, err := v.GetMatrix(req, organizationID)
 			if err != nil {
@@ -223,4 +223,62 @@ func metricStringBuilder(metrics []*Metric) string {
 	}
 
 	return builder.String()
+}
+
+func CalculateInterval(start, end int64, dataPoints uint) int {
+	intervals := []int{
+		60,
+		3 * 60,
+		5 * 60,
+		10 * 60,
+		15 * 60,
+		20 * 60,
+		30 * 60,
+		60 * 60,
+		2 * 60 * 60,
+		3 * 60 * 60,
+		4 * 60 * 60,
+		5 * 60 * 60,
+		6 * 60 * 60,
+		7 * 60 * 60,
+		8 * 60 * 60,
+		9 * 60 * 60,
+		10 * 60 * 60,
+		11 * 60 * 60,
+		12 * 60 * 60,
+		13 * 60 * 60,
+		14 * 60 * 60,
+		15 * 60 * 60,
+		16 * 60 * 60,
+		17 * 60 * 60,
+		18 * 60 * 60,
+		19 * 60 * 60,
+		20 * 60 * 60,
+		21 * 60 * 60,
+		22 * 60 * 60,
+		23 * 60 * 60,
+		24 * 60 * 60,
+	}
+	timeDelta := end - start
+	if timeDelta < 0 {
+		return 0
+	}
+	for _, interval := range intervals {
+		if timeDelta/int64(interval) < int64(dataPoints) {
+			return interval
+		}
+	}
+	return 60
+}
+
+// AdjustMatrixResponse adjusts matrix response based on startedAt,
+// if startedAt is greater than the first value of the matrix response, it will be replaced by startedAt
+func AdjustMatrixResponse(matrix []*MatrixResponse, startedAt int64) {
+
+	for _, response := range matrix {
+		vStartedAt := response.Values[0][0].(int64)
+		if vStartedAt < startedAt {
+			response.Values[0][0] = startedAt
+		}
+	}
 }

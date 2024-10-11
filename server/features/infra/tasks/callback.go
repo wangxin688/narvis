@@ -13,6 +13,7 @@ import (
 	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools"
+	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
 	"golang.org/x/exp/rand"
 	"gorm.io/gorm"
@@ -128,7 +129,7 @@ func lldpCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Lldp
 		core.Logger.Error("[deviceScanCallback.lldp]: get devices failed by chassis ids", zap.Error(err))
 		return err
 	}
-	remoteAps, err := infra_biz.NewApService().CetApByMacAddresses(remoteChassisIds, orgId)
+	remoteAps, err := infra_biz.NewApService().GetApByMacAddresses(remoteChassisIds, orgId)
 	if err != nil {
 		core.Logger.Error("[deviceScanCallback.lldp]: get aps failed by chassis ids", zap.Error(err))
 		return err
@@ -360,6 +361,13 @@ func deviceUpdateHandler(data *intendtask.DeviceScanResponse, device *models.Dev
 }
 
 func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
+	ok, err := infra_biz.LicenseUsageDepends(1, scanResults[0].OrganizationId)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return errors.NewError(errors.CodeLicenseCountExceeded, errors.MsgLicenseCountExceeded)
+	}
 	managementIPs := lo.Map(scanResults, func(v *intendtask.ApScanResponse, _ int) string {
 		return v.ManagementIp
 	})

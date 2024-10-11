@@ -1908,6 +1908,20 @@ definitions:
       token_type:
         type: string
     type: object
+  vtm.MatrixResponse:
+    properties:
+      legend:
+        type: string
+      metric:
+        additionalProperties:
+          type: string
+        type: object
+      value:
+        items:
+          items: {}
+          type: array
+        type: array
+    type: object
 info:
   contact:
     name: Jeffry
@@ -4754,6 +4768,77 @@ paths:
       summary: Username Password Login
       tags:
       - Auth
+  /monitor/time-series:
+    get:
+      consumes:
+      - application/json
+      description: Get Time Series Data
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: apName
+        type: array
+      - in: query
+        name: dataPoints
+        type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: deviceId
+        type: array
+      - in: query
+        name: endedAt
+        required: true
+        type: string
+      - in: query
+        name: funcName
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: ifName
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: metricName
+        required: true
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: radioType
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: siteId
+        type: array
+      - in: query
+        name: startedAt
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/vtm.MatrixResponse'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get Time Series Data
+      tags:
+      - Monitor
   /org/organizations:
     post:
       parameters:
@@ -4883,6 +4968,12 @@ paths:
         name: deviceId
         required: true
         type: string
+      - in: query
+        name: cols
+        type: integer
+      - in: query
+        name: rows
+        type: integer
       produces:
       - application/json
       responses:

@@ -25,7 +25,7 @@ func GenerateTask(siteId, taskName, callback string) ([]string, error) {
 		return taskIds, err
 	}
 	if len(devices) == 0 {
-		core.Logger.Info("[taskGeneration]: no devices found", zap.String("task_name", taskName), zap.String("site_id", siteId))
+		core.Logger.Info("[taskGeneration]: no devices found", zap.String("taskName", taskName), zap.String("siteId", siteId))
 		return taskIds, nil
 	}
 	deviceIds := infra_utils.DevicesToIds(devices)

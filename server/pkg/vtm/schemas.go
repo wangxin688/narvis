@@ -5,35 +5,35 @@ import (
 )
 
 type QueryLabelRequest struct {
-	Start     *uint64 `json:"start,omitempty"`
-	End       *uint64 `json:"end,omitempty"`
-	Match     string  `json:"match"` // query string
-	LabelName string  `json:"label_name"`
+	Start     *int64 `json:"start,omitempty"`
+	End       *int64 `json:"end,omitempty"`
+	Match     string `json:"match"` // query string
+	LabelName string `json:"label_name"`
 }
 type VectorRequest struct {
-	Step         uint64  `json:"step"`
+	Step         int     `json:"step"`
 	Query        string  `json:"query"`
 	LegendFormat *string `json:"legend_format,omitempty"`
-	Time         *uint   `json:"time,omitempty"`
+	Time         *int64  `json:"time,omitempty"`
 }
 
 type MatrixRequest struct {
-	Step         uint64  `json:"step"`
+	Step         int     `json:"step"`
 	Query        string  `json:"query"`
 	LegendFormat *string `json:"legend_format,omitempty"`
-	Start        uint64  `json:"start"`
-	End          uint64  `json:"end"`
+	Start        int64   `json:"start"`
+	End          int64   `json:"end"`
 }
 
 type VectorResponse struct {
 	Metric map[string]string `json:"metric"`
-	Value  [2]string         `json:"value"`
+	Value  [2]any            `json:"value"`
 	Legend *string           `json:"legend"`
 }
 
 type MatrixResponse struct {
 	Metric map[string]string `json:"metric"`
-	Values [][][2]string     `json:"value"`
+	Values [][2]any          `json:"value"`
 	Legend *string           `json:"legend"`
 }
 

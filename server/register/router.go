@@ -7,6 +7,7 @@ import (
 	infra_api "github.com/wangxin688/narvis/server/features/infra/api"
 	intend_api "github.com/wangxin688/narvis/server/features/intend/api"
 	ipam_api "github.com/wangxin688/narvis/server/features/ipam/api"
+	monitor_api "github.com/wangxin688/narvis/server/features/monitor/api"
 	organization_api "github.com/wangxin688/narvis/server/features/organization/api"
 	task_api "github.com/wangxin688/narvis/server/features/task/api"
 	webssh_api "github.com/wangxin688/narvis/server/features/webssh/api"
@@ -23,4 +24,5 @@ func RegisterRouter(e *gin.Engine) {
 	task_api.RegisterTaskRoutes(e)
 	ipam_api.RegisterIpamRoutes(e)
 	webssh_api.RegisterWebSSHRoutes(e)
+	monitor_api.RegisterMonitorRoutes(e)
 }

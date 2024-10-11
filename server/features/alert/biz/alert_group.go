@@ -50,7 +50,7 @@ func (ag *AlertGroupService) CreateAlertGroup(group *schemas.AlertGroupCreate) (
 	}
 	if dbGroup == nil {
 		if len(groupEventIds) > 0 || (len(groupEventIds) == 0 && group.Status == "firing") {
-			siteId := group.GroupLabels["site_id"]
+			siteId := group.GroupLabels["siteId"]
 			sendFlag = true
 			core.Logger.Info(fmt.Sprintf("[alertGroup]: receive new alert group with hash: %s with %d alerts", groupKey, len(groupEventIds)))
 			dbGroup = &models.AlertGroup{

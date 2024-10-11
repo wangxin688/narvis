@@ -127,7 +127,7 @@ func (r *RestConfCredentialService) GetCredentialByDeviceId(deviceId string) (*s
 					InheritFromOrg: true,
 				}, nil
 			}
-			return nil, te.NewError(te.CodeNotFound, te.MsgNotFound, gen.RestconfCredential.TableName(), "device_id", deviceId)
+			return nil, te.NewError(te.CodeNotFound, te.MsgNotFound, gen.RestconfCredential.TableName(), "deviceId", deviceId)
 		}
 		return nil, err
 	}

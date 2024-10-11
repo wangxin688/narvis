@@ -48,7 +48,7 @@ func GetApOpStatus(apIds []string, orgId string) (map[string]string, error) {
 	ql := vtm.NewPromQLBuilder(string(metrics.ApStatus))
 	query, err := ql.WithFuncName("last_over_time").WithLabels(
 		vtm.Label{
-			Name:    "ap_name",
+			Name:    "apName",
 			Value:   strings.Join(apNames, "|"),
 			Matcher: vtm.LikeMatcher,
 		},
@@ -58,7 +58,7 @@ func GetApOpStatus(apIds []string, orgId string) (map[string]string, error) {
 		core.Logger.Error("[metricService]: failed to build ap operation status query", zap.Error(err))
 		return res, err
 	}
-	vectors, err := vtm.NewVtmClient().GetVector(vtm.VectorRequest{Query: query, Step: 60}, &orgId)
+	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, &orgId)
 	if err != nil {
 		core.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
 		return res, err
@@ -67,7 +67,7 @@ func GetApOpStatus(apIds []string, orgId string) (map[string]string, error) {
 		return res, nil
 	}
 	for _, v := range vectors {
-		res[apNameIdMap[v.Metric["ap_name"]]] = OpStatusMapping(v.Value[1])
+		res[apNameIdMap[v.Metric["apName"]]] = OpStatusMapping(v.Value[1].(string))
 	}
 	return res, nil
 
@@ -81,7 +81,7 @@ func GetDeviceOpStatus(deviceIds []string, orgId string) (map[string]string, err
 	ql := vtm.NewPromQLBuilder(string(metrics.ICMPPing))
 	query, err := ql.WithFuncName("last_over_time").WithLabels(
 		vtm.Label{
-			Name:    "device_id",
+			Name:    "deviceId",
 			Value:   strings.Join(deviceIds, "|"),
 			Matcher: vtm.LikeMatcher,
 		},
@@ -91,7 +91,7 @@ func GetDeviceOpStatus(deviceIds []string, orgId string) (map[string]string, err
 		core.Logger.Error("[metricService]: failed to build device operation status query", zap.Error(err))
 		return res, err
 	}
-	vectors, err := vtm.NewVtmClient().GetVector(vtm.VectorRequest{Query: query, Step: 60}, &orgId)
+	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, &orgId)
 	if err != nil {
 		core.Logger.Error("[metricService]: failed to get device operation status", zap.Error(err))
 		return res, err
@@ -100,7 +100,7 @@ func GetDeviceOpStatus(deviceIds []string, orgId string) (map[string]string, err
 		return res, nil
 	}
 	for _, v := range vectors {
-		res[v.Metric["device_id"]] = OpStatusMapping(v.Value[1])
+		res[v.Metric["deviceId"]] = OpStatusMapping(v.Value[1].(string))
 	}
 	return res, nil
 }
@@ -109,14 +109,14 @@ func GetDeviceOpStatus(deviceIds []string, orgId string) (map[string]string, err
 func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string, error) {
 	query, err := vtm.NewPromQLBuilder(string(metrics.ApStatus)).
 		WithFuncName("last_over_time").
-		WithLabels(vtm.Label{Name: "site_id", Value: siteId, Matcher: vtm.EqualMatcher}).
+		WithLabels(vtm.Label{Name: "siteId", Value: siteId, Matcher: vtm.EqualMatcher}).
 		WithWindow("5m").Build()
 
 	if err != nil {
 		core.Logger.Error("[metricService]: failed to build ap operation status query", zap.Error(err))
 		return nil, err
 	}
-	vectors, err := vtm.NewVtmClient().GetVector(vtm.VectorRequest{Query: query, Step: 60}, nil)
+	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, nil)
 	if err != nil {
 		core.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
 		return nil, err
@@ -129,7 +129,7 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 	}
 	if opStatus == "nodata" {
 		allApNameWithData := lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
-			return v.Metric["ap_name"]
+			return v.Metric["apName"]
 		})
 		allApIds, err := infra_biz.NewApService().GetAllApIdsBySiteId(siteId)
 		if err != nil {
@@ -148,7 +148,7 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 	if opStatus == "up" {
 		apNames = lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
 			if v.Value[1] == "1" {
-				return v.Metric["ap_name"]
+				return v.Metric["apName"]
 			}
 			return ""
 		})
@@ -158,7 +158,7 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 	} else if opStatus == "down" {
 		apNames = lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
 			if v.Value[1] == "0" {
-				return v.Metric["ap_name"]
+				return v.Metric["apName"]
 			}
 			return ""
 		})
@@ -182,14 +182,14 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string, error) {
 	query, err := vtm.NewPromQLBuilder(string(metrics.ICMPPing)).
 		WithFuncName("last_over_time").
-		WithLabels(vtm.Label{Name: "site_id", Value: siteId, Matcher: vtm.EqualMatcher}).
+		WithLabels(vtm.Label{Name: "siteId", Value: siteId, Matcher: vtm.EqualMatcher}).
 		WithWindow("5m").Build()
 
 	if err != nil {
 		core.Logger.Error("[metricService]: failed to build device operation status query", zap.Error(err))
 		return nil, err
 	}
-	vectors, err := vtm.NewVtmClient().GetVector(vtm.VectorRequest{Query: query, Step: 60}, nil)
+	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, nil)
 	if err != nil {
 		core.Logger.Error("[metricService]: failed to get device operation status", zap.Error(err))
 		return nil, err
@@ -202,7 +202,7 @@ func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 	}
 	if opStatus == "nodata" {
 		allDeviceIdsWithData := lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
-			return v.Metric["device_id"]
+			return v.Metric["deviceId"]
 		})
 		allDeviceIds, err := infra_biz.NewDeviceService().GetAllDeviceIdsBySiteId(siteId)
 		if err != nil {
@@ -216,7 +216,7 @@ func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 	if opStatus == "up" {
 		deviceIds = lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
 			if v.Value[1] == "1" {
-				return v.Metric["device_id"]
+				return v.Metric["deviceId"]
 			}
 			return ""
 		})
@@ -226,7 +226,7 @@ func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 	} else if opStatus == "down" {
 		deviceIds = lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
 			if v.Value[1] == "0" {
-				return v.Metric["device_id"]
+				return v.Metric["deviceId"]
 			}
 			return ""
 		})

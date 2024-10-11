@@ -66,6 +66,8 @@ const (
 const (
 	CodeOrganizationAlreadyExist ErrorCode = 300000
 	MsgOrganizationAlreadyExist  ErrorMsg  = "organization already exist"
+	CodeLicenseCountExceeded     ErrorCode = 300001
+	MsgLicenseCountExceeded      ErrorMsg  = "license count exceeded, can not add infra anymore"
 )
 
 // intend error codes (400000 - 500000)
@@ -96,6 +98,12 @@ const (
 // circuit error codes (700000 - 800000)
 
 // monitor error codes (800000 - 900000)
+const (
+	CodeMetricNotDefined ErrorCode = 800000
+	MsgMetricNotDefined  ErrorMsg  = "metric: %s not defined"
+	CodeQueryBuildFailed ErrorCode = 800001
+	MsgQueryBuildFailed  ErrorMsg  = "query %s build failed"
+)
 
 // alert error codes (900000 - 1000000)
 const (

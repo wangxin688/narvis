@@ -147,14 +147,14 @@ func TestMatchAnyRegexInvalidRegex(t *testing.T) {
 
 func TestDeviceSearch(t *testing.T) {
 	data := map[string]any{
-		"device_role": "WanRouter",
+		"deviceRole": "WanRouter",
 		"description": map[string]string{
 			"en": "WanRouter",
 			"zh": "出口路由器",
 		},
-		"weight":         10,
-		"abbreviation":   "WRT",
-		"product_family": "Routing",
+		"weight":        10,
+		"abbreviation":  "WRT",
+		"productFamily": "Routing",
 	}
 
 	searchValue := "WRT"

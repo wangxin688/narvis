@@ -143,7 +143,7 @@ func (m *MaintenanceService) ListMaintenances(query *schemas.MaintenanceQuery) (
 			EXISTS (
             SELECT *
             FROM jsonb_array_elements(alert_maintenance.conditions) AS elements
-            WHERE elements->>'item' = 'site_id'  AND EXISTS (
+            WHERE elements->>'item' = 'siteId'  AND EXISTS (
             SELECT 1
             FROM jsonb_array_elements_text(elements->'value') AS val
             WHERE val.value IN ?

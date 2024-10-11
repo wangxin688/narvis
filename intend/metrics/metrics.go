@@ -136,8 +136,8 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 	var entityStatus map[int]string = map[int]string{
 		-1: "nodata",
-		1: "normal",
-		2: "abnormal",
+		1:  "normal",
+		2:  "abnormal",
 	}
 
 	metricMeta := map[MetricNameEnum]Metric{
@@ -455,12 +455,14 @@ func GetListMetric() (int, []Metric) {
 	return len(metricMeta), lo.Values(metricMeta)
 }
 
-func GetMetric(metricName string) Metric {
+func GetMetric(metricName string) *Metric {
 
 	metricMeta := getMetricMeta()
 
 	if _, ok := metricMeta[MetricNameEnum(metricName)]; !ok {
-		return Metric{}
+		return nil
 	}
-	return metricMeta[MetricNameEnum(metricName)]
+
+	result := metricMeta[MetricNameEnum(metricName)]
+	return &result
 }

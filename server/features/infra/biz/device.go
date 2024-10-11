@@ -20,6 +20,14 @@ func NewDeviceService() *DeviceService {
 }
 
 func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, error) {
+	orgId := global.OrganizationId.Get()
+	ok, err := LicenseUsageDepends(1, orgId)
+	if err != nil {
+		return "", err
+	}
+	if !ok {
+		return "", errors.NewError(errors.CodeLicenseCountExceeded, errors.MsgLicenseCountExceeded)
+	}
 	newDevice := models.Device{
 		Name:           device.Name,
 		ManagementIp:   device.ManagementIp,
@@ -33,7 +41,7 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 		SerialNumber:   device.SerialNumber,
 		Floor:          device.Floor,
 		SiteId:         device.SiteId,
-		OrganizationId: global.OrganizationId.Get(),
+		OrganizationId: orgId,
 	}
 	if device.RackId != nil && device.RackPosition != nil {
 		newDevice.RackId = device.RackId
@@ -52,7 +60,7 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 		newDevice.RackPosition = &position
 	}
 
-	err := gen.Device.Create(&newDevice)
+	err = gen.Device.Create(&newDevice)
 	if err != nil {
 		return "", err
 	}

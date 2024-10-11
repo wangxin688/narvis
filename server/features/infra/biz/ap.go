@@ -224,8 +224,8 @@ func (s *ApService) GetByIpsAndSiteId(ips []string, siteId string, orgId string)
 	return res, nil
 }
 
-// CetApByMacAddresses: get ap by mac address, return map[ap.macAddress]apModel
-func (s *ApService) CetApByMacAddresses(macAddresses []string, orgId string) (map[string]*models.AP, error) {
+// GetApByMacAddresses: get ap by mac address, return map[ap.macAddress]apModel
+func (s *ApService) GetApByMacAddresses(macAddresses []string, orgId string) (map[string]*models.AP, error) {
 	aps, err := gen.AP.Where(
 		gen.AP.OrganizationId.Eq(orgId),
 		gen.AP.MacAddress.In(macAddresses...),

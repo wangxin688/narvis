@@ -100,10 +100,10 @@ func (s *SnmpCredentialService) GetCredentialByOrgId(orgId string) (*models.Snmp
 	return cred, err
 }
 
-func (s *SnmpCredentialService) DeleteCredential(device_id string) (cred *models.SnmpV2Credential, err error) {
+func (s *SnmpCredentialService) DeleteCredential(deviceId string) (cred *models.SnmpV2Credential, err error) {
 	dbCred, err := gen.SnmpV2Credential.Where(
 		gen.SnmpV2Credential.OrganizationId.Eq(global.OrganizationId.Get()),
-		gen.SnmpV2Credential.DeviceId.Eq(device_id),
+		gen.SnmpV2Credential.DeviceId.Eq(deviceId),
 	).First()
 	if err != nil {
 		return nil, err

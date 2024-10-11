@@ -7,6 +7,7 @@ import (
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools"
+	"github.com/wangxin688/narvis/server/tools/errors"
 	"gorm.io/gorm"
 )
 
@@ -97,9 +98,17 @@ func (s *ScanDeviceService) GetById(id string) (*schemas.ScanDevice, error) {
 }
 
 func (s *ScanDeviceService) UpdateById(id string, update *schemas.ScanDeviceUpdate) (string, error) {
+	orgId := global.OrganizationId.Get()
+	ok, err := LicenseUsageDepends(1, orgId)
+	if err != nil {
+		return "", err
+	}
+	if !ok {
+		return "", errors.NewError(errors.CodeLicenseCountExceeded, errors.MsgLicenseCountExceeded)
+	}
 	device, err := gen.ScanDevice.Where(
 		gen.ScanDevice.Id.Eq(id),
-		gen.ScanDevice.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.ScanDevice.OrganizationId.Eq(orgId),
 	).First()
 	if err != nil {
 		return "", err
@@ -138,6 +147,14 @@ func (s *ScanDeviceService) UpdateById(id string, update *schemas.ScanDeviceUpda
 }
 
 func (s *ScanDeviceService) BatchUpdate(device *schemas.ScanDeviceBatchUpdate) ([]string, error) {
+	orgId := global.OrganizationId.Get()
+	ok, err := LicenseUsageDepends(uint32(len(device.Ids)), orgId)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, errors.NewError(errors.CodeLicenseCountExceeded, errors.MsgLicenseCountExceeded)
+	}
 	for _, id := range device.Ids {
 		_, err := s.UpdateById(id, &schemas.ScanDeviceUpdate{
 			Status:     device.Status,
