@@ -49,12 +49,16 @@ func SupportedManufacturer() []Manufacturer {
 func GetManufacturerByEnterpriseId(etpId string) Manufacturer {
 	idMapping := map[string]Manufacturer{
 		"2011":  Huawei,
-		"56813": "Huawei",
+		"56813": Huawei,
 		"9":     Cisco,
+		"5771":  Cisco,
+		"5842":  Cisco,
+		"53683": Cisco,
 		"14823": Aruba,
 		"30065": Arista,
 		"4881":  RuiJie,
 		"61878": H3C,
+		"25506": H3C,
 		"25461": PaloAlto,
 		"12356": FortiNet,
 		"2636":  Juniper,
