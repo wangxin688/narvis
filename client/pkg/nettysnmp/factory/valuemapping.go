@@ -371,3 +371,35 @@ func GetHuaweiStackRole(stackRole uint64) string {
 	}
 	return huaweiStackRoleValueMapping[stackRole]
 }
+
+func GetCiscoVlanMemberShipTypeValue(vlanMembershipType uint64) string {
+	ciscoVlanMemberShipTypeValueMapping := map[uint64]string{
+		1: "static",
+		2: "dynamic",
+		3: "multiVlan",
+	}
+	return ciscoVlanMemberShipTypeValueMapping[vlanMembershipType]
+}
+
+func GetHuaweiL2PortType(l2PortType uint64) string {
+	huaweiL2PortTypeValueMapping := map[uint64]string{
+		0: "invalid",
+		1: "trunk",
+		2: "access",
+		3: "hybrid",
+		4: "fabric",
+		5: "qinq",
+		6: "desirable",
+		7: "auto",
+	}
+	return huaweiL2PortTypeValueMapping[l2PortType]
+}
+
+func GetCiscoVtpPortTrunkMode(ciscoVtpPortTrunkMode uint64) string {
+	mapping := map[uint64]string{
+		1: "trunking",
+		2: "nonTrunking",
+	}
+
+	return mapping[ciscoVtpPortTrunkMode]
+}

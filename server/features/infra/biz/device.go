@@ -267,7 +267,7 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 	return count, &res, nil
 }
 
-func (d *DeviceService) GetDeviceInterfaces(deviceId string) (*[]*schemas.DeviceInterface, error) {
+func (d *DeviceService) GetDeviceInterfaces(deviceId string) ([]*schemas.DeviceInterface, error) {
 
 	list, err := gen.DeviceInterface.Where(gen.DeviceInterface.DeviceId.Eq(deviceId)).Find()
 
@@ -294,7 +294,7 @@ func (d *DeviceService) GetDeviceInterfaces(deviceId string) (*[]*schemas.Device
 			IfIpAddress:   item.IfIpAddress,
 		})
 	}
-	return &res, nil
+	return res, nil
 }
 
 // GetDeviceShortMap get device by pk id, return map[pkId]Device

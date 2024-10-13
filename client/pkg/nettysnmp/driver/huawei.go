@@ -27,6 +27,11 @@ const hwMemberStackMacAddress = ".1.3.6.1.4.1.2011.5.25.183.1.20.1.4"
 const hwStackPortName = ".1.3.6.1.4.1.2011.5.25.183.1.21.1.3"
 const hwStackPortStatus = ".1.3.6.1.4.1.2011.5.25.183.1.21.1.5"
 
+// HUAWEI-L2IF-MIB
+const hwL2IfPortIfIndex = ".1.3.6.1.4.1.2011.5.25.42.1.1.1.3.1.2"
+const hwL2IfPortType = ".1.3.6.1.4.1.2011.5.25.42.1.1.1.3.1.3"
+const hwL2IfPVID = ".1.3.6.1.4.1.2011.5.25.42.1.1.1.3.1.4"
+
 type HuaweiDriver struct {
 	factory.SnmpDiscovery
 }

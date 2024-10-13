@@ -16,33 +16,33 @@ const AuthorizationString string = "Authorization"
 const AuthorizationBearer string = "Bearer"
 
 type AccessToken struct {
-	TokenType             string `json:"token_type"`
-	AccessToken           string `json:"access_token"`
-	ExpiresAt             int64  `json:"expires_at"`
-	IssuedAt              int64  `json:"issued_at"`
-	RefreshToken          string `json:"refresh_token"`
-	RefreshTokenExpiresAt int64  `json:"refresh_token_expires_at"`
-	RefreshTokenIssuedAt  int64  `json:"refresh_token_issued_at"`
+	TokenType             string    `json:"tokenType"`
+	AccessToken           string    `json:"accessToken"`
+	ExpiresAt             time.Time `json:"expiresAt"`
+	IssuedAt              time.Time `json:"issuedAt"`
+	RefreshToken          string    `json:"refreshToken"`
+	RefreshTokenExpiresAt time.Time `json:"refreshTokenExpiresAt"`
+	RefreshTokenIssuedAt  time.Time `json:"refreshTokenIssuedAt"`
 }
 
 type Claims struct {
-	UserId    string `json:"user_id"`
+	UserId    string `json:"userId"`
 	Username  string `json:"username"`
 	Refreshed bool   `json:"refreshed"`
 	jwt.StandardClaims
 }
 
-func CreateAccessToken(userID string, username string, refresh bool, expire time.Duration) (token string, expiresAt int64, issuedAt int64) {
+func CreateAccessToken(userID string, username string, refresh bool, expire time.Duration) (token string, expiresAt time.Time, issuedAt time.Time) {
 	now := time.Now()
-	expiresAt = now.Add(expire).Unix()
-	issuedAt = now.Unix()
+	expiresAt = now.Add(expire)
+	issuedAt = now
 	claims := Claims{
 		UserId:    userID,
 		Username:  username,
 		Refreshed: refresh,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expiresAt,
-			IssuedAt:  issuedAt,
+			ExpiresAt: expiresAt.Unix(),
+			IssuedAt:  issuedAt.Unix(),
 		},
 	}
 	_token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -20,10 +20,15 @@ const bsnApIpAddress = ".1.3.6.1.4.1.14179.2.2.1.1.19"
 const bsnAPName = ".1.3.6.1.4.1.14179.2.2.1.1.3"
 const bsnAPModel = ".1.3.6.1.4.1.14179.2.2.1.1.16"
 const bsnAPSerialNumber = ".1.3.6.1.4.1.14179.2.2.1.1.17"
+
 // const bsnAPPrimaryMwarName = ".1.3.6.1.4.1.14179.2.2.1.1.10"
 const bsnAPSoftwareVersion = ".1.3.6.1.4.1.14179.2.2.1.1.8"
 
-
+// CISCO-VLAN-MEMBERSHIP-MIB && CISCO-VTP-MIB
+const vmVlanType = ".1.3.6.1.4.1.9.9.68.1.2.2.1.1"
+const vmVlan = ".1.3.6.1.4.1.9.9.68.1.2.2.1.2"
+const vlanTrunkPortIfIndex = ".1.3.6.1.4.1.9.9.46.1.6.1.1.1"
+const vlanTrunkPortDynamicStatus = ".1.3.6.1.4.1.9.9.46.1.6.1.1.14"
 
 type CiscoBaseDriver struct {
 	factory.SnmpDiscovery
@@ -103,6 +108,9 @@ func NewCiscoIosXEDriver(sc factory.SnmpConfig) (*CiscoIosXEDriver, error) {
 
 func (cd *CiscoBaseDriver) Vlans() (vlan []*factory.VlanItem, errors []string) {
 	l2Vlan, err := cd.Session.BulkWalkAll(vtpVlanName)
+	if err != nil {
+		return nil, []string{fmt.Sprintf("failed to get vlan from %s", cd.IpAddress)}
+	}
 	l2VlanIfIndex, errIfIndex := cd.Session.BulkWalkAll(vtpVlanIfIndex)
 	if err != nil || errIfIndex != nil {
 		errors = append(errors, err.Error())
@@ -123,6 +131,32 @@ func (cd *CiscoBaseDriver) Vlans() (vlan []*factory.VlanItem, errors []string) {
 	}
 
 	return vlan, errors
+}
+
+func (cd *CiscoBaseDriver) VlanAssign() (vlan []*factory.VlanAssignItem, errors []string) {
+	vlanType, errVlanType := cd.Session.BulkWalkAll(vmVlanType)
+	if errVlanType != nil {
+		return nil, []string{fmt.Sprintf("failed to get vlan assignment from %s", cd.IpAddress)}
+	}
+
+	vlanId, errVlanId := cd.Session.BulkWalkAll(vmVlan)
+	if errVlanId != nil {
+		return nil, []string{fmt.Sprintf("failed to get vlan assignment from %s", cd.IpAddress)}
+	}
+	indexVlanType := factory.ExtractInteger(vmVlanType, vlanType)
+	indexVlanId := factory.ExtractInteger(vmVlan, vlanId)
+	for i, v := range indexVlanType {
+		ifIndexString := strings.TrimPrefix(i, ".")
+		ifIndex, _ := strconv.Atoi(ifIndexString)
+		_vlan := &factory.VlanAssignItem{
+			VlanType: factory.GetCiscoVlanMemberShipTypeValue(v),
+			IfIndex:  uint64(ifIndex),
+			VlanId:   uint32(indexVlanId[i]),
+		}
+		vlan = append(vlan, _vlan)
+	}
+	return vlan, errors
+
 }
 
 func (cd *CiscoBaseDriver) APs() (ap []*factory.ApItem, errors []string) {

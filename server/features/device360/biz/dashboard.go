@@ -11,6 +11,29 @@ import (
 	"go.uber.org/zap"
 )
 
+func GetAllDeviceHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
+
+	query := vtm.NewPromQLBuilder(string(metrics.HealthScore)).WithWindow("5m")
+	if siteId != nil && *siteId != "" {
+		query = query.WithLabels(vtm.Label{
+			Name:    "siteId",
+			Value:   *siteId,
+			Matcher: vtm.EqualMatcher,
+		})
+	}
+	queryString, err := query.Build()
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to build all device health query", zap.Error(err))
+		return nil, errors.NewError(errors.CodeQueryBuildFailed, errors.MsgQueryBuildFailed, "all device health")
+	}
+	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: queryString, Step: 60}, &orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get all device health", zap.Error(err))
+		return nil, err
+	}
+	return device360_utils.VectorResponseToHealthMap(vectors), nil
+}
+
 func GetSwitchHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
 	query := vtm.NewPromQLBuilder(string(metrics.HealthScore)).
 		WithLabels(vtm.Label{

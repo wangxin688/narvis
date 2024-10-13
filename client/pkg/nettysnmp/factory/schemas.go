@@ -64,6 +64,12 @@ type VlanItem struct {
 	Gateway  string `json:"gateway"`
 }
 
+type VlanAssignItem struct {
+	VlanType string `json:"vlanType"`
+	VlanId   uint32 `json:"vlanId"`
+	IfIndex  uint64 `json:"ifIndex"`
+}
+
 type Route struct{}
 
 type Prefix struct{}
