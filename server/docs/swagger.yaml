@@ -24,15 +24,15 @@ definitions:
     - HighClientNumber
     - HighBandwidthUtilization
     - HighErrorRate
-    - HighICMPLatency
-    - HighICMPPacketLoss
+    - high_icmp_ping_response_time
+    - high_icmp_ping_loss
     - HighTemperature
     - AbnormalFanStatus
     - AbnormalPowerStatus
     - InterfaceDown
     - InterfaceHalfDuplex
     - SnmpAgentTimeout
-    - NodePingTimeout
+    - unavailable_by_icmp_ping
     - ApDown
     - unknown
     type: string
@@ -47,15 +47,15 @@ definitions:
     - HighClientNumber
     - HighBandwidthUtilization
     - HighErrorRate
-    - HighICMPLatency
-    - HighICMPPacketLoss
+    - high_icmp_ping_response_time
+    - high_icmp_ping_loss
     - HighTemperature
     - AbnormalFanStatus
     - AbnormalPowerStatus
     - InterfaceDown
     - InterfaceHalfDuplex
     - SnmpAgentTimeout
-    - NodePingTimeout
+    - unavailable_by_icmp_ping
     - ApDown
     - Unknown
   alerts.SeverityEnum:

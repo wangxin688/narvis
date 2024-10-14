@@ -59,7 +59,7 @@ const (
 	FanStatus         SwitchingMetrics = "fan_status"
 	PowerSupplyStatus SwitchingMetrics = "power_supply_status"
 	Temperature       SwitchingMetrics = "temperature"
-	SnmpAgentStatus   SwitchingMetrics = "snmp_agent_status"
+	SnmpAgentStatus   SwitchingMetrics = "snmp_agent_availability"
 	Uptime            SwitchingMetrics = "uptime"
 )
 
@@ -69,15 +69,16 @@ const (
 const (
 	ApStatus                  WirelessMetrics = "ap_status"
 	ApUptime                  WirelessMetrics = "ap_uptime"
+	ApBootstraps              WirelessMetrics = "ap_bootstraps"
 	ChannelUtilization        WirelessMetrics = "channel_utilization"
 	ChannelNoise              WirelessMetrics = "channel_noise"
 	ChannelReceiveErrorRate   WirelessMetrics = "channel_error_rate"
 	ChannelRxRate             WirelessMetrics = "channel_rx_rate"
 	ChannelTxRate             WirelessMetrics = "channel_tx_rate"
-	ChannelRxBytes            WirelessMetrics = "channel_rx_bytes"
-	ChannelTxBytes            WirelessMetrics = "channel_tx_bytes"
+	ChannelRxBits             WirelessMetrics = "channel_rx_bits"
+	ChannelTxBits             WirelessMetrics = "channel_tx_bits"
 	ChannelFrameRetryRate     WirelessMetrics = "channel_frame_retry_rate"
-	ChannelEirp               WirelessMetrics = "channel_eirp" // transmit power
+	ChannelTransmitPower      WirelessMetrics = "radio_transmit_power" // transmit power
 	ChannelInterferenceRate   WirelessMetrics = "channel_interference_rate"
 	ChannelAssociationClients WirelessMetrics = "channel_association_clients"
 )
@@ -421,8 +422,8 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Legend:                    "{device_name}(channel) Channel Frame Retry",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
-		MetricNameEnum(ChannelEirp): {
-			Name:                      MetricNameEnum(ChannelEirp),
+		MetricNameEnum(ChannelTransmitPower): {
+			Name:                      MetricNameEnum(ChannelTransmitPower),
 			Description:               common.I18n{En: "Channel Transmit Power", Zh: "信道发射功率"},
 			Unit:                      &dBm,
 			ValueMapping:              nil,

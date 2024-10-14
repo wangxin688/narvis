@@ -7,6 +7,7 @@ import (
 	"github.com/wangxin688/narvis/intend/metrics"
 	"github.com/wangxin688/narvis/server/core"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
+	"github.com/wangxin688/narvis/server/features/monitor/schemas"
 	"github.com/wangxin688/narvis/server/pkg/vtm"
 	"go.uber.org/zap"
 )
@@ -235,4 +236,38 @@ func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 		})
 	}
 	return deviceIds, nil
+}
+
+func GetApAssociatedClients(apNames []string, siteId string, orgId string) (map[string]*schemas.ApClientItem, error) {
+	apNamesString := strings.Join(apNames, "|")
+	query, err := vtm.NewPromQLBuilder(string(metrics.ChannelAssociationClients)).
+		WithFuncName("last_over_time").WithLabels(
+		vtm.Label{
+			Name:    "apName",
+			Value:   apNamesString,
+			Matcher: vtm.LikeMatcher,
+		},
+	).WithLabels(vtm.Label{Name: "siteId", Value: siteId, Matcher: vtm.EqualMatcher}).Build()
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to build ap associated clients query", zap.Error(err))
+		return nil, err
+	}
+	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, &orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get ap associated clients", zap.Error(err))
+		return nil, err
+	}
+	result := make(map[string]*schemas.ApClientItem)
+	if len(vectors) == 0 {
+		return result, nil
+	}
+
+	for _, v := range vectors {
+		result[v.Metric["apName"]] = &schemas.ApClientItem{
+			Channel:      v.Metric["channel"],
+			NumOfClients: v.Value[1].(string),
+			RadioType:    v.Metric["radioType"],
+		}
+	}
+	return result, nil
 }
