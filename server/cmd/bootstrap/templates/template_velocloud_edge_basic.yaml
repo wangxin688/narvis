@@ -1,0 +1,545 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 1877cc163d5b46e1a8121d91b1dbe38e
+      name: Templates/narvis
+  templates:
+    - uuid: b19fe0934e714192a4a411105d2b22c9
+      template: template_velocloud_edge_basic
+      name: template_velocloud_edge_basic
+      groups:
+        - name: Templates/narvis
+      items:
+        - uuid: 5a69de3c48e24ce5abe06ffa4e4c52ed
+          name: cpu_utilization
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.45346.1.1.2.2.2.1.0
+          key: vceCpuUtilPct5min
+          delay: 5m
+          history: 90d
+          units: '%'
+          tags:
+            - tag: interval
+              value: 5min
+          triggers:
+            - uuid: 588f6fa0e755477dac7f2c87e8fc6d22
+              expression: 'min(/template_velocloud_sdwan_basic/vceCpuUtilPct5min,5m)>={$CPU.UTIL.CRIT}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'min(/template_velocloud_sdwan_basic/vceCpuUtilPct5min,10m)<{$CPU.UTIL.RECOVER}'
+              name: high_cpu_utlization
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: 5c96c6a8d16a4903ad64206f5136b2df
+          name: cpu_utilization
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.45346.1.1.2.2.2.2.0
+          key: vceCpuUtilPct30sec
+          history: 90d
+          units: '%'
+          tags:
+            - tag: interval
+              value: 30s
+        - uuid: 87fcd9f8e84f4820a03d3c354331cdff
+          name: vcehaadminstate
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.45346.1.1.2.1.2.1.0
+          key: vceHaAdminState
+          delay: 5m
+          history: 90d
+          valuemap:
+            name: VceHaAdminStateType
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          triggers:
+            - uuid: f4db9144cc9743faa98d21428afa12bf
+              expression: 'last(/template_velocloud_sdwan_basic/vceHaAdminState,#1)=2 or last(/template_velocloud_sdwan_basic/vceHaAdminState,#1)=6'
+              name: cluster_ha_status_abnormal
+              status: DISABLED
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: a8adf89659a8499b96ea7dc4b5779ca1
+          name: vcehapeerstate
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.45346.1.1.2.1.2.2.0
+          key: vceHaPeerState
+          delay: 5m
+          history: 90d
+          valuemap:
+            name: VceHaPeerStateType
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+        - uuid: 79d48487e8da4777a04f493e9e1a462b
+          name: memory_utilization
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.45346.1.1.2.2.2.3.0
+          key: vceMemUsedPct
+          delay: 3m
+          history: 90d
+          units: '%'
+          triggers:
+            - uuid: 96a8f9b111474efd84de28d5d79a3ddd
+              expression: 'min(/template_velocloud_sdwan_basic/vceMemUsedPct,10m)>= {$MEMORY.UTIL.MAX}'
+              name: high_memory_utilization
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: 1686315313274cefae5e2dfee29c35e8
+          name: vcepathnum
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.45346.1.1.2.4.2.1.0
+          key: vcePathNum
+          delay: 5m
+          history: 90d
+          trends: '0'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+      discovery_rules:
+        - uuid: 6246ca15cc3540a2a188633874d33075
+          name: vcelinkentry_discovery
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#LINKNAME}, 1.3.6.1.4.1.45346.1.1.2.3.2.2.1.3]'
+          key: vceLinkEntry.discovery
+          delay: 1h
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: 6d6406084286476db2b856165ca311ae
+              name: bits_received
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.39.{#SNMPINDEX}'
+              key: 'vceLinkRxbytes[{#LINKNAME}]'
+              delay: 3m
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+            - uuid: d48d9836c3924dc4a66782cb6da059b5
+              name: vce_link_rx_jitter
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.21.{#SNMPINDEX}'
+              key: 'vceLinkRxJitter[{#LINKNAME}]'
+              delay: 3m
+              units: ms
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+            - uuid: ac735b6621494066acc5b2578cc8cb18
+              name: vce_link_rx_latency
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.23.{#SNMPINDEX}'
+              key: 'vceLinkRxLatency[{#LINKNAME}]'
+              delay: 3m
+              units: ms
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+            - uuid: 4022e99843bc478388d1ba10467bec7c
+              name: vce_link_rx_lost_pkt
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.25.{#SNMPINDEX}'
+              key: 'vceLinkRxLostPkt[{#LINKNAME}]'
+              delay: 3m
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+            - uuid: 5c117efb3835421e86f0a7aa21435837
+              name: vce_link_state
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.34.{#SNMPINDEX}'
+              key: 'vceLinkState[{#LINKNAME}]'
+              delay: 3m
+              valuemap:
+                name: VceLinkStateType
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+              trigger_prototypes:
+                - uuid: 997af49c51c54f2da0d4f8cab77dcd28
+                  expression: 'last(/template_velocloud_sdwan_basic/vceLinkState[{#LINKNAME}])=2 or last(/template_velocloud_sdwan_basic/vceLinkState[{#LINKNAME}])=6'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/template_velocloud_sdwan_basic/vceLinkState[{#LINKNAME}])=7'
+                  name: circuit_unsatable_or_down
+                  opdata: '{"circuit_status": ITEM.LASTVALUE1}'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: circuit
+                      value: '{#LINKNAME}'
+            - uuid: 74f0b5ddb95f46fa9a6c7b5fee66bc6e
+              name: bits_sent
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.38.{#SNMPINDEX}'
+              key: 'vceLinkTxbytes[{#LINKNAME}]'
+              delay: 3m
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+            - uuid: 5e9cad31ceb44e26950d52ead6638f71
+              name: vce_link_tx_jitter
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.20.{#SNMPINDEX}'
+              key: 'vceLinkTxJitter[{#LINKNAME}]'
+              delay: 3m
+              units: ms
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+            - uuid: e10edc1e12a141139becd9d3e540f6bd
+              name: vce_link_tx_latency
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.22.{#SNMPINDEX}'
+              key: 'vceLinkTxLatency[{#LINKNAME}]'
+              delay: 3m
+              units: ms
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+            - uuid: 0a54bf1efaa34bc7a9fef32adb1b630a
+              name: vce_link_tx_lost_pkt
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.24.{#SNMPINDEX}'
+              key: 'vceLinkTxLostPkt[{#LINKNAME}]'
+              delay: 3m
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+            - uuid: 0d19909ad1ea458b98b7fd8a8b6d4c74
+              name: vce_Link_Vpn_State
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.3.2.2.1.26.{#SNMPINDEX}'
+              key: 'vceLinkVpnState[{#LINKNAME}]'
+              delay: 3m
+              valuemap:
+                name: VceLinkStateType
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+          trigger_prototypes:
+            - uuid: 8ed5f9f83b1e4f45a7ed1ec9050eb728
+              expression: 'avg(/template_velocloud_sdwan_basic/vceLinkRxbytes[{#LINKNAME}],5m)>={$IF.MAX.BAND:"{#LINKNAME}"} or avg(/template_velocloud_sdwan_basic/vceLinkTxbytes[{#LINKNAME}],5m)>={$IF.MAX.BAND:"{#LINKNAME}"}'
+              name: isp_traffic_above_threshold
+              opdata: 'In: {ITEM.LASTVALUE1}, out: {ITEM.LASTVALUE3}, speed: {$IF.MAX.BAND: "{#LINKNAME}"}'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: circuit
+                  value: '{#LINKNAME}'
+        - uuid: cf7f8220b40b43ccb360462381c351c4
+          name: vcepathentry_discovery
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#PEERNAME}, 1.3.6.1.4.1.45346.1.1.2.4.2.2.1.6,{#PATHIP}, 1.3.6.1.4.1.45346.1.1.2.4.2.2.1.3]'
+          key: vcePathEntry.discovery
+          delay: 3h
+          status: DISABLED
+          filter:
+            conditions:
+              - macro: '{#PEERNAME}'
+                value: '^.*(Ark|ark).*$'
+                operator: NOT_MATCHES_REGEX
+                formulaid: A
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: f6654dd29386427daafdd9b03d65cd85
+              name: 'Peer {#PEERNAME} path_ip {#PATHIP}: vcePathRxAveLatency'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.4.2.2.1.14.{#SNMPINDEX}'
+              key: 'vcePathRxAveLatency[{#SNMPINDEX}]'
+              delay: 3m
+              status: DISABLED
+              discover: NO_DISCOVER
+              units: ms
+              tags:
+                - tag: Peer
+                  value: '{#PEERNAME}'
+                - tag: '{#PEERNAME}'
+            - uuid: 1e1302513f704b558df3299eee651f38
+              name: 'Peer {#PEERNAME} path_ip {#PATHIP}: vcePathRxBytes'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.4.2.2.1.15.{#SNMPINDEX}'
+              key: 'vcePathRxBytes[{#SNMPINDEX}]'
+              delay: 3m
+              status: DISABLED
+              discover: NO_DISCOVER
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Peer
+                  value: '{#PEERNAME}'
+                - tag: '{#PEERNAME}'
+            - uuid: 3c5b7b19376e414e94166ac8ed45ec16
+              name: 'Peer {#PEERNAME} path_ip {#PATHIP}: vcePathRxLostPkt'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.4.2.2.1.17.{#SNMPINDEX}'
+              key: 'vcePathRxLostPkt[{#SNMPINDEX}]'
+              delay: 3m
+              status: DISABLED
+              discover: NO_DISCOVER
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Peer
+                  value: '{#PEERNAME}'
+                - tag: '{#PEERNAME}'
+            - uuid: 0ff0ce554722433d8cf5eb9fd7805ea1
+              name: 'Peer {#PEERNAME} path_ip {#PATHIP}: vcePathRxState'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.4.2.2.1.10.{#SNMPINDEX}'
+              key: 'vcePathRxState[{#SNMPINDEX}]'
+              delay: 3m
+              status: DISABLED
+              discover: NO_DISCOVER
+              valuemap:
+                name: VcePathStateType
+              tags:
+                - tag: Peer
+                  value: '{#PEERNAME}'
+                - tag: '{#PEERNAME}'
+            - uuid: f56be51bfc764be4b620118a627a7d1f
+              name: 'Peer {#PEERNAME} path_ip {#PATHIP}: vcePathState'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.4.2.2.1.7.{#SNMPINDEX}'
+              key: 'vcePathState[{#SNMPINDEX}]'
+              delay: 3m
+              status: DISABLED
+              discover: NO_DISCOVER
+              valuemap:
+                name: VcePathStateType
+              tags:
+                - tag: Peer
+                  value: '{#PEERNAME}'
+                - tag: '{#PEERNAME}'
+            - uuid: b0532b9f022c4971a27c3c48c6208d8f
+              name: 'Peer {#PEERNAME} path_ip {#PATHIP}: vcePathTxAveLatency'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.4.2.2.1.13.{#SNMPINDEX}'
+              key: 'vcePathTxAveLatency[{#SNMPINDEX}]'
+              delay: 3m
+              status: DISABLED
+              discover: NO_DISCOVER
+              units: ms
+              tags:
+                - tag: Peer
+                  value: '{#PEERNAME}'
+                - tag: '{#PEERNAME}'
+            - uuid: 504068aa839545d0bf79763c15aee55f
+              name: 'Peer {#PEERNAME} path_ip {#PATHIP}: vcePathTxBytes'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.4.2.2.1.16.{#SNMPINDEX}'
+              key: 'vcePathTxBytes[{#SNMPINDEX}]'
+              delay: 3m
+              status: DISABLED
+              discover: NO_DISCOVER
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Peer
+                  value: '{#PEERNAME}'
+                - tag: '{#PEERNAME}'
+            - uuid: 9626a22e1b3d44eca69cb7b36123ea80
+              name: 'Peer {#PEERNAME} path_ip {#PATHIP}: vcePathTxState'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.4.2.2.1.11.{#SNMPINDEX}'
+              key: 'vcePathTxState[{#SNMPINDEX}]'
+              delay: 3m
+              status: DISABLED
+              discover: NO_DISCOVER
+              valuemap:
+                name: VcePathStateType
+              tags:
+                - tag: Peer
+                  value: '{#PEERNAME}'
+                - tag: '{#PEERNAME}'
+            - uuid: 8ea9b60208f84290881071f7cd017974
+              name: 'Peer {#PEERNAME} path_ip {#PATHIP}: vcePathUpTime'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.45346.1.1.2.4.2.2.1.8.{#SNMPINDEX}'
+              key: 'vcePathUpTime[{#SNMPINDEX}]'
+              delay: 3m
+              history: '0'
+              trends: '0'
+              status: DISABLED
+              discover: NO_DISCOVER
+              units: uptime
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.01'
+              tags:
+                - tag: Peer
+                  value: '{#PEERNAME}'
+                - tag: '{#PEERNAME}'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  function hexToIPInner(hexStr) {
+                          var splitDataOrg = hexStr.split(" ");
+                          var splitData = splitDataOrg.filter(function(e) {return e!==''});
+                          for (var i=0; i<splitData.length; i++ ){
+                              if (!!splitData[i]) {
+                                  splitData[i] = parseInt(splitData[i], 16)
+                              } else {
+                  
+                              };
+                  
+                          };
+                          var ip = splitData.join(".");
+                          return ip;
+                      };
+                      var regex = /"{#PATHIP}":"([0-9 A-F ]*) "}/;
+                      var m;
+                      do {
+                      m = regex.exec(value)
+                      if (m) {
+                          var str = '';
+                          hex = m[1];
+                          str = hexToIPInner(hex)
+                          value = value.replace(m[1], str);
+                      }
+                      } while (m);
+                      return (value);
+      macros:
+        - macro: '{$CPU.UTIL.CRIT}'
+          value: '80'
+        - macro: '{$CPU.UTIL.RECOVER}'
+        - macro: '{$MEMORY.UTIL.MAX}'
+          value: '80'
+      valuemaps:
+        - uuid: 0a7cdae115db4fc389837f7223a7f8d6
+          name: VceHaAdminStateType
+          mappings:
+            - value: '1'
+              newvalue: initial
+            - value: '2'
+              newvalue: dead
+            - value: '3'
+              newvalue: unusable
+            - value: '4'
+              newvalue: quiet
+            - value: '5'
+              newvalue: standby
+            - value: '6'
+              newvalue: unstable
+            - value: '7'
+              newvalue: stable
+            - value: '8'
+              newvalue: unknow
+        - uuid: 6a6dbe581d1c4125b62ae41200984371
+          name: VceHaPeerStateType
+          mappings:
+            - value: '1'
+              newvalue: initializing
+            - value: '2'
+              newvalue: active
+            - value: '3'
+              newvalue: standby
+            - value: '5'
+              newvalue: unknown
+        - uuid: 871483cb6b9e4f9892a4a9938348c1fd
+          name: VceLinkStateType
+          mappings:
+            - value: '1'
+              newvalue: initial
+            - value: '2'
+              newvalue: dead
+            - value: '3'
+              newvalue: unusable
+            - value: '4'
+              newvalue: quiet
+            - value: '5'
+              newvalue: standby
+            - value: '7'
+              newvalue: stable
+            - value: '8'
+              newvalue: unknow
+            - value: '6'
+              newvalue: unstable
+        - uuid: 0b0d14a9f2b34f0caf075ab7f553e7e2
+          name: VcePathStateType
+          mappings:
+            - value: '1'
+              newvalue: initial
+            - value: '2'
+              newvalue: dead
+            - value: '3'
+              newvalue: unusable
+            - value: '4'
+              newvalue: quiet
+            - value: '5'
+              newvalue: unstable
+            - value: '6'
+              newvalue: bwUnmeasurable
+            - value: '7'
+              newvalue: waitingForLinkbw
+            - value: '8'
+              newvalue: measuringTxBw
+            - value: '9'
+              newvalue: measuringRxBw
+            - value: '10'
+              newvalue: stable
+            - value: '11'
+              newvalue: active
+            - value: '12'
+              newvalue: upHsby
+            - value: '13'
+              newvalue: idleHsby
+            - value: '14'
+              newvalue: backup
+            - value: '15'
+              newvalue: unknown
+        - uuid: 015c17b3e88747599650c220ca2393d1
+          name: VcePathTunlModeType
+          mappings:
+            - value: '1'
+              newvalue: default
+            - value: '2'
+              newvalue: trusted
+            - value: '3'
+              newvalue: untrustedTransport
+            - value: '4'
+              newvalue: untrustedTunnel
+            - value: '5'
+              newvalue: unknown

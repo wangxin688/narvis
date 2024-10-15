@@ -1,0 +1,828 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 1877cc163d5b46e1a8121d91b1dbe38e
+      name: Templates/narvis
+  templates:
+    - uuid: 840c59acd2424ff38896b6fbb9dbbe7f
+      template: template_aruba_wlan_basic
+      name: template_aruba_wlan_basic
+      description: |
+        desc: aruba wireless controller data collection
+        author: wangxin.jeffry
+        version: v1.3
+        
+        v1.3: fix 5g dual band error for raido discovery
+      templates:
+        - name: template_interface_basic
+      groups:
+        - name: Templates/narvis
+      items:
+        - uuid: ba5d683fa8174747a33f480a5231a193
+          name: association_clients
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.14823.2.2.1.5.2.1.2.0
+          key: aos.associations.total
+          delay: 3m
+          history: 7d
+          trends: '0'
+        - uuid: 8abb3353f0df485fa59a517a1d82fd1c
+          name: number_of_active_aps
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.14823.2.2.1.20.1.2.1.1.0
+          key: aos.ha.active.aps
+          delay: 3m
+          history: 7d
+          trends: '0'
+          description: |
+            Get number of active APs from wac,
+             - show ap database local
+        - uuid: 10dd95f3749a4ab28c218a39510d16fa
+          name: number_of_standby_aps
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.14823.2.2.1.20.1.2.1.2.0
+          key: aos.ha.standby.aps
+          delay: 3m
+          history: 7d
+          trends: '0'
+          description: |
+            Get number of standby APs from wac,
+             - show ap database long, flag S
+        - uuid: 49a5ecc034d640d38d80fbf0213eba80
+          name: memory_total_bytes
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.14823.2.2.1.1.1.11.1.2.1
+          key: aos.memory.total
+          delay: 3m
+          history: 7d
+          trends: '0'
+          units: B
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+        - uuid: 4b44a9532a0d4139899be53eec9b0f59
+          name: memory_utilization
+          type: CALCULATED
+          key: aos.memory.usage
+          delay: 3m
+          history: 7d
+          value_type: FLOAT
+          trends: '0'
+          units: '%'
+          params: '100*last(//aos.memory.used,#1:now-5m)/last(//aos.memory.total,#1:now-5m)'
+          triggers:
+            - uuid: d80724d0365c415591bca1e8b7598579
+              expression: 'min(/template_aruba_wlan_basic/aos.memory.usage,#3)>={$MEMORY.UTIL.HIGH}'
+              name: high_memory_utilization
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: b74ee4cf7a9d438aaedd424dd5820eec
+          name: memory_used_bytes
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.14823.2.2.1.1.1.11.1.3.1
+          key: aos.memory.used
+          delay: 3m
+          history: 7d
+          trends: '0'
+          units: B
+        - uuid: 1aa034555f3244b29103555572fab499
+          name: icmp_ping
+          type: SIMPLE
+          key: icmpping
+          history: 7d
+          trends: '0'
+          triggers:
+            - uuid: e1f7e06012bc4c5cb4ec5851262aacd5
+              expression: 'max(/template_aruba_wlan_basic/icmpping,#3)=0'
+              name: unavailable_by_icmp_ping
+              priority: HIGH
+              description: 'Last three attempts returned timeout.  Please check device connectivity.'
+              manual_close: 'YES'
+        - uuid: 8378b52b29154c619c215abe2e95afac
+          name: icmp_loss
+          type: SIMPLE
+          key: icmppingloss
+          history: 7d
+          value_type: FLOAT
+          trends: '0'
+          units: '%'
+          triggers:
+            - uuid: 71fe8325785a43dda6d1d6a57029fb6f
+              expression: 'min(/template_aruba_wlan_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_aruba_wlan_basic/icmppingloss,5m)<100'
+              name: high_icmp_ping_loss
+              opdata: 'Loss: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: 85fa725505fa463f9bfe9725143461d5
+          name: icmp_response_time
+          type: SIMPLE
+          key: icmppingsec
+          history: 7d
+          value_type: FLOAT
+          trends: '0'
+          units: s
+          triggers:
+            - uuid: 514e5bc675094b629d32ef7a49e32677
+              expression: 'avg(/template_aruba_wlan_basic/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
+              name: high_icmp_ping_response_time
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: 12fb977d7a14450a98741ba2e582afb8
+          name: uptime
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: 'system.net.uptime[sysUpTime.0]'
+          delay: 3m
+          history: 7d
+          trends: '0'
+          units: uptime
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+        - uuid: 3a65afc6c0e3463fba73bf503e8d90d6
+          name: snmp_agent_availability
+          type: INTERNAL
+          key: 'zabbix[host,snmp,available]'
+          history: 7d
+          trends: '0'
+          valuemap:
+            name: zabbix.host.available
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  if (value == 2) {
+                     return 0
+                  } else {
+                     return value
+                  }
+                  }
+          triggers:
+            - uuid: 6c69afeae7b842a492b8da185316da57
+              expression: 'max(/template_aruba_wlan_basic/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
+              name: no_snmp_data_collection
+              opdata: 'Current state: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              description: 'SNMP is not available for polling. Please check device connectivity and SNMP settings.'
+              manual_close: 'YES'
+              dependencies:
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_aruba_wlan_basic/icmpping,#3)=0'
+      discovery_rules:
+        - uuid: 4791d40ccabd4441908a43a6cd64d870
+          name: ap_discovery
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#APNAME},1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.3,{#APACTIVE},1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.41,{#APMODEL},1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.13]'
+          key: aos.ap.discovery
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#APACTIVE}'
+                value: (0)
+                formulaid: A
+              - macro: '{#APMODEL}'
+                value: '225'
+                operator: NOT_MATCHES_REGEX
+                formulaid: B
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: 79834b9df803447bb8718b858d5a6062
+              name: ap_bootstraps
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.20.{#SNMPINDEX}'
+              key: 'aos.ap.bootstraps.[{#APNAME}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              description: 'Number of times the AP has bootstraped with controller.'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+            - uuid: a443eb62f0d44505be7b14af5eb2789f
+              name: ap_status
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.19.{#SNMPINDEX}'
+              key: 'aos.ap.status.[{#APNAME}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              description: 'AP status'
+              valuemap:
+                name: 'ap operational status'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+              trigger_prototypes:
+                - uuid: b00e52aac6e4466d88a4884ad15b06bc
+                  expression: 'min(/template_aruba_wlan_basic/aos.ap.status.[{#APNAME}],5)=2 and last(/template_aruba_wlan_basic/aos.ap.status.[{#APNAME}],#1)<>last(/template_aruba_wlan_basic/aos.ap.status.[{#APNAME}],#2)'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/template_aruba_wlan_basic/aos.ap.status.[{#APNAME}])=1'
+                  name: wireless_access_point_down
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: apName
+                      value: '{#APNAME}'
+            - uuid: 507640f4175c415d9301aa379814b71d
+              name: ap_uptime
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.12.{#SNMPINDEX}'
+              key: 'aos.ap.uptime.[{#APNAME}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              units: uptime
+              description: '# since ap is monitor by WAC, can not use uptime_network as metric_name.'
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.01'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+        - uuid: ac78868e4df244c6b3a2564213f46e1e
+          name: datapath_cpu_discovery
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#CPU}, 1.3.6.1.4.1.14823.2.2.1.2.1.13.1.2]'
+          key: aos.cpu.discovery
+          delay: 1d
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: b26ea5eb470946f895b933d2a464c776
+              name: cpu_utilization
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.2.1.13.1.3.{#SNMPINDEX}'
+              key: 'aos.cpuload.[{#CPU}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              units: '%'
+              tags:
+                - tag: cpu
+                  value: '{#CPU}'
+              trigger_prototypes:
+                - uuid: 2c7d3b33810a4eb68483c48c14733c2e
+                  expression: 'min(/template_aruba_wlan_basic/aos.cpuload.[{#CPU}],3)>={$CPU.USAGE.HIGH}'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'min(/template_aruba_wlan_basic/aos.cpuload.[{#CPU}],3)<=70'
+                  name: high_cpu_utilization
+                  priority: WARNING
+                  description: 'CPU utilization is too high. The system might be slow to respond and with user experience impact.'
+                  manual_close: 'YES'
+                  tags:
+                    - tag: cpu
+                      value: '{#CPU}'
+          overrides:
+            - name: 'supervisor card override'
+              step: '1'
+              filter:
+                conditions:
+                  - macro: '{#CPU}'
+                    value: '^Supervisor Card CPU.*$'
+                    formulaid: A
+              operations:
+                - operationobject: TRIGGER_PROTOTYPE
+                  value: 'High CPU Usage'
+                  discover: NO_DISCOVER
+        - uuid: d59bf3ef0d44437fa4496b38e2d091da
+          name: essid_discover
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#CLIENT},1.3.6.1.4.1.14823.2.2.1.5.2.1.8.1.2]'
+          key: aos.essid.discovery
+          delay: 1h
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: c0f0c20f309d4b4394c7cf1725d2cfcd
+              name: essid_total_client
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.5.2.1.8.1.2.{#SNMPINDEX}'
+              key: 'aos.essid.client.[{#ESSID}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              tags:
+                - tag: essid
+                  value: '{#ESSID}'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var value = JSON.parse(value)
+                  var data = []
+                  for (var j = 0; j < value.length; j++) {
+                   var decimalValues = value[j]['{#SNMPINDEX}'].split('.').map(Number);
+                   var tem_data = decimalValues.slice(1)
+                   var asciiString = "";
+                   for (var i = 0; i < tem_data.length; i++) {
+                   asciiString += String.fromCharCode(tem_data[i]);
+                  }
+                  value[j]['{#ESSID}'] = asciiString
+                  data.push(value[j])
+                  };
+                  return JSON.stringify(data)
+        - uuid: a32c82438cd84090adee5ee70708e2f8
+          name: fan_discovery
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#FANS}, 1.3.6.1.4.1.14823.2.2.1.2.1.17.1.2]'
+          key: aos.fans.discovery
+          delay: 1d
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: 919e01c3497b455397bf7e8a9b4e56db
+              name: fan_status
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.2.1.17.1.2.{#SNMPINDEX}'
+              key: 'aos.fan.status.[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              valuemap:
+                name: 'power status'
+              tags:
+                - tag: fan
+                  value: '{#SNMPINDEX}'
+              trigger_prototypes:
+                - uuid: de71e5f26531414ab9050e8e3e4eb286
+                  expression: 'min(/template_aruba_wlan_basic/aos.fan.status.[{#SNMPINDEX}],3)>1'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/template_aruba_wlan_basic/aos.fan.status.[{#SNMPINDEX}],#1)=1'
+                  name: fan_status_abnormal
+                  priority: WARNING
+                  description: 'Fan {#SNMPINDEX} is not active, please check the device log and hardware status.'
+                  manual_close: 'YES'
+                  tags:
+                    - tag: fan
+                      value: '{#SNMPINDEX}'
+        - uuid: 91e5d504a80849289df202e3205a1124
+          name: power_discovery
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#POWER}, 1.3.6.1.4.1.14823.2.2.1.2.1.18.1.2]'
+          key: aos.power.discovery
+          delay: 1d
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: 67fe1e874c8e43abae3af158465b97b7
+              name: power_supply_status
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.2.1.18.1.2.{#SNMPINDEX}'
+              key: 'aos.power.status.[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              valuemap:
+                name: 'power status'
+              tags:
+                - tag: power
+                  value: '{#SNMPINDEX}'
+              trigger_prototypes:
+                - uuid: 3d5e581f540d4219bce3975bd55a779f
+                  expression: 'min(/template_aruba_wlan_basic/aos.power.status.[{#SNMPINDEX}],3)>1'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/template_aruba_wlan_basic/aos.power.status.[{#SNMPINDEX}],#1)=1'
+                  name: power_status_abnormal
+                  priority: WARNING
+                  description: 'Power Supply is in abnormal state, please check device log and hardware info.'
+                  manual_close: 'YES'
+                  tags:
+                    - tag: power
+                      value: '{#SNMPINDEX}'
+        - uuid: 098d1c22ab0043b795021629bec984ce
+          name: radio_flex_discovery
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#APNAME},.1.3.6.1.4.1.14823.2.2.1.5.2.1.5.1.16,{#RADIOTYPE},.1.3.6.1.4.1.14823.2.2.1.5.2.1.5.1.2,{#CHANNEL},.1.3.6.1.4.1.14823.2.2.1.5.2.1.5.1.15]'
+          key: aos.wlsx.flex.radio.discovery
+          delay: 1h
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: dea59c05e46e4c3ea74630532d8b20ce
+              name: channel_ack_failure
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.29.{#SNMPINDEX}'
+              key: 'aos.channel.ackfailure[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: 694e234e9b104548b9f553fe11ff8298
+              name: channel_busy_rate
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.37.{#SNMPINDEX}'
+              key: 'aos.channel.busy[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              description: 'this is percentage of time the channel is busy， busy=rx+tx+inteference'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: 80304047e14f4fff9220e35b15a4fa64
+              name: channel_interference_rate
+              type: CALCULATED
+              key: 'aos.channel.interference[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              value_type: FLOAT
+              trends: '0'
+              params: 'last(//aos.channel.busy[{#SNMPINDEX}],#1:now-5m)-last(//aos.channel.rxrate[{#SNMPINDEX}],#1:now-5m)-last(//aos.channel.txrate[{#SNMPINDEX}],#1:now-5m)'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+              trigger_prototypes:
+                - uuid: b565d3482dd74e409cddeacd7aa90eb5
+                  expression: 'last(/template_aruba_wlan_basic/aos.channel.interference[{#SNMPINDEX}],#1:now-5m)>={$CHANNEL.INTERFERENCE.WARNING}'
+                  name: high_channel_interference
+                  event_name: '{#APNAME} High channel interference'
+                  opdata: '{ ''ap_name'': ''{#APNAME}'', ''channel'': ''{#CHANNEL}'', ''channel_interference'': {ITEM.VALUE1}}'
+                  priority: INFO
+                  manual_close: 'YES'
+                  tags:
+                    - tag: apName
+                      value: '{#APNAME}'
+            - uuid: dd3c04b416234da392e75693ef6599f1
+              name: channel_noise
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.9.{#SNMPINDEX}'
+              key: 'aos.channel.noise[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+              trigger_prototypes:
+                - uuid: ebc5489a3357498ebde19d7ebe343b66
+                  expression: 'max(/template_aruba_wlan_basic/aos.channel.noise[{#SNMPINDEX}],#3:now-10m)<={$CHANNEL.NOISE.WARNING}'
+                  name: high_channel_noise
+                  event_name: '{#APNAME} High channel noise'
+                  opdata: '{ ''ap_name'': ''{#APNAME}'', ''channel'': ''{#CHANNEL}'', ''channel_noise'': {ITEM.VALUE1}}'
+                  priority: INFO
+                  manual_close: 'YES'
+                  tags:
+                    - tag: apName
+                      value: '{#APNAME}'
+            - uuid: 4e387c0b160047158e43956544adfdf0
+              name: channel_receive_error_rate
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.20.{#SNMPINDEX}'
+              key: 'aos.channel.receive.errorrate[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              description: 'the number of received error packets as a percentage of total packets received on this channel'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: da864beb19ab4d1a9c070a35a92af9f8
+              name: channel_frame_retry_rate
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.12.{#SNMPINDEX}'
+              key: 'aos.channel.retryrate[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              description: 'the number of retry packets as a percentage of total packets transmitted and received on this channel'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: bc110095999545df87c401eeff698a62
+              name: channel_rts_failure
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.28.{#SNMPINDEX}'
+              key: 'aos.channel.rtsfailure[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: 4546982d49d74d97abef3d45eee218a1
+              name: channel_rts_success
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.27.{#SNMPINDEX}'
+              key: 'aos.channel.rtssuccess[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: db5c178e88294d6c8a0a337e28131807
+              name: channel_rx_rate
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.35.{#SNMPINDEX}'
+              key: 'aos.channel.rxrate[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              description: 'this is percentage of time the channel Rx busy'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: de9f7531f0f748b191fa88bf4ccf9c09
+              name: channel_throughput
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.4.{#SNMPINDEX}'
+              key: 'aos.channel.throughput[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              value_type: FLOAT
+              trends: '0'
+              units: bps
+              description: 'this is percentage of time the channel Tx busy'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: fae7fe70423a41e692c35c53f3a1741f
+              name: channel_tx_rate
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.36.{#SNMPINDEX}'
+              key: 'aos.channel.txrate[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              description: 'this is percentage of time the channel Tx busy'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: 20fbabc2acb543dfb7d86c880111c59c
+              name: channel_associated_clients
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.5.2.1.5.1.7.{#SNMPINDEX}'
+              key: 'aos.radio.clients[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+              trigger_prototypes:
+                - uuid: d84db1b6ac614dca932ab7d5c1cb2ca5
+                  expression: 'min(/template_aruba_wlan_basic/aos.radio.clients[{#SNMPINDEX}],#3:now-10m)>={$ASSOCIATED.CLIENT.WARN}'
+                  name: high_client_num
+                  event_name: '{#APNAME} Associated Clients High(10m>60)'
+                  opdata: '{ ''ap_name'': ''{#APNAME}'', ''channel'': ''{#CHANNEL}'', ''client_num'': {ITEM.VALUE1} }'
+                  priority: INFO
+                  manual_close: 'YES'
+                  tags:
+                    - tag: apName
+                      value: '{#APNAME}'
+            - uuid: 874b852216c444d3af10955d43465b9f
+              name: channel_transmit_power
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.5.2.1.5.1.4.{#SNMPINDEX}'
+              key: 'aos.radio.power[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              units: dBm
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: 570363167949410496fa48905fae5155
+              name: channel_rx_bits
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.5.3.1.9.1.2.{#SNMPINDEX}'
+              key: 'aos.radio.rxrate[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: c03e32e0a647466da6dc7d5346de574f
+              name: channel_tx_bits
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.5.3.1.9.1.4.{#SNMPINDEX}'
+              key: 'aos.radio.txrate[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: 7e1c061bdd8940c3bce5ba87e4cf2478
+              name: channel_utilization
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.5.2.1.5.1.6.{#SNMPINDEX}'
+              key: 'aos.radio.utilization[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+              trigger_prototypes:
+                - uuid: 35221d4915e74185b3ccbdae523d655b
+                  expression: 'avg(/template_aruba_wlan_basic/aos.radio.utilization[{#SNMPINDEX}],#3:now-10m)>={$CHANNEL.USAGE.WARNING}'
+                  name: high_channel_utilization
+                  event_name: '{#APNAME} high channel utlization'
+                  opdata: '{ ''ap_name'': ''{#APNAME}'', ''channel'': ''{#CHANNEL}'', ''channel_utilization'': {ITEM.VALUE1} }'
+                  priority: INFO
+                  manual_close: 'YES'
+                  tags:
+                    - tag: apName
+                      value: '{#APNAME}'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var obj=JSON.parse(value)
+                  for (i=0; i<Object.keys(obj).length; i++) {
+                  if (obj[i]['{#RADIOTYPE}'] === "1") {
+                    obj[i]['{#RADIOTYPE}'] = "5GHz"
+                  } else if (obj[i]['{#RADIOTYPE}'] === "3") {
+                    obj[i]['{#RADIOTYPE}'] = "2.4GHz"
+                  } else if  (obj[i]['{#RADIOTYPE}'] === "6") {
+                    obj[i]['{#RADIOTYPE}'] = "6GHz"
+                  }
+                  }
+                  return JSON.stringify(obj)
+          overrides:
+            - name: 'override 2.4G interference'
+              step: '1'
+              filter:
+                conditions:
+                  - macro: '{#RADIOTYPE}'
+                    value: 2.4GHz
+                    formulaid: A
+              operations:
+                - operationobject: TRIGGER_PROTOTYPE
+                  value: high_channel_interference
+                  discover: NO_DISCOVER
+                - operationobject: TRIGGER_PROTOTYPE
+                  value: high_channel_noise
+                  discover: NO_DISCOVER
+                - operationobject: TRIGGER_PROTOTYPE
+                  value: high_channel_utilization
+                  discover: NO_DISCOVER
+                - operationobject: TRIGGER_PROTOTYPE
+                  value: high_client_num_60
+                  discover: NO_DISCOVER
+                - operationobject: TRIGGER_PROTOTYPE
+                  value: high_client_num_80
+                  discover: NO_DISCOVER
+      macros:
+        - macro: '{$ASSOCIATED.CLIENT.WARN}'
+          value: '70'
+          description: 'the number of associated clients for a single AP'
+        - macro: '{$CHANNEL.BUSY.WARNING}'
+          value: '80'
+          description: 'the threshold of channel busy rate for AP'
+        - macro: '{$CHANNEL.INTERFERENCE.WARNING}'
+          value: '20'
+        - macro: '{$CHANNEL.NOISE.WARNING}'
+          value: '88'
+          description: '-88 dBm'
+        - macro: '{$CHANNEL.USAGE.WARNING}'
+          value: '70'
+        - macro: '{$CPU.USAGE.HIGH}'
+          value: '90'
+          description: 'the cpu ulitization of datapath CPU Processor'
+        - macro: '{$DISK.USAGE.HIGH}'
+          value: '90'
+          description: 'the disk utilization high threshold'
+        - macro: '{$ICMP_LOSS_WARN}'
+          value: '20'
+        - macro: '{$ICMP_RESPONSE_TIME_WARN}'
+          value: '0.15'
+        - macro: '{$MEMORY.UTIL.HIGH}'
+          value: '90'
+          description: 'the memory ulitization high threshold'
+        - macro: '{$SNMP.TIMEOUT}'
+          value: 5m
+      valuemaps:
+        - uuid: 8e8d73fd8617462a83fd8414fdb2cdd9
+          name: 'ap operational status'
+          mappings:
+            - value: '1'
+              newvalue: Up
+            - value: '2'
+              newvalue: Down
+        - uuid: 5680b84f8c884860ac0783a7f75c0f89
+          name: 'power status'
+          mappings:
+            - value: '1'
+              newvalue: Active
+            - type: GREATER_OR_EQUAL
+              value: '2'
+              newvalue: Abnormal
+        - uuid: 4315d4a222a1488a8f70a92dffd8c7e0
+          name: zabbix.host.available
+          mappings:
+            - value: '0'
+              newvalue: 'not available'
+            - value: '1'
+              newvalue: available
+            - value: '2'
+              newvalue: unknown

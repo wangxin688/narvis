@@ -26,8 +26,8 @@ const (
 	CircuitPing         CircuitMetrics = "circuit_icmp_ping"
 	CircuitResponseTime CircuitMetrics = "circuit_icmp_response_time"
 	CircuitPacketLoss   CircuitMetrics = "circuit_icmp_loss"
-	CircuitRxBytes      CircuitMetrics = "circuit_rx_bytes"
-	CircuitTxBytes      CircuitMetrics = "circuit_tx_bytes"
+	CircuitRxBits       CircuitMetrics = "circuit_rx_bits"
+	CircuitTxBits       CircuitMetrics = "circuit_tx_bits"
 	CircuitRxDiscards   CircuitMetrics = "circuit_rx_discards"
 	CircuitTxDiscards   CircuitMetrics = "circuit_tx_discards"
 	CircuitRxErrors     CircuitMetrics = "circuit_rx_errors"
@@ -48,7 +48,7 @@ const (
 	TxRate            InterfaceMetrics = "tx_rate"
 	OperationalStatus InterfaceMetrics = "operational_status"
 	HighSpeed         InterfaceMetrics = "high_speed"
-	Duplex            InterfaceMetrics = "duplex"
+	DuplexStatus            InterfaceMetrics = "duplex_status"
 )
 
 const (
@@ -253,8 +253,8 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Legend:                    "{device_name} {interface}:{description} Port Speed",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
-		MetricNameEnum(Duplex): {
-			Name:                      MetricNameEnum(Duplex),
+		MetricNameEnum(DuplexStatus): {
+			Name:                      MetricNameEnum(DuplexStatus),
 			Description:               common.I18n{En: "Duplex Status", Zh: "接口双工状态"},
 			Unit:                      nil,
 			ValueMapping:              &duplexStatus,
@@ -396,21 +396,21 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
-		MetricNameEnum(ChannelRxBytes): {
-			Name:                      MetricNameEnum(ChannelRxBytes),
-			Description:               common.I18n{En: "Channel Rx Bytes", Zh: "信道上行流量"},
+		MetricNameEnum(ChannelRxBits): {
+			Name:                      MetricNameEnum(ChannelRxBits),
+			Description:               common.I18n{En: "Channel Rx Bits", Zh: "信道上行流量"},
 			Unit:                      &bps,
 			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Rx Bytes",
+			Legend:                    "{device_name}(channel) Channel Rx Bits",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
-		MetricNameEnum(ChannelTxBytes): {
-			Name:                      MetricNameEnum(ChannelTxBytes),
-			Description:               common.I18n{En: "Channel Tx Bytes", Zh: "信道下行流量"},
+		MetricNameEnum(ChannelTxBits): {
+			Name:                      MetricNameEnum(ChannelTxBits),
+			Description:               common.I18n{En: "Channel Tx Bits", Zh: "信道下行流量"},
 			Unit:                      &bps,
 			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Tx Bytes",
+			Legend:                    "{device_name}(channel) Channel Tx Bits",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 

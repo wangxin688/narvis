@@ -1,0 +1,342 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 1877cc163d5b46e1a8121d91b1dbe38e
+      name: Templates/narvis
+  templates:
+    - uuid: 43ad9f6642354e76b8e12a65329ba10b
+      template: template_ruijie_basic
+      name: template_ruijie_basic
+      templates:
+        - name: template_interface_basic
+      groups:
+        - name: Templates/narvis
+      items:
+        - uuid: 4847d669ba4c4c78b07ea47a99117e32
+          name: icmp_ping
+          type: SIMPLE
+          key: icmpping
+          history: 90d
+          triggers:
+            - uuid: b963b3218f7048559c406630f518a307
+              expression: 'max(/template_ruijie_basic/icmpping,#3)=0'
+              name: unavailable_by_icmp_ping
+              priority: HIGH
+              description: 'Last three attempts returned timeout.  Please check device connectivity.'
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 78b7f68f5ee64d9d9ac26b8b7e66a5f7
+          name: icmp_loss
+          type: SIMPLE
+          key: icmppingloss
+          history: 90d
+          value_type: FLOAT
+          units: '%'
+          triggers:
+            - uuid: 2c3ea99d702c4322bd1dacd002dea679
+              expression: 'min(/template_ruijie_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_ruijie_basic/icmppingloss,5m)<100'
+              name: high_icmp_ping_loss
+              opdata: 'Loss: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              manual_close: 'YES'
+              dependencies:
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_ruijie_basic/icmpping,#3)=0'
+        - uuid: f45539e385e04119b59ba8f0c08dc67e
+          name: icmp_response_time
+          type: SIMPLE
+          key: icmppingsec
+          history: 90d
+          value_type: FLOAT
+          units: s
+          triggers:
+            - uuid: 19cc42d09cd94a539e04747230c5f310
+              expression: 'avg(/template_ruijie_basic/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
+              name: high_icmp_ping_response_time
+              opdata: 'Value: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              manual_close: 'YES'
+              dependencies:
+                - name: high_icmp_ping_loss
+                  expression: 'min(/template_ruijie_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_ruijie_basic/icmppingloss,5m)<100'
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_ruijie_basic/icmpping,#3)=0'
+              tags:
+                - tag: scope
+                  value: availability
+                - tag: scope
+                  value: performance
+        - uuid: 9ba02c7055f94231bc723679c8d01eae
+          name: 'Module Temperature state'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.4881.1.1.10.2.21.1.4.1.3.1.1
+          key: rjModuleTempState
+          delay: 3m
+          history: 15d
+          status: DISABLED
+          tags:
+            - tag: Application
+              value: 'NET_Ruijie Temperature'
+        - uuid: 7f4ba80e397e42138aa0cfadf095fbb1
+          name: temperature
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.4881.1.1.10.2.1.1.16.0
+          key: rjSystemTemperatureCurrent
+          delay: 3m
+          history: 15d
+          units: ℃
+        - uuid: bf05eb4081cc4efa86644209d3b19fd6
+          name: cpu_utilization
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.4881.1.1.10.2.36.1.1.3.0
+          key: system.cpu.util
+          delay: 3m
+          history: 15d
+          units: '%'
+        - uuid: 3fe10dff1dbf471a88c20c6b5c87e66a
+          name: memory_utilization
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.4881.1.1.10.2.35.1.1.1.3.1
+          key: system.mem.util
+          delay: 3m
+          history: 15d
+          units: '%'
+          triggers:
+            - uuid: 36dd4f8181414ee5af92ca8f19038acc
+              expression: 'min(/template_ruijie_basic/system.mem.util,5m)>{$MEMORY.UTIL.HIGH}'
+              name: high_cpu_utilization
+              event_name: 'High memory utilization (>{$MEMORY.UTIL.HIGH}% for 5m)'
+              priority: AVERAGE
+              description: 'The CPU utilization is too high. The system might be slow to respond.'
+              manual_close: 'YES'
+            - uuid: 0f7198b40a244c5bae5f05a838217e82
+              expression: 'min(/template_ruijie_basic/system.mem.util,5m) > {$MEMORY.UTIL.MAX}'
+              name: high_memory_utilization
+              event_name: 'High memory utilization (>{$MEMORY.UTIL.HIGH}% for 5m)'
+              priority: AVERAGE
+              description: 'Last value: {ITEM.LASTVALUE1}.'
+              manual_close: 'YES'
+        - uuid: 355ba8b362774a7eac892086f248c350
+          name: uptime
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: 'system.net.uptime[sysUpTime.0]'
+          delay: 3m
+          history: 7d
+          trends: '0'
+          units: uptime
+          description: |
+            MIB: SNMPv2-MIB
+            The time (in hundredths of a second) since the network management portion of the system was last re-initialized.
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+        - uuid: d61c6fc55d114ecc8084cb8161efbebb
+          name: snmp_agent_availability
+          type: INTERNAL
+          key: 'zabbix[host,snmp,available]'
+          history: 15d
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  if (value == 2) {
+                     return 0
+                  } else {
+                     return value
+                  }
+                  }
+          triggers:
+            - uuid: 769f0eebcf96452ea976070ee720995d
+              expression: 'max(/template_ruijie_basic/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
+              name: no_snmp_data_collection
+              opdata: 'Current state: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              description: 'SNMP is not available for polling. Please check device connectivity and SNMP settings.'
+              manual_close: 'YES'
+              dependencies:
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_ruijie_basic/icmpping,#3)=0'
+              tags:
+                - tag: scope
+                  value: availability
+      discovery_rules:
+        - uuid: e969bbc713f94d4b8e6e7dd9950d932b
+          name: 'Fan discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},1.3.6.1.4.1.4881.1.1.10.2.21.1.6.1.3.1,{#FAN},1.3.6.1.4.1.4881.1.1.10.2.21.1.6.1.4.1]'
+          key: fan.discovery
+          delay: 1h
+          status: DISABLED
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: 9e732cb4a88140e2b9b9c993baf9c879
+              name: 'FAN1 {#FAN}-{#SNMPINDEX} status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.4881.1.1.10.2.21.1.6.1.3.1.{#SNMPINDEX}'
+              key: 'fan1.status[{#SNMPINDEX}]'
+              delay: 3m
+              history: 15d
+              valuemap:
+                name: 'Ruijie FAN status'
+              tags:
+                - tag: Application
+                  value: 'NET_Ruijie Fan'
+              trigger_prototypes:
+                - uuid: f7d977384949472fbb5c1149331d9ca1
+                  expression: 'min(/template_ruijie_basic/fan1.status[{#SNMPINDEX}],#3)<>{$FAN.NORMAL.STATUS}'
+                  name: 'Fan is in critical state'
+                  priority: AVERAGE
+                  description: 'Last value: {ITEM.LASTVALUE1}.'
+                  manual_close: 'YES'
+            - uuid: 171928fcf4514ff78c29c2667c806000
+              name: 'FAN2 {#FAN}-{#SNMPINDEX} status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.4881.1.1.10.2.21.1.6.1.3.2.{#SNMPINDEX}'
+              key: 'fan2.status[{#SNMPINDEX}]'
+              delay: 3m
+              history: 15d
+              valuemap:
+                name: 'Ruijie FAN status'
+              tags:
+                - tag: Application
+                  value: 'NET_Ruijie Fan'
+              trigger_prototypes:
+                - uuid: 317ffc238fab46f6ae6f63a3399bd1aa
+                  expression: 'min(/template_ruijie_basic/fan2.status[{#SNMPINDEX}],#3)<>{$FAN.NORMAL.STATUS}'
+                  name: 'Fan is in critical state'
+                  priority: AVERAGE
+                  description: 'Last value: {ITEM.LASTVALUE1}.'
+                  manual_close: 'YES'
+        - uuid: 1e73e5098fac43f298d2240d6698a178
+          name: 'PSU Discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},1.3.6.1.4.1.4881.1.1.10.2.21.1.5.1.3.1,{#SENSOR_PSU},1.3.6.1.4.1.4881.1.1.10.2.21.1.5.1.4.1]'
+          key: psu.discovery
+          delay: 1h
+          status: DISABLED
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: 90e032e0f17742bc912d99c533f6bf50
+              name: 'Power {#SENSOR_PSU}-{#SNMPINDEX} status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.4881.1.1.10.2.21.1.5.1.3.1.{#SNMPINDEX}'
+              key: 'sensor.psu.status[swSensorStatus.{#SNMPINDEX}]'
+              delay: 3m
+              history: 15d
+              valuemap:
+                name: 'Ruijie power status'
+              tags:
+                - tag: Application
+                  value: 'NET_Ruijie PSU'
+              trigger_prototypes:
+                - uuid: 3eaf2d9547454a2ca4abfdef1a2f73a6
+                  expression: 'last(/template_ruijie_basic/sensor.psu.status[swSensorStatus.{#SNMPINDEX}])<>{$PSU.NORMAL.STATUS}'
+                  name: 'Power supply is in critical state'
+                  priority: HIGH
+                  description: 'Last value: {ITEM.LASTVALUE1}.'
+                  manual_close: 'YES'
+            - uuid: 549f295b62a44d83a970ba7c26f5be4c
+              name: 'Power2 {#SENSOR_PSU}-{#SNMPINDEX} status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.4881.1.1.10.2.21.1.5.1.3.2.{#SNMPINDEX}'
+              key: 'sensor.psu2.status[swSensorStatus.{#SNMPINDEX}]'
+              delay: 3m
+              history: 15d
+              valuemap:
+                name: 'Ruijie power status'
+              tags:
+                - tag: Application
+                  value: 'NET_Ruijie PSU'
+              trigger_prototypes:
+                - uuid: 82cf10749cf740098b894d644864feaa
+                  expression: 'last(/template_ruijie_basic/sensor.psu2.status[swSensorStatus.{#SNMPINDEX}])<>{$PSU.NORMAL.STATUS}'
+                  name: 'Power supply is in critical state'
+                  priority: HIGH
+                  description: 'Last value: {ITEM.LASTVALUE1}.'
+                  manual_close: 'YES'
+      macros:
+        - macro: '{$CPU.USAGE.HIGH}'
+          value: '90'
+        - macro: '{$FAN_CRIT_STATUS}'
+          value: '2'
+        - macro: '{$ICMP_LOSS_WARN}'
+          value: '20'
+        - macro: '{$ICMP_RESPONSE_TIME_WARN}'
+          value: '0.15'
+        - macro: '{$MEMORY.UTIL.HIGH}'
+          value: '90'
+        - macro: '{$SNMP.TIMEOUT}'
+          value: 5m
+        - macro: '{$TEMP_CRIT}'
+          value: '75'
+        - macro: '{$TEMP_CRIT_LOW}'
+          value: '5'
+        - macro: '{$TEMP_WARN}'
+          value: '68'
+      valuemaps:
+        - uuid: e1b854dc47d5485a952383a7a4da0d6b
+          name: 'Ruijie FAN status'
+          mappings:
+            - value: '0'
+              newvalue: 'not ok'
+            - value: '1'
+              newvalue: ok
+            - value: '2'
+              newvalue: 'not ok'
+            - value: '3'
+              newvalue: 'not ok'
+            - value: '4'
+              newvalue: 'not ok'
+            - value: '5'
+              newvalue: 'not ok'
+            - value: '6'
+              newvalue: 'not ok'
+        - uuid: 126c2d0f0cc242c6b410849323dfa5a1
+          name: 'Ruijie power status'
+          mappings:
+            - value: '0'
+              newvalue: 'not ok'
+            - value: '1'
+              newvalue: 'not ok'
+            - value: '2'
+              newvalue: 'not ok'
+            - value: '3'
+              newvalue: 'not ok'
+            - value: '4'
+              newvalue: ok
+            - value: '5'
+              newvalue: 'not ok'
+            - value: '6'
+              newvalue: 'not ok'
+        - uuid: e1fd3a765cd54c81b39f99bf6acae986
+          name: 'Ruijie temperature status'
+          mappings:
+            - value: '0'
+              newvalue: 'not ok'
+            - value: '1'
+              newvalue: ok
+            - value: '2'
+              newvalue: 'not ok'
+            - value: '3'
+              newvalue: 'not ok'
+            - value: '4'
+              newvalue: 'not ok'
+            - value: '5'
+              newvalue: 'not ok'
+            - value: '6'
+              newvalue: 'not ok'
+        - uuid: 3f6dbf35d8d24af0a59327fbb6aa9cc7
+          name: zabbix.host.available
+          mappings:
+            - value: '0'
+              newvalue: 'not available'
+            - value: '1'
+              newvalue: available
+            - value: '2'
+              newvalue: unknown

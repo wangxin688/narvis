@@ -4,9 +4,9 @@ zabbix_export:
     - uuid: 1877cc163d5b46e1a8121d91b1dbe38e
       name: Templates/narvis
   templates:
-    - uuid: bd35dc67bbc4478fb777de0c917d8553
-      template: template_cisco_basic
-      name: template_cisco_basic
+    - uuid: ace8e140af14491092453aa29903be28
+      template: template_cisco_wlan_basic
+      name: template_cisco_wlan_basic
       description: |
         Template Cisco IOS Software releases 12.2(3.5) or later
         
@@ -32,7 +32,7 @@ zabbix_export:
       groups:
         - name: Templates/narvis
       items:
-        - uuid: e6b2ed08ca1445f69dbf7e70efc5eb4a
+        - uuid: bec379ac9e86470bb7e02611fcf0960a
           name: icmp_ping
           type: SIMPLE
           key: icmpping
@@ -41,13 +41,13 @@ zabbix_export:
           valuemap:
             name: 'Service state'
           triggers:
-            - uuid: 026643b2d17841f08dabccf569b7533f
-              expression: 'max(/template_cisco_basic/icmpping,#3)=0'
+            - uuid: efea2a8cb8014d2296202005dbcb7cfd
+              expression: 'max(/template_cisco_wlan_basic/icmpping,#3)=0'
               name: unavailable_by_icmp_ping
               priority: HIGH
               description: 'Last three attempts returned timeout.  Please check device connectivity.'
               manual_close: 'YES'
-        - uuid: 1a3cd7fad4f74676b7f21eea372b2894
+        - uuid: 4b81c48dd4f74d60a736d017fa684202
           name: icmp_loss
           type: SIMPLE
           key: icmppingloss
@@ -56,16 +56,16 @@ zabbix_export:
           trends: '0'
           units: '%'
           triggers:
-            - uuid: 76c1bca6616b4bdb8a742422a72c0052
-              expression: 'min(/template_cisco_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_cisco_basic/icmppingloss,5m)<100'
+            - uuid: 0a5db7b17e6c45e3b56cf00b676e36bd
+              expression: 'min(/template_cisco_wlan_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_cisco_wlan_basic/icmppingloss,5m)<100'
               name: high_icmp_ping_loss
               opdata: 'Loss: {ITEM.LASTVALUE1}'
               priority: WARNING
               manual_close: 'YES'
               dependencies:
                 - name: unavailable_by_icmp_ping
-                  expression: 'max(/template_cisco_basic/icmpping,#3)=0'
-        - uuid: b5d36ced75404d0a8214d308b42ff489
+                  expression: 'max(/template_cisco_wlan_basic/icmpping,#3)=0'
+        - uuid: 61a2c3f9119f4439ba93a81c3b34d98f
           name: icmp_response_time
           type: SIMPLE
           key: icmppingsec
@@ -74,18 +74,18 @@ zabbix_export:
           trends: '0'
           units: s
           triggers:
-            - uuid: 22d33566ef5d482ebc01ddef713b76bb
-              expression: 'avg(/template_cisco_basic/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
+            - uuid: b889ccc2a57e4015b4aa0dd8e7d1f5e4
+              expression: 'avg(/template_cisco_wlan_basic/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
               name: high_icmp_ping_response_time
               opdata: 'Value: {ITEM.LASTVALUE1}'
               priority: WARNING
               manual_close: 'YES'
               dependencies:
                 - name: high_icmp_ping_loss
-                  expression: 'min(/template_cisco_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_cisco_basic/icmppingloss,5m)<100'
+                  expression: 'min(/template_cisco_wlan_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_cisco_wlan_basic/icmppingloss,5m)<100'
                 - name: unavailable_by_icmp_ping
-                  expression: 'max(/template_cisco_basic/icmpping,#3)=0'
-        - uuid: b3d2505632fe47888f856772f20fc80e
+                  expression: 'max(/template_cisco_wlan_basic/icmpping,#3)=0'
+        - uuid: aebbdc6ffd4f479993cf2d997d89f9fb
           name: snmp_walk_fans
           type: SNMP_AGENT
           snmp_oid: 'walk[1.3.6.1.4.1.9.9.13.1.4.1.2,1.3.6.1.4.1.9.9.13.1.4.1.3]'
@@ -95,7 +95,7 @@ zabbix_export:
           value_type: TEXT
           trends: '0'
           description: 'Discovering system fans.'
-        - uuid: 337e996e018b4120a8f1f658c48f035f
+        - uuid: ed11da838a104704a1747268bd387ec4
           name: snmp_walk_psus
           type: SNMP_AGENT
           snmp_oid: 'walk[1.3.6.1.4.1.9.9.13.1.5.1.2,1.3.6.1.4.1.9.9.13.1.5.1.3]'
@@ -105,7 +105,7 @@ zabbix_export:
           value_type: TEXT
           trends: '0'
           description: 'The table of power supply status maintained by the environmental monitor card.'
-        - uuid: 0b454bf4ea9d44238a6c15be9aa614f3
+        - uuid: 22df67545da440e0bfc3e7f4e6fe092b
           name: snmp_walk_temperature_sensors
           type: SNMP_AGENT
           snmp_oid: 'walk[1.3.6.1.4.1.9.9.13.1.3.1.2,1.3.6.1.4.1.9.9.13.1.3.1.3,1.3.6.1.4.1.9.9.13.1.3.1.6]'
@@ -115,7 +115,7 @@ zabbix_export:
           value_type: TEXT
           trends: '0'
           description: 'Discovery of ciscoEnvMonTemperatureTable (ciscoEnvMonTemperatureDescr), a table of ambient temperature status maintained by the environmental monitor.'
-        - uuid: 84e56c8f866d4d3f94a9888574a70b44
+        - uuid: 3d81db189a34432fbbab1d0274423c83
           name: snmp_walk_system_cpus
           type: SNMP_AGENT
           snmp_oid: 'walk[1.3.6.1.4.1.9.9.109.1.1.1.1.5,1.3.6.1.4.1.9.9.109.1.1.1.1.8]'
@@ -130,7 +130,7 @@ zabbix_export:
             This table allows CISCO-PROCESS-MIB to keep CPU statistics for different physical entities in the router,
             like different CPU chips, group of CPUs, or CPUs in different modules/cards.
             In case of a single CPU, cpmCPUTotalTable has only one entry.
-        - uuid: 22a4eaf40cf941c08e7ca0dfc9fa161b
+        - uuid: ffb9e2ec2a5e412b98f98948bbe1e497
           name: uptime
           type: SNMP_AGENT
           snmp_oid: 1.3.6.1.2.1.1.3.0
@@ -146,7 +146,7 @@ zabbix_export:
             - type: MULTIPLIER
               parameters:
                 - '0.01'
-        - uuid: e6d37610749c4739b38e0b003dbd653d
+        - uuid: 3a78433dc7aa49baa2c1afb1f59cdb2e
           name: snmp_walk_memory
           type: SNMP_AGENT
           snmp_oid: 'walk[1.3.6.1.4.1.9.9.48.1.1.1.2,1.3.6.1.4.1.9.9.48.1.1.1.5,1.3.6.1.4.1.9.9.48.1.1.1.6]'
@@ -159,7 +159,7 @@ zabbix_export:
             MIB: CISCO-MEMORY-POOL-MIB
             Discovery of ciscoMemoryPoolTable, a table of memory pool monitoring entries.
             http://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/15216-contiguous-memory.html.
-        - uuid: 7f19387175a846c992ebf04d4b96100b
+        - uuid: c56193a2b72341a49d969d4dfe71fc91
           name: snmp_agent_availability
           type: INTERNAL
           key: 'zabbix[host,snmp,available]'
@@ -184,8 +184,8 @@ zabbix_export:
                   }
                   }
           triggers:
-            - uuid: 34dc864296724b52913ecf8bb0fb4c0e
-              expression: 'max(/template_cisco_basic/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
+            - uuid: 3aca4e7c0d1c4bd0a882d3c1b8180892
+              expression: 'max(/template_cisco_wlan_basic/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
               name: no_snmp_data_collection
               opdata: 'Current state: {ITEM.LASTVALUE1}'
               priority: WARNING
@@ -193,9 +193,9 @@ zabbix_export:
               manual_close: 'YES'
               dependencies:
                 - name: unavailable_by_icmp_ping
-                  expression: 'max(/template_cisco_basic/icmpping,#3)=0'
+                  expression: 'max(/template_cisco_wlan_basic/icmpping,#3)=0'
       discovery_rules:
-        - uuid: 29e1496def874eaba3c3ee9e3e5ed94c
+        - uuid: e4e6bdd2d42c4186a0858a4e1e5fb8cd
           name: cpu_discovery
           type: DEPENDENT
           key: cpu.discovery
@@ -209,7 +209,7 @@ zabbix_export:
             like different CPU chips, group of CPUs, or CPUs in different modules/cards.
             In case of a single CPU, cpmCPUTotalTable has only one entry.
           item_prototypes:
-            - uuid: 01326a2e4fb64cc0a9de2b52e4b92c22
+            - uuid: 66513e35adf3423c84788517d2c1ff91
               name: cpu_utilization
               type: DEPENDENT
               key: 'system.cpu.util[cpmCPUTotal5minRev.{#SNMPINDEX}]'
@@ -236,8 +236,8 @@ zabbix_export:
                 - tag: cpu
                   value: '{#SNMPINDEX}'
               trigger_prototypes:
-                - uuid: 621e68242d554b4c8ad379e94a88a8b5
-                  expression: 'min(/template_cisco_basic/system.cpu.util[cpmCPUTotal5minRev.{#SNMPINDEX}],5m)>{$CPU.USAGE.HIGH}'
+                - uuid: 598dccff90394685a46977ef998d52ef
+                  expression: 'min(/template_cisco_wlan_basic/system.cpu.util[cpmCPUTotal5minRev.{#SNMPINDEX}],5m)>{$CPU.USAGE.HIGH}'
                   name: high_cpu_utilization
                   event_name: '#{#SNMPINDEX}: High CPU utilization (over {$CPU.USAGE.HIGH}% for 5m)'
                   opdata: 'Current utilization: {ITEM.LASTVALUE1}'
@@ -258,7 +258,7 @@ zabbix_export:
             - type: DISCARD_UNCHANGED_HEARTBEAT
               parameters:
                 - 1h
-        - uuid: 1d85f48f6f7442e192fec31b8252945d
+        - uuid: 5b5aec3f4c124cac9b2bb429e0ce7a62
           name: fan_discovery
           type: DEPENDENT
           key: fan.discovery
@@ -267,7 +267,7 @@ zabbix_export:
           lifetime: '0'
           description: 'The table of fan status maintained by the environmental monitor.'
           item_prototypes:
-            - uuid: e8e23e972ea940379773c39c0c4d587a
+            - uuid: 793a7fe2f4cf474ca640ef9c740a614f
               name: fan_status
               type: DEPENDENT
               key: 'sensor.fan.status[ciscoEnvMonFanState.{#SNMPINDEX}]'
@@ -298,8 +298,8 @@ zabbix_export:
                 - tag: fan
                   value: '{#SENSOR_INFO}'
               trigger_prototypes:
-                - uuid: 07391949fec046fd96ba717130665d25
-                  expression: 'min(/template_cisco_basic/sensor.fan.status[ciscoEnvMonFanState.{#SNMPINDEX}],#3:now-10m)>1'
+                - uuid: 0436b852fbd044fe9097bee77cda50db
+                  expression: 'min(/template_cisco_wlan_basic/sensor.fan.status[ciscoEnvMonFanState.{#SNMPINDEX}],#3:now-10m)>1'
                   name: fan_status_abnormal
                   opdata: 'Current state: {ITEM.LASTVALUE1}'
                   priority: AVERAGE
@@ -320,7 +320,7 @@ zabbix_export:
             - type: DISCARD_UNCHANGED_HEARTBEAT
               parameters:
                 - 1h
-        - uuid: 542057f8a9e24feda0445a2e17864e71
+        - uuid: eeb13c492101467e8279334e67cc180a
           name: memory_discovery
           type: DEPENDENT
           key: memory.discovery
@@ -331,7 +331,7 @@ zabbix_export:
             Discovery of ciscoMemoryPoolTable, a table of memory pool monitoring entries.
             http://www.cisco.com/c/en/us/support/docs/ip/simple-network-management-protocol-snmp/15216-contiguous-memory.html
           item_prototypes:
-            - uuid: 6e7bf3c3a5b84c1b87dad09bda955605
+            - uuid: 32b1fc5fde1240b0a5f4e47e24669429
               name: free_memory
               type: DEPENDENT
               key: 'vm.memory.free[ciscoMemoryPoolFree.{#SNMPINDEX}]'
@@ -350,7 +350,7 @@ zabbix_export:
                     - '0'
               master_item:
                 key: vm.memory.walk
-            - uuid: 488a42cdfd304cf386857bb7a510a878
+            - uuid: 614e36dbe67444818d4e794741666731
               name: used_memory
               type: DEPENDENT
               key: 'vm.memory.used[ciscoMemoryPoolUsed.{#SNMPINDEX}]'
@@ -369,7 +369,7 @@ zabbix_export:
                     - '0'
               master_item:
                 key: vm.memory.walk
-            - uuid: 50d477c306d2451eb605f598e39bc3bf
+            - uuid: 64c15b0f0af74c2fadb0bf303471c144
               name: memory_utilization
               type: CALCULATED
               key: 'vm.memory.util[vm.memory.util.{#SNMPINDEX}]'
@@ -384,8 +384,8 @@ zabbix_export:
                 - tag: entity
                   value: '{#SNMPVALUE}'
               trigger_prototypes:
-                - uuid: 7df7108e9b064c969ad8ceb87e473481
-                  expression: 'min(/template_cisco_basic/vm.memory.util[vm.memory.util.{#SNMPINDEX}],5m)>{$MEMORY.UTIL.HIGH}'
+                - uuid: 06dbd3fcbd794dc6a1ed884bc8c79153
+                  expression: 'min(/template_cisco_wlan_basic/vm.memory.util[vm.memory.util.{#SNMPINDEX}],5m)>{$MEMORY.UTIL.HIGH}'
                   name: high_memory_utilization
                   event_name: '{#SNMPVALUE}: High memory utilization (>{$MEMORY.UTIL.HIGH}% for 5m)'
                   priority: AVERAGE
@@ -405,7 +405,7 @@ zabbix_export:
             - type: DISCARD_UNCHANGED_HEARTBEAT
               parameters:
                 - 1h
-        - uuid: 7005599cd1e5476f9370eda2e82b5864
+        - uuid: 07c989830d4c42a795efa9b1776ca7e7
           name: psu_discovery
           type: DEPENDENT
           key: psu.discovery
@@ -414,7 +414,7 @@ zabbix_export:
           lifetime: '0'
           description: 'The table of power supply status maintained by the environmental monitor card.'
           item_prototypes:
-            - uuid: 08d6b060446d47a8bd37536568747c9f
+            - uuid: 9f40bfaacaa8439598c1b47622b42341
               name: power_supply_status
               type: DEPENDENT
               key: 'sensor.psu.status[ciscoEnvMonSupplyState.{#SNMPINDEX}]'
@@ -445,8 +445,8 @@ zabbix_export:
                 - tag: power
                   value: '{#SENSOR_INFO}'
               trigger_prototypes:
-                - uuid: e063ab1322e74564ab5adc55f37aee16
-                  expression: 'min(/template_cisco_basic/sensor.psu.status[ciscoEnvMonSupplyState.{#SNMPINDEX}],#3)>1'
+                - uuid: 0f90aa59d1f9443f8ac6d5bc19b256a8
+                  expression: 'min(/template_cisco_wlan_basic/sensor.psu.status[ciscoEnvMonSupplyState.{#SNMPINDEX}],#3)>1'
                   name: power_supply_is_in_critical_state
                   opdata: 'Current state: {ITEM.LASTVALUE1}'
                   priority: AVERAGE
@@ -467,7 +467,7 @@ zabbix_export:
             - type: DISCARD_UNCHANGED_HEARTBEAT
               parameters:
                 - 1h
-        - uuid: 35bc972ae88440bf9d5ec8a430cb499c
+        - uuid: aa8192e2dc0941b3b99f103bfca8473d
           name: temperature_discovery
           type: DEPENDENT
           key: temperature.discovery
@@ -478,7 +478,7 @@ zabbix_export:
             Discovery of ciscoEnvMonTemperatureTable (ciscoEnvMonTemperatureDescr), a table of ambient temperature status
             maintained by the environmental monitor.
           item_prototypes:
-            - uuid: 664b1c2eb52f4adba4eeabc402973d8f
+            - uuid: 72dc86d8b7ba4608bcb6900f32314b94
               name: temperature_status
               type: DEPENDENT
               key: 'sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}]'
@@ -503,7 +503,7 @@ zabbix_export:
               tags:
                 - tag: entity
                   value: '{#SNMPVALUE}'
-            - uuid: 80f50f9b59f74ee6832e81644e878e64
+            - uuid: b3463127638449f39c5f6b349d913bc0
               name: temperature
               type: DEPENDENT
               key: 'sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}]'
@@ -529,15 +529,15 @@ zabbix_export:
                 - tag: entity
                   value: '{#SNMPVALUE}'
           trigger_prototypes:
-            - uuid: a29f446270f44a62b0c73ff5bbb120c4
+            - uuid: 27c5dd1ed6fb44f5981f06b70e46b1f8
               expression: |
-                avg(/template_cisco_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)>{$TEMP_CRIT:"{#SNMPVALUE}"}
+                avg(/template_cisco_wlan_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)>{$TEMP_CRIT:"{#SNMPVALUE}"}
                 or
-                last(/template_cisco_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_CRIT_STATUS}
+                last(/template_cisco_wlan_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_CRIT_STATUS}
                 or
-                last(/template_cisco_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_DISASTER_STATUS}
+                last(/template_cisco_wlan_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_DISASTER_STATUS}
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: 'max(/template_cisco_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)<{$TEMP_CRIT:"{#SNMPVALUE}"}-3'
+              recovery_expression: 'max(/template_cisco_wlan_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)<{$TEMP_CRIT:"{#SNMPVALUE}"}-3'
               name: high_temperature
               event_name: '{#SNMPVALUE}: Temperature is above critical threshold: >{$TEMP_CRIT:"{#SNMPVALUE}"}'
               opdata: 'Current value: {ITEM.LASTVALUE1}'
@@ -546,13 +546,13 @@ zabbix_export:
               tags:
                 - tag: entity
                   value: '{#SNMPVALUE}'
-            - uuid: ce89bde21f3644d8b00f5157857c5897
+            - uuid: 6e38d89e254d4afd8373323d1b21c5b8
               expression: |
-                avg(/template_cisco_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)>{$TEMP_WARN:"{#SNMPVALUE}"}
+                avg(/template_cisco_wlan_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)>{$TEMP_WARN:"{#SNMPVALUE}"}
                 or
-                last(/template_cisco_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_WARN_STATUS}
+                last(/template_cisco_wlan_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_WARN_STATUS}
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: 'max(/template_cisco_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)<{$TEMP_WARN:"{#SNMPVALUE}"}-3'
+              recovery_expression: 'max(/template_cisco_wlan_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)<{$TEMP_WARN:"{#SNMPVALUE}"}-3'
               name: high_temperature
               event_name: '{#SNMPVALUE}: Temperature is above warning threshold: >{$TEMP_WARN:"{#SNMPVALUE}"}'
               opdata: 'Current value: {ITEM.LASTVALUE1}'
@@ -561,12 +561,12 @@ zabbix_export:
               dependencies:
                 - name: high_temperature
                   expression: |
-                    avg(/template_cisco_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)>{$TEMP_CRIT:"{#SNMPVALUE}"}
+                    avg(/template_cisco_wlan_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)>{$TEMP_CRIT:"{#SNMPVALUE}"}
                     or
-                    last(/template_cisco_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_CRIT_STATUS}
+                    last(/template_cisco_wlan_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_CRIT_STATUS}
                     or
-                    last(/template_cisco_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_DISASTER_STATUS}
-                  recovery_expression: 'max(/template_cisco_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)<{$TEMP_CRIT:"{#SNMPVALUE}"}-3'
+                    last(/template_cisco_wlan_basic/sensor.temp.status[ciscoEnvMonTemperatureState.{#SNMPINDEX}])={$TEMP_DISASTER_STATUS}
+                  recovery_expression: 'max(/template_cisco_wlan_basic/sensor.temp.value[ciscoEnvMonTemperatureValue.{#SNMPINDEX}],5m)<{$TEMP_CRIT:"{#SNMPVALUE}"}-3'
               tags:
                 - tag: entity
                   value: '{#SNMPVALUE}'
@@ -606,7 +606,7 @@ zabbix_export:
         - macro: '{$TEMP_WARN_STATUS}'
           value: '2'
       valuemaps:
-        - uuid: 0341751040ee4069a2f2016a09a38219
+        - uuid: 10793c77e95f4bb3b76d945850df7964
           name: 'CISCO-ENVMON-MIB::CiscoEnvMonState'
           mappings:
             - value: '1'
@@ -621,14 +621,14 @@ zabbix_export:
               newvalue: notPresent
             - value: '6'
               newvalue: notFunctioning
-        - uuid: b7973e1a3e784565b3b77c04194c8f4c
+        - uuid: 7b483641ff34423db00afabe4ea77db2
           name: entity_status
           mappings:
             - value: '1'
               newvalue: normal
             - value: '2'
               newvalue: abnormal
-        - uuid: e75a01d3d2e54cdfb8aff566bc441ec3
+        - uuid: 63f64cc05e90441fa92087f71d5f18f9
           name: 'EtherLike-MIB::dot3StatsDuplexStatus'
           mappings:
             - value: '1'
@@ -637,7 +637,7 @@ zabbix_export:
               newvalue: halfDuplex
             - value: '3'
               newvalue: fullDuplex
-        - uuid: ff8e8597d4ab4939acac6b1971db8c7d
+        - uuid: 839dedcbf6954408a06472a3a837fef9
           name: 'IF-MIB::ifOperStatus'
           mappings:
             - value: '1'
@@ -652,7 +652,7 @@ zabbix_export:
               newvalue: notPresent
             - value: '7'
               newvalue: lowerLayerDown
-        - uuid: 30ac84dcf12a49a48642fa7d8a86b905
+        - uuid: 982ce340db1c46368f579c4361b9e4a9
           name: 'IF-MIB::ifType'
           mappings:
             - value: '1'
@@ -1227,14 +1227,14 @@ zabbix_export:
               newvalue: ptm
             - value: '290'
               newvalue: ghn
-        - uuid: bce5f83351714800995ad4f00f51d3c3
+        - uuid: 94128b82ec574522b5f1447edabaa7e1
           name: 'Service state'
           mappings:
             - value: '0'
               newvalue: Down
             - value: '1'
               newvalue: Up
-        - uuid: 0860b7f4703442f88adf8b59e1f6a9cc
+        - uuid: 2ce787e6c02c483092b14ee642a955bd
           name: zabbix.host.available
           mappings:
             - value: '0'

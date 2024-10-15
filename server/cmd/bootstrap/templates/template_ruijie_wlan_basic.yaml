@@ -1,0 +1,211 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 1877cc163d5b46e1a8121d91b1dbe38e
+      name: Templates/narvis
+  templates:
+    - uuid: 8db906b81cb646d784cba14644164faf
+      template: template_ruijie_wlan_basic
+      name: template_ruijie_wlan_basic
+      templates:
+        - name: template_interface_basic
+      groups:
+        - name: Templates/narvis
+      items:
+        - uuid: 0b53fc34915b4d6abce7b7f021e8e5bd
+          name: icmp_ping
+          type: SIMPLE
+          key: icmpping
+          history: 1w
+          triggers:
+            - uuid: cff1f0c45b964a7b99db5c5be4b56dac
+              expression: 'max(/template_ruijie_wlan_basic/icmpping,#3)=0'
+              name: unavailable_by_icmp_ping
+              priority: HIGH
+              description: 'Last three attempts returned timeout.  Please check device connectivity.'
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: 6123ba7cf38e42a3928c635a2981d857
+          name: icmp_loss
+          type: SIMPLE
+          key: icmppingloss
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          triggers:
+            - uuid: f9ec899fb1054635ad33739d13c972c2
+              expression: 'min(/template_ruijie_wlan_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_ruijie_wlan_basic/icmppingloss,5m)<100'
+              name: high_icmp_ping_loss
+              opdata: 'Loss: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              manual_close: 'YES'
+              dependencies:
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_ruijie_wlan_basic/icmpping,#3)=0'
+        - uuid: d781abb74fd942999cc053d77011b98a
+          name: icmp_response_time
+          type: SIMPLE
+          key: icmppingsec
+          history: 1w
+          value_type: FLOAT
+          units: s
+          triggers:
+            - uuid: 2a568f2701bf4d19a11f8308b72df9ef
+              expression: 'avg(/template_ruijie_wlan_basic/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
+              name: high_icmp_ping_response_time
+              opdata: 'Value: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              manual_close: 'YES'
+              dependencies:
+                - name: high_icmp_ping_loss
+                  expression: 'min(/template_ruijie_wlan_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_ruijie_wlan_basic/icmppingloss,5m)<100'
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_ruijie_wlan_basic/icmpping,#3)=0'
+              tags:
+                - tag: scope
+                  value: availability
+                - tag: scope
+                  value: performance
+        - uuid: f759820b4a064e76b6c5cfa93f756ae4
+          name: uptime_hardware
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.25.1.1.0
+          key: 'system.hw.uptime[hrSystemUptime.0]'
+          delay: 3m
+          history: 2w
+          trends: '0'
+          status: DISABLED
+          units: uptime
+          description: |
+            MIB: HOST-RESOURCES-MIB
+            The amount of time since this host was last initialized. Note that this is different from sysUpTime in the SNMPv2-MIB [RFC1907] because sysUpTime is the uptime of the network management portion of the system.
+          preprocessing:
+            - type: CHECK_NOT_SUPPORTED
+              parameters:
+                - '-1'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+        - uuid: 9e56410ecdc0469c9242077f32c60b75
+          name: uptime_network
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: 'system.net.uptime[sysUpTime.0]'
+          history: 2w
+          trends: '0'
+          units: uptime
+          description: |
+            MIB: SNMPv2-MIB
+            The time (in hundredths of a second) since the network management portion of the system was last re-initialized.
+        - uuid: e72646fce6c243e38808f838f2491d33
+          name: snmp_agent_availability
+          type: INTERNAL
+          key: 'zabbix[host,snmp,available]'
+          history: 7d
+          description: |
+            Availability of SNMP checks on the host. The value of this item corresponds to availability icons in the host list.
+            Possible value:
+            0 - not available
+            1 - available
+            2 - unknown
+          valuemap:
+            name: zabbix.host.available
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  if (value == 2) {
+                     return 0
+                  } else {
+                     return value
+                  }
+                  }
+          triggers:
+            - uuid: 683a5f89528740069a1b4483abb53be7
+              expression: 'max(/template_ruijie_wlan_basic/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
+              name: no_snmp_data_collection
+              opdata: 'Current state: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              description: 'SNMP is not available for polling. Please check device connectivity and SNMP settings.'
+              manual_close: 'YES'
+              dependencies:
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_ruijie_wlan_basic/icmpping,#3)=0'
+              tags:
+                - tag: scope
+                  value: availability
+      macros:
+        - macro: '{$ASSOCIATED.CLIENT.HIGH}'
+          value: '80'
+          description: 'the number of associated clients for a single AP'
+        - macro: '{$ASSOCIATED.CLIENT.WARN}'
+          value: '60'
+          description: 'the number of associated clients for a single AP'
+        - macro: '{$CHANNEL.BUSY.WARNING}'
+          value: '70'
+          description: 'the threshold of channel busy rate for AP'
+        - macro: '{$CHANNEL.INTERFERENCE.WARNING}'
+          value: '20'
+        - macro: '{$CHANNEL.NOISE.WARNING}'
+          value: '88'
+          description: '-88 dBm'
+        - macro: '{$CHANNEL.USAGE.WARNING}'
+          value: '70'
+        - macro: '{$CPU.USAGE.HIGH}'
+          value: '90'
+          description: 'the cpu ulitization of datapath CPU Processor'
+        - macro: '{$DISK.USAGE.HIGH}'
+          value: '90'
+          description: 'the disk utilization high threshold'
+        - macro: '{$ICMP_LOSS_WARN}'
+          value: '20'
+        - macro: '{$ICMP_RESPONSE_TIME_WARN}'
+          value: '0.15'
+        - macro: '{$MEMORY.UTIL.HIGH}'
+          value: '90'
+          description: 'the memory ulitization high threshold'
+        - macro: '{$SNMP.TIMEOUT}'
+          value: 5m
+      valuemaps:
+        - uuid: 6135a17ad43b45ee91cd5df19088db65
+          name: 'ap operational status'
+          mappings:
+            - value: '1'
+              newvalue: Up
+            - value: '2'
+              newvalue: Down
+        - uuid: abdd25e73fcf4b5b9c7ba8b96d7fc1e8
+          name: 'power status'
+          mappings:
+            - value: '1'
+              newvalue: Active
+            - type: GREATER_OR_EQUAL
+              value: '2'
+              newvalue: Abnormal
+        - uuid: 321877b962e4493dab21a6a9994d955e
+          name: zabbix.host.available
+          mappings:
+            - value: '0'
+              newvalue: 'not available'
+            - value: '1'
+              newvalue: available
+            - value: '2'
+              newvalue: unknown
+  triggers:
+    - uuid: 12fa6802b3d74033b038b5b2b32f757a
+      expression: '(last(/template_ruijie_wlan_basic/system.hw.uptime[hrSystemUptime.0])>0 and last(/template_ruijie_wlan_basic/system.hw.uptime[hrSystemUptime.0])<10m) or (last(/template_ruijie_wlan_basic/system.hw.uptime[hrSystemUptime.0])=0 and last(/template_ruijie_wlan_basic/system.net.uptime[sysUpTime.0])<10m)'
+      name: host_has_been_restarted
+      event_name: '{HOST.NAME} has been restarted (uptime < 10m)'
+      priority: WARNING
+      description: 'Uptime is less than 10 minutes.'
+      manual_close: 'YES'
+      dependencies:
+        - name: no_snmp_data_collection
+          expression: 'max(/template_ruijie_wlan_basic/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
+      tags:
+        - tag: scope
+          value: notice

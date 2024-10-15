@@ -1,0 +1,174 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 1877cc163d5b46e1a8121d91b1dbe38e
+      name: Templates/narvis
+  templates:
+    - uuid: c68030d151584510b53fa3c4980c38b3
+      template: template_h3c_wlan_basic
+      name: template_h3c_wlan_basic
+      templates:
+        - name: template_interface_basic
+      groups:
+        - name: Templates/narvis
+      items:
+        - uuid: c28ddd89b0134070931a222482fedbd2
+          name: icmp_ping
+          type: SIMPLE
+          key: icmpping
+          history: 1w
+          triggers:
+            - uuid: b2a054ab7f61477e94455218ad1c3b0c
+              expression: 'max(/template_h3c_wlan_basic/icmpping,#3)=0'
+              name: unavailable_by_icmp_ping
+              priority: HIGH
+              description: 'Last three attempts returned timeout.  Please check device connectivity.'
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: availability
+        - uuid: e91822ef4f9b4303b74c961e0f7d0767
+          name: icmp_loss
+          type: SIMPLE
+          key: icmppingloss
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          triggers:
+            - uuid: 2734522641b24b5ba0e74b575cbfd063
+              expression: 'min(/template_h3c_wlan_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_h3c_wlan_basic/icmppingloss,5m)<100'
+              name: high_icmp_ping_loss
+              opdata: 'Loss: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              manual_close: 'YES'
+              dependencies:
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_h3c_wlan_basic/icmpping,#3)=0'
+        - uuid: ca7dc77d833146e4bb98dbe0c1fdd171
+          name: icmp_response_time
+          type: SIMPLE
+          key: icmppingsec
+          history: 1w
+          value_type: FLOAT
+          units: s
+          triggers:
+            - uuid: 0f738e078b9448bca454e7a577d51999
+              expression: 'avg(/template_h3c_wlan_basic/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
+              name: high_icmp_ping_response_time
+              opdata: 'Value: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              manual_close: 'YES'
+              dependencies:
+                - name: high_icmp_ping_loss
+                  expression: 'min(/template_h3c_wlan_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_h3c_wlan_basic/icmppingloss,5m)<100'
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_h3c_wlan_basic/icmpping,#3)=0'
+              tags:
+                - tag: scope
+                  value: availability
+                - tag: scope
+                  value: performance
+        - uuid: 1b22c05369774968a9b49bc0ff724ea1
+          name: uptime_network
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: 'system.net.uptime[sysUpTime.0]'
+          delay: 3m
+          history: 2w
+          trends: '0'
+          units: uptime
+          description: |
+            MIB: SNMPv2-MIB
+            The time (in hundredths of a second) since the network management portion of the system was last re-initialized.
+        - uuid: 6146503ed70846ceb8a651a2d8ff9158
+          name: snmp_agent_availability
+          type: INTERNAL
+          key: 'zabbix[host,snmp,available]'
+          history: 7d
+          description: |
+            Availability of SNMP checks on the host. The value of this item corresponds to availability icons in the host list.
+            Possible value:
+            0 - not available
+            1 - available
+            2 - unknown
+          valuemap:
+            name: zabbix.host.available
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  if (value == 2) {
+                     return 0
+                  } else {
+                     return value
+                  }
+                  }
+          triggers:
+            - uuid: b81f0e09ad72416684f59f08c9063b77
+              expression: 'max(/template_h3c_wlan_basic/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
+              name: no_snmp_data_collection
+              opdata: 'Current state: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              description: 'SNMP is not available for polling. Please check device connectivity and SNMP settings.'
+              manual_close: 'YES'
+              dependencies:
+                - name: unavailable_by_icmp_ping
+                  expression: 'max(/template_h3c_wlan_basic/icmpping,#3)=0'
+              tags:
+                - tag: scope
+                  value: availability
+      macros:
+        - macro: '{$ASSOCIATED.CLIENT.HIGH}'
+          value: '80'
+          description: 'the number of associated clients for a single AP'
+        - macro: '{$ASSOCIATED.CLIENT.WARN}'
+          value: '60'
+          description: 'the number of associated clients for a single AP'
+        - macro: '{$CHANNEL.BUSY.WARNING}'
+          value: '70'
+          description: 'the threshold of channel busy rate for AP'
+        - macro: '{$CHANNEL.INTERFERENCE.WARNING}'
+          value: '20'
+        - macro: '{$CHANNEL.NOISE.WARNING}'
+          value: '88'
+          description: '-88 dBm'
+        - macro: '{$CHANNEL.USAGE.WARNING}'
+          value: '70'
+        - macro: '{$CPU.USAGE.HIGH}'
+          value: '90'
+          description: 'the cpu ulitization of datapath CPU Processor'
+        - macro: '{$DISK.USAGE.HIGH}'
+          value: '90'
+          description: 'the disk utilization high threshold'
+        - macro: '{$ICMP_LOSS_WARN}'
+          value: '20'
+        - macro: '{$ICMP_RESPONSE_TIME_WARN}'
+          value: '0.15'
+        - macro: '{$MEMORY.UTIL.HIGH}'
+          value: '90'
+          description: 'the memory ulitization high threshold'
+      valuemaps:
+        - uuid: 634a54906b704bb187c72c0a7bbbc9c8
+          name: 'ap operational status'
+          mappings:
+            - value: '1'
+              newvalue: Up
+            - value: '2'
+              newvalue: Down
+        - uuid: 3c5909d0966b4032af33e049220b0da3
+          name: 'power status'
+          mappings:
+            - value: '1'
+              newvalue: Active
+            - type: GREATER_OR_EQUAL
+              value: '2'
+              newvalue: Abnormal
+        - uuid: 8f992d7d0ed14ec2b9640b2a1ffcc522
+          name: zabbix.host.available
+          mappings:
+            - value: '0'
+              newvalue: 'not available'
+            - value: '1'
+              newvalue: available
+            - value: '2'
+              newvalue: unknown
