@@ -37,13 +37,13 @@ func (rsp *ZbxResponse) GetResult(v any) {
 }
 
 type Tag struct {
-	Tag   string
-	Value string
+	Tag   string `json:"tag"`
+	Value string `json:"value"`
 }
 
 type Macro struct {
-	Macro string
-	Value string
+	Macro string `json:"macro"`
+	Value string `json:"value"`
 }
 
 type LoginResponse struct {

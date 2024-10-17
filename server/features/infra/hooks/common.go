@@ -13,7 +13,7 @@ import (
 )
 
 func proxySelect(orgId string) string {
-	proxies, err := gen.Proxy.Select(gen.Proxy.Id).Where(gen.Proxy.OrganizationId.Eq(orgId)).Find()
+	proxies, err := gen.Proxy.Select(gen.Proxy.ProxyId).Where(gen.Proxy.OrganizationId.Eq(orgId)).Find()
 	if err != nil {
 		core.Logger.Error(fmt.Sprintf("[proxyChoice]: proxyChoice for organization failed with orgId %s", orgId), zap.Error(err))
 		return ""
@@ -23,7 +23,7 @@ func proxySelect(orgId string) string {
 	}
 	proxyIds := make([]string, 0, len(proxies))
 	for _, proxy := range proxies {
-		proxyIds = append(proxyIds, proxy.Id)
+		proxyIds = append(proxyIds, *proxy.ProxyId)
 	}
 	return lo.Sample(proxyIds)
 }
@@ -39,7 +39,7 @@ func deviceTemplateSelect(device *models.Device) (string, error) {
 		return "", err
 	}
 
-	return template.Id, nil
+	return template.TemplateId, nil
 }
 
 func circuitTemplateSelect() (string, error) {
@@ -85,7 +85,7 @@ func getGlobalCommunityMacroName(enterpriseCode string) string {
 	return "{$" + strings.ToUpper(enterpriseCode) + "}"
 }
 
-func snmpV2CommunitySelect(deviceId string) (community string, port uint16) {
+func snmpV2CommunitySelect(deviceId string, orgId string) (community string, port uint16) {
 	cred, err := gen.SnmpV2Credential.Where(
 		gen.SnmpV2Credential.DeviceId.Eq(deviceId)).Find()
 	if err != nil {
@@ -93,7 +93,7 @@ func snmpV2CommunitySelect(deviceId string) (community string, port uint16) {
 		return "", 161
 	}
 	if len(cred) == 0 {
-		enterpriseCode, err := getOrgEnterpriseCode(deviceId)
+		enterpriseCode, err := getOrgEnterpriseCode(orgId)
 		if err != nil {
 			return "{$SNMP_COMMUNITY}", 161
 		}

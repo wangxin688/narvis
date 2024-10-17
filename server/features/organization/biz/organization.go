@@ -49,7 +49,7 @@ func (o *OrganizationService) CreateOrganization(organization *schemas.Organizat
 		organizationModel.AuthConfig = &authConfig
 	}
 	if o.validateExist(organization) {
-		core.Logger.Error(fmt.Sprintf("failed to create organization %v, enterprise_code or domain_name already exist", organization))
+		core.Logger.Info(fmt.Sprintf("failed to create organization %v, enterprise_code or domain_name already exist", organization))
 		return nil, &e.GenericError{Code: e.CodeOrganizationAlreadyExist, Message: e.MsgOrganizationAlreadyExist}
 	}
 

@@ -41,6 +41,7 @@ func main() {
 	configureRouter(router)
 	helpers.RegisterCustomValidator()
 	middleware.RegisterOpenAPI(router)
+	go register.RegisterScheduler()
 	// rmq.GetMqConn()
 	if err := router.Run(":8000"); err != nil {
 		core.Logger.Fatal("[mainStartHttpServer]: failed to run server", zap.Error(err))

@@ -356,7 +356,7 @@ func RunDevice360OfflineTask() {
 	queries := getQueries()
 	deviceVectors, apVectors, err := queryResults(queries)
 	if err != nil {
-		core.Logger.Error("[device360OfflineTask]: failed to get vector from victoriaMetrics", zap.Error(err))
+		core.Logger.Info("[device360OfflineTask]: failed to get vector from victoriaMetrics", zap.Error(err))
 		return
 	}
 

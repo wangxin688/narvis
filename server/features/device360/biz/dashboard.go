@@ -1,6 +1,8 @@
 package device360_biz
 
 import (
+	"time"
+
 	"github.com/wangxin688/narvis/intend/devicerole"
 	"github.com/wangxin688/narvis/intend/metrics"
 	"github.com/wangxin688/narvis/server/core"
@@ -115,7 +117,59 @@ func GetGatewayHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, err
 	return device360_utils.VectorResponseToHealthMap(vectors), nil
 }
 
-// TODO: add circuit health in device360 task
-// func getCircuitHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
-// 	return nil, nil
-// }
+func getSLAQuery(siteId *string, slaType string) (string, error) {
+	matcher := vtm.EqualMatcher
+	if slaType == "device" {
+		matcher = vtm.NotEqualMatcher
+	}
+
+	query := vtm.NewPromQLBuilder(string(metrics.HealthScore)).WithFuncName(
+		"avg_over_time").WithLabels(vtm.Label{
+		Name:    "deviceRole",
+		Value:   string(devicerole.WlanAP),
+		Matcher: matcher,
+	}).WithWindow("3m")
+	if siteId != nil && *siteId != "" {
+		query = query.WithLabels(vtm.Label{
+			Name:    "siteId",
+			Value:   *siteId,
+			Matcher: vtm.EqualMatcher,
+		}).WithAgg(vtm.Aggregation{
+			Op:     vtm.Avg,
+			AggWay: vtm.GroupBy,
+			By:     []string{"__name__", "siteId"},
+		})
+	} else {
+		query = query.WithAgg(vtm.Aggregation{
+			Op:     vtm.Avg,
+			AggWay: vtm.GroupBy,
+			By:     []string{"__name__", "organizationId"},
+		})
+	}
+	return query.Build()
+}
+
+// TODO: add circuit sla support
+func GetSLA(siteId *string, orgId string, startedAtGte time.Time, startedAtLte time.Time) ([]*vtm.MatrixResponse, error) {
+	wlanSLAQueryString, err := getSLAQuery(siteId, "wlan")
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to build wlan sla query", zap.Error(err))
+		return nil, errors.NewError(errors.CodeQueryBuildFailed, errors.MsgQueryBuildFailed, "wlan sla")
+	}
+	deviceSLAQueryString, err := getSLAQuery(siteId, "device")
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to build device sla query", zap.Error(err))
+		return nil, errors.NewError(errors.CodeQueryBuildFailed, errors.MsgQueryBuildFailed, "device sla")
+	}
+	wlanSLAQuery := vtm.MatrixRequest{
+		Query: wlanSLAQueryString, Step: 60, Start: startedAtGte.Unix(), End: startedAtLte.Unix()}
+	deviceSLAQuery := vtm.MatrixRequest{
+		Query: deviceSLAQueryString, Step: 60, Start: startedAtGte.Unix(), End: startedAtLte.Unix()}
+	vectors, err := vtm.NewVtmClient().GetBulkMatrix([]*vtm.MatrixRequest{&wlanSLAQuery, &deviceSLAQuery}, &orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get wlan sla", zap.Error(err))
+		return nil, err
+	}
+	return vectors, nil
+
+}

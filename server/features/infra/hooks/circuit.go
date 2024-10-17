@@ -87,7 +87,7 @@ func circuitDeviceCreateHooks(circuit *models.Circuit, proxy string) {
 		return
 	}
 
-	community, port := snmpV2CommunitySelect(circuit.DeviceId)
+	community, port := snmpV2CommunitySelect(circuit.DeviceId, circuit.OrganizationId)
 	template, err := circuitHostTemplateSelect()
 	if err != nil {
 		core.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: get template failed with circuit %s", circuit.Id), zap.Error(err))

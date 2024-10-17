@@ -5,8 +5,8 @@ zabbix_export:
       name: Templates/narvis
   templates:
     - uuid: b19fe0934e714192a4a411105d2b22c9
-      template: template_velocloud_edge_basic
-      name: template_velocloud_edge_basic
+      template: template_velocloud_sdwan_basic
+      name: template_velocloud_sdwan_basic
       groups:
         - name: Templates/narvis
       items:

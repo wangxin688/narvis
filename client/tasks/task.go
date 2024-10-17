@@ -45,8 +45,7 @@ func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse
 	result := dispatcher.DispatchBasic()
 	if len(result) != 0 {
 		for _, r := range result {
-			if !r.SnmpReachable || r.Data == nil || len(r.Data.Errors) == 0 {
-				logger.Logger.Error("[ScanDeviceBasicInfo]: device snmp not reachable", zap.String("ip", r.IpAddress))
+			if !r.SnmpReachable || r.Data == nil || len(r.Data.Errors) != 0 {
 				continue
 			}
 			results = append(results, &intendtask.DeviceBasicInfoScanResponse{

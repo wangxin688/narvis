@@ -24,7 +24,7 @@ func DeviceCreateHooks(deviceId string) {
 		core.Logger.Error(fmt.Sprintf("[deviceCreateHooks]: device role %s and manufacturer %s not support in monitoring yet", device.DeviceRole, device.Manufacturer), zap.Error(err))
 		return
 	}
-	community, port := snmpV2CommunitySelect(deviceId)
+	community, port := snmpV2CommunitySelect(deviceId, device.OrganizationId)
 	hostGroupId, err := getHostGroupId(device.SiteId)
 	if err != nil {
 		core.Logger.Error(fmt.Sprintf("[deviceCreateHooks]: getHostGroupId for device failed with device %s", deviceId), zap.Error(err))

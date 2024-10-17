@@ -65,7 +65,7 @@ func connectDB() *gorm.DB {
 func initOrganization() string {
 	service := biz.NewOrganizationService()
 
-	org, err := gen.Organization.Where(gen.Organization.Name.Eq("NarvisDemo")).Find()
+	org, err := gen.Organization.Where(gen.Organization.EnterpriseCode.Eq("narvis")).Find()
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to get organization", zap.Error(err))
 		panic(err)
@@ -103,19 +103,36 @@ func initProxy(orgId string) {
 	}
 	if len(dbProxy) > 0 {
 		core.Logger.Info("[bootstrap]: proxy already exists", zap.String("id", dbProxy[0].Id))
-		return
+		for _, proxy := range dbProxy {
+			if proxy.Active && proxy.ProxyId == nil {
+				proxy, err := biz.NewProxyService().CreateProxy(&schemas.ProxyCreate{
+					OrganizationId: orgId,
+					Name:           core.Settings.BootstrapConfig.EnterpriseCode,
+					Active:         true,
+				})
+				if err != nil {
+					core.Logger.Error("[bootstrap]: failed to create proxy", zap.Error(err))
+					panic(err)
+				}
+				core.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
+				hooks.CreateZbxProxy(proxy)
+			} else {
+				core.Logger.Info("[bootstrap]: zbx proxy already exists", zap.String("proxyId", *proxy.ProxyId))
+			}
+		}
+	} else {
+		proxy, err := biz.NewProxyService().CreateProxy(&schemas.ProxyCreate{
+			OrganizationId: orgId,
+			Name:           core.Settings.BootstrapConfig.EnterpriseCode,
+			Active:         true,
+		})
+		if err != nil {
+			core.Logger.Error("[bootstrap]: failed to create proxy", zap.Error(err))
+			panic(err)
+		}
+		core.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
+		hooks.CreateZbxProxy(proxy)
 	}
-	proxy, err := biz.NewProxyService().CreateProxy(&schemas.ProxyCreate{
-		OrganizationId: orgId,
-		Name:           core.Settings.BootstrapConfig.EnterpriseCode,
-		Active:         true,
-	})
-	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create proxy", zap.Error(err))
-		panic(err)
-	}
-	core.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
-	hooks.CreateZbxProxy(proxy)
 }
 
 func initMacAddress() {
@@ -609,22 +626,40 @@ func initNarvisSnmpCredential(orgId string) error {
 	}
 	if len(cred) > 0 {
 		core.Logger.Info("[bootstrap]: snmp credential already exists", zap.String("id", cred[0].Id))
-		return nil
+		for _, cr := range cred {
+			if cr.DeviceId == nil && cr.GlobalMacroId == nil {
+				snmpCred := &models.SnmpV2Credential{
+					OrganizationId: orgId,
+					Community:      core.Settings.BootstrapConfig.SnmpCommunity,
+					MaxRepetitions: 50,
+					Timeout:        core.Settings.BootstrapConfig.SnmpTimeout,
+					Port:           core.Settings.BootstrapConfig.SnmpPort,
+				}
+				err = gen.SnmpV2Credential.Create(snmpCred)
+				if err != nil {
+					core.Logger.Error("[bootstrap]: failed to create snmp credential", zap.Error(err))
+					return err
+				}
+				core.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
+				infra_hooks.SnmpCredCreateHooks(snmpCred.Id)
+			}
+		}
+	} else {
+		snmpCred := &models.SnmpV2Credential{
+			OrganizationId: orgId,
+			Community:      core.Settings.BootstrapConfig.SnmpCommunity,
+			MaxRepetitions: 50,
+			Timeout:        core.Settings.BootstrapConfig.SnmpTimeout,
+			Port:           core.Settings.BootstrapConfig.SnmpPort,
+		}
+		err = gen.SnmpV2Credential.Create(snmpCred)
+		if err != nil {
+			core.Logger.Error("[bootstrap]: failed to create snmp credential", zap.Error(err))
+			return err
+		}
+		core.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
+		infra_hooks.SnmpCredCreateHooks(snmpCred.Id)
 	}
-	snmpCred := &models.SnmpV2Credential{
-		OrganizationId: orgId,
-		Community:      core.Settings.BootstrapConfig.SnmpCommunity,
-		MaxRepetitions: 50,
-		Timeout:        core.Settings.BootstrapConfig.SnmpTimeout,
-		Port:           core.Settings.BootstrapConfig.SnmpPort,
-	}
-	err = gen.SnmpV2Credential.Create(snmpCred)
-	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create snmp credential", zap.Error(err))
-		return err
-	}
-	core.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
-	infra_hooks.SnmpCredCreateHooks(snmpCred.Id)
 	return nil
 }
 
@@ -653,7 +688,7 @@ func initNarvisCliCredential(orgId string) error {
 }
 
 func initZbxTemplates() error {
-	const templateDir = "cmd/bootstrap/appdata/templates"
+	const templateDir = "/cmd/bootstrap/appdata/templates"
 	files, err := os.ReadDir(filepath.Join(core.ProjectPath, templateDir))
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to read template dir", zap.Error(err))
@@ -661,7 +696,7 @@ func initZbxTemplates() error {
 	}
 	zbxClient := zbx.NewZbxClient()
 	for _, f := range files {
-		if !f.IsDir() {
+		if f.IsDir() {
 			continue
 		}
 		templateName := f.Name()
@@ -670,12 +705,12 @@ func initZbxTemplates() error {
 		}
 		template, err := os.ReadFile(filepath.Join(core.ProjectPath, templateDir, templateName))
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to read template file", zap.Error(err))
+			core.Logger.Info("[bootstrap]: failed to read template file", zap.Error(err))
 			return err
 		}
 		_, err = zbxClient.ConfigurationImport(string(template))
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to import template", zap.Error(err))
+			core.Logger.Info("[bootstrap]: failed to import template", zap.Error(err))
 			return err
 		}
 		core.Logger.Info("[bootstrap]: init zbx template", zap.String("name", templateName))

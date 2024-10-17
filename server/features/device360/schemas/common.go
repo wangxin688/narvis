@@ -1,5 +1,7 @@
 package schemas
 
+import ts "github.com/wangxin688/narvis/server/tools/schemas"
+
 // TODO: Discuss
 // Healthy Degraded Unhealthy Unavailable, Unknown for SRE
 // Good, NeedsAttention, Critical, Unhealthy, Unknown
@@ -23,5 +25,15 @@ func (h *HealthHeatMap) Add(score string) {
 		h.Unhealthy++
 	case "unknown":
 		h.Unknown++
+	}
+}
+
+func (h *HealthHeatMap) ToPieChat() []*ts.PieChartData {
+	return []*ts.PieChartData{
+		{Name: "good", Value: h.Good},
+		{Name: "needsAttention", Value: h.NeedsAttention},
+		{Name: "poor", Value: h.Poor},
+		{Name: "unhealthy", Value: h.Unhealthy},
+		{Name: "unknown", Value: h.Unknown},
 	}
 }

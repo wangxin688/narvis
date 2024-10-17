@@ -3,6 +3,7 @@ package schemas
 import (
 	"time"
 
+	ifs "github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/tools/schemas"
 )
 
@@ -61,4 +62,10 @@ type OrganizationQuery struct {
 	DomainName     *[]string `form:"domainName" binding:"omitempty"`
 	Active         *bool     `form:"active" binding:"omitempty"`
 	AuthType       *uint8    `form:"authType" binding:"gte=0,lte=4,omitempty"`
+}
+
+type OrganizationSettings struct {
+	SnmpCredential     *ifs.SnmpV2CredentialUpdate   `json:"snmpCredential"`
+	CliCredential      *ifs.CliCredentialUpdate      `json:"cliCredential"`
+	RestconfCredential *ifs.RestconfCredentialUpdate `json:"restconfCredential"`
 }
