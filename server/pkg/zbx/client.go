@@ -313,6 +313,7 @@ func (z *Zbx) ConfigurationImport(config string) (res bool, err error) {
 		"discoveryRules":  {"createMissing": true, "updateExisting": true, "deleteMissing": true},
 		"graphs":          {"createMissing": true, "updateExisting": true, "deleteMissing": true},
 		"template_groups": {"createMissing": true, "updateExisting": true},
+		"templateLinkage": {"createMissing": true, "deleteMissing": true},
 	}
 
 	req := &zs.ZbxRequest{

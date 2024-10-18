@@ -688,7 +688,7 @@ func initNarvisCliCredential(orgId string) error {
 }
 
 func initZbxTemplates() error {
-	const templateDir = "/cmd/bootstrap/appdata/templates"
+	const templateDir = "/cmd/bootstrap/templates"
 	files, err := os.ReadDir(filepath.Join(core.ProjectPath, templateDir))
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to read template dir", zap.Error(err))

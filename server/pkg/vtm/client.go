@@ -56,21 +56,22 @@ func (rsp *VtmResponse) getResult(v any) {
 
 func (c *VtmClient) GetLabelValues(label *QueryLabelRequest, OrganizationId *string) (result []string, err error) {
 	label_query_path := fmt.Sprintf("/api/v1/label/%s/values", label.LabelName)
+	request := c.R()
 	if label.Match != "" {
-		c.R().SetQueryParam("match", label.Match)
+		request = request.SetQueryParam("match", label.Match)
 	}
 	if label.Start != nil {
-		c.R().SetQueryParam("start", fmt.Sprintf("%d", *label.Start))
+		request = request.SetQueryParam("start", fmt.Sprintf("%d", *label.Start))
 	}
 	if label.End != nil {
-		c.R().SetQueryParam("end", fmt.Sprintf("%d", *label.End))
+		request = request.SetQueryParam("end", fmt.Sprintf("%d", *label.End))
 	}
 	if OrganizationId != nil {
-		c.R().SetQueryParam("extra_label=organizationId", *OrganizationId)
+		request = request.SetQueryParam("extra_label=organizationId", *OrganizationId)
 	}
 	rsp := VtmResponse{}
-	c.R().SetSuccessResult(&rsp)
-	_, err = c.R().Get(label_query_path)
+	request = request.SetSuccessResult(&rsp)
+	_, err = request.Get(label_query_path)
 	if err != nil {
 		return nil, err
 	}
@@ -81,18 +82,19 @@ func (c *VtmClient) GetLabelValues(label *QueryLabelRequest, OrganizationId *str
 func (c *VtmClient) GetVector(query *VectorRequest, OrganizationId *string) (results []*VectorResponse, err error) {
 
 	vector_query_path := "/api/v1/query"
+	request := c.R()
 	if query.Time != nil {
-		c.R().SetQueryParam("time", fmt.Sprintf("%d", *query.Time))
+		request = request.SetQueryParam("time", fmt.Sprintf("%d", *query.Time))
 	}
 	if query.LegendFormat != nil {
-		c.R().SetQueryParam("legend_format", *query.LegendFormat)
+		request = request.SetQueryParam("legend_format", *query.LegendFormat)
 	}
 	if OrganizationId != nil {
-		c.R().SetQueryParam("extra_label=organizationId", *OrganizationId)
+		request = request.SetQueryParam("extra_label=organizationId", *OrganizationId)
 	}
 	rsp := VtmResponse{}
-	c.R().SetSuccessResult(&rsp)
-	_, err = c.R().Get(vector_query_path)
+	request = request.SetSuccessResult(&rsp)
+	_, err = request.Get(vector_query_path)
 	if err != nil {
 		return nil, err
 	}
@@ -103,26 +105,26 @@ func (c *VtmClient) GetVector(query *VectorRequest, OrganizationId *string) (res
 func (c *VtmClient) GetMatrix(query *MatrixRequest, OrganizationId *string) (results []*MatrixResponse, err error) {
 
 	matrix_query_path := "/api/v1/query_range"
-
+	request := c.R()
 	if query.Start != 0 {
-		c.R().SetQueryParam("start", fmt.Sprintf("%d", query.Start))
+		request = request.SetQueryParam("start", fmt.Sprintf("%d", query.Start))
 	}
 	if query.End != 0 {
-		c.R().SetQueryParam("end", fmt.Sprintf("%d", query.End))
+		request = request.SetQueryParam("end", fmt.Sprintf("%d", query.End))
 	}
 	if query.Step != 0 {
-		c.R().SetQueryParam("step", fmt.Sprintf("%d", query.Step))
+		request = request.SetQueryParam("step", fmt.Sprintf("%d", query.Step))
 	}
 	if query.LegendFormat != nil {
-		c.R().SetQueryParam("legend_format", *query.LegendFormat)
+		request = request.SetQueryParam("legend_format", *query.LegendFormat)
 	}
 	if OrganizationId != nil {
-		c.R().SetQueryParam("extra_label=organizationId", *OrganizationId)
+		request = request.SetQueryParam("extra_label=organizationId", *OrganizationId)
 	}
 
 	rsp := VtmResponse{}
-	c.R().SetSuccessResult(&rsp)
-	_, err = c.R().Get(matrix_query_path)
+	request = request.SetSuccessResult(&rsp)
+	_, err = request.Get(matrix_query_path)
 	if err != nil {
 		return nil, err
 	}

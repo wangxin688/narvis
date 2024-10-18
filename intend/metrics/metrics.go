@@ -38,8 +38,8 @@ const (
 
 // tags: interface, description
 const (
-	RxBytes           InterfaceMetrics = "rx_bytes"
-	TxBytes           InterfaceMetrics = "tx_bytes"
+	RxBits            InterfaceMetrics = "rx_bits"
+	TxBits            InterfaceMetrics = "tx_bits"
 	RxDiscards        InterfaceMetrics = "rx_discards"
 	TxDiscards        InterfaceMetrics = "tx_discards"
 	RxErrors          InterfaceMetrics = "rx_errors"
@@ -48,13 +48,13 @@ const (
 	TxRate            InterfaceMetrics = "tx_rate"
 	OperationalStatus InterfaceMetrics = "operational_status"
 	HighSpeed         InterfaceMetrics = "high_speed"
-	DuplexStatus            InterfaceMetrics = "duplex_status"
+	DuplexStatus      InterfaceMetrics = "duplex_status"
 )
 
 const (
-	CpuUsage          SwitchingMetrics = "cpu_usage"
-	MemoryUsage       SwitchingMetrics = "memory_usage"
-	DiskUsage         SwitchingMetrics = "disk_usage"
+	CpuUtilization    SwitchingMetrics = "cpu_utilization"
+	MemoryUtilization SwitchingMetrics = "memory_utilization"
+	DiskUsage         SwitchingMetrics = "space_utilization"
 	SystemLoad        SwitchingMetrics = "system_load"
 	FanStatus         SwitchingMetrics = "fan_status"
 	PowerSupplyStatus SwitchingMetrics = "power_supply_status"
@@ -78,9 +78,9 @@ const (
 	ChannelRxBits             WirelessMetrics = "channel_rx_bits"
 	ChannelTxBits             WirelessMetrics = "channel_tx_bits"
 	ChannelFrameRetryRate     WirelessMetrics = "channel_frame_retry_rate"
-	ChannelTransmitPower      WirelessMetrics = "radio_transmit_power" // transmit power
+	ChannelTransmitPower      WirelessMetrics = "channel_transmit_power" // transmit power
 	ChannelInterferenceRate   WirelessMetrics = "channel_interference_rate"
-	ChannelAssociationClients WirelessMetrics = "channel_association_clients"
+	ChannelAssociationClients WirelessMetrics = "channel_associated_clients"
 )
 
 const (
@@ -167,20 +167,20 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
-		MetricNameEnum(RxBytes): {
-			Name:                      MetricNameEnum(RxBytes),
-			Description:               common.I18n{En: "Rx Bytes", Zh: "下行流量"},
+		MetricNameEnum(RxBits): {
+			Name:                      MetricNameEnum(RxBits),
+			Description:               common.I18n{En: "Rx Bits", Zh: "下行流量"},
 			Unit:                      &bps,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Rx Bytes",
+			Legend:                    "{device_name} {interface}:{description} Rx Bits",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
-		MetricNameEnum(TxBytes): {
-			Name:                      MetricNameEnum(TxBytes),
-			Description:               common.I18n{En: "Tx Bytes", Zh: "上行流量"},
+		MetricNameEnum(TxBits): {
+			Name:                      MetricNameEnum(TxBits),
+			Description:               common.I18n{En: "Tx Bits", Zh: "上行流量"},
 			Unit:                      &bps,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Tx Bytes",
+			Legend:                    "{device_name} {interface}:{description} Tx Bits",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -262,16 +262,16 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
-		MetricNameEnum(CpuUsage): {
-			Name:                      MetricNameEnum(CpuUsage),
+		MetricNameEnum(CpuUtilization): {
+			Name:                      MetricNameEnum(CpuUtilization),
 			Description:               common.I18n{En: "CPU Usage", Zh: "CPU利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{device_name} CPU#{cpu} CPU Usage",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
-		MetricNameEnum(MemoryUsage): {
-			Name:                      MetricNameEnum(MemoryUsage),
+		MetricNameEnum(MemoryUtilization): {
+			Name:                      MetricNameEnum(MemoryUtilization),
 			Description:               common.I18n{En: "Memory Usage", Zh: "内存利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,

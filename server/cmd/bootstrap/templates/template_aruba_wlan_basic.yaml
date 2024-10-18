@@ -13,8 +13,6 @@ zabbix_export:
         version: v1.3
         
         v1.3: fix 5g dual band error for raido discovery
-      templates:
-        - name: template_interface_basic
       groups:
         - name: Templates/narvis
       items:

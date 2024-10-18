@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/samber/lo"
+	"github.com/wangxin688/narvis/intend/devicerole"
 	"github.com/wangxin688/narvis/intend/metrics"
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/pkg/vtm"
@@ -14,8 +15,8 @@ import (
 func getQueries() map[string]string {
 	queries := map[string]string{
 		string(metrics.ICMPPing):                  fmt.Sprintf("last_over_time(%s[3m])", metrics.ICMPPing),
-		string(metrics.CpuUsage):                  fmt.Sprintf("last_over_time(%s[5m])", metrics.CpuUsage),
-		string(metrics.MemoryUsage):               fmt.Sprintf("last_over_time(%s[5m])", metrics.MemoryUsage),
+		string(metrics.CpuUtilization):            fmt.Sprintf("last_over_time(%s[5m])", metrics.CpuUtilization),
+		string(metrics.MemoryUtilization):         fmt.Sprintf("last_over_time(%s[5m])", metrics.MemoryUtilization),
 		string(metrics.Temperature):               fmt.Sprintf("last_over_time(%s[5m])", metrics.Temperature),
 		string(metrics.FanStatus):                 fmt.Sprintf("last_over_time(%s[5m])", metrics.FanStatus),
 		string(metrics.PowerSupplyStatus):         fmt.Sprintf("last_over_time(%s[5m])", metrics.PowerSupplyStatus),
@@ -102,6 +103,7 @@ func aggregateApMetrics(vectors map[string][]*vtm.VectorResponse) map[string]map
 			delete(item.Metric, "deviceName")
 			delete(item.Metric, "channel")
 			delete(item.Metric, "radioType")
+			item.Metric["deviceRole"] = string(devicerole.WlanAP)
 			if _, ok := apMetrics[siteId]; !ok {
 				apMetrics[siteId] = make(map[string]*ApSchema)
 			}
@@ -147,8 +149,8 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 			if _, ok := deviceMetrics[deviceId]; !ok {
 				deviceMetrics[deviceId] = &DeviceSchema{
 					ICMPPing:          -1,
-					CpuUsage:          make([]float64, 0),
-					MemoryUsage:       make([]float64, 0),
+					CpuUtilization:    make([]float64, 0),
+					MemoryUtilization: make([]float64, 0),
 					Temperature:       make([]float64, 0),
 					FanStatus:         make([]float64, 0),
 					PowerSupplyStatus: make([]float64, 0),
@@ -166,10 +168,10 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 			switch metricName {
 			case string(metrics.ICMPPing):
 				deviceMetrics[deviceId].ICMPPing = stringToFloat64(item.Value[1].(string))
-			case string(metrics.CpuUsage):
-				deviceMetrics[deviceId].CpuUsage = append(deviceMetrics[deviceId].CpuUsage, stringToFloat64(item.Value[1].(string)))
-			case string(metrics.MemoryUsage):
-				deviceMetrics[deviceId].MemoryUsage = append(deviceMetrics[deviceId].MemoryUsage, stringToFloat64(item.Value[1].(string)))
+			case string(metrics.CpuUtilization):
+				deviceMetrics[deviceId].CpuUtilization = append(deviceMetrics[deviceId].CpuUtilization, stringToFloat64(item.Value[1].(string)))
+			case string(metrics.MemoryUtilization):
+				deviceMetrics[deviceId].MemoryUtilization = append(deviceMetrics[deviceId].MemoryUtilization, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.Temperature):
 				deviceMetrics[deviceId].Temperature = append(deviceMetrics[deviceId].Temperature, stringToFloat64(item.Value[1].(string)))
 			case string(metrics.FanStatus):
@@ -204,8 +206,8 @@ func calcHealthScore(deviceMetrics map[string]*DeviceSchema, timestamp int64) []
 			continue
 		}
 		icmpScore := calcIcmpScore(device.ICMPPing)
-		cpuScore := calcCpuScore(device.CpuUsage)
-		memoryScore := calcMemScore(device.MemoryUsage)
+		cpuScore := calcCpuScore(device.CpuUtilization)
+		memoryScore := calcMemScore(device.MemoryUtilization)
 		tempScore := calcTemperatureScore(device.Temperature)
 		fanScore, fanAnomaly := calcFanSore(device.FanStatus)
 		powerSupplyScore, powerSupplyAnomaly := calcPowerSupplyScore(device.PowerSupplyStatus)
@@ -216,7 +218,13 @@ func calcHealthScore(deviceMetrics map[string]*DeviceSchema, timestamp int64) []
 		rxRateScore, rxRateAnomaly := calcIfTrafficScore(device.RxRate)
 		txRateScore, txRateAnomaly := calcIfTrafficScore(device.TxRate)
 		operationalStatusScore, operationalStatusAnomaly := calcIfOpStatusScore(device.OperationalStatus)
-		device360Score := lo.Min([]float64{icmpScore, cpuScore, memoryScore, tempScore, fanScore, powerSupplyScore, rxDiscardScore, txDiscardScore, rxErrorScore, txErrorScore, rxRateScore, txRateScore, operationalStatusScore})
+		scores := []float64{icmpScore, cpuScore, memoryScore, tempScore,
+			fanScore, powerSupplyScore, rxDiscardScore, txDiscardScore, rxErrorScore,
+			txErrorScore, rxRateScore, txRateScore, operationalStatusScore}
+		excludeNegative := lo.Filter(scores, func(score float64, _ int) bool {
+			return score >= 0
+		})
+		device360Score := lo.Min(excludeNegative)
 		results = append(results, &vtm.Metric{
 			Metric:    string(metrics.HealthScore),
 			Labels:    device.Labels,
