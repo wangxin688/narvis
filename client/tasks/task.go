@@ -11,6 +11,7 @@ import (
 	"github.com/gosnmp/gosnmp"
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/client/config"
+	"github.com/wangxin688/narvis/client/pkg/gossh"
 	"github.com/wangxin688/narvis/client/pkg/gowebssh"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
@@ -273,18 +274,40 @@ func webSSHTask(data []byte) error {
 	return nil
 }
 
-// func configurationBackupTask(data []byte) error {
-// 	task := &intendtask.ConfigurationBackupTask{}
-// 	err := json.Unmarshal(data, task)
-// 	if err != nil {
-// 		logger.Logger.Error("[ConfigurationBackupTask]: Unmarshal err: ", zap.Error(err))
-// 		return err
-// 	}
-// 	// Get the token from the proxy server
-// 	token, err := security.ProxyToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY)
-// 	if err != nil {
-// 		logger.Logger.Error("[ConfigurationBackupTask]: failed to get token", zap.Error(err))
-// 		return err
-// 	}
+func configurationBackupTask(data []byte) *intendtask.ConfigurationBackupTaskResult {
+	task := &intendtask.ConfigurationBackupTask{}
+	err := json.Unmarshal(data, task)
+	result := &intendtask.ConfigurationBackupTaskResult{
+		DeviceId: task.DeviceId,
+	}
+	if err != nil {
+		logger.Logger.Error("[ConfigurationBackupTask]: Unmarshal err: ", zap.Error(err))
+		result.Error = err.Error()
+		return result
+	}
+	connectionInfo := gossh.ConnectionInfo{
+		ManagementIp: task.ManagementIp,
+		Port:         int(task.Port),
+		Platform:     task.Platform,
+		Username:     task.Username,
+		Password:     task.Password,
+		Timeout:      5,
+	}
+	sshConn, err := gossh.NewConnection(&connectionInfo)
+	if err != nil {
+		logger.Logger.Error("[ConfigurationBackupTask]: failed to create ssh connection", zap.Error(err))
+		result.Error = err.Error()
+		return result
+	}
+	configuration, err := sshConn.ShowRunningConfig()
+	if err != nil {
+		logger.Logger.Error("[ConfigurationBackupTask]: failed to get running config", zap.Error(err))
+		result.Error = err.Error()
+		return result
+	}
+	result.Configuration = configuration
+	result.BackupTime = time.Now().UTC().String()
+	result.HashValue = helpers.StringToMd5(configuration)
+	return result
 
-// }
+}

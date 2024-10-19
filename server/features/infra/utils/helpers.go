@@ -12,6 +12,14 @@ func DevicesToIds(devices []*models.Device) []string {
 	return ids
 }
 
+func DevicePlatforms(devices []*models.Device) map[string]string {
+	result := make(map[string]string, len(devices))
+	for _, device := range devices {
+		result[device.Id] = device.Platform
+	}
+	return result
+}
+
 func DeviceManagementIpMap(devices []*models.Device) map[string]string {
 	result := make(map[string]string, len(devices))
 

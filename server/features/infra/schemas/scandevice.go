@@ -82,3 +82,7 @@ type ScanApCreate struct {
 type ScanDeviceDetailTask struct {
 	SiteId string `json:"siteId" binding:"required,uuid"`
 }
+
+type ConfigBackUpCreate struct {
+	SiteId string `json:"siteId" binding:"required,uuid"`
+}

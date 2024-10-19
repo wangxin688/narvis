@@ -231,7 +231,7 @@ func createScanAP(c *gin.Context) {
 		return
 	}
 
-	taskIds, err := infra_tasks.GenerateTask(scanAP.SiteId, intendtask.ScanAp, intendtask.ScanApCallback)
+	taskIds, err := infra_tasks.GenerateSNMPTask(scanAP.SiteId, intendtask.ScanAp, intendtask.ScanApCallback)
 	if err != nil {
 		return
 	}
@@ -258,7 +258,38 @@ func scanDeviceDetails(c *gin.Context) {
 	if err = c.ShouldBindJSON(&scanDeviceDetailTask); err != nil {
 		return
 	}
-	taskIds, err := infra_tasks.GenerateTask(scanDeviceDetailTask.SiteId, intendtask.ScanDevice, intendtask.ScanDeviceCallback)
+	taskIds, err := infra_tasks.GenerateSNMPTask(scanDeviceDetailTask.SiteId, intendtask.ScanDevice, intendtask.ScanDeviceCallback)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdsResponse{Ids: taskIds})
+}
+
+// @Tags Infra
+// @Summary Device Configuration backup
+// @Description Device Configuration backup
+// @Security BearerAuth
+// @Accept  json
+// @Produce  json
+// @Param data body schemas.ConfigBackUpCreate true "data"
+// @Success 200 {object} ts.IdsResponse
+// @Router /infra/device-config-backup [post]
+
+func configBackUp(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var configBackUpCreate schemas.ConfigBackUpCreate
+	if err = c.ShouldBindJSON(&configBackUpCreate); err != nil {
+		return
+	}
+	taskIds, err := infra_tasks.ConfigBackUpTask(
+		configBackUpCreate.SiteId,
+		intendtask.ConfigurationBackup,
+		intendtask.ConfigurationBackupCallback)
 	if err != nil {
 		return
 	}

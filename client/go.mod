@@ -11,6 +11,7 @@ require (
 	github.com/gosnmp/gosnmp v1.38.0
 	github.com/imroc/req/v3 v3.46.0
 	github.com/samber/lo v1.47.0
+	github.com/scrapli/scrapligo v1.3.3-0.20241017171040-f6dbfb57d4f9
 	github.com/spf13/viper v1.19.0
 	github.com/wagslane/go-rabbitmq v0.14.2
 	github.com/wangxin688/narvis/intend v0.0.0-00010101000000-000000000000
@@ -24,7 +25,6 @@ require (
 	github.com/creack/pty v1.1.23 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/pprof v0.0.0-20240910150728-a0b0bb1d4134 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -40,7 +40,7 @@ require (
 	github.com/refraction-networking/utls v1.6.7 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
-	github.com/sirikothe/gotextfsm v1.0.0 // indirect
+	github.com/sirikothe/gotextfsm v1.0.1-0.20200816110946-6aa2cfd355e4 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect

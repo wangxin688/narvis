@@ -14,6 +14,7 @@ import (
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
+	"github.com/wangxin688/narvis/server/tools/helpers"
 	"go.uber.org/zap"
 	"golang.org/x/exp/rand"
 	"gorm.io/gorm"
@@ -433,4 +434,39 @@ func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
 		}
 	}
 	return nil
+}
+
+func ConfigBackUpCallback(data *intendtask.ConfigurationBackupTaskResult) error {
+	lastConfig, err := infra_biz.NewDeviceConfigService().GetLatestDeviceConfigByDeviceId(data.DeviceId)
+	if err != nil {
+		return err
+	}
+	totalLines := uint32(infra_biz.GetConfigTotalLines(data.Configuration))
+	hashValue := helpers.StringToMd5(data.Configuration)
+	if lastConfig == nil {
+		newBackupConfig := &models.DeviceConfig{
+			Configuration: data.Configuration,
+			DeviceId:      data.DeviceId,
+			TotalLines:    totalLines,
+			LinesAdded:    totalLines,
+			LinesDeleted:  0,
+			Md5Checksum:   hashValue,
+		}
+		return gen.DeviceConfig.Create(newBackupConfig)
+	} else {
+
+		if lastConfig.Md5Checksum == hashValue {
+			return nil
+		}
+		added, deleted := infra_biz.GetLineChanges(lastConfig.Configuration, data.Configuration)
+		newBackupConfig := &models.DeviceConfig{
+			Configuration: data.Configuration,
+			DeviceId:      data.DeviceId,
+			TotalLines:    totalLines,
+			LinesAdded:    uint32(added),
+			LinesDeleted:  uint32(deleted),
+			Md5Checksum:   hashValue,
+		}
+		return gen.DeviceConfig.Create(newBackupConfig)
+	}
 }

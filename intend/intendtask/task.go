@@ -14,18 +14,21 @@ const ScanIPAM = "ScanIPAM"
 const ScanMacAddressTable = "ScanMacAddressTable"
 const ScanAp = "ScanAp"
 const WebSSH = "WebSSH"
+const ConfigurationBackup = "ConfigurationBackup"
 
 const ScanDeviceBasicInfoCallback = "ScanDeviceBasicInfoCallback"
 const ScanDeviceCallback = "ScanDeviceCallback"
 const ScanIPAMCallback = "ScanIPAMCallback"
 const ScanMacAddressTableCallback = "ScanMacAddressTableCallback"
 const ScanApCallback = "ScanApCallback"
+const ConfigurationBackupCallback = "ConfigurationBackupCallback"
 
 const DeviceBasicInfoCbUrl = "/api/v1/task/scan-device-basic"
 const DeviceCbUrl = "/api/v1/task/scan-device"
 const MacAddressTableCbUrl = "/api/v1/task/scan-mac"
 const ApCbUrl = "/api/v1/task/scan-ap"
 const WebSocketCbUrl = "/api/v1/webssh/proxy"
+const ConfigurationBackupCbUrl = "/api/v1/task/config-backup"
 
 // 正式落库后的数据扫描schema
 type BaseSnmpTask struct {
@@ -48,6 +51,7 @@ type BaseSnmpScanTask struct {
 	Range      string            `json:"range"` // CIDR
 }
 
+
 type WebSSHTask struct {
 	TaskName     string `json:"taskName"`
 	SessionId    string `json:"sessionId"`
@@ -63,10 +67,12 @@ type ConfigurationBackupTask struct {
 	TaskId       string `json:"taskId"`
 	TaskName     string `json:"taskName"`
 	Callback     string `json:"callback"`
-	ManagementIP string `json:"managementIp"`
+	DeviceId     string `json:"deviceId"`
+	ManagementIp string `json:"managementIp"`
 	Username     string `json:"username"`
 	Password     string `json:"password"`
 	Port         uint16 `json:"port"`
+	Platform     string `json:"platform"`
 }
 
 type ConfigurationBackupTaskResult struct {
@@ -74,8 +80,8 @@ type ConfigurationBackupTaskResult struct {
 	DeviceId      string `json:"deviceId"`
 	BackupTime    string `json:"backupTime"`
 	HashValue     string `json:"hashValue"`
+	Error         string `json:"error"`
 }
-
 
 type SnmpV2Credential struct {
 	Community      string `json:"community"`

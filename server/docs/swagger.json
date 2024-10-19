@@ -4940,26 +4940,26 @@
         "alerts.AlertNameEnum": {
             "type": "string",
             "enum": [
-                "HighCpuUtilization",
-                "HighMemoryUtilization",
-                "HighDiskUtilization",
-                "HighSystemLoad",
-                "HighChannelUtilization",
-                "HighChannelInterference",
-                "HighChannelNoise",
-                "HighClientNumber",
-                "HighBandwidthUtilization",
-                "HighErrorRate",
-                "HighICMPLatency",
-                "HighICMPPacketLoss",
-                "HighTemperature",
-                "AbnormalFanStatus",
-                "AbnormalPowerStatus",
-                "InterfaceDown",
-                "InterfaceHalfDuplex",
-                "SnmpAgentTimeout",
-                "NodePingTimeout",
-                "ApDown",
+                "high_cpu_utilization",
+                "high_memory_utilization",
+                "high_disk_utilization",
+                "high_system_load",
+                "high_channel_utilization",
+                "high_channel_interference",
+                "high_channel_noise",
+                "high_client_number",
+                "high_bandwidth_usage",
+                "high_error_rate",
+                "high_icmp_ping_response_time",
+                "high_icmp_ping_loss",
+                "high_temperature",
+                "fan_status_abnormal",
+                "power_status_abnormal",
+                "interface_down",
+                "interface_half_duplex",
+                "no_snmp_data_collection",
+                "unavailable_by_icmp_ping",
+                "wireless_access_point_down",
                 "unknown"
             ],
             "x-enum-varnames": [
@@ -7695,25 +7695,25 @@
         "security.AccessToken": {
             "type": "object",
             "properties": {
-                "access_token": {
+                "accessToken": {
                     "type": "string"
                 },
-                "expires_at": {
-                    "type": "integer"
-                },
-                "issued_at": {
-                    "type": "integer"
-                },
-                "refresh_token": {
+                "expiresAt": {
                     "type": "string"
                 },
-                "refresh_token_expires_at": {
-                    "type": "integer"
+                "issuedAt": {
+                    "type": "string"
                 },
-                "refresh_token_issued_at": {
-                    "type": "integer"
+                "refreshToken": {
+                    "type": "string"
                 },
-                "token_type": {
+                "refreshTokenExpiresAt": {
+                    "type": "string"
+                },
+                "refreshTokenIssuedAt": {
+                    "type": "string"
+                },
+                "tokenType": {
                     "type": "string"
                 }
             }

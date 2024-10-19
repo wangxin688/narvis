@@ -13,5 +13,6 @@ func RegisterTaskRoutes(e *gin.Engine) {
 		router.POST("scan-device-basic", scanDeviceBasicInfoCallback)
 		router.POST("scan-ap", scanApCallback)
 		router.POST("scan-device", scanDeviceDetailCallback)
+		router.POST("config-backup", configBackupCallback)
 	}
 }

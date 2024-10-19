@@ -127,3 +127,41 @@ func scanDeviceDetailCallback(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, ts.SuccessResponse{Status: "ok"})
 }
+
+// @Tags Task
+// @Summary ConfigurationBackup Callback
+// @Description Configuration backup callback
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param data body []intendtask.ConfigurationBackupTaskResult true "data"
+// @Success 200 {object} ts.SuccessResponse
+// @Router /task/config-backup [post]
+func configBackupCallback(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var configBackUp *intendtask.ConfigurationBackupTaskResult
+	taskId := c.GetHeader(xTaskID)
+	err = helpers.ValidateUuidString(taskId)
+	if err != nil {
+		return
+	}
+	if err = c.ShouldBindJSON(&configBackUp); err != nil {
+		return
+	}
+	err = task_biz.UpdateConfigBackupResult(taskId, configBackUp)
+	if err != nil {
+		return
+	}
+	if configBackUp != nil && configBackUp.Error == "" {
+		err = infra_tasks.ConfigBackUpCallback(configBackUp)
+		if err != nil {
+			return
+		}
+	}
+	c.JSON(http.StatusOK, ts.SuccessResponse{Status: "ok"})
+}

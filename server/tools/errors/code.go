@@ -91,6 +91,8 @@ const (
 	MsgTaskNameInvalid              ErrorMsg  = "task name invalid"
 	CodeRackPositionOccupied        ErrorCode = 500007
 	MsgRackPositionOccupied         ErrorMsg  = "rack position occupied"
+	CodeNoDevicesFound              ErrorCode = 500008
+	MsgNoDevicesFound              ErrorMsg  = "generate task failed, no devices found for site"
 )
 
 // ipam error codes (600000 - 700000)

@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// TODO: optimize error handling return to server, add to struct rather than return error
 func TaskDispatcher(data []byte) {
 
 	task := make(map[string]any)
@@ -56,6 +57,12 @@ func TaskDispatcher(data []byte) {
 				logger.Logger.Error("taskDispatcher]: scanMacAddressTable err: ", zap.Error(err))
 			}
 			scanMacAddressTableCallback(results, taskId)
+		case intendtask.ConfigurationBackup:
+			results := configurationBackupTask(data)
+			if err != nil {
+				logger.Logger.Error("taskDispatcher]: configurationBackupTask err: ", zap.Error(err))
+			}
+			configBackUpCallback(results, taskId)
 		}
 	}
 

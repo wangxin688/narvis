@@ -68,5 +68,6 @@ func RegisterInfraRoutes(e *gin.Engine) {
 
 		router.POST("/scan-aps", createScanAP)
 		router.POST("/scan-device-details", scanDeviceDetails)
+		router.POST("/config-backup", configBackUp)
 	}
 }

@@ -17,7 +17,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func GenerateTask(siteId, taskName, callback string) ([]string, error) {
+func GenerateSNMPTask(siteId, taskName, callback string) ([]string, error) {
 	taskIds := make([]string, 0)
 	orgId := global.OrganizationId.Get()
 	devices, err := getDevicesByTaskName(siteId, taskName)
@@ -26,7 +26,7 @@ func GenerateTask(siteId, taskName, callback string) ([]string, error) {
 	}
 	if len(devices) == 0 {
 		core.Logger.Info("[taskGeneration]: no devices found", zap.String("taskName", taskName), zap.String("siteId", siteId))
-		return taskIds, nil
+		return taskIds, errors.NewError(errors.CodeNoDevicesFound, errors.MsgNoDevicesFound)
 	}
 	deviceIds := infra_utils.DevicesToIds(devices)
 	deviceManagementIp := infra_utils.DeviceManagementIpMap(devices)
@@ -86,6 +86,8 @@ func getDevicesByTaskName(siteId, taskName string) ([]*models.Device, error) {
 		return infra_biz.NewDeviceService().GetActiveDevices(siteId)
 	case intendtask.ScanIPAM:
 		return infra_biz.NewDeviceService().GetCoreSwitch(siteId)
+	case intendtask.ConfigurationBackup:
+		return infra_biz.NewDeviceService().GetActiveDevices(siteId)
 	default:
 		return nil, errors.NewError(errors.CodeTaskNameInvalid, errors.MsgTaskNameInvalid)
 	}
@@ -143,4 +145,57 @@ func CreateScanTask(sd *schemas.ScanDeviceCreate, orgId string) ([]string, error
 		core.Logger.Error("[CreateScanTask]: create task result to db failed", zap.Error(err))
 	}
 	return taskIds, nil
+}
+
+func ConfigBackUpTask(siteId, taskName, callback string) ([]string, error) {
+	taskIds := make([]string, 0)
+	orgId := global.OrganizationId.Get()
+	devices, err := getDevicesByTaskName(siteId, taskName)
+	if err != nil {
+		return taskIds, err
+	}
+	deviceIds := infra_utils.DevicesToIds(devices)
+	devicePlatforms := infra_utils.DevicePlatforms(devices)
+	deviceManagementIp := infra_utils.DeviceManagementIpMap(devices)
+	sshCredential, err := infra_biz.NewCliCredentialService().GetCredentialByDeviceIds(deviceIds)
+	if err != nil {
+		return taskIds, err
+	}
+	newTasks := make([]*models.TaskResult, 0)
+	for deviceId, sshConfig := range sshCredential {
+		taskId := uuid.New().String()
+		task := &intendtask.ConfigurationBackupTask{
+			TaskId:       taskId,
+			TaskName:     taskName,
+			DeviceId:     deviceId,
+			ManagementIp: deviceManagementIp[deviceId],
+			Username:     sshConfig.Username,
+			Password:     sshConfig.Password,
+			Port:         sshConfig.Port,
+			Platform:     devicePlatforms[deviceId],
+			Callback:     callback,
+		}
+		taskBytes, err := json.Marshal(task)
+		if err != nil {
+			return taskIds, err
+		}
+		err = rmq.PublishProxyMessage(taskBytes, orgId)
+		if err != nil {
+			return taskIds, err
+		}
+		newTasks = append(newTasks, &models.TaskResult{
+			BaseDbModel: models.BaseDbModel{
+				Id: taskId,
+			},
+			Name:           taskName,
+			Status:         "InProgress",
+			OrganizationId: orgId,
+		})
+	}
+	err = gen.TaskResult.CreateInBatches(newTasks, len(newTasks))
+	if err != nil {
+		return taskIds, err
+	}
+	return taskIds, nil
+
 }
