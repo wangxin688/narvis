@@ -1,6 +1,7 @@
 package infra_biz
 
 import (
+	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/devicerole"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
@@ -389,7 +390,6 @@ func (s *SiteService) GetDeviceApTotalBySites(sites []string) (*map[string]int64
 	return &res, nil
 }
 
-
 func (s *SiteService) GetSiteShortMap(siteIds []string) (map[string]*schemas.SiteShort, error) {
 	sites, err := gen.Site.Select(
 		gen.Site.Id,
@@ -408,4 +408,24 @@ func (s *SiteService) GetSiteShortMap(siteIds []string) (map[string]*schemas.Sit
 		}
 	}
 	return res, nil
+}
+
+func (s *SiteService) GetAllActiveSites() ([]*models.Site, error) {
+
+	activeTenants, err := gen.Organization.Select(gen.Organization.Id).Where(gen.Organization.Active.Is(true)).Find()
+
+	if err != nil {
+		return nil, err
+	}
+	tenantIds := lo.Map(activeTenants, func(item *models.Organization, index int) string {
+		return item.Id
+	})
+	sites := make([]*models.Site, 0)
+	err = gen.Site.Select(gen.Site.Id, gen.Site.OrganizationId).
+		Where(gen.Site.OrganizationId.In(tenantIds...), gen.Site.Status.Eq("Active")).Scan(&sites)
+	if err != nil {
+		return nil, err
+	}
+	return sites, nil
+
 }
