@@ -8,12 +8,13 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/features/device360/schemas"
 	device360_utils "github.com/wangxin688/narvis/server/features/device360/utils"
+	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/pkg/vtm"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
 )
 
-func GetAllDeviceHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
+func getAllDeviceHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
 
 	query := vtm.NewPromQLBuilder(string(metrics.HealthScore)).WithWindow("5m")
 	if siteId != nil && *siteId != "" {
@@ -36,7 +37,7 @@ func GetAllDeviceHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, e
 	return device360_utils.VectorResponseToHealthMap(vectors), nil
 }
 
-func GetSwitchHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
+func getSwitchHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
 	query := vtm.NewPromQLBuilder(string(metrics.HealthScore)).
 		WithLabels(vtm.Label{
 			Name:    "deviceRole",
@@ -63,7 +64,7 @@ func GetSwitchHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, erro
 	return device360_utils.VectorResponseToHealthMap(vectors), nil
 }
 
-func GetAccessPointsHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
+func getAccessPointsHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
 	query := vtm.NewPromQLBuilder(string(metrics.HealthScore)).
 		WithLabels(vtm.Label{
 			Name:    "deviceRole",
@@ -90,7 +91,7 @@ func GetAccessPointsHealth(siteId *string, orgId string) (*schemas.HealthHeatMap
 	return device360_utils.VectorResponseToHealthMap(vectors), nil
 }
 
-func GetGatewayHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
+func getGatewayHealth(siteId *string, orgId string) (*schemas.HealthHeatMap, error) {
 	query := vtm.NewPromQLBuilder(string(metrics.HealthScore)).
 		WithLabels(vtm.Label{
 			Name:    "deviceRole",
@@ -172,4 +173,34 @@ func GetSLA(siteId *string, orgId string, startedAtGte time.Time, startedAtLte t
 	}
 	return vectors, nil
 
+}
+
+func GetHealth(query *schemas.DeviceHealthQuery) (*schemas.HealthResponse, error) {
+	orgId := global.OrganizationId.Get()
+	switchHealth, err := getSwitchHealth(query.SiteId, orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get switch health", zap.Error(err))
+		return nil, err
+	}
+	allDeviceHealth, err := getAllDeviceHealth(query.SiteId, orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get all device health", zap.Error(err))
+		return nil, err
+	}
+	gatewayHealth, err := getGatewayHealth(query.SiteId, orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get gateway health", zap.Error(err))
+		return nil, err
+	}
+	accessPointHealth, err := getAccessPointsHealth(query.SiteId, orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get access point health", zap.Error(err))
+		return nil, err
+	}
+	return &schemas.HealthResponse{
+		Gateway: *gatewayHealth,
+		WlanAP:  *accessPointHealth,
+		Switch:  *switchHealth,
+		Device:  *allDeviceHealth,
+	}, nil
 }

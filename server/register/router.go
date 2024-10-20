@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	admin_api "github.com/wangxin688/narvis/server/features/admin/api"
 	alert_api "github.com/wangxin688/narvis/server/features/alert/api"
+	device360_api "github.com/wangxin688/narvis/server/features/device360/api"
 	infra_api "github.com/wangxin688/narvis/server/features/infra/api"
 	intend_api "github.com/wangxin688/narvis/server/features/intend/api"
 	ipam_api "github.com/wangxin688/narvis/server/features/ipam/api"
@@ -25,4 +26,5 @@ func RegisterRouter(e *gin.Engine) {
 	ipam_api.RegisterIpamRoutes(e)
 	webssh_api.RegisterWebSSHRoutes(e)
 	monitor_api.RegisterMonitorRoutes(e)
+	device360_api.RegisterDevice360Routes(e)
 }
