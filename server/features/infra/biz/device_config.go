@@ -50,3 +50,23 @@ func GetLineChanges(config1 string, config2 string) (added, deleted int) {
 	}
 	return
 }
+
+// TODO: confirm backup max limit needs config or set a default
+func (s *DeviceConfigService) HouseKeeping(deviceId string) error {
+	maxLimit := 30
+	count, err := gen.DeviceConfig.Where(
+		gen.DeviceConfig.DeviceId.Eq(deviceId)).Count()
+
+	if err != nil {
+		return err
+	}
+	if count > int64(maxLimit) {
+		// delete the oldest config order by createdAt
+		_, err = gen.DeviceConfig.Where(
+			gen.DeviceConfig.DeviceId.Eq(deviceId)).Order(gen.DeviceConfig.Id.Desc()).Limit(1).Delete()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

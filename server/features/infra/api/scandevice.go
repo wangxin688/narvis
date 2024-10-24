@@ -274,7 +274,6 @@ func scanDeviceDetails(c *gin.Context) {
 // @Param data body schemas.ConfigBackUpCreate true "data"
 // @Success 200 {object} ts.IdsResponse
 // @Router /infra/device-config-backup [post]
-
 func configBackUp(c *gin.Context) {
 	var err error
 	defer func() {

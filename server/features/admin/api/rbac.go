@@ -31,3 +31,6 @@ func passwordLogin(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, token)
 }
+
+
+// google auth https://console.cloud.google.com/apis/credentials/consent/edit;newAppInternalUser=false?hl=zh-cn&project=smart-seer-431515-a0

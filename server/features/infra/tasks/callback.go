@@ -437,7 +437,8 @@ func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
 }
 
 func ConfigBackUpCallback(data *intendtask.ConfigurationBackupTaskResult) error {
-	lastConfig, err := infra_biz.NewDeviceConfigService().GetLatestDeviceConfigByDeviceId(data.DeviceId)
+	configService := infra_biz.NewDeviceConfigService()
+	lastConfig, err := configService.GetLatestDeviceConfigByDeviceId(data.DeviceId)
 	if err != nil {
 		return err
 	}
@@ -452,7 +453,10 @@ func ConfigBackUpCallback(data *intendtask.ConfigurationBackupTaskResult) error 
 			LinesDeleted:  0,
 			Md5Checksum:   hashValue,
 		}
-		return gen.DeviceConfig.Create(newBackupConfig)
+		err = gen.DeviceConfig.Create(newBackupConfig)
+		if err != nil {
+			return err
+		}
 	} else {
 
 		if lastConfig.Md5Checksum == hashValue {
@@ -467,6 +471,10 @@ func ConfigBackUpCallback(data *intendtask.ConfigurationBackupTaskResult) error 
 			LinesDeleted:  uint32(deleted),
 			Md5Checksum:   hashValue,
 		}
-		return gen.DeviceConfig.Create(newBackupConfig)
+		err = gen.DeviceConfig.Create(newBackupConfig)
+		if err != nil {
+			return err
+		}
 	}
+	return configService.HouseKeeping(data.DeviceId)
 }

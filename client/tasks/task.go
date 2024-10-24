@@ -281,7 +281,7 @@ func configurationBackupTask(data []byte) *intendtask.ConfigurationBackupTaskRes
 		DeviceId: task.DeviceId,
 	}
 	if err != nil {
-		logger.Logger.Error("[ConfigurationBackupTask]: Unmarshal err: ", zap.Error(err))
+		logger.Logger.Warn("[ConfigurationBackupTask]: Unmarshal err: ", zap.Error(err))
 		result.Error = err.Error()
 		return result
 	}
@@ -291,17 +291,17 @@ func configurationBackupTask(data []byte) *intendtask.ConfigurationBackupTaskRes
 		Platform:     task.Platform,
 		Username:     task.Username,
 		Password:     task.Password,
-		Timeout:      5,
+		Timeout:      15,
 	}
 	sshConn, err := gossh.NewConnection(&connectionInfo)
 	if err != nil {
-		logger.Logger.Error("[ConfigurationBackupTask]: failed to create ssh connection", zap.Error(err))
+		logger.Logger.Warn("[ConfigurationBackupTask]: failed to create ssh connection", zap.String("managementIp", task.ManagementIp), zap.Error(err))
 		result.Error = err.Error()
 		return result
 	}
 	configuration, err := sshConn.ShowRunningConfig()
 	if err != nil {
-		logger.Logger.Error("[ConfigurationBackupTask]: failed to get running config", zap.Error(err))
+		logger.Logger.Warn("[ConfigurationBackupTask]: failed to get running config", zap.String("managementIp", task.ManagementIp), zap.Error(err))
 		result.Error = err.Error()
 		return result
 	}

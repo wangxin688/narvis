@@ -191,6 +191,7 @@ func ConfigBackUpTask(siteId, taskName, callback string) ([]string, error) {
 			Status:         "InProgress",
 			OrganizationId: orgId,
 		})
+		taskIds = append(taskIds, taskId)
 	}
 	err = gen.TaskResult.CreateInBatches(newTasks, len(newTasks))
 	if err != nil {

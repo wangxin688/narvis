@@ -83,6 +83,7 @@ func (c *VtmClient) GetVector(query *VectorRequest, OrganizationId *string) (res
 
 	vector_query_path := "/api/v1/query"
 	request := c.R()
+	request = request.SetQueryParam("query", query.Query)
 	if query.Time != nil {
 		request = request.SetQueryParam("time", fmt.Sprintf("%d", *query.Time))
 	}
@@ -106,6 +107,7 @@ func (c *VtmClient) GetMatrix(query *MatrixRequest, OrganizationId *string) (res
 
 	matrix_query_path := "/api/v1/query_range"
 	request := c.R()
+	request = request.SetQueryParam("query", query.Query)
 	if query.Start != 0 {
 		request = request.SetQueryParam("start", fmt.Sprintf("%d", query.Start))
 	}

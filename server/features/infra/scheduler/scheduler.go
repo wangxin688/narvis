@@ -19,7 +19,7 @@ func SyncDeviceScheduler() {
 		siteId := site.Id
 		orgId := site.OrganizationId
 		global.OrganizationId.Set(orgId)
-		ids, err := infra_tasks.GenerateSNMPTask(siteId, intendtask.ScanDeviceBasicInfo, intendtask.ScanDeviceBasicInfoCallback)
+		ids, err := infra_tasks.GenerateSNMPTask(siteId, intendtask.ScanDevice, intendtask.ScanDeviceCallback)
 		if err != nil {
 			core.Logger.Warn("[syncDeviceScheduler]: generate snmp task failed", zap.Error(err))
 		}
