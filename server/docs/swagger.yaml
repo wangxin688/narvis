@@ -189,6 +189,19 @@ definitions:
       vlanId:
         type: integer
     type: object
+  intendtask.ConfigurationBackupTaskResult:
+    properties:
+      backupTime:
+        type: string
+      configuration:
+        type: string
+      deviceId:
+        type: string
+      error:
+        type: string
+      hashValue:
+        type: string
+    type: object
   intendtask.DeviceBasicInfoScanResponse:
     properties:
       chassisId:
@@ -749,6 +762,13 @@ definitions:
     - item
     - value
     type: object
+  schemas.ConfigBackUpCreate:
+    properties:
+      siteId:
+        type: string
+    required:
+    - siteId
+    type: object
   schemas.Device:
     properties:
       createdAt:
@@ -915,6 +935,19 @@ definitions:
         type: string
       Type:
         type: string
+    type: object
+  schemas.HealthHeatMap:
+    properties:
+      good:
+        type: integer
+      needsAttention:
+        type: integer
+      poor:
+        type: integer
+      unhealthy:
+        type: integer
+      unknown:
+        type: integer
     type: object
   schemas.IdResponse:
     properties:
@@ -2778,6 +2811,27 @@ paths:
       summary: Update Subscription
       tags:
       - Alert
+  /assurance/device-healthy:
+    get:
+      consumes:
+      - application/json
+      description: Get Device Healthy
+      parameters:
+      - in: query
+        name: siteId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.HealthHeatMap'
+      security:
+      - BearerAuth: []
+      summary: Get Device Healthy
+      tags:
+      - Assurance
   /infra/aps:
     delete:
       consumes:
@@ -3193,6 +3247,30 @@ paths:
       security:
       - BearerAuth: []
       summary: Update circuit
+      tags:
+      - Infra
+  /infra/device-config-backup:
+    post:
+      consumes:
+      - application/json
+      description: Device Configuration backup
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.ConfigBackUpCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdsResponse'
+      security:
+      - BearerAuth: []
+      summary: Device Configuration backup
       tags:
       - Infra
   /infra/devices:
@@ -4858,6 +4936,32 @@ paths:
       summary: Create organization
       tags:
       - Organization
+  /task/config-backup:
+    post:
+      consumes:
+      - application/json
+      description: Configuration backup callback
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/intendtask.ConfigurationBackupTaskResult'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.SuccessResponse'
+      security:
+      - BearerAuth: []
+      summary: ConfigurationBackup Callback
+      tags:
+      - Task
   /task/scan-ap:
     post:
       consumes:

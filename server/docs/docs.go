@@ -1381,6 +1381,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/assurance/device-healthy": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get Device Healthy",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assurance"
+                ],
+                "summary": "Get Device Healthy",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "siteId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.HealthHeatMap"
+                        }
+                    }
+                }
+            }
+        },
         "/infra/aps": {
             "get": {
                 "security": [
@@ -2038,6 +2073,45 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/device-config-backup": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Device Configuration backup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra"
+                ],
+                "summary": "Device Configuration backup",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ConfigBackUpCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdsResponse"
                         }
                     }
                 }
@@ -4716,6 +4790,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/task/config-backup": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Configuration backup callback",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "ConfigurationBackup Callback",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/intendtask.ConfigurationBackupTaskResult"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/task/scan-ap": {
             "post": {
                 "security": [
@@ -5173,6 +5289,26 @@ const docTemplate = `{
                 },
                 "vlanId": {
                     "type": "integer"
+                }
+            }
+        },
+        "intendtask.ConfigurationBackupTaskResult": {
+            "type": "object",
+            "properties": {
+                "backupTime": {
+                    "type": "string"
+                },
+                "configuration": {
+                    "type": "string"
+                },
+                "deviceId": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "hashValue": {
+                    "type": "string"
                 }
             }
         },
@@ -6010,6 +6146,17 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.ConfigBackUpCreate": {
+            "type": "object",
+            "required": [
+                "siteId"
+            ],
+            "properties": {
+                "siteId": {
+                    "type": "string"
+                }
+            }
+        },
         "schemas.Device": {
             "type": "object",
             "properties": {
@@ -6257,6 +6404,26 @@ const docTemplate = `{
                 },
                 "Type": {
                     "type": "string"
+                }
+            }
+        },
+        "schemas.HealthHeatMap": {
+            "type": "object",
+            "properties": {
+                "good": {
+                    "type": "integer"
+                },
+                "needsAttention": {
+                    "type": "integer"
+                },
+                "poor": {
+                    "type": "integer"
+                },
+                "unhealthy": {
+                    "type": "integer"
+                },
+                "unknown": {
+                    "type": "integer"
                 }
             }
         },
