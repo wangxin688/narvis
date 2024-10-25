@@ -5985,7 +5985,9 @@
                     "type": "string"
                 },
                 "rxBandWidth": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 800000,
+                    "minimum": 1
                 },
                 "status": {
                     "type": "string",
@@ -5995,7 +5997,9 @@
                     ]
                 },
                 "txBandWidth": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 800000,
+                    "minimum": 1
                 }
             }
         },

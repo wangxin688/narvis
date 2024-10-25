@@ -175,6 +175,7 @@ type HostInterfaceCreate struct {
 	Main    uint8   `json:"main"`  // 0:no 1:yes
 	UseIp   uint8   `json:"useip"` // 0:use dns 1:use ip
 	IP      string  `json:"ip"`
+	Dns     string  `json:"dns"`
 	Port    uint32  `json:"port"` // default agent 10050, snmp 161
 	Details Details `json:"details"`
 }

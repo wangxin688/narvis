@@ -5993,7 +5993,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rxBandWidth": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 800000,
+                    "minimum": 1
                 },
                 "status": {
                     "type": "string",
@@ -6003,7 +6005,9 @@ const docTemplate = `{
                     ]
                 },
                 "txBandWidth": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 800000,
+                    "minimum": 1
                 }
             }
         },

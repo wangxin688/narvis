@@ -650,6 +650,8 @@ definitions:
       provider:
         type: string
       rxBandWidth:
+        maximum: 800000
+        minimum: 1
         type: integer
       status:
         enum:
@@ -657,6 +659,8 @@ definitions:
         - Inactive
         type: string
       txBandWidth:
+        maximum: 800000
+        minimum: 1
         type: integer
     required:
     - cid

@@ -642,6 +642,7 @@ func initNarvisSnmpCredential(orgId string) error {
 				}
 				core.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
 				infra_hooks.SnmpCredCreateHooks(snmpCred.Id)
+				break
 			}
 		}
 	} else {
@@ -734,6 +735,9 @@ func initNarvisTemplates() error {
 	zbxClient := zbx.NewZbxClient()
 	for _, template := range templates {
 		templateName := template["platform"] + " " + template["deviceRole"]
+		if strings.Contains(templateName, "*") {
+			templateName = template["basicTemplate"]
+		}
 		dbTemplate, err := gen.Template.Where(
 			gen.Template.TemplateName.Eq(templateName),
 		).Find()
@@ -755,7 +759,7 @@ func initNarvisTemplates() error {
 			},
 		)
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to get template", zap.Error(err))
+			core.Logger.Error("[bootstrap]: failed to get template", zap.String("name", template["basicTemplate"]), zap.Error(err))
 			return err
 		}
 		if len(templateId) == 0 {

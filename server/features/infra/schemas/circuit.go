@@ -11,10 +11,10 @@ type CircuitCreate struct {
 	CId         *string `json:"cid" binding:"required"`
 	Status      string  `json:"status" binding:"required,oneof= Active Inactive"`
 	CircuitType string  `json:"circuitType" binding:"required,oneof= Internet MPLS IEPL DPLC DarkFiber ADSL"`
-	RxBandWidth uint32  `json:"rxBandWidth" binding:"required,gt=1, lt=800000"`
-	TxBandWidth uint32  `json:"txBandWidth" binding:"required,gt=1, lt=800000"`
-	Ipv4Address *string `json:"ipv4Address" binding:"ipv4"`
-	Ipv6Address *string `json:"ipv6Address" binding:"ipv6"`
+	RxBandWidth uint32  `json:"rxBandWidth" binding:"required,gte=1,lte=800000"`
+	TxBandWidth uint32  `json:"txBandWidth" binding:"required,gte=1,lte=800000"`
+	Ipv4Address *string `json:"ipv4Address" binding:"omitempty,ipv4"`
+	Ipv6Address *string `json:"ipv6Address" binding:"omitempty,ipv6"`
 	Description *string `json:"description" binding:"omitempty"`
 	Provider    string  `json:"provider" binding:"required"`
 	InterfaceId string  `json:"interfaceId" binding:"required,uuid"`

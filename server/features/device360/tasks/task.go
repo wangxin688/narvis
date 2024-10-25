@@ -144,7 +144,15 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 				continue
 			}
 
-			delete(item.Metric, "__name__")
+			labels := map[string]string{
+				"deviceId":       deviceId,
+				"deviceName":     item.Metric["deviceName"],
+				"deviceRole":     item.Metric["deviceRole"],
+				"siteId":         item.Metric["siteId"],
+				"siteCode":       item.Metric["siteCode"],
+				"siteName":       item.Metric["siteName"],
+				"organizationId": item.Metric["organizationId"],
+			}
 
 			if _, ok := deviceMetrics[deviceId]; !ok {
 				deviceMetrics[deviceId] = &DeviceSchema{
@@ -161,7 +169,7 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 					RxRate:            make([]float64, 0),
 					TxRate:            make([]float64, 0),
 					OperationalStatus: make([]float64, 0),
-					Labels:            item.Metric,
+					Labels:            labels,
 				}
 			}
 

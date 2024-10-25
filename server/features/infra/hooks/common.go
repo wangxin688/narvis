@@ -50,7 +50,7 @@ func circuitTemplateSelect() (string, error) {
 		core.Logger.Error("templateChoice failed", zap.Error(err))
 		return "", err
 	}
-	return template.Id, nil
+	return template.TemplateId, nil
 }
 
 func circuitHostTemplateSelect() (string, error) {
@@ -61,7 +61,7 @@ func circuitHostTemplateSelect() (string, error) {
 		core.Logger.Error("templateChoice failed", zap.Error(err))
 		return "", err
 	}
-	return template.Id, nil
+	return template.TemplateId, nil
 }
 
 func genCircuitMacros(circuit *models.Circuit, deviceInterface *models.DeviceInterface) *[]zschema.Macro {

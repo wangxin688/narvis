@@ -40,7 +40,7 @@ func (c *CircuitService) CreateCircuit(circuit *schemas.CircuitCreate) (string, 
 		Provider:       circuit.Provider,
 		OrganizationId: global.OrganizationId.Get(),
 	}
-	siteId, deviceId, err := c.GetDeviceSiteIdByInterfaceId(circuit.InterfaceId)
+	deviceId, siteId, err := c.GetDeviceSiteIdByInterfaceId(circuit.InterfaceId)
 	if err != nil {
 		return "", err
 	}
