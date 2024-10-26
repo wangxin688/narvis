@@ -1,4 +1,4 @@
-package metric_biz
+package infra_biz
 
 import (
 	"strings"
@@ -6,7 +6,6 @@ import (
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/metrics"
 	"github.com/wangxin688/narvis/server/core"
-	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/monitor/schemas"
 	"github.com/wangxin688/narvis/server/pkg/vtm"
 	"go.uber.org/zap"
@@ -34,7 +33,7 @@ func OpStatusReverseMapping(status string) int {
 }
 
 func GetApOpStatus(apIds []string, orgId string) (map[string]string, error) {
-	apMap, err := infra_biz.NewApService().GetApShortMap(apIds)
+	apMap, err := NewApService().GetApShortMap(apIds)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +123,7 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 	}
 	if len(vectors) == 0 {
 		if opStatus == "nodata" {
-			return infra_biz.NewApService().GetAllApIdsBySiteId(siteId)
+			return NewApService().GetAllApIdsBySiteId(siteId)
 		}
 		return []string{}, nil
 	}
@@ -132,12 +131,12 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 		allApNameWithData := lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
 			return v.Metric["apName"]
 		})
-		allApIds, err := infra_biz.NewApService().GetAllApIdsBySiteId(siteId)
+		allApIds, err := NewApService().GetAllApIdsBySiteId(siteId)
 		if err != nil {
 			core.Logger.Error("[metricService]: failed to get ap ids by site id", zap.String("siteId", siteId), zap.Error(err))
 			return nil, err
 		}
-		apIds, err := infra_biz.NewApService().GetApIdsByNames(allApNameWithData, orgId)
+		apIds, err := NewApService().GetApIdsByNames(allApNameWithData, orgId)
 		if err != nil {
 			core.Logger.Error("[metricService]: failed to get ap ids by names", zap.Error(err))
 			return nil, err
@@ -171,7 +170,7 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 		return apNames, nil
 	}
 
-	apIds, err := infra_biz.NewApService().GetApIdsByNames(apNames, orgId)
+	apIds, err := NewApService().GetApIdsByNames(apNames, orgId)
 	if err != nil {
 		core.Logger.Error("[metricService]: failed to get ap ids by names", zap.Error(err))
 		return nil, err
@@ -197,7 +196,7 @@ func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 	}
 	if len(vectors) == 0 {
 		if opStatus == "nodata" {
-			return infra_biz.NewDeviceService().GetAllDeviceIdsBySiteId(siteId)
+			return NewDeviceService().GetAllDeviceIdsBySiteId(siteId)
 		}
 		return []string{}, nil
 	}
@@ -205,7 +204,7 @@ func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 		allDeviceIdsWithData := lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
 			return v.Metric["deviceId"]
 		})
-		allDeviceIds, err := infra_biz.NewDeviceService().GetAllDeviceIdsBySiteId(siteId)
+		allDeviceIds, err := NewDeviceService().GetAllDeviceIdsBySiteId(siteId)
 		if err != nil {
 			core.Logger.Error("[metricService]: failed to get device ids by site id", zap.String("siteId", siteId), zap.Error(err))
 			return nil, err

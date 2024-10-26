@@ -173,7 +173,7 @@ func (pb *PromQLBuilder) Build() (string, error) {
 	if len(pb.labels) > 0 {
 		tmp := make([]string, len(pb.labels))
 		for index, label := range pb.labels {
-			tmp[index] = fmt.Sprintf("%s%s%s", label.Name, label.Matcher, label.Value)
+			tmp[index] = fmt.Sprintf(`%s%s"%s"`, label.Name, label.Matcher, label.Value)
 		}
 		basicQL += fmt.Sprintf("{%s}", strings.Join(tmp, ","))
 	}

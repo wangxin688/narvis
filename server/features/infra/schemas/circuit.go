@@ -50,20 +50,21 @@ type CircuitQuery struct {
 }
 
 type Circuit struct {
-	Id          string    `json:"id"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-	Name        string    `json:"name"`
-	CId         string    `json:"cid"`
-	Status      string    `json:"status"`
-	CircuitType string    `json:"circuitType"`
-	RxBandWidth uint32    `json:"rxBandWidth"`
-	TxBandWidth uint32    `json:"txBandWidth"`
-	Ipv4Address *string   `json:"ipv4Address"`
-	Ipv6Address *string   `json:"ipv6Address"`
-	Description *string   `json:"description"`
-	MonitorId   *string   `json:"monitorId"`
-	Provider    string    `json:"provider"`
+	Id            string    `json:"id"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
+	Name          string    `json:"name"`
+	CId           string    `json:"cid"`
+	Status        string    `json:"status"`
+	CircuitType   string    `json:"circuitType"`
+	RxBandWidth   uint32    `json:"rxBandWidth"`
+	TxBandWidth   uint32    `json:"txBandWidth"`
+	Ipv4Address   *string   `json:"ipv4Address"`
+	Ipv6Address   *string   `json:"ipv6Address"`
+	Description   *string   `json:"description"`
+	MonitorId     *string   `json:"monitorId"`
+	MonitorHostId *string   `json:"monitorHostId"`
+	Provider      string    `json:"provider"`
 	// ASite ds.SiteShort `json:"a_site"`
 	// ADevice ds.DeviceShort `json:"a_device"`
 	// AInterface ds.InterfaceShort `json:"a_interface"`

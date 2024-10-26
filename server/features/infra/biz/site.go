@@ -257,7 +257,7 @@ func (s *SiteService) GetList(params *schemas.SiteQuery) (int64, *[]*schemas.Sit
 		)
 	}
 	count, err := stmt.Count()
-	if err != nil || count < 0 {
+	if err != nil || count <= 0 {
 		return 0, &res, err
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())
@@ -316,6 +316,7 @@ func (s *SiteService) GetCircuitBySites(sites []string) (*map[string][]*schemas.
 		gen.Circuit.Provider,
 		gen.Circuit.RxBandWidth,
 		gen.Circuit.TxBandWidth,
+		gen.Circuit.SiteId,
 	).Where(
 		gen.Circuit.OrganizationId.Eq(global.OrganizationId.Get()),
 		gen.Circuit.SiteId.In(sites...),

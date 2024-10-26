@@ -54,7 +54,7 @@ func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *[]*schemas.R
 		).Or(gen.Role.Description.Like(searchString))
 	}
 	count, err := stmt.Count()
-	if err != nil || count < 0 {
+	if err != nil || count <= 0 {
 		return 0, &res, err
 	}
 	stmt.UnderlyingDB().Scopes(params.OrderByField())

@@ -3,11 +3,14 @@ package infra_biz
 import (
 	"fmt"
 
+	"github.com/samber/lo"
+	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools/helpers"
+	"go.uber.org/zap"
 )
 
 type ApService struct{}
@@ -18,7 +21,8 @@ func NewApService() *ApService {
 
 func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, error) {
 	res := make([]*schemas.AP, 0)
-	stmt := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()))
+	orgId := global.OrganizationId.Get()
+	stmt := gen.AP.Where(gen.AP.OrganizationId.Eq(orgId))
 	if query.Name != nil {
 		stmt = stmt.Where(gen.AP.Name.In(*query.Name...))
 	}
@@ -43,7 +47,7 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 	}
 
 	count, err := stmt.Count()
-	if err != nil || count < 0 {
+	if err != nil || count <= 0 {
 		return 0, &res, err
 	}
 	stmt.UnderlyingDB().Scopes(query.OrderByField())
@@ -52,14 +56,25 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 	if err != nil {
 		return 0, &res, err
 	}
+	apIds := lo.Map(aps, func(ap *models.AP, _ int) string { return ap.Id })
+	opStatus, err := GetApOpStatus(apIds, orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
+	}
+
 	for _, ap := range aps {
 		res = append(res, &schemas.AP{
-			Id:              ap.Id,
-			CreatedAt:       ap.CreatedAt,
-			UpdatedAt:       ap.UpdatedAt,
-			Name:            ap.Name,
-			Status:          ap.Status,
-			OperStatus:      "",
+			Id:        ap.Id,
+			CreatedAt: ap.CreatedAt,
+			UpdatedAt: ap.UpdatedAt,
+			Name:      ap.Name,
+			Status:    ap.Status,
+			OperStatus: func() string {
+				if status, ok := opStatus[ap.Id]; ok {
+					return status
+				}
+				return "nodata"
+			}(),
 			MacAddress:      ap.MacAddress,
 			SerialNumber:    ap.SerialNumber,
 			ManagementIp:    ap.ManagementIp,
@@ -81,19 +96,27 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 }
 
 func (s *ApService) GetById(id string) (*schemas.AP, error) {
-
-	ap, err := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.Id.Eq(id)).First()
+	orgId := global.OrganizationId.Get()
+	ap, err := gen.AP.Where(gen.AP.OrganizationId.Eq(orgId), gen.AP.Id.Eq(id)).First()
 	if err != nil {
 		return nil, err
 	}
-
+	opStatus, err := GetApOpStatus([]string{ap.Id}, orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
+	}
 	return &schemas.AP{
-		Id:              ap.Id,
-		CreatedAt:       ap.CreatedAt,
-		UpdatedAt:       ap.UpdatedAt,
-		Name:            ap.Name,
-		Status:          ap.Status,
-		OperStatus:      "",
+		Id:        ap.Id,
+		CreatedAt: ap.CreatedAt,
+		UpdatedAt: ap.UpdatedAt,
+		Name:      ap.Name,
+		Status:    ap.Status,
+		OperStatus: func() string {
+			if status, ok := opStatus[ap.Id]; ok {
+				return status
+			}
+			return "nodata"
+		}(),
 		MacAddress:      ap.MacAddress,
 		SerialNumber:    ap.SerialNumber,
 		ManagementIp:    ap.ManagementIp,

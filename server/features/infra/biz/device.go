@@ -2,7 +2,9 @@ package infra_biz
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/devicerole"
+	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
@@ -11,6 +13,7 @@ import (
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
+	"go.uber.org/zap"
 )
 
 type DeviceService struct{}
@@ -149,9 +152,14 @@ func (d *DeviceService) DeleteDevice(deviceId string) (*models.Device, error) {
 }
 
 func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
-	device, err := gen.Device.Select(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	orgId := global.OrganizationId.Get()
+	device, err := gen.Device.Select(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(orgId)).First()
 	if err != nil {
 		return nil, err
+	}
+	opStatus, err := GetDeviceOpStatus([]string{deviceId}, orgId)
+	if err != nil {
+		core.Logger.Error("[infraDeviceService]: failed to get device op status", zap.Error(err))
 	}
 	return &schemas.Device{
 		Id:           device.Id,
@@ -161,7 +169,12 @@ func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
 		ManagementIp: device.ManagementIp,
 		Platform:     device.Platform,
 		Status:       device.Status,
-		OperStatus:   "",
+		OperStatus: func() string {
+			if value, ok := opStatus[deviceId]; ok {
+				return value
+			}
+			return "nodata"
+		}(),
 		DeviceModel:  device.DeviceModel,
 		Manufacturer: device.Manufacturer,
 		DeviceRole:   device.DeviceRole,
@@ -183,7 +196,8 @@ func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
 
 func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*schemas.Device, error) {
 	res := make([]*schemas.Device, 0)
-	stmt := gen.Device.Where(gen.Device.OrganizationId.Eq(global.OrganizationId.Get()))
+	orgId := global.OrganizationId.Get()
+	stmt := gen.Device.Where(gen.Device.OrganizationId.Eq(orgId))
 	if query.Name != nil {
 		stmt = stmt.Where(gen.Device.Name.In(*query.Name...))
 	}
@@ -225,7 +239,7 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 	}
 
 	count, err := stmt.Count()
-	if err != nil && count < 0 {
+	if err != nil || count <= 0 {
 		return 0, &res, err
 	}
 	stmt.UnderlyingDB().Scopes(query.OrderByField())
@@ -233,6 +247,11 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 	list, err := stmt.Find()
 	if err != nil {
 		return 0, &res, err
+	}
+	deviceIds := lo.Map(list, func(item *models.Device, _ int) string { return item.Id })
+	opStatus, err := GetDeviceOpStatus(deviceIds, orgId)
+	if err != nil {
+		core.Logger.Error("[infraDeviceService]: failed to get device op status", zap.Error(err))
 	}
 
 	for _, item := range list {
@@ -244,7 +263,12 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 			ManagementIp: item.ManagementIp,
 			Platform:     item.Platform,
 			Status:       item.Status,
-			OperStatus:   "",
+			OperStatus: func() string {
+				if value, ok := opStatus[item.Id]; ok {
+					return value
+				}
+				return "nodata"
+			}(),
 			DeviceModel:  item.DeviceModel,
 			Manufacturer: item.Manufacturer,
 			DeviceRole:   item.DeviceRole,

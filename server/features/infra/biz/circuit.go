@@ -129,19 +129,21 @@ func (c *CircuitService) GetCircuitById(id string) (*schemas.Circuit, error) {
 		return nil, err
 	}
 	return &schemas.Circuit{
-		Id:          circuit.Id,
-		Name:        circuit.Name,
-		CId:         *circuit.CId,
-		Status:      circuit.Status,
-		RxBandWidth: circuit.RxBandWidth,
-		TxBandWidth: circuit.TxBandWidth,
-		Ipv4Address: circuit.Ipv4Address,
-		Ipv6Address: circuit.Ipv6Address,
-		Description: circuit.Description,
-		CircuitType: circuit.CircuitType,
-		Provider:    circuit.Provider,
-		CreatedAt:   circuit.CreatedAt,
-		UpdatedAt:   circuit.UpdatedAt,
+		Id:            circuit.Id,
+		Name:          circuit.Name,
+		CId:           *circuit.CId,
+		Status:        circuit.Status,
+		RxBandWidth:   circuit.RxBandWidth,
+		TxBandWidth:   circuit.TxBandWidth,
+		Ipv4Address:   circuit.Ipv4Address,
+		Ipv6Address:   circuit.Ipv6Address,
+		Description:   circuit.Description,
+		CircuitType:   circuit.CircuitType,
+		Provider:      circuit.Provider,
+		MonitorId:     circuit.MonitorId,
+		MonitorHostId: circuit.MonitorHostId,
+		CreatedAt:     circuit.CreatedAt,
+		UpdatedAt:     circuit.UpdatedAt,
 	}, nil
 }
 
@@ -195,7 +197,7 @@ func (c *CircuitService) ListCircuit(query *schemas.CircuitQuery) (int64, *[]*sc
 	}
 
 	count, err := stmt.Count()
-	if err != nil || count < 0 {
+	if err != nil || count <= 0 {
 		return 0, &res, err
 	}
 
@@ -208,19 +210,21 @@ func (c *CircuitService) ListCircuit(query *schemas.CircuitQuery) (int64, *[]*sc
 	}
 	for _, item := range list {
 		res = append(res, &schemas.Circuit{
-			Id:          item.Id,
-			Name:        item.Name,
-			CId:         *item.CId,
-			Status:      item.Status,
-			RxBandWidth: item.RxBandWidth,
-			TxBandWidth: item.TxBandWidth,
-			Ipv4Address: item.Ipv4Address,
-			Ipv6Address: item.Ipv6Address,
-			Description: item.Description,
-			CircuitType: item.CircuitType,
-			Provider:    item.Provider,
-			CreatedAt:   item.CreatedAt,
-			UpdatedAt:   item.UpdatedAt,
+			Id:            item.Id,
+			Name:          item.Name,
+			CId:           *item.CId,
+			Status:        item.Status,
+			RxBandWidth:   item.RxBandWidth,
+			TxBandWidth:   item.TxBandWidth,
+			Ipv4Address:   item.Ipv4Address,
+			Ipv6Address:   item.Ipv6Address,
+			Description:   item.Description,
+			CircuitType:   item.CircuitType,
+			Provider:      item.Provider,
+			MonitorId:     item.MonitorId,
+			MonitorHostId: item.MonitorHostId,
+			CreatedAt:     item.CreatedAt,
+			UpdatedAt:     item.UpdatedAt,
 		})
 	}
 	return count, &res, nil

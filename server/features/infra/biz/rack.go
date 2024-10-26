@@ -129,7 +129,7 @@ func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *[]*schemas.R
 		stmt = stmt.Where(gen.Rack.SerialNumber.In(*params.SerialNumber...))
 	}
 	count, err := stmt.Count()
-	if err != nil || count < 0 {
+	if err != nil || count <= 0 {
 		return 0, &res, err
 	}
 	if params.IsSearchable() {

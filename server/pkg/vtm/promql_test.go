@@ -38,7 +38,7 @@ func TestBuild(t *testing.T) {
 					},
 				},
 			},
-			expected: "metric{label1=value1,label2!=value2}",
+			expected: `metric{label1="value1",label2!="value2"}`,
 			err:      nil,
 		},
 		{
