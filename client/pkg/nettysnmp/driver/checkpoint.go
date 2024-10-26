@@ -2,8 +2,6 @@ package driver
 
 import "github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
 
-
-
 type CheckPointDriver struct {
 	factory.SnmpDiscovery
 }

@@ -102,7 +102,6 @@ func scanMacAddressTableCallback(data []*intendtask.MacAddressTableScanResponse,
 	logger.Logger.Info(fmt.Sprintf("[ScanMacAddressTableCallback] [%s]: post result to server success", taskId))
 }
 
-
 func configBackUpCallback(data *intendtask.ConfigurationBackupTaskResult, taskId string) {
 	server := newServer()
 	if server == nil {
