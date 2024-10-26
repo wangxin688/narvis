@@ -181,7 +181,7 @@ func getDBObjectBeforeOperation(tx *gorm.DB) (*snapshot, error) {
 }
 
 func (a *AuditLogMixin) RegisterCallbacks(tx *gorm.DB) {
-	tx.Callback().Create().After("gorm:create").Register("audit:after_create", a.afterCreate)
-	tx.Callback().Update().After("gorm:update").Register("audit:after_update", a.afterUpdate)
-	tx.Callback().Delete().After("gorm:delete").Register("audit:after_delete", a.afterDelete)
+	tx.Callback().Create().After("gorm:create").Register("audit:after_create", a.afterCreate) //nolint:errcheck
+	tx.Callback().Update().After("gorm:update").Register("audit:after_update", a.afterUpdate) //nolint:errcheck
+	tx.Callback().Delete().After("gorm:delete").Register("audit:after_delete", a.afterDelete) //nolint:errcheck
 }

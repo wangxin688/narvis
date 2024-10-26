@@ -129,7 +129,7 @@ func (s *ScanDeviceService) UpdateById(id string, update *schemas.ScanDeviceUpda
 		DeviceRole:   update.DeviceRole,
 	}
 	newDeviceId := ""
-	gen.ScanDevice.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
+	err = gen.ScanDevice.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
 		newDeviceId, err = NewDeviceService().CreateDevice(&newDevice)
 		if err != nil {
 			return err
@@ -140,6 +140,9 @@ func (s *ScanDeviceService) UpdateById(id string, update *schemas.ScanDeviceUpda
 		}
 		return nil
 	})
+	if err != nil {
+		return "", err
+	}
 	tools.BackgroundTask(func() {
 		hooks.DeviceCreateHooks(newDeviceId)
 	})

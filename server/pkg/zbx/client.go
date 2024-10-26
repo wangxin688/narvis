@@ -59,14 +59,14 @@ func NewZbxClient() *Zbx {
 	return zbxInstance
 }
 
-func (zbx *Zbx) Rpc(request *zs.ZbxRequest) (rsp *zs.ZbxResponse, err error) {
-	if zbx == nil {
+func (z *Zbx) Rpc(request *zs.ZbxRequest) (rsp *zs.ZbxResponse, err error) {
+	if z == nil {
 		return nil, fmt.Errorf("zbx client is nil")
 	}
 	request.ID = atomic.AddUint64(&requestID, 1)
 	request.JsonRpc = "2.0"
 
-	_, err = zbx.R().SetSuccessResult(&rsp).SetBody(request).Post("/api_jsonrpc.php")
+	_, err = z.R().SetSuccessResult(&rsp).SetBody(request).Post("/api_jsonrpc.php")
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +133,7 @@ func (z *Zbx) HostGroupGet(params *zs.HostGroupGet) (res []*zs.HostGroup, err er
 		return nil, err
 	}
 
-	json.Unmarshal([]byte(rsp.Result), &res)
+	json.Unmarshal([]byte(rsp.Result), &res) //nolint: errcheck
 	return
 }
 func (z *Zbx) HostCreate(params *zs.HostCreate) (res string, err error) {
@@ -207,7 +207,7 @@ func (z *Zbx) HostInterfaceGet(params *zs.HostInterfaceGet) (res []*zs.HostInter
 		return nil, err
 	}
 	rsp.GetResult(&res)
-	json.Unmarshal([]byte(rsp.Result), &res)
+	json.Unmarshal([]byte(rsp.Result), &res) //nolint: errcheck
 	return
 }
 
@@ -237,7 +237,7 @@ func (z *Zbx) HostGet(params *zs.HostGet) (res []*zs.Host, err error) {
 		return nil, err
 	}
 	rsp.GetResult(&res)
-	json.Unmarshal([]byte(rsp.Result), &res)
+	json.Unmarshal([]byte(rsp.Result), &res) //nolint: errcheck
 	return
 }
 

@@ -78,11 +78,10 @@ func GinRecovery(logger *zap.Logger, logStack bool) gin.HandlerFunc {
 						zap.Any("error", err),
 						zap.String("request", string(dump)),
 					)
-					c.Error(err.(error)) // nolint: errcheck
+					c.Error(err.(error)) //nolint: errcheck
 					c.Abort()
 					return
 				}
-
 				stack := ""
 				if logStack {
 					stack = string(debug.Stack())

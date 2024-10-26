@@ -14,7 +14,7 @@ import (
 func handleProxyWebSocket(c *gin.Context) error {
 	upGrader := websocket.Upgrader{
 		// cross origin domain
-		CheckOrigin: func(r *http.Request) bool {
+		CheckOrigin: func(_ *http.Request) bool {
 			return true
 		},
 		// 处理 Sec-WebSocket-Protocol Header

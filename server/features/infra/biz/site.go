@@ -85,7 +85,7 @@ func (s *SiteService) Update(Id string, site *schemas.SiteUpdate) (diff map[stri
 	if len(updateFields) == 0 {
 		return nil, nil
 	}
-	gen.Site.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
+	err = gen.Site.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
 		err := gen.Site.UnderlyingDB().Save(dbSite).Error
 		if err != nil {
 			return err
@@ -110,6 +110,9 @@ func (s *SiteService) Update(Id string, site *schemas.SiteUpdate) (diff map[stri
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
 	return diffValue, nil
 }
 
@@ -418,7 +421,7 @@ func (s *SiteService) GetAllActiveSites() ([]*models.Site, error) {
 	if err != nil {
 		return nil, err
 	}
-	tenantIds := lo.Map(activeTenants, func(item *models.Organization, index int) string {
+	tenantIds := lo.Map(activeTenants, func(item *models.Organization, _ int) string {
 		return item.Id
 	})
 	sites := make([]*models.Site, 0)

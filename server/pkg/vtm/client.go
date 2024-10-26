@@ -51,7 +51,7 @@ func NewVtmClient() *VtmClient {
 }
 
 func (rsp *VtmResponse) getResult(v any) {
-	json.Unmarshal(rsp.Data.Result, &v)
+	json.Unmarshal(rsp.Data.Result, &v) //nolint: errcheck
 }
 
 func (c *VtmClient) GetLabelValues(label *QueryLabelRequest, OrganizationId *string) (result []string, err error) {
@@ -134,7 +134,7 @@ func (c *VtmClient) GetMatrix(query *MatrixRequest, OrganizationId *string) (res
 	return
 }
 
-func (v *VtmClient) GetBulkVector(queries []*VectorRequest, organizationID *string) ([]*VectorResponse, error) {
+func (c *VtmClient) GetBulkVector(queries []*VectorRequest, organizationID *string) ([]*VectorResponse, error) {
 	results := make([]*VectorResponse, 0, len(queries))
 	resultChan := make(chan []*VectorResponse, len(queries))
 	var wg sync.WaitGroup
@@ -143,7 +143,7 @@ func (v *VtmClient) GetBulkVector(queries []*VectorRequest, organizationID *stri
 		wg.Add(1)
 		go func(q *VectorRequest) {
 			defer wg.Done()
-			vectors, err := v.GetVector(q, organizationID)
+			vectors, err := c.GetVector(q, organizationID)
 			if err != nil {
 				resultChan <- nil
 				return
@@ -167,7 +167,7 @@ func (v *VtmClient) GetBulkVector(queries []*VectorRequest, organizationID *stri
 	return results, nil
 }
 
-func (v *VtmClient) GetBulkMatrix(requests []*MatrixRequest, organizationID *string) ([]*MatrixResponse, error) {
+func (c *VtmClient) GetBulkMatrix(requests []*MatrixRequest, organizationID *string) ([]*MatrixResponse, error) {
 	results := make([]*MatrixResponse, 0)
 	resultChan := make(chan []*MatrixResponse, len(requests))
 	var wg sync.WaitGroup
@@ -176,7 +176,7 @@ func (v *VtmClient) GetBulkMatrix(requests []*MatrixRequest, organizationID *str
 		wg.Add(1)
 		go func(req *MatrixRequest) {
 			defer wg.Done()
-			matrix, err := v.GetMatrix(req, organizationID)
+			matrix, err := c.GetMatrix(req, organizationID)
 			if err != nil {
 				resultChan <- nil
 				return

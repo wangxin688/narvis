@@ -6,9 +6,9 @@ type TopX struct {
 }
 
 type TrendItem struct {
-	Value int
+	Value    int
 	Severity string
-	Date string
+	Date     string
 }
 
 type Trend struct {

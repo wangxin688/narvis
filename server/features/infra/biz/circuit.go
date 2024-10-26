@@ -255,7 +255,7 @@ func (c *CircuitService) GetCircuitShortMap(cIds []string) (map[string]*schemas.
 	return res, nil
 }
 
-func (d *CircuitService) SearchCircuitByKeyword(keyword string, orgId string) ([]string, error) {
+func (c *CircuitService) SearchCircuitByKeyword(keyword string, orgId string) ([]string, error) {
 	result := make([]string, 0)
 	stmt := gen.Circuit.Select(gen.Circuit.Id).Where(gen.Circuit.OrganizationId.Eq(orgId))
 	keyword = "%" + keyword + "%"

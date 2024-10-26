@@ -19,7 +19,7 @@ func GetManufacturers(query *schemas.ManufacturerQuery) (int64, []string) {
 		return int64(count), listString
 	}
 	if query.Manufacturer != nil {
-		listString = lo.Filter(listString, func(item string, index int) bool {
+		listString = lo.Filter(listString, func(item string, _ int) bool {
 			return strings.EqualFold(item, *query.Manufacturer)
 		})
 	}

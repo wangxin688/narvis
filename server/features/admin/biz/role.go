@@ -109,7 +109,7 @@ func (r *RoleService) CreateRole(role *schemas.RoleCreate) (string, error) {
 		Description:    role.Description,
 		OrganizationId: global.OrganizationId.Get(),
 	}
-	gen.Role.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
+	err = gen.Role.UnderlyingDB().Transaction(func(_ *gorm.DB) error {
 		err = gen.Role.Create(roleModel)
 		if err != nil {
 			return err
@@ -120,6 +120,9 @@ func (r *RoleService) CreateRole(role *schemas.RoleCreate) (string, error) {
 		}
 		return nil
 	})
+	if err != nil {
+		return "", err
+	}
 	return roleModel.Id, nil
 }
 
@@ -131,7 +134,7 @@ func (r *RoleService) UpdateRole(RoleId string, role *schemas.RoleUpdate) error 
 	if role.Description != nil {
 		updateFields["description"] = *role.Description
 	}
-	gen.Role.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
+	err := gen.Role.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
 		dbRole, err := gen.Role.Where(gen.Role.Id.Eq(RoleId), gen.Role.OrganizationId.Eq(global.OrganizationId.Get())).First()
 		if err != nil {
 			return err
@@ -159,6 +162,9 @@ func (r *RoleService) UpdateRole(RoleId string, role *schemas.RoleUpdate) error 
 		gen.Role.UnderlyingDB().Save(updateFields)
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

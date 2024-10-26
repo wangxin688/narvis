@@ -1,6 +1,6 @@
 package schemas
 
 type OrmDiff struct {
-	Before any    `json:"before"`
-	After  any    `json:"after"`
+	Before any `json:"before"`
+	After  any `json:"after"`
 }

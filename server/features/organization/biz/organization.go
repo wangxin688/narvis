@@ -53,7 +53,7 @@ func (o *OrganizationService) CreateOrganization(organization *schemas.Organizat
 		return nil, &e.GenericError{Code: e.CodeOrganizationAlreadyExist, Message: e.MsgOrganizationAlreadyExist}
 	}
 
-	gen.Organization.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
+	err := gen.Organization.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
 		err := gen.Organization.Create(organizationModel)
 		if err != nil {
 			core.Logger.Error(fmt.Sprintf("failed to create organization %v", organization), zap.Error(err))
@@ -69,6 +69,10 @@ func (o *OrganizationService) CreateOrganization(organization *schemas.Organizat
 		core.Logger.Info(fmt.Sprintf("create admin user %s", user.Id))
 		return nil
 	})
+
+	if err != nil {
+		return nil, err
+	}
 	return &schemas.Organization{
 		Id:             organizationModel.Id,
 		CreatedAt:      organizationModel.CreatedAt,

@@ -15,12 +15,12 @@ func GetDeviceRoles(query *schemas.DeviceRoleQuery) (int64, []devicerole.DeviceR
 		return int64(count), list
 	}
 	if query.Name != nil {
-		list = lo.Filter(list, func(item devicerole.DeviceRole, index int) bool {
+		list = lo.Filter(list, func(item devicerole.DeviceRole, _ int) bool {
 			return strings.EqualFold(string(item.DeviceRole), *query.Name)
 		})
 	}
 	if query.Keyword != nil {
-		list = lo.Filter(list, func(item devicerole.DeviceRole, index int) bool {
+		list = lo.Filter(list, func(item devicerole.DeviceRole, _ int) bool {
 			return helpers.FuzzySearch(item.ToMap(), *query.Keyword, true, nil)
 		})
 	}

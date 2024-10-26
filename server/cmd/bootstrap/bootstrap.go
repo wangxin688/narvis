@@ -44,8 +44,8 @@ func main() {
 		orgId := initOrganization()
 		core.SetUpConfig()
 		initProxy(orgId)
-		initNarvisCliCredential(orgId)
-		initNarvisSnmpCredential(orgId)
+		initNarvisCliCredential(orgId) //nolint: errcheck
+		initNarvisSnmpCredential(orgId) //nolint: errcheck
 	}
 	core.SetUpConfig()
 	err = initZbxTemplates()
@@ -183,18 +183,18 @@ func initRabbitMQ() {
 	if len(vhosts) >= 2 {
 		core.Logger.Info("[bootstrap]: rabbitmq vhost already exists")
 		return
-	} else {
-		_, err = client.PutVhost("server", rabbithole.VhostSettings{Description: "narvis server vhost"})
-		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to create rabbitmq vhost", zap.Error(err))
-		}
-		core.Logger.Info("[bootstrap]: rabbitmq vhost server created")
-		_, err = client.PutVhost("proxy", rabbithole.VhostSettings{Description: "narvis monitor vhost"})
-		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to create rabbitmq vhost", zap.Error(err))
-		}
-		core.Logger.Info("[bootstrap]: rabbitmq vhost proxy created")
 	}
+	_, err = client.PutVhost("server", rabbithole.VhostSettings{Description: "narvis server vhost"})
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to create rabbitmq vhost", zap.Error(err))
+	}
+	core.Logger.Info("[bootstrap]: rabbitmq vhost server created")
+	_, err = client.PutVhost("proxy", rabbithole.VhostSettings{Description: "narvis monitor vhost"})
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to create rabbitmq vhost", zap.Error(err))
+	}
+	core.Logger.Info("[bootstrap]: rabbitmq vhost proxy created")
+
 	users, err := client.ListUsers()
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to list rabbitmq users", zap.Error(err))
@@ -203,34 +203,34 @@ func initRabbitMQ() {
 	if len(users) >= 2 {
 		core.Logger.Info("[bootstrap]: rabbitmq user already exists")
 		return
-	} else {
-		_, err = client.PutUser("narvis-proxy", rabbithole.UserSettings{
-			Name:     "narvis-proxy",
-			Password: "851b090b967a89f802e72a0baf1d230e",
-		})
-		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to create rabbitmq user", zap.Error(err))
-		}
-		core.Logger.Info("[bootstrap]: rabbitmq proxy user created")
-		_, err = client.UpdatePermissionsIn("proxy", "narvis-server", rabbithole.Permissions{
-			Read:      ".*",
-			Write:     ".*",
-			Configure: ".*",
-		})
-		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to update rabbitmq user permissions", zap.Error(err))
-		}
-		core.Logger.Info("[bootstrap]: rabbitmq server user permissions updated")
-		_, err = client.UpdatePermissionsIn("proxy", "narvis-proxy", rabbithole.Permissions{
-			Read:      ".*",
-			Write:     ".*",
-			Configure: ".*",
-		})
-		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to update rabbitmq proxy user permissions", zap.Error(err))
-		}
-		core.Logger.Info("[bootstrap]: rabbitmq proxy user permissions updated")
 	}
+	_, err = client.PutUser("narvis-proxy", rabbithole.UserSettings{
+		Name:     "narvis-proxy",
+		Password: "851b090b967a89f802e72a0baf1d230e",
+	})
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to create rabbitmq user", zap.Error(err))
+	}
+	core.Logger.Info("[bootstrap]: rabbitmq proxy user created")
+	_, err = client.UpdatePermissionsIn("proxy", "narvis-server", rabbithole.Permissions{
+		Read:      ".*",
+		Write:     ".*",
+		Configure: ".*",
+	})
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to update rabbitmq user permissions", zap.Error(err))
+	}
+	core.Logger.Info("[bootstrap]: rabbitmq server user permissions updated")
+	_, err = client.UpdatePermissionsIn("proxy", "narvis-proxy", rabbithole.Permissions{
+		Read:      ".*",
+		Write:     ".*",
+		Configure: ".*",
+	})
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to update rabbitmq proxy user permissions", zap.Error(err))
+	}
+	core.Logger.Info("[bootstrap]: rabbitmq proxy user permissions updated")
+
 	core.Logger.Info("[bootstrap]: rabbitmq initialized")
 }
 
@@ -244,7 +244,7 @@ func initZbx() {
 		core.Logger.Info("[bootstrap]: failed to init zbx media type", zap.Error(err))
 		return
 	}
-	initZbxGlobalMacro(client)
+	initZbxGlobalMacro(client) 
 	err = initZbxConnector(client)
 	if err != nil {
 		core.Logger.Info("[bootstrap]: failed to init zbx connector", zap.Error(err))

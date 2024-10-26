@@ -33,7 +33,7 @@ func (rsp *ZbxResponse) HasError() error {
 }
 
 func (rsp *ZbxResponse) GetResult(v any) {
-	json.Unmarshal(rsp.Result, &v)
+	json.Unmarshal(rsp.Result, &v) //nolint: errcheck
 }
 
 type Tag struct {

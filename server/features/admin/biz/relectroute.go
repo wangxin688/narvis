@@ -12,7 +12,7 @@ import (
 // router.POST("/route2", routeHandler(router))
 
 func ReflectRouteToDb(router *gin.Engine) gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(_ *gin.Context) {
 		routes := router.Routes()
 		for _, route := range routes {
 			core.Logger.Info(route.Method + " " + route.Path)

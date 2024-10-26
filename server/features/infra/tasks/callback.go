@@ -103,7 +103,7 @@ func DeviceScanCallback(data *intendtask.DeviceScanResponse) error {
 	if len(data.ArpTable) > 0 {
 		// due to arp table may have huge size, we do it in background task
 		tools.BackgroundTask(func() {
-			arpTableCallbackHandler(data.DeviceId, data.SiteId, data.OrganizationId, data.ArpTable)
+			arpTableCallbackHandler(data.DeviceId, data.SiteId, data.OrganizationId, data.ArpTable) //nolint: errcheck
 		})
 	}
 

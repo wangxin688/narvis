@@ -12,6 +12,6 @@ func RegisterIntendRoutes(e *gin.Engine) {
 		router.GET("/device-roles", deviceRoleList)
 		router.GET("/manufacturers", manufacturerList)
 		router.GET("/platforms", platformList)
-		
+
 	}
 }

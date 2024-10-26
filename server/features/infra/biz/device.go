@@ -280,10 +280,10 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 			RackPosition: func() *[]uint8 {
 				if item.RackPosition == nil {
 					return nil
-				} else {
-					position, _ := infra_utils.ParseUint8s(*item.RackPosition)
-					return &position
 				}
+				position, _ := infra_utils.ParseUint8s(*item.RackPosition)
+				return &position
+
 			}(),
 			SiteId: item.SiteId,
 		})
