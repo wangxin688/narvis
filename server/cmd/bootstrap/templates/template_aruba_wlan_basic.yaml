@@ -637,7 +637,7 @@ zabbix_export:
               trigger_prototypes:
                 - uuid: d84db1b6ac614dca932ab7d5c1cb2ca5
                   expression: 'min(/template_aruba_wlan_basic/aos.radio.clients[{#SNMPINDEX}],#3:now-10m)>={$ASSOCIATED.CLIENT.WARN}'
-                  name: high_client_num
+                  name: high_client_number
                   event_name: '{#APNAME} Associated Clients High(10m>60)'
                   opdata: '{ ''ap_name'': ''{#APNAME}'', ''channel'': ''{#CHANNEL}'', ''client_num'': {ITEM.VALUE1} }'
                   priority: INFO

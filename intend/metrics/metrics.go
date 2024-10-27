@@ -69,6 +69,8 @@ const (
 const (
 	ApStatus                  WirelessMetrics = "ap_status"
 	ApUptime                  WirelessMetrics = "ap_uptime"
+	ApCpuUtilization          WirelessMetrics = "ap_cpu_utilization"
+	ApMemoryUtilization       WirelessMetrics = "ap_memory_utilization"
 	ApBootstraps              WirelessMetrics = "ap_bootstraps"
 	ChannelUtilization        WirelessMetrics = "channel_utilization"
 	ChannelNoise              WirelessMetrics = "channel_noise"
@@ -125,7 +127,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 	var opStatus map[int]string = map[int]string{
 		-1: "nodata",
-		0:  "down",
+		2:  "down",
 		1:  "up",
 	}
 
@@ -444,6 +446,22 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Unit:                      nil,
 			ValueMapping:              nil,
 			Legend:                    "{device_name}(channel) Channel Association Clients",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(ApCpuUtilization): {
+			Name:                      MetricNameEnum(ApCpuUtilization),
+			Description:               common.I18n{En: "AP CPU utilization", Zh: "AP CPU利用率"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{device_name} AP CPU utilization",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(ApMemoryUtilization): {
+			Name:                      MetricNameEnum(ApMemoryUtilization),
+			Description:               common.I18n{En: "AP Memory utilization", Zh: "AP 内存利用率"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{device_name} AP Memory utilization",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 	}

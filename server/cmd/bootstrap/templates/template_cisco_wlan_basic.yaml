@@ -32,6 +32,16 @@ zabbix_export:
       groups:
         - name: Templates/narvis
       items:
+        - uuid: 4c1b6670265946dea22b8a849d92c963
+          name: snmp_ap_walk
+          type: SNMP_AGENT
+          snmp_oid: 'walk[1.3.6.1.4.1.14179.2.2.1.1.3, 1.3.6.1.4.1.14179.2.2.1.1.6,1.3.6.1.4.1.9.9.513.1.1.1.1.6,1.3.6.1.4.1.9.9.513.1.1.1.1.57,1.3.6.1.4.1.9.9.513.1.1.1.1.55]'
+          key: aireos.ap.walk
+          delay: 3m
+          history: '0'
+          value_type: TEXT
+          trends: '0'
+          timeout: 30s
         - uuid: bec379ac9e86470bb7e02611fcf0960a
           name: icmp_ping
           type: SIMPLE
@@ -195,6 +205,199 @@ zabbix_export:
                 - name: unavailable_by_icmp_ping
                   expression: 'max(/template_cisco_wlan_basic/icmpping,#3)=0'
       discovery_rules:
+        - uuid: f8d45245cb474c89b25a3e71a7c2f1bf
+          name: radio_flex_discovery
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#RADIOTYPE},1.3.6.1.4.1.14179.2.2.2.1.2,{#CHANNEL},1.3.6.1.4.1.14179.2.2.2.1.4,{#BANDWIDTH},1.3.6.1.4.1.9.9.513.1.2.1.1.23]'
+          key: aireos.radio.discovery
+          delay: 1h
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: 054f227b87d6490589afc39b7261373d
+              name: channel_associated_clients
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14179.2.2.13.1.4.{#SNMPINDEX}'
+              key: 'aireos.channel.clients.[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              tags:
+                - tag: apMac
+                  value: '{#APMAC}'
+                - tag: bandwidth
+                  value: '{#BANDWIDTH}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: 28f66d6dc4e242c99b9a3c5f57e55c42
+              name: channel_noise
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14179.2.2.15.1.21.{#SNMPINDEX}'
+              key: 'aireos.channel.noise.[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              units: dBm
+              tags:
+                - tag: apMac
+                  value: '{#APMAC}'
+                - tag: bandwidth
+                  value: '{#BANDWIDTH}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+            - uuid: dc99a1db20804d72a68a0817dfae1b8c
+              name: channel_utlization
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.14179.2.2.13.1.3.{#SNMPINDEX}'
+              key: 'aireos.channel.utlization.[{#SNMPINDEX}]'
+              delay: 3m
+              history: 7d
+              trends: '0'
+              units: '%'
+              tags:
+                - tag: apMac
+                  value: '{#APMAC}'
+                - tag: bandwidth
+                  value: '{#BANDWIDTH}'
+                - tag: channel
+                  value: '{#CHANNEL}'
+                - tag: radioType
+                  value: '{#RADIOTYPE}'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var obj=JSON.parse(value)
+                  for (i = 0; i < Object.keys(obj).length; i++) {
+                    if (obj[i]['{#RADIOTYPE}'] === "1") {
+                      obj[i]['{#RADIOTYPE}'] = "2.4GHz"
+                    } else if (obj[i]['{#RADIOTYPE}'] === "2") {
+                      obj[i]['{#RADIOTYPE}'] = "5GHz"
+                    } else if  (obj[i]['{#RADIOTYPE}'] === "4") {
+                      obj[i]['{#RADIOTYPE}'] = "6GHz"
+                    }
+                  
+                    obj[i]['{#APMAC}'] == obj[i]['{SNMPINDEX}'].slice(0,-2)
+                  }
+                  return  JSON.stringify(obj)
+          overrides:
+            - name: 'override 2.4G'
+              step: '1'
+              filter:
+                conditions:
+                  - macro: '{#RADIOTYPE}'
+                    value: 2.4GHz
+                    formulaid: A
+              operations:
+                - operationobject: TRIGGER_PROTOTYPE
+                  value: high_channel_noise
+                  discover: NO_DISCOVER
+                - operationobject: TRIGGER_PROTOTYPE
+                  value: high_channel_utilization
+                  discover: NO_DISCOVER
+                - operationobject: TRIGGER_PROTOTYPE
+                  value: high_client_num
+                  discover: NO_DISCOVER
+        - uuid: 1866e8cd7db546f2a4d992405c90c7e4
+          name: ap_discovery
+          type: DEPENDENT
+          key: ap.discovery
+          delay: '0'
+          lifetime_type: DELETE_IMMEDIATELY
+          lifetime: '0'
+          item_prototypes:
+            - uuid: 06ef233645b0469bae30684a30cf266b
+              name: ap_cpu_utilization
+              type: DEPENDENT
+              key: 'ap.cpu.utilization.[{#SNMPINDEX}]'
+              delay: '0'
+              history: 7d
+              trends: '0'
+              units: '%'
+              preprocessing:
+                - type: SNMP_WALK_VALUE
+                  parameters:
+                    - 1.3.6.1.4.1.9.9.513.1.1.1.1.57
+                    - '0'
+              master_item:
+                key: aireos.ap.walk
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+            - uuid: 68788865517c412fabf66a40581cd80f
+              name: ap_memory_utilization
+              type: DEPENDENT
+              key: 'ap.memory.[{#SNMPINDEX}]'
+              delay: '0'
+              history: 7d
+              trends: '0'
+              units: '%'
+              preprocessing:
+                - type: SNMP_WALK_VALUE
+                  parameters:
+                    - 1.3.6.1.4.1.9.9.513.1.1.1.1.55
+                    - '0'
+              master_item:
+                key: aireos.ap.walk
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+            - uuid: 24936e2b2ab14e808ac5622c1161e25e
+              name: ap_status
+              type: DEPENDENT
+              key: 'ap.status.[{#SNMPINDEX}]'
+              delay: '0'
+              preprocessing:
+                - type: SNMP_WALK_VALUE
+                  parameters:
+                    - 1.3.6.1.4.1.9.9.513.1.1.1.1.6
+                    - '0'
+                - type: JAVASCRIPT
+                  parameters:
+                    - |
+                      if (value != 1) {
+                          return 2
+                      } else {
+                          return 1
+                      }
+              master_item:
+                key: aireos.ap.walk
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+            - uuid: 4cad63fae5bf4e629098239692c13915
+              name: ap_uptime
+              type: DEPENDENT
+              key: 'ap.uptime.[{#SNMPINDEX}]'
+              delay: '0'
+              history: 7d
+              trends: '0'
+              units: uptime
+              preprocessing:
+                - type: SNMP_WALK_VALUE
+                  parameters:
+                    - 1.3.6.1.4.1.9.9.513.1.1.1.1.6
+                    - '0'
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.01'
+              master_item:
+                key: aireos.ap.walk
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
+          master_item:
+            key: aireos.ap.walk
+          preprocessing:
+            - type: SNMP_WALK_TO_JSON
+              parameters:
+                - '{#APNAME}'
+                - 1.3.6.1.4.1.14179.2.2.1.1.3
+                - '0'
         - uuid: e4e6bdd2d42c4186a0858a4e1e5fb8cd
           name: cpu_discovery
           type: DEPENDENT
@@ -606,6 +809,13 @@ zabbix_export:
         - macro: '{$TEMP_WARN_STATUS}'
           value: '2'
       valuemaps:
+        - uuid: fbb2a921b0254aa6b0282390490ca063
+          name: ap_status
+          mappings:
+            - value: '1'
+              newvalue: up
+            - value: '2'
+              newvalue: down
         - uuid: 10793c77e95f4bb3b76d945850df7964
           name: 'CISCO-ENVMON-MIB::CiscoEnvMonState'
           mappings:
