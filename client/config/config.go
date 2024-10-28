@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"time"
 
 	"github.com/spf13/viper"
 )
@@ -53,14 +52,6 @@ func SetupConfig() (err error) {
 	_, currentPath, _, _ := runtime.Caller(0)
 
 	projectPath := filepath.Dir(filepath.Dir(currentPath))
-
-	// Set defaults for the config file values
-	viper.SetDefault("AccessTokenExpireMinutes", time.Duration(60*24)*time.Minute)
-	viper.SetDefault("RefreshTokenExpireMinutes", time.Duration(60*24*8)*time.Minute)
-	viper.SetDefault("ServerTimeZone", "Asia/Shanghai")
-	viper.SetDefault("DBDebugMode", false)
-	viper.SetDefault("RedisPort", 6379)
-	viper.SetDefault("RedisDB", 0)
 
 	// Set the config file name and type
 	viper.SetConfigFile(projectPath + "/.env")

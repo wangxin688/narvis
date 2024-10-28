@@ -1,5 +1,0 @@
-services:
-  zabbix-proxy:
-  image: !reset null
-  build:
-    context: ./config/zabbix_proxy
