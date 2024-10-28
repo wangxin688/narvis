@@ -404,25 +404,6 @@ zabbix_export:
           lifetime_type: DELETE_IMMEDIATELY
           lifetime: '0'
           item_prototypes:
-            - uuid: dea59c05e46e4c3ea74630532d8b20ce
-              name: channel_ack_failure
-              type: SNMP_AGENT
-              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.29.{#SNMPINDEX}'
-              key: 'aos.channel.ackfailure[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              preprocessing:
-                - type: CHANGE_PER_SECOND
-                  parameters:
-                    - ''
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
             - uuid: 694e234e9b104548b9f553fe11ff8298
               name: channel_busy_rate
               type: SNMP_AGENT
@@ -435,6 +416,8 @@ zabbix_export:
               tags:
                 - tag: apName
                   value: '{#APNAME}'
+                - tag: bandwidth
+                  value: '{#BANDWIDTH}'
                 - tag: channel
                   value: '{#CHANNEL}'
                 - tag: radioType
@@ -447,10 +430,12 @@ zabbix_export:
               history: 7d
               value_type: FLOAT
               trends: '0'
-              params: 'last(//aos.channel.busy[{#SNMPINDEX}],#1:now-5m)-last(//aos.channel.rxrate[{#SNMPINDEX}],#1:now-5m)-last(//aos.channel.txrate[{#SNMPINDEX}],#1:now-5m)'
+              params: 'last(//aos.channel.busy[{#SNMPINDEX}],#1:now-5m)-last(//aos.radio.utilization[{#SNMPINDEX}],#1:now-5m)'
               tags:
                 - tag: apName
                   value: '{#APNAME}'
+                - tag: bandwidth
+                  value: '{#BANDWIDTH}'
                 - tag: channel
                   value: '{#CHANNEL}'
                 - tag: radioType
@@ -477,6 +462,8 @@ zabbix_export:
               tags:
                 - tag: apName
                   value: '{#APNAME}'
+                - tag: bandwidth
+                  value: '{#BANDWIDTH}'
                 - tag: channel
                   value: '{#CHANNEL}'
                 - tag: radioType
@@ -492,133 +479,6 @@ zabbix_export:
                   tags:
                     - tag: apName
                       value: '{#APNAME}'
-            - uuid: 4e387c0b160047158e43956544adfdf0
-              name: channel_receive_error_rate
-              type: SNMP_AGENT
-              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.20.{#SNMPINDEX}'
-              key: 'aos.channel.receive.errorrate[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              description: 'the number of received error packets as a percentage of total packets received on this channel'
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
-            - uuid: da864beb19ab4d1a9c070a35a92af9f8
-              name: channel_frame_retry_rate
-              type: SNMP_AGENT
-              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.12.{#SNMPINDEX}'
-              key: 'aos.channel.retryrate[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              description: 'the number of retry packets as a percentage of total packets transmitted and received on this channel'
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
-            - uuid: bc110095999545df87c401eeff698a62
-              name: channel_rts_failure
-              type: SNMP_AGENT
-              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.28.{#SNMPINDEX}'
-              key: 'aos.channel.rtsfailure[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              preprocessing:
-                - type: CHANGE_PER_SECOND
-                  parameters:
-                    - ''
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
-            - uuid: 4546982d49d74d97abef3d45eee218a1
-              name: channel_rts_success
-              type: SNMP_AGENT
-              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.27.{#SNMPINDEX}'
-              key: 'aos.channel.rtssuccess[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              preprocessing:
-                - type: CHANGE_PER_SECOND
-                  parameters:
-                    - ''
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
-            - uuid: db5c178e88294d6c8a0a337e28131807
-              name: channel_rx_rate
-              type: SNMP_AGENT
-              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.35.{#SNMPINDEX}'
-              key: 'aos.channel.rxrate[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              description: 'this is percentage of time the channel Rx busy'
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
-            - uuid: de9f7531f0f748b191fa88bf4ccf9c09
-              name: channel_throughput
-              type: SNMP_AGENT
-              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.4.{#SNMPINDEX}'
-              key: 'aos.channel.throughput[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              value_type: FLOAT
-              trends: '0'
-              units: bps
-              description: 'this is percentage of time the channel Tx busy'
-              preprocessing:
-                - type: CHANGE_PER_SECOND
-                  parameters:
-                    - ''
-                - type: MULTIPLIER
-                  parameters:
-                    - '8'
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
-            - uuid: fae7fe70423a41e692c35c53f3a1741f
-              name: channel_tx_rate
-              type: SNMP_AGENT
-              snmp_oid: '.1.3.6.1.4.1.14823.2.2.1.5.3.1.6.1.36.{#SNMPINDEX}'
-              key: 'aos.channel.txrate[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              description: 'this is percentage of time the channel Tx busy'
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
             - uuid: 20fbabc2acb543dfb7d86c880111c59c
               name: channel_associated_clients
               type: SNMP_AGENT
@@ -630,6 +490,8 @@ zabbix_export:
               tags:
                 - tag: apName
                   value: '{#APNAME}'
+                - tag: bandwidth
+                  value: '{#BANDWIDTH}'
                 - tag: channel
                   value: '{#CHANNEL}'
                 - tag: radioType
@@ -657,50 +519,8 @@ zabbix_export:
               tags:
                 - tag: apName
                   value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
-            - uuid: 570363167949410496fa48905fae5155
-              name: channel_rx_bits
-              type: SNMP_AGENT
-              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.5.3.1.9.1.2.{#SNMPINDEX}'
-              key: 'aos.radio.rxrate[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              preprocessing:
-                - type: CHANGE_PER_SECOND
-                  parameters:
-                    - ''
-                - type: MULTIPLIER
-                  parameters:
-                    - '8'
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
-                - tag: channel
-                  value: '{#CHANNEL}'
-                - tag: radioType
-                  value: '{#RADIOTYPE}'
-            - uuid: c03e32e0a647466da6dc7d5346de574f
-              name: channel_tx_bits
-              type: SNMP_AGENT
-              snmp_oid: '1.3.6.1.4.1.14823.2.2.1.5.3.1.9.1.4.{#SNMPINDEX}'
-              key: 'aos.radio.txrate[{#SNMPINDEX}]'
-              delay: 3m
-              history: 7d
-              trends: '0'
-              preprocessing:
-                - type: CHANGE_PER_SECOND
-                  parameters:
-                    - ''
-                - type: MULTIPLIER
-                  parameters:
-                    - '8'
-              tags:
-                - tag: apName
-                  value: '{#APNAME}'
+                - tag: bandwidth
+                  value: '{#BANDWIDTH}'
                 - tag: channel
                   value: '{#CHANNEL}'
                 - tag: radioType
@@ -716,6 +536,8 @@ zabbix_export:
               tags:
                 - tag: apName
                   value: '{#APNAME}'
+                - tag: bandwidth
+                  value: '{#BANDWIDTH}'
                 - tag: channel
                   value: '{#CHANNEL}'
                 - tag: radioType
@@ -743,6 +565,15 @@ zabbix_export:
                     obj[i]['{#RADIOTYPE}'] = "2.4GHz"
                   } else if  (obj[i]['{#RADIOTYPE}'] === "6") {
                     obj[i]['{#RADIOTYPE}'] = "6GHz"
+                  }
+                  if (obj[i]['{#CHANNEL}'].includes("+") || obj[i]['{#CHANNEL}'].includes("-"))  {
+                    obj[i]['{#BANDWIDTH}'] = "40MHz"
+                  } else if (obj[i]['{#CHANNEL}'].includes("E")) {
+                    obj[i]['{#BANDWIDTH}'] = "80MHz"
+                  } else if (obj[i]['{#CHANNEL}'].includes("S")) {
+                    obj[i]['{#BANDWIDTH}'] = "160MHz"
+                  } else {
+                    obj[i]['{#BANDWIDTH}'] = "20MHz"
                   }
                   }
                   return JSON.stringify(obj)

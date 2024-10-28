@@ -74,12 +74,6 @@ const (
 	ApBootstraps              WirelessMetrics = "ap_bootstraps"
 	ChannelUtilization        WirelessMetrics = "channel_utilization"
 	ChannelNoise              WirelessMetrics = "channel_noise"
-	ChannelReceiveErrorRate   WirelessMetrics = "channel_error_rate"
-	ChannelRxRate             WirelessMetrics = "channel_rx_rate"
-	ChannelTxRate             WirelessMetrics = "channel_tx_rate"
-	ChannelRxBits             WirelessMetrics = "channel_rx_bits"
-	ChannelTxBits             WirelessMetrics = "channel_tx_bits"
-	ChannelFrameRetryRate     WirelessMetrics = "channel_frame_retry_rate"
 	ChannelTransmitPower      WirelessMetrics = "channel_transmit_power" // transmit power
 	ChannelInterferenceRate   WirelessMetrics = "channel_interference_rate"
 	ChannelAssociationClients WirelessMetrics = "channel_associated_clients"
@@ -371,57 +365,6 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Unit:                      &dBm,
 			ValueMapping:              nil,
 			Legend:                    "{device_name}(channel) Channel Noise",
-			DefaultQueryRangeFunction: "max_over_time",
-		},
-		MetricNameEnum(ChannelReceiveErrorRate): {
-			Name:                      MetricNameEnum(ChannelReceiveErrorRate),
-			Description:               common.I18n{En: "Channel Receive Error Rate", Zh: "信道接收错误率"},
-			Unit:                      &percent,
-			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Receive Error Rate",
-			DefaultQueryRangeFunction: "max_over_time",
-		},
-		MetricNameEnum(ChannelRxRate): {
-			Name:                      MetricNameEnum(ChannelRxRate),
-			Description:               common.I18n{En: "Channel Rx Rate", Zh: "信道上行速率"},
-			Unit:                      &percent,
-			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Rx Rate",
-			DefaultQueryRangeFunction: "max_over_time",
-		},
-		MetricNameEnum(ChannelTxRate): {
-			Name:                      MetricNameEnum(ChannelTxRate),
-			Description:               common.I18n{En: "Channel Tx Rate", Zh: "信道下行速率"},
-			Unit:                      &percent,
-			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Tx Rate",
-			DefaultQueryRangeFunction: "max_over_time",
-		},
-
-		MetricNameEnum(ChannelRxBits): {
-			Name:                      MetricNameEnum(ChannelRxBits),
-			Description:               common.I18n{En: "Channel Rx Bits", Zh: "信道上行流量"},
-			Unit:                      &bps,
-			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Rx Bits",
-			DefaultQueryRangeFunction: "max_over_time",
-		},
-
-		MetricNameEnum(ChannelTxBits): {
-			Name:                      MetricNameEnum(ChannelTxBits),
-			Description:               common.I18n{En: "Channel Tx Bits", Zh: "信道下行流量"},
-			Unit:                      &bps,
-			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Tx Bits",
-			DefaultQueryRangeFunction: "max_over_time",
-		},
-
-		MetricNameEnum(ChannelFrameRetryRate): {
-			Name:                      MetricNameEnum(ChannelFrameRetryRate),
-			Description:               common.I18n{En: "Channel Frame Retry", Zh: "信道帧重传率"},
-			Unit:                      &percent,
-			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Frame Retry",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ChannelTransmitPower): {

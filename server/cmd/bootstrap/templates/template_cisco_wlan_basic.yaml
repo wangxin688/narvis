@@ -280,7 +280,15 @@ zabbix_export:
                     } else if  (obj[i]['{#RADIOTYPE}'] === "4") {
                       obj[i]['{#RADIOTYPE}'] = "6GHz"
                     }
-                  
+                    if (obj[i]['{#BANDWIDTH}']==='3') {
+                      obj[i]['{#BANDWIDTH}'] = '20MHz'
+                    } else if (obj[i]['{#BANDWIDTH}']==='4') {
+                      obj[i]['{#BANDWIDTH}']= '40MHz'
+                    } else if (obj[i]['{#BANDWIDTH}']==='5') {
+                      obj[i]['{#BANDWIDTH}'] = '80MHz' 
+                    } else if (obj[i]['{#BANDWIDTH}']==='6') {
+                      obj[i]['{#BANDWIDTH}'] = '160MHz'
+                    }
                     obj[i]['{#APMAC}'] == obj[i]['{SNMPINDEX}'].slice(0,-2)
                   }
                   return  JSON.stringify(obj)
