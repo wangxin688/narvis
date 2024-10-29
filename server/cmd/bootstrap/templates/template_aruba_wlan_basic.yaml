@@ -516,6 +516,10 @@ zabbix_export:
               history: 7d
               trends: '0'
               units: dBm
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '0.5'
               tags:
                 - tag: apName
                   value: '{#APNAME}'

@@ -329,7 +329,7 @@ zabbix_export:
               preprocessing:
                 - type: SNMP_WALK_VALUE
                   parameters:
-                    - 1.3.6.1.4.1.9.9.513.1.1.1.1.57
+                    - '1.3.6.1.4.1.9.9.513.1.1.1.1.57.{#SNMPINDEX}'
                     - '0'
               master_item:
                 key: aireos.ap.walk
@@ -347,7 +347,7 @@ zabbix_export:
               preprocessing:
                 - type: SNMP_WALK_VALUE
                   parameters:
-                    - 1.3.6.1.4.1.9.9.513.1.1.1.1.55
+                    - '1.3.6.1.4.1.9.9.513.1.1.1.1.55.{#SNMPINDEX}'
                     - '0'
               master_item:
                 key: aireos.ap.walk
@@ -362,7 +362,7 @@ zabbix_export:
               preprocessing:
                 - type: SNMP_WALK_VALUE
                   parameters:
-                    - 1.3.6.1.4.1.9.9.513.1.1.1.1.6
+                    - '1.3.6.1.4.1.9.9.513.1.1.1.1.6.{#SNMPINDEX}'
                     - '0'
                 - type: JAVASCRIPT
                   parameters:
@@ -388,7 +388,7 @@ zabbix_export:
               preprocessing:
                 - type: SNMP_WALK_VALUE
                   parameters:
-                    - 1.3.6.1.4.1.9.9.513.1.1.1.1.6
+                    - '1.3.6.1.4.1.9.9.513.1.1.1.1.6.{#SNMPINDEX}'
                     - '0'
                 - type: MULTIPLIER
                   parameters:
