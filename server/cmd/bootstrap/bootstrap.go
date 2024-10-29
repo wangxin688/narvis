@@ -269,24 +269,24 @@ func initZbx() {
 	}
 	mediaTypeId, err := initZbxMediaType(client)
 	if err != nil {
-		core.Logger.Info("[bootstrap]: failed to init zbx media type", zap.Error(err))
+		core.Logger.Info("[bootstrap]: failed to init media type", zap.Error(err))
 		return
 	}
 	initZbxGlobalMacro(client)
 	err = initZbxConnector(client)
 	if err != nil {
-		core.Logger.Info("[bootstrap]: failed to init zbx connector", zap.Error(err))
+		core.Logger.Info("[bootstrap]: failed to init monitor connector", zap.Error(err))
 		return
 	}
 	superUserId, err := initZbxSuperUser(client, mediaTypeId)
 	if err != nil {
-		core.Logger.Info("[bootstrap]: failed to init zbx super user", zap.Error(err))
+		core.Logger.Info("[bootstrap]: failed to init monitor super user", zap.Error(err))
 		return
 	}
 	initZbxAction(client, mediaTypeId, superUserId)
 	token, err := initZbxSuperToken(client, superUserId)
 	if err != nil {
-		core.Logger.Info("[bootstrap]: failed to init zbx super token", zap.Error(err))
+		core.Logger.Info("[bootstrap]: failed to init monitor super token", zap.Error(err))
 		return
 	}
 	initZbxDisableDefaultAdmin(client, token)
@@ -742,7 +742,7 @@ func initNarvisCliCredential(orgId string) error {
 // 			core.Logger.Info("[bootstrap]: failed to import template", zap.Error(err))
 // 			return err
 // 		}
-// 		core.Logger.Info("[bootstrap]: init zbx template", zap.String("name", templateName))
+// 		core.Logger.Info("[bootstrap]: init monitor template", zap.String("name", templateName))
 // 	}
 // 	return nil
 // }
@@ -767,7 +767,7 @@ func initZbxTemplates() error {
 			core.Logger.Error("[bootstrap]: failed to import template", zap.Error(err))
 			return err
 		}
-		core.Logger.Info("[bootstrap]: init zbx template", zap.String("name", template))
+		core.Logger.Info("[bootstrap]: init monitor template", zap.String("name", template))
 	}
 	return nil
 
