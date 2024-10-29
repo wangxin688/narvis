@@ -117,7 +117,7 @@ func initProxy(orgId string) {
 				core.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
 				hooks.CreateZbxProxy(proxy)
 			} else {
-				core.Logger.Info("[bootstrap]: zbx proxy already exists", zap.String("proxyId", *proxy.ProxyId))
+				core.Logger.Info("[bootstrap]: monitor proxy already exists", zap.String("proxyId", *proxy.ProxyId))
 			}
 		}
 	} else {
@@ -304,10 +304,10 @@ func getClient() *req.Client {
 	var loginResponse zschema.LoginResponse
 	resp, err := client.R().SetBody(login).SetSuccessResult(&loginResponse).Post("/api_jsonrpc.php")
 	if err != nil || !resp.IsSuccessState() || loginResponse.Error != nil {
-		core.Logger.Info("[bootstrap]: zbx has been already init.")
+		core.Logger.Info("[bootstrap]: monitor has been already init.")
 		return nil
 	}
-	core.Logger.Info("[bootstrap]: login to zabbix success")
+	core.Logger.Info("[bootstrap]: login to monitor success")
 	token := loginResponse.Result
 	client.SetCommonBearerAuthToken(token)
 	return client
@@ -389,11 +389,11 @@ return JSON.stringify(result);
 	newAlertMedia, err := client.R().SetBody(mediaTypeBody).SetSuccessResult(&mediaTypeResponse).Post("/api_jsonrpc.php")
 	fmt.Printf("%v", mediaTypeResponse)
 	if err != nil || !newAlertMedia.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init_zbx failed to create alert media type", zap.Error(err))
+		core.Logger.Error("[bootstrap]: init monitor failed to create alert media type", zap.Error(err))
 		return "", err
 	}
 	newMediaTypeId := mediaTypeResponse.Result.Mediatypeids[0]
-	core.Logger.Info(fmt.Sprintf("[bootstrap]: init_zbx create new media type %s success", newMediaTypeId))
+	core.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new media type %s success", newMediaTypeId))
 	return newMediaTypeId, nil
 }
 
@@ -449,11 +449,11 @@ func initZbxSuperUser(client *req.Client, mediaTypeId string) (string, error) {
 	superUserResponse := new(Resp)
 	newSuperUser, err := client.R().SetBody(superUserBody).SetSuccessResult(&superUserResponse).Post("/api_jsonrpc.php")
 	if err != nil || !newSuperUser.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init_zbx failed to create super user", zap.Error(err))
+		core.Logger.Error("[bootstrap]: init monitor failed to create super user", zap.Error(err))
 		return "", err
 	}
 	newSuperUserId := superUserResponse.Result.Userids[0]
-	core.Logger.Info(fmt.Sprintf("[bootstrap]: init_zbx create new super user %s success", newSuperUserId))
+	core.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new super user %s success", newSuperUserId))
 	return newSuperUserId, nil
 }
 
@@ -522,11 +522,11 @@ func initZbxAction(client *req.Client, mediaTypeId string, superUserId string) (
 	newActionResponse := new(Resp)
 	resp, err := client.R().SetBody(newActionBody).SetSuccessResult(&newActionResponse).Post("/api_jsonrpc.php")
 	if err != nil || !resp.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init_zbx failed to create new action", zap.Error(err))
+		core.Logger.Error("[bootstrap]: init monitor failed to create new action", zap.Error(err))
 		return "", err
 	}
 	newActionId := newActionResponse.Result.ActionIds[0]
-	core.Logger.Info(fmt.Sprintf("[bootstrap]: init_zbx create new action %s success", newActionId))
+	core.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new action %s success", newActionId))
 	return newActionId, nil
 }
 
@@ -547,7 +547,7 @@ func initZbxSuperToken(client *req.Client, superUserId string) (string, error) {
 	newTokenResponse := new(Resp)
 	newToken, err := client.R().SetBody(newTokenBody).SetSuccessResult(&newTokenResponse).Post("/api_jsonrpc.php")
 	if err != nil || !newToken.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init_zbx failed to create super token", zap.Error(err))
+		core.Logger.Error("[bootstrap]: init monitor failed to create super token", zap.Error(err))
 		return "", err
 	}
 	newTokenId := newTokenResponse.Result.TokenIds[0]
@@ -567,11 +567,11 @@ func initZbxSuperToken(client *req.Client, superUserId string) (string, error) {
 	nowTokenGenerateResponse := new(NowTokenGenerateResp)
 	nowTokenGenerate, err := client.R().SetBody(nowTokenGenerateBody).SetSuccessResult(&nowTokenGenerateResponse).Post("/api_jsonrpc.php")
 	if err != nil || !nowTokenGenerate.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init_zbx failed to create super token", zap.Error(err))
+		core.Logger.Error("[bootstrap]: init_monitor failed to create super token", zap.Error(err))
 		return "", err
 	}
 	nowToken := nowTokenGenerateResponse.Result[0].Token
-	core.Logger.Info(fmt.Sprintf("[bootstrap]: init_zbx create new super token %s success", nowToken))
+	core.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new super token %s success", nowToken))
 	writeTokenToYamlConfig(nowToken)
 	return nowToken, nil
 }
@@ -614,10 +614,10 @@ func initZbxDisableDefaultAdmin(client *req.Client, token string) error {
 	}
 	resp, err := client.R().SetBody(updateBody).Post("/api_jsonrpc.php")
 	if err != nil || !resp.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init_zbx failed to disable default admin", zap.Error(err))
+		core.Logger.Error("[bootstrap]: init monitor failed to disable default admin", zap.Error(err))
 		return err
 	}
-	core.Logger.Info("[bootstrap]: init_zbx disable default admin success")
+	core.Logger.Info("[bootstrap]: init monitor disable default admin success")
 	return nil
 }
 
@@ -639,10 +639,10 @@ func initZbxConnector(client *req.Client) error {
 	}
 	resp, err := client.R().SetBody(newConnector).Post("/api_jsonrpc.php")
 	if err != nil || resp.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init_zbx failed to create connector", zap.Error(err))
+		core.Logger.Error("[bootstrap]: init monitor failed to create connector", zap.Error(err))
 		return err
 	}
-	core.Logger.Info("[bootstrap]: init_zbx create connector success")
+	core.Logger.Info("[bootstrap]: init monitor create connector success")
 	return nil
 }
 
