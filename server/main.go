@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/getsentry/sentry-go"
 	sentry_gin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
@@ -37,6 +39,7 @@ func main() {
 		panic(err)
 	}
 	gen.SetDefault(infra.DB)
+	core.Logger.Info("[mainStartHttpServer]: server started to run on port", zap.Int("port", core.Settings.System.ServerPort))
 	if core.Settings.Env == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -46,10 +49,9 @@ func main() {
 	middleware.RegisterOpenAPI(router)
 	go register.RegisterScheduler()
 	// rmq.GetMqConn()
-	if err := router.Run(":8000"); err != nil {
+	if err := router.Run(fmt.Sprintf(":%d", core.Settings.System.ServerPort)); err != nil {
 		core.Logger.Fatal("[mainStartHttpServer]: failed to run server", zap.Error(err))
 	}
-	core.Logger.Info("[mainStartHttpServer]: server started")
 }
 
 func setupConfig() {
