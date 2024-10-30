@@ -577,7 +577,7 @@ func initZbxSuperToken(client *req.Client, superUserId string) (string, error) {
 }
 
 func writeTokenToYamlConfig(token string) {
-	yamlConfig, err := os.ReadFile(core.ProjectPath + "/config.yaml")
+	yamlConfig, err := os.ReadFile("config.yaml")
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to read config file", zap.Error(err))
 		return
@@ -594,7 +594,7 @@ func writeTokenToYamlConfig(token string) {
 		core.Logger.Error("[bootstrap]: failed to marshal config file", zap.Error(err))
 		return
 	}
-	err = os.WriteFile(core.ProjectPath+"/config.yaml", yamlConfig, 0644)
+	err = os.WriteFile("config.yaml", yamlConfig, 0644)
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to write config file", zap.Error(err))
 		return

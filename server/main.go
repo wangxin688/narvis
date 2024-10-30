@@ -37,6 +37,9 @@ func main() {
 		panic(err)
 	}
 	gen.SetDefault(infra.DB)
+	if core.Settings.Env == "prod" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	router := gin.New()
 	configureRouter(router)
 	helpers.RegisterCustomValidator()
@@ -46,6 +49,7 @@ func main() {
 	if err := router.Run(":8000"); err != nil {
 		core.Logger.Fatal("[mainStartHttpServer]: failed to run server", zap.Error(err))
 	}
+	core.Logger.Info("[mainStartHttpServer]: server started")
 }
 
 func setupConfig() {
@@ -57,7 +61,7 @@ func setupLogger() {
 }
 
 func initializeSentry() {
-	if core.Environment == config.Prod || core.Environment == config.Stage {
+	if core.Settings.Env == config.Prod || core.Settings.Env == config.Stage {
 		if err := sentry.Init(sentry.ClientOptions{
 			Dsn:              core.Settings.Sentry.Dsn,
 			EnableTracing:    core.Settings.Sentry.EnableTracing,
@@ -67,12 +71,12 @@ func initializeSentry() {
 			core.Logger.Fatal("[mainStartHttpServer]: failed to initialize sentry", zap.Error(err))
 		}
 	} else {
-		core.Logger.Info("[mainStartHttpServer]: sentry disabled because of environment", zap.String("environment", string(core.Environment)))
+		core.Logger.Info("[mainStartHttpServer]: sentry disabled because of environment", zap.String("environment", string(core.Settings.Env)))
 	}
 }
 
 func configureRouter(router *gin.Engine) {
-	if core.Environment == config.Prod || core.Environment == config.Stage {
+	if core.Settings.Env == config.Prod || core.Settings.Env == config.Stage {
 		router.Use(sentry_gin.New(sentry_gin.Options{}))
 	}
 	router.Use(

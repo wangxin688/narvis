@@ -49,7 +49,7 @@ sentry:
   enable_tracing: true
   trace_sample_rate: 0
   release: v0.0.1
-env: dev
+env: prod
 zbx:
   url: http://127.0.0.1:8088
   token: 33ee4060b4988930b44fbe7286f81c619a4889929b70147cfd9c10f02abb7d91

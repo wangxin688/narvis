@@ -11,8 +11,6 @@ import (
 
 var Settings *Config
 
-var ProjectPath string
-
 type Environment string
 
 const (
@@ -67,9 +65,6 @@ func SetupConfig() (err error) {
 	if err = viper.Unmarshal(&settings); err != nil {
 		return fmt.Errorf("error unmarshaling viper config into `Settings`: %w", err)
 	}
-
-	// Update the ProjectPath var
-	ProjectPath = projectPath
 
 	Settings = settings
 
