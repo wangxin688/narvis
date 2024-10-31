@@ -66,6 +66,7 @@ const (
 // Wireless metric tags
 // radio_type: 2.4GHz/5GHz/6GHz
 // channel: 1..14, 36-64, 100-140, 149-165
+// h3c: no way to get client per-channel, only per-ap
 const (
 	ApStatus                  WirelessMetrics = "ap_status"
 	ApUptime                  WirelessMetrics = "ap_uptime"
