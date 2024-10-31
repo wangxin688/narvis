@@ -15,9 +15,10 @@ zabbix_export:
         - uuid: 14a40edae56543d7ab2ff31b23114477
           name: snmp_walk_ap
           type: SNMP_AGENT
-          snmp_oid: 'walk[1.3.6.1.4.1.25506.2.75.2.1.2.1.8,1.3.6.1.4.1.25506.2.75.2.1.8.1.1,1.3.6.1.4.1.25506.2.75.2.1.8.1.2,1.3.6.1.4.1.25506.2.75.2.1.8.1.4,1.3.6.1.4.1.25506.2.75.2.1.1.1.4]'
+          snmp_oid: 'walk[1.3.6.1.4.1.25506.2.75.2.1.2.1.8,1.3.6.1.4.1.25506.2.75.2.1.8.1.1,1.3.6.1.4.1.25506.2.75.2.1.8.1.2,1.3.6.1.4.1.25506.2.75.2.1.8.1.4,1.3.6.1.4.1.25506.2.75.2.1.1.1.4, 1.3.6.1.4.1.25506.2.75.2.1.2.1.7]'
           key: h3c.ap.walk
           delay: 3m
+          history: '0'
           value_type: TEXT
           trends: '0'
           timeout: 30s
@@ -145,6 +146,23 @@ zabbix_export:
           lifetime_type: DELETE_IMMEDIATELY
           lifetime: '0'
           item_prototypes:
+            - uuid: fea7e262627e413fa8d13475eaf76ddc
+              name: channel_associated_clients
+              type: DEPENDENT
+              key: 'ap.clients.[{#SNMPINDEX}]'
+              delay: '0'
+              history: 7d
+              trends: '0'
+              preprocessing:
+                - type: SNMP_WALK_VALUE
+                  parameters:
+                    - 1.3.6.1.4.1.25506.2.75.2.1.2.1.7
+                    - '0'
+              master_item:
+                key: h3c.ap.walk
+              tags:
+                - tag: apName
+                  value: '{#APNAME}'
             - uuid: d7a697418cca4278b6f9a38dd0861d58
               name: ap_cpu_utilization
               type: DEPENDENT
