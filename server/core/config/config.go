@@ -5,9 +5,9 @@ import "fmt"
 type Env string
 
 const (
-	Dev   Env = "dev"
-	Stage Env = "stage"
-	Prod  Env = "prod"
+	Dev    Env = "dev"
+	Prod   Env = "prod"
+	OnPrem Env = "on_prem"
 )
 
 type Settings struct {

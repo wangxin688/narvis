@@ -40,7 +40,7 @@ func main() {
 	}
 	gen.SetDefault(infra.DB)
 	core.Logger.Info("[mainStartHttpServer]: server started to run on port", zap.Int("port", core.Settings.System.ServerPort))
-	if core.Settings.Env == "prod" {
+	if core.Settings.Env == config.Prod || core.Settings.Env == config.OnPrem {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	router := gin.New()
@@ -63,7 +63,7 @@ func setupLogger() {
 }
 
 func initializeSentry() {
-	if core.Settings.Env == config.Prod || core.Settings.Env == config.Stage {
+	if core.Settings.Env == config.Prod {
 		if err := sentry.Init(sentry.ClientOptions{
 			Dsn:              core.Settings.Sentry.Dsn,
 			EnableTracing:    core.Settings.Sentry.EnableTracing,
@@ -78,7 +78,7 @@ func initializeSentry() {
 }
 
 func configureRouter(router *gin.Engine) {
-	if core.Settings.Env == config.Prod || core.Settings.Env == config.Stage {
+	if core.Settings.Env == config.Prod {
 		router.Use(sentry_gin.New(sentry_gin.Options{}))
 	}
 	router.Use(

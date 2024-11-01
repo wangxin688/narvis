@@ -40,7 +40,7 @@ func main() {
 	initMacAddress()
 	initZbx()
 	initRabbitMQ()
-	if core.Settings.Env == "dev" {
+	if core.Settings.Env == "on_prem" {
 		orgId := initOrganization()
 		core.SetUpConfig()
 		initProxy(orgId)
@@ -64,8 +64,12 @@ func connectDB() *gorm.DB {
 
 func initOrganization() string {
 	service := biz.NewOrganizationService()
+	if core.Settings.BootstrapConfig.EnterpriseCode == "" {
+		core.Logger.Error("[bootstrap]: enterprise code is empty")
+		panic("enterprise code is empty")
+	}
 
-	org, err := gen.Organization.Where(gen.Organization.EnterpriseCode.Eq("narvis")).Find()
+	org, err := gen.Organization.Where(gen.Organization.EnterpriseCode.Eq(core.Settings.BootstrapConfig.EnterpriseCode)).Find()
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to get organization", zap.Error(err))
 		panic(err)
@@ -273,11 +277,6 @@ func initZbx() {
 		return
 	}
 	initZbxGlobalMacro(client)
-	err = initZbxConnector(client)
-	if err != nil {
-		core.Logger.Info("[bootstrap]: failed to init monitor connector", zap.Error(err))
-		return
-	}
 	superUserId, err := initZbxSuperUser(client, mediaTypeId)
 	if err != nil {
 		core.Logger.Info("[bootstrap]: failed to init monitor super user", zap.Error(err))
@@ -621,31 +620,6 @@ func initZbxDisableDefaultAdmin(client *req.Client, token string) error {
 	return nil
 }
 
-func initZbxConnector(client *req.Client) error {
-	newConnector := map[string]any{
-		"jsonrpc": "2.0",
-		"method":  "connector.create",
-		"params": []map[string]any{
-			{
-				"name":      "narvis_metrics_exporter",
-				"data_type": "0",
-				"authtype":  "1",
-				"url":       core.Settings.BootstrapConfig.KafkaConnectorUrl,
-				"username":  core.Settings.BootstrapConfig.KafkaUser,
-				"password":  core.Settings.BootstrapConfig.KafkaPassword,
-			},
-		},
-		"id": 1,
-	}
-	resp, err := client.R().SetBody(newConnector).Post("/api_jsonrpc.php")
-	if err != nil || resp.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init monitor failed to create connector", zap.Error(err))
-		return err
-	}
-	core.Logger.Info("[bootstrap]: init monitor create connector success")
-	return nil
-}
-
 func initNarvisSnmpCredential(orgId string) error {
 	cred, err := gen.SnmpV2Credential.Where(gen.SnmpV2Credential.OrganizationId.Eq(orgId)).Find()
 	if err != nil {
@@ -750,12 +724,30 @@ func initNarvisCliCredential(orgId string) error {
 func initZbxTemplates() error {
 	templates := asset.AssetNames()
 	zbxTemplates := make([]string, 0)
+	firstImportTemplates := make([]string, 0)
 	for _, template := range templates {
 		if strings.Contains(template, ".yaml") {
-			zbxTemplates = append(zbxTemplates, template)
+			if strings.Contains(template, "template_interface_basic") || strings.Contains(template, "template_interface_circuit") {
+				firstImportTemplates = append(firstImportTemplates, template)
+			} else {
+				zbxTemplates = append(zbxTemplates, template)
+			}
 		}
 	}
 	zbxClient := zbx.NewZbxClient()
+	for _, template := range firstImportTemplates {
+		templateBytes, err := asset.Asset(template)
+		if err != nil {
+			core.Logger.Error("[bootstrap]: failed to read template file", zap.Error(err))
+			return err
+		}
+		_, err = zbxClient.ConfigurationImport(string(templateBytes))
+		if err != nil {
+			core.Logger.Error("[bootstrap]: failed to import template", zap.Error(err))
+			return err
+		}
+		core.Logger.Info("[bootstrap]: init monitor template", zap.String("name", template))
+	}
 	for _, template := range zbxTemplates {
 		templateBytes, err := asset.Asset(template)
 		if err != nil {

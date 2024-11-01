@@ -2,22 +2,12 @@ package config
 
 import (
 	"fmt"
-	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/spf13/viper"
 )
 
 var Settings *Config
-
-type Environment string
-
-const (
-	Dev   Environment = "dev"
-	Stage Environment = "stage"
-	Prod  Environment = "prod"
-)
 
 type Config struct {
 	ORGANIZATION_ID string `mapstructure:"ORGANIZATION_ID"`
@@ -47,13 +37,9 @@ func SetupConfig() (err error) {
 
 	var settings = Settings
 
-	_, currentPath, _, _ := runtime.Caller(0)
-
-	projectPath := filepath.Dir(filepath.Dir(currentPath))
-
-	// Set the config file name and type
-	viper.SetConfigFile(projectPath + "/.env")
+	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
+	viper.AddConfigPath(".")
 
 	// Attempt to read the config file
 	if err = viper.ReadInConfig(); err != nil {

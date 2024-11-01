@@ -27,7 +27,7 @@ func SetUpLogger() {
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,
 		EncodeTime:     zapcore.ISO8601TimeEncoder,
 		EncodeDuration: zapcore.SecondsDurationEncoder,
-		EncodeCaller:   zapcore.FullCallerEncoder,
+		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
 	encoder := zapcore.NewConsoleEncoder(encoderConfig)
 	core := zapcore.NewCore(encoder, zapcore.AddSync(log.Writer()), levels[0])

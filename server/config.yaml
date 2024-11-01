@@ -1,9 +1,5 @@
 zap:
-  level: info
-  prefix: '[narvis/server]'
   format: console
-  encode_level: LowercaseColorLevelEncoder
-  show_line: true
 postgres:
   host: localhost
   port: "5432"
