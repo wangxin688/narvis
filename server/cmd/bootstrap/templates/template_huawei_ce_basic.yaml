@@ -214,8 +214,6 @@ zabbix_export:
               delay: 3m
               history: 7d
               trends: '0'
-              valuemap:
-                name: 'Huawei VRP Pwr status'
               preprocessing:
                 - type: JAVASCRIPT
                   parameters:
@@ -410,17 +408,6 @@ zabbix_export:
               newvalue: normal
             - value: '2'
               newvalue: abnormal
-        - uuid: 3469565a619e4d819314d1bd596b2741
-          name: 'Huawei VRP Pwr status'
-          mappings:
-            - value: '1'
-              newvalue: Supply
-            - value: '2'
-              newvalue: NotSupply
-            - value: '3'
-              newvalue: Sleep
-            - value: '4'
-              newvalue: unknown
         - uuid: d55f3c68a74f4d549c698bfbc85f6ec0
           name: 'IF-MIB::ifOperStatus'
           mappings:
