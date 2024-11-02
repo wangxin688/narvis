@@ -132,8 +132,7 @@ func (ag *AlertGroupService) GetGroupedAlerts(group *schemas.AlertGroupCreate) (
 	query := &am.AlertRequest{
 		Filter: filters,
 	}
-	amApi := am.NewAlertManager(core.Settings.Atm.Url, core.Settings.Atm.Username, core.Settings.Atm.Password)
-	amGroupAlerts, err := amApi.GetAlertGroups(query)
+	amGroupAlerts, err := am.NewAlertManager().GetAlertGroups(query)
 	if err != nil {
 		return nil, nil, err
 	}

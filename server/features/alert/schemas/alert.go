@@ -37,6 +37,10 @@ func (a *AlertCreate) validateStartTime() error {
 			return errors.NewError(errors.CodeAlertStartTimeInFuture, errors.MsgAlertStartTimeInFuture)
 		}
 	}
+	if a.StartedAt == nil {
+		timeNow := time.Now()
+		a.StartedAt = &timeNow
+	}
 	return nil
 }
 
@@ -76,7 +80,7 @@ func (a *AlertCreate) Validate() error {
 
 // remove duplicate and no-need labels
 func (a *AlertCreate) updateLabels() {
-	excludeKeys := []string{"siteCode", "name", "scope", "hostname"}
+	excludeKeys := []string{"siteCode", "name", "scope", "hostname", "organizationId"}
 	existedKeys := make([]string, 0)
 	newLabels := make([]*Label, 0)
 	for _, label := range a.Labels {

@@ -68,18 +68,17 @@ func (a *AlertService) CreateAlert(alert *schemas.AlertCreate) (*models.Alert, e
 		if dbAlert.Status == constants.AlertResolvedStatus {
 			resolvedAt := time.Now().UTC()
 			dbAlert.ResolvedAt = &resolvedAt
-			core.Logger.Info("[createAlert]: received resolved event", zap.Any("alert", dbAlert))
+			core.Logger.Info("[createAlert]: received resolved event", zap.Any("alert", alert))
 		}
 	}
 	dbAlert = a.silenceAlert(dbAlert)
-	if err = gen.Alert.Create(dbAlert); err != nil {
+	if err = gen.Alert.UnderlyingDB().Save(dbAlert).Error; err != nil {
 		return nil, err
 	}
 	if !dbAlert.Suppressed {
 		tools.BackgroundTask(func() {
 			postAlert := a.AlertManagerMessage(dbAlert)
-			amApi := am.NewAlertManager(core.Settings.Atm.Url, core.Settings.Atm.Username, core.Settings.Atm.Password)
-			err = amApi.CreateAlerts(postAlert)
+			err = am.NewAlertManager().CreateAlerts(postAlert)
 			if err != nil {
 				core.Logger.Error("[createAlert]post alert to alertmanager error", zap.Error(err))
 			}
@@ -116,22 +115,24 @@ func (a *AlertService) alertPreProcess(alert *schemas.AlertCreate) (*schemas.Ale
 			return nil, errors.NewError(errors.CodeNotFound, errors.MsgNotFound, gen.Device.TableName(), "Id", hostId)
 		}
 		acc.OrganizationId = host.OrganizationId
+		acc.SiteId = host.SiteId
 		if lo.Contains(alerts.GetApAlertEnumNames(), alerts.AlertNameEnum(alert.AlertName)) {
 			apId, err := a.getApInfo(alert, host.SiteId, host.OrganizationId)
 			if err != nil {
 				return nil, err
 			}
 			acc.ApId = &apId
-			acc.SiteId = host.SiteId
 			acc.Severity = a.severity(alert.AlertName, devicerole.WlanAP)
 		} else if lo.Contains(alerts.GetInterfaceAlertEnumNames(), alerts.AlertNameEnum(alert.AlertName)) {
 			interfaceId, err := a.getInterfaceInfo(alert, host.Id)
 			if err != nil {
 				return nil, err
 			}
-			acc.SiteId = host.SiteId
 			acc.DeviceId = &host.Id
 			acc.InterfaceId = &interfaceId
+			acc.Severity = a.severity(alert.AlertName, devicerole.DeviceRoleEnum(host.DeviceRole))
+		} else {
+			acc.DeviceId = &host.Id
 			acc.Severity = a.severity(alert.AlertName, devicerole.DeviceRoleEnum(host.DeviceRole))
 		}
 	} else if strings.Contains(alert.HostId, "c_") || strings.Contains(alert.HostId, "cd_") {
@@ -287,7 +288,7 @@ func (a *AlertService) AlertManagerMessage(alert *models.Alert) []*am.Alert {
 			"alertName":      alert.AlertName,
 			"siteId":         alert.SiteId,
 			"OrganizationId": alert.OrganizationId,
-			"eventId":        "alert.EventId",
+			"eventId":        alert.EventId,
 			"severity":       alert.Severity,
 		},
 		Annotations:  annotations,
