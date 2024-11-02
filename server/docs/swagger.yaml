@@ -489,7 +489,7 @@ definitions:
         type: string
       status:
         enum:
-        - Problem
+        - PROBLEM
         - OK
         type: string
       tags:
@@ -502,7 +502,6 @@ definitions:
     - alertName
     - eventId
     - hostId
-    - severity
     - status
     - triggerId
     type: object

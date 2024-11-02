@@ -5717,7 +5717,6 @@
                 "alertName",
                 "eventId",
                 "hostId",
-                "severity",
                 "status",
                 "triggerId"
             ],
@@ -5746,7 +5745,7 @@
                 "status": {
                     "type": "string",
                     "enum": [
-                        "Problem",
+                        "PROBLEM",
                         "OK"
                     ]
                 },

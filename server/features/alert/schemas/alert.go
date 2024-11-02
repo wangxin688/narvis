@@ -92,7 +92,7 @@ func (a *AlertCreate) updateLabels() {
 func GetStatus(status string) uint8 {
 	statusMap := map[string]uint8{
 		"firing":   constants.AlertFiringStatus,
-		"Problem":  constants.AlertFiringStatus,
+		"PROBLEM":  constants.AlertFiringStatus,
 		"OK":       constants.AlertResolvedStatus,
 		"resolved": constants.AlertResolvedStatus,
 	}

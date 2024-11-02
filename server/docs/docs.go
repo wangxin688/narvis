@@ -5725,7 +5725,6 @@ const docTemplate = `{
                 "alertName",
                 "eventId",
                 "hostId",
-                "severity",
                 "status",
                 "triggerId"
             ],
@@ -5754,7 +5753,7 @@ const docTemplate = `{
                 "status": {
                     "type": "string",
                     "enum": [
-                        "Problem",
+                        "PROBLEM",
                         "OK"
                     ]
                 },
