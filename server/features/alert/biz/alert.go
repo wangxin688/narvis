@@ -89,7 +89,14 @@ func (a *AlertService) CreateAlert(alert *schemas.AlertCreate) (*models.Alert, e
 }
 
 func (a *AlertService) GetAlertByEventId(eventId string) (*models.Alert, error) {
-	return gen.Alert.Where(gen.Alert.EventId.Eq(eventId)).First()
+	alerts, err := gen.Alert.Where(gen.Alert.EventId.Eq(eventId)).Find()
+	if err != nil {
+		return nil, err
+	}
+	if len(alerts) == 0 {
+		return nil, nil
+	}
+	return alerts[0], nil
 }
 
 func (a *AlertService) alertPreProcess(alert *schemas.AlertCreate) (*schemas.AlertConcrete, error) {
