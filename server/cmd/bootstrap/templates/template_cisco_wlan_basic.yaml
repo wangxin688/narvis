@@ -245,6 +245,8 @@ zabbix_export:
               delay: 3m
               history: 7d
               trends: '0'
+              status: DISABLED
+              discover: NO_DISCOVER
               units: '%'
               tags:
                 - tag: apMac
@@ -263,7 +265,13 @@ zabbix_export:
               delay: 3m
               history: 7d
               trends: '0'
+              status: DISABLED
+              discover: NO_DISCOVER
               units: dBm
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return parseInt(value)'
               tags:
                 - tag: apMac
                   value: '{#APMAC}'
