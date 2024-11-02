@@ -354,7 +354,7 @@ zabbix_export:
                   expression: 'last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}])=2 and last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}],#1)<>last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}],#2)'
                   recovery_mode: RECOVERY_EXPRESSION
                   recovery_expression: 'last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}])<>2'
-                  name: link_down
+                  name: interface_down
                   event_name: 'Interface {#IFNAME}({#IFALIAS}): Link down'
                   opdata: 'Current state: {ITEM.LASTVALUE1}'
                   priority: AVERAGE
@@ -406,7 +406,7 @@ zabbix_export:
               description: 'The utilization of the network interface is close to its estimated maximum bandwidth.'
               manual_close: 'YES'
               dependencies:
-                - name: link_down
+                - name: interface_down
                   expression: 'last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}])=2 and last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}],#1)<>last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}],#2)'
                   recovery_expression: 'last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}])<>2'
               tags:
@@ -429,7 +429,7 @@ zabbix_export:
               description: 'It recovers when it is below 80% of the `{$IF.ERRORS.WARN:"{#IFNAME}"}` threshold.'
               manual_close: 'YES'
               dependencies:
-                - name: link_down
+                - name: interface_down
                   expression: 'last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}])=2 and last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}],#1)<>last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}],#2)'
                   recovery_expression: 'last(/template_interface_basic/net.if.status[ifOperStatus.{#SNMPINDEX}])<>2'
               tags:

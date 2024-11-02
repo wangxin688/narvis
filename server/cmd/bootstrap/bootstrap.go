@@ -327,20 +327,19 @@ try {
     req.addHeader("Content-Type: application/json");
     req.addHeader("Authorization: Bearer " + params.token);
     fields.alertName = params.alertName;
-    fields.HostId = params.HostId;
+    fields.hostId = params.hostId;
     fields.itemName = params.itemName;
     fields.opData = params.opData;
     fields.status = params.status;
     fields.triggerId = params.triggerId;
     fields.url = params.url;
-    fields.eventId =
-        params.eventId;
-    fields.tags = params.tags;
+    fields.eventId = params.eventId;
     for (var i in fields) {
         if (fields[i].startsWith('{')) {
             delete fields[i]
         }
     }
+	fields.tags = JSON.parse(params.tags);
     if (JSON.stringify(fields) === '{}') {
         result = {}
     } else {
@@ -363,7 +362,7 @@ return JSON.stringify(result);
 		`,
 		"parameters": []map[string]string{
 			{"name": "alertName", "value": "{TRIGGER.NAME}"},
-			{"name": "HostId", "value": "{HOSTNAME}"},
+			{"name": "hostId", "value": "{HOSTNAME}"},
 			{"name": "itemName", "value": "{ITEM.NAME}"},
 			{"name": "opData", "value": "{EVENT.OPDATA}"},
 			{"name": "status", "value": "{TRIGGER.STATUS}"},
@@ -871,7 +870,7 @@ func initNarvisTemplates() error {
 			return err
 		}
 		if len(templateId) == 0 {
-			core.Logger.Error("[bootstrap]: failed to get template", zap.Error(err))
+			core.Logger.Error("[bootstrap]: failed to get template", zap.String("name", template["basicTemplate"]), zap.Error(err))
 			continue
 		}
 		newdbTemplate := &models.Template{

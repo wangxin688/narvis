@@ -48,6 +48,16 @@ func NewErrorWithData(code ErrorCode, message ErrorMsg, data any, args ...any) *
 	}
 }
 
+// ResponseErrorHandler is a gin middleware to handle errors.
+// The error is always one of the following:
+//   - GenericError
+//   - validator.ValidationErrors
+//   - pgconn.PgError
+//   - gorm.ErrRecordNotFound
+//   - other errors
+//
+// The middleware will log the error and return the error to the client
+// with the correct status code.
 func ResponseErrorHandler(g *gin.Context, e error) {
 	var generalError *GenericError
 	var validationError validator.ValidationErrors
@@ -55,10 +65,11 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 	switch {
 	case errors.As(e, &generalError):
 		if generalError == nil {
-			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e))
+			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
 			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
+		core.Logger.Error("[errResponseHandler]: general error", zap.Error(e), zap.Int("code", int(generalError.Code)))
 		if generalError.Code <= 500 {
 			g.AbortWithStatusJSON(int(generalError.Code), generalError)
 			return
@@ -67,10 +78,11 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 		return
 	case errors.As(e, &pgError):
 		if pgError == nil {
-			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e))
+			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
 			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
+		core.Logger.Error("[errResponseHandler]: conflict error", zap.Error(e), zap.String("tableName", pgError.TableName))
 		if pgError.Code == "23505" {
 			var fields, values string
 			matches := pgConflictRegexp.FindStringSubmatch(pgError.Detail)
@@ -79,7 +91,6 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 				values = matches[2]
 				fields, values = removeOrgInError(fields, values)
 			}
-
 			g.AbortWithStatusJSON(http.StatusConflict, NewError(CodeExist, MsgExist, pgError.TableName, fields, values))
 			return
 		}
@@ -108,17 +119,18 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 		return
 	case errors.As(e, &validationError):
 		if validationError == nil {
-			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e))
+			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
 			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
+		core.Logger.Error("[errResponseHandler]: validation error", zap.Error(e))
 		g.AbortWithStatusJSON(http.StatusUnprocessableEntity, NewErrorWithData(CodeUnprocessableEntity, MsgUnprocessableEntity, e.Error()))
 		return
 	case errors.Is(e, gorm.ErrRecordNotFound):
 		g.AbortWithStatusJSON(http.StatusNotFound, NewError(CodeNotFound, "record not found"))
 		return
 	default:
-		core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e))
+		core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
 		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 		return
 	}
