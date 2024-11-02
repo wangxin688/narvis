@@ -20,7 +20,7 @@ const xTaskID = "X-Task-ID"
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param resp body []intendtask.DeviceBasicInfoScanResponse true "resp"
+// @Param data body []intendtask.DeviceBasicInfoScanResponse true "data"
 // @Success 200 {object} ts.SuccessResponse
 // @Router /task/scan-device-basic [post]
 func scanDeviceBasicInfoCallback(c *gin.Context) {
@@ -58,7 +58,7 @@ func scanDeviceBasicInfoCallback(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param resp body []intendtask.ApScanResponse true "resp"
+// @Param data body []intendtask.ApScanResponse true "data"
 // @Success 200 {object} ts.SuccessResponse
 // @Router /task/scan-ap [post]
 func scanApCallback(c *gin.Context) {
@@ -96,7 +96,7 @@ func scanApCallback(c *gin.Context) {
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param resp body intendtask.DeviceScanResponse true "resp"
+// @Param data body intendtask.DeviceScanResponse true "data"
 // @Success 200 {object} ts.SuccessResponse
 // @Router /task/scan-device [post]
 func scanDeviceDetailCallback(c *gin.Context) {

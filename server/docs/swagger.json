@@ -4844,8 +4844,8 @@
                 "summary": "ScanAP Callback",
                 "parameters": [
                     {
-                        "description": "resp",
-                        "name": "resp",
+                        "description": "data",
+                        "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -4886,8 +4886,8 @@
                 "summary": "ScanDeviceDetail Callback",
                 "parameters": [
                     {
-                        "description": "resp",
-                        "name": "resp",
+                        "description": "data",
+                        "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -4925,8 +4925,8 @@
                 "summary": "ScanDevice BasicInfo Callback",
                 "parameters": [
                     {
-                        "description": "resp",
-                        "name": "resp",
+                        "description": "data",
+                        "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -5914,6 +5914,9 @@
                     "type": "string"
                 },
                 "ipv6Address": {
+                    "type": "string"
+                },
+                "monitorHostId": {
                     "type": "string"
                 },
                 "monitorId": {

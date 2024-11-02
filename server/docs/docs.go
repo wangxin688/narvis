@@ -4852,8 +4852,8 @@ const docTemplate = `{
                 "summary": "ScanAP Callback",
                 "parameters": [
                     {
-                        "description": "resp",
-                        "name": "resp",
+                        "description": "data",
+                        "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -4894,8 +4894,8 @@ const docTemplate = `{
                 "summary": "ScanDeviceDetail Callback",
                 "parameters": [
                     {
-                        "description": "resp",
-                        "name": "resp",
+                        "description": "data",
+                        "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -4933,8 +4933,8 @@ const docTemplate = `{
                 "summary": "ScanDevice BasicInfo Callback",
                 "parameters": [
                     {
-                        "description": "resp",
-                        "name": "resp",
+                        "description": "data",
+                        "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -5922,6 +5922,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "ipv6Address": {
+                    "type": "string"
+                },
+                "monitorHostId": {
                     "type": "string"
                 },
                 "monitorId": {

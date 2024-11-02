@@ -433,6 +433,21 @@ func (d *DeviceService) GetDeviceByChassisIds(chassisIds []string, orgId string)
 	return deviceMap, nil
 }
 
+// GetDeviceByManagementIp get device by management ip, return map[ManagementIp]Device
+func (d *DeviceService) GetDeviceByManagementIp(ips []string, orgId string) (map[string]*models.Device, error) {
+	devices, err := gen.Device.Where(
+		gen.Device.ManagementIp.In(ips...),
+		gen.Device.OrganizationId.Eq(orgId)).Find()
+	if err != nil {
+		return nil, err
+	}
+	deviceMap := make(map[string]*models.Device)
+	for _, device := range devices {
+		deviceMap[device.ManagementIp] = device
+	}
+	return deviceMap, nil
+}
+
 func (d *DeviceService) GetManagementIP(deviceId string) (string, error) {
 
 	device, err := gen.Device.Select(gen.Device.ManagementIp).Where(gen.Device.Id.Eq(deviceId),

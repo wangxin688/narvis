@@ -609,6 +609,8 @@ definitions:
         type: string
       ipv6Address:
         type: string
+      monitorHostId:
+        type: string
       monitorId:
         type: string
       name:
@@ -4972,9 +4974,9 @@ paths:
       - application/json
       description: Scan AP callback
       parameters:
-      - description: resp
+      - description: data
         in: body
-        name: resp
+        name: data
         required: true
         schema:
           items:
@@ -4998,9 +5000,9 @@ paths:
       - application/json
       description: Scan device detail callback
       parameters:
-      - description: resp
+      - description: data
         in: body
-        name: resp
+        name: data
         required: true
         schema:
           $ref: '#/definitions/intendtask.DeviceScanResponse'
@@ -5022,9 +5024,9 @@ paths:
       - application/json
       description: Scan device basic information callback
       parameters:
-      - description: resp
+      - description: data
         in: body
-        name: resp
+        name: data
         required: true
         schema:
           items:

@@ -34,11 +34,20 @@ func DeviceBasicInfoScanCallback(scanResults []*intendtask.DeviceBasicInfoScanRe
 		core.Logger.Error("[deviceBasicInfoScanCallback]: get db scan devices failed", zap.Error(err))
 		return err
 	}
+	infraDevices, err := infra_biz.NewDeviceService().GetDeviceByManagementIp(managementIPs, scanResults[0].OrganizationId)
+	if err != nil {
+		core.Logger.Error("[deviceBasicInfoScanCallback]: get infra scan devices failed", zap.Error(err))
+		return err
+	}
 
 	// find new devices
 	var newDevices []*models.ScanDevice
 	for _, scanResult := range scanResults {
 		if _, ok := dbDevices[scanResult.ManagementIp]; !ok {
+			// if device is already registered in devices table, ignore it.
+			if _, ok := infraDevices[scanResult.ManagementIp]; ok {
+				continue
+			}
 			newDevices = append(newDevices, &models.ScanDevice{
 				OrganizationId: scanResult.OrganizationId,
 				ManagementIp:   scanResult.ManagementIp,
