@@ -34,11 +34,11 @@ jobs:
             --build-arg GOFLAGS=-ldflags="-w -s" \
             --push
       
-      - name: Build and push Docker image (client)
-        if: startsWith(github.event.release.tag_name, 'client-') || startsWith(github.event.release.tag_name, 'all-')
+      - name: Build and push Docker image (proxy)
+        if: startsWith(github.event.release.tag_name, 'proxy-') || startsWith(github.event.release.tag_name, 'all-')
         run: |
           docker buildx build --platform linux/amd64,linux/arm64 \
-            -t jeffry688/narvis-client:${{ github.event.release.tag_name }} \
+            -t jeffry688/narvis-proxy:${{ github.event.release.tag_name }} \
             -f client/Dockerfile . \
             --build-arg GOFLAGS=-ldflags="-w -s" \
             --push
