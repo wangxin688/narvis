@@ -8,7 +8,7 @@ import (
 
 func RegisterAlertRoutes(r *gin.Engine) {
 	basePath := core.Settings.System.RouterPrefix
-	pubRouter := r.Group(basePath + "/alert")
+	pubRouter := r.Group(basePath + "/alert", middleware.PublicAuthMiddleware())
 	{
 		pubRouter.POST("/alerts", createAlert)
 		pubRouter.POST("/alert-groups", createAlertGroup)

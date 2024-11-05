@@ -123,6 +123,7 @@ func (a *AlertService) alertPreProcess(alert *schemas.AlertCreate) (*schemas.Ale
 			}
 			acc.ApId = &apId
 			acc.Severity = a.severity(alert.AlertName, devicerole.WlanAP)
+			*acc.DeviceRole = string(devicerole.WlanAP)
 		} else if lo.Contains(alerts.GetInterfaceAlertEnumNames(), alerts.AlertNameEnum(alert.AlertName)) {
 			interfaceId, err := a.getInterfaceInfo(alert, host.Id)
 			if err != nil {
@@ -131,9 +132,11 @@ func (a *AlertService) alertPreProcess(alert *schemas.AlertCreate) (*schemas.Ale
 			acc.DeviceId = &host.Id
 			acc.InterfaceId = &interfaceId
 			acc.Severity = a.severity(alert.AlertName, devicerole.DeviceRoleEnum(host.DeviceRole))
+			acc.DeviceRole = &host.DeviceRole
 		} else {
 			acc.DeviceId = &host.Id
 			acc.Severity = a.severity(alert.AlertName, devicerole.DeviceRoleEnum(host.DeviceRole))
+			acc.DeviceRole = &host.DeviceRole
 		}
 	} else if strings.Contains(alert.HostId, "c_") || strings.Contains(alert.HostId, "cd_") {
 		circuit, err := gen.Circuit.Where(gen.Circuit.Id.Eq(hostId)).First()
@@ -287,7 +290,7 @@ func (a *AlertService) AlertManagerMessage(alert *models.Alert) []*am.Alert {
 		Labels: map[string]string{
 			"alertName":      alert.AlertName,
 			"siteId":         alert.SiteId,
-			"OrganizationId": alert.OrganizationId,
+			"organizationId": alert.OrganizationId,
 			"eventId":        alert.EventId,
 			"severity":       alert.Severity,
 		},
@@ -379,6 +382,11 @@ func (a *AlertService) ListAlerts(query schemas.AlertQuery) (int64, []*schemas.A
 	total, err := stmt.Count()
 	if err != nil {
 		return 0, res, err
+	}
+	defaultOrderBy := "startedAt"
+	replacedOrderBy := "createdAt"
+	if query.PageInfo.OrderBy == nil || *query.PageInfo.OrderBy == replacedOrderBy {
+		query.PageInfo.OrderBy = &defaultOrderBy	
 	}
 	stmt.UnderlyingDB().Scopes(query.OrderByField())
 	stmt.UnderlyingDB().Scopes(query.Pagination())

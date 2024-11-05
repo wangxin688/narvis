@@ -193,19 +193,19 @@ type Entity struct {
 
 type AlertQuery struct {
 	ts.PageInfo
-	SiteId            *[]string  `json:"siteId" binding:"omitEmpty,list_uuid"`
-	AlertName         *[]string  `json:"alertName" binding:"omitempty"`
-	DeviceId          *[]string  `json:"deviceId" binding:"omitempty,list_uuid"`
-	ApId              *[]string  `json:"apId" binding:"omitempty,list_uuid"`
-	CircuitId         *[]string  `json:"circuitId" binding:"omitempty,list_uuid"`
-	DeviceInterfaceId *[]string  `json:"deviceInterfaceId" binding:"omitempty,list_uuid"`
-	DeviceRole        *[]string  `json:"deviceRole" binding:"omitempty"`
-	Severity          *[]string  `json:"severity" binding:"omitempty"`
-	Status            *uint8     `json:"status" binding:"omitempty"`
-	Acknowledged      *bool      `json:"acknowledged" binding:"omitempty"`
-	Suppressed        *bool      `json:"suppressed" binding:"omitempty"`
-	StartedAtGte      *time.Time `json:"startedAtGte" binding:"omitempty"`
-	StartedAtLte      *time.Time `json:"startedAtLte" binding:"omitempty"`
-	ResolvedAtGte     *time.Time `json:"endsAtGte" binding:"omitempty"`
-	ResolvedAtLte     *time.Time `json:"endsAtLte" binding:"omitempty"`
+	SiteId            *[]string  `form:"siteId" binding:"omitempty,list_uuid"`
+	AlertName         *[]string  `form:"alertName" binding:"omitempty"`
+	DeviceId          *[]string  `form:"deviceId" binding:"omitempty,list_uuid"`
+	ApId              *[]string  `form:"apId" binding:"omitempty,list_uuid"`
+	CircuitId         *[]string  `form:"circuitId" binding:"omitempty,list_uuid"`
+	DeviceInterfaceId *[]string  `form:"deviceInterfaceId" binding:"omitempty,list_uuid"`
+	DeviceRole        *[]string  `form:"deviceRole" binding:"omitempty"`
+	Severity          *[]string  `form:"severity" binding:"omitempty"`
+	Status            *uint8     `form:"status" binding:"omitempty"`
+	Acknowledged      *bool      `form:"acknowledged" binding:"omitempty"`
+	Suppressed        *bool      `form:"suppressed" binding:"omitempty"`
+	StartedAtGte      *time.Time `form:"startedAtGte" binding:"omitempty"`
+	StartedAtLte      *time.Time `form:"startedAtLte" binding:"omitempty"`
+	ResolvedAtGte     *time.Time `form:"endsAtGte" binding:"omitempty"`
+	ResolvedAtLte     *time.Time `form:"endsAtLte" binding:"omitempty"`
 }

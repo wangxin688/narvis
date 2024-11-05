@@ -34,7 +34,7 @@ func (ag *AlertGroupService) CreateAlertGroup(group *schemas.AlertGroupCreate) (
 	groupKey := helpers.StringToMd5(group.GroupKey)
 	contentByte, _ := json.Marshal(group.GetAlertLabels())
 	contentHash := helpers.ByteToMd5(contentByte)
-	orgId, ok := group.GroupLabels["organization_id"]
+	orgId, ok := group.CommonLabels["organizationId"]
 	if !ok {
 		return nil, ts.NewError(ts.CodeAlertGroupMissingOrganizationId, ts.MsgAlertGroupMissingOrganizationId)
 	}
@@ -127,7 +127,7 @@ func (ag *AlertGroupService) GetAlertGroupByGroupKey(groupKey string) (*models.A
 func (ag *AlertGroupService) GetGroupedAlerts(group *schemas.AlertGroupCreate) (events []*schemas.Event, groupEventIds []string, err error) {
 	filters := make([]string, 0)
 	for key, value := range group.GroupLabels {
-		filters = append(filters, fmt.Sprintf("%s = '%s'", key, value))
+		filters = append(filters, fmt.Sprintf("%s=%s", key, value))
 	}
 	query := &am.AlertRequest{
 		Filter: filters,

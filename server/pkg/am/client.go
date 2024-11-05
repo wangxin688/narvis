@@ -42,7 +42,7 @@ func NewAlertManager() *AlertManager {
 						return nil
 					}
 					if !resp.IsSuccessState() {
-						resp.Err = fmt.Errorf("request metrics system error: %s, status code: %s", resp.Dump(), resp.Status)
+						resp.Err = fmt.Errorf("request atm alert error: %s, status code: %s", resp.Body, resp.Status)
 					}
 					return nil
 				}),
@@ -92,10 +92,13 @@ func (am *AlertManager) GetAlerts(query *AlertRequest) ([]*AlertResponse, error)
 	} else {
 		requestParams["unprocessed"] = true
 	}
+	request := am.R().SetQueryParamsAnyType(requestParams)
 	if query.Filter != nil {
-		requestParams["filter"] = query.Filter
+		for _, v := range query.Filter {
+			request = request.AddQueryParams("filter", v)
+		}
 	}
-	_, err := am.R().SetQueryParamsAnyType(requestParams).SetSuccessResult(&results).Get(path)
+	_, err := request.SetSuccessResult(&results).Get(path)
 	if err != nil {
 		return results, err
 	}
@@ -129,10 +132,13 @@ func (am *AlertManager) GetAlertGroups(query *AlertRequest) ([]*AlertGroupRespon
 	} else {
 		requestParams["unprocessed"] = true
 	}
+	request := am.R().SetQueryParamsAnyType(requestParams)
 	if query.Filter != nil {
-		requestParams["filter"] = query.Filter
+		for _, v := range query.Filter {
+			request = request.AddQueryParams("filter", v)
+		}
 	}
-	_, err := am.R().SetQueryParamsAnyType(requestParams).SetSuccessResult(&results).Get(path)
+	_, err := request.SetSuccessResult(&results).Get(path)
 	if err != nil {
 		return results, err
 	}
