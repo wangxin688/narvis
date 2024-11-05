@@ -31,7 +31,7 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t jeffry688/narvis-server:${{ github.event.release.tag_name }} \
             -f server/Dockerfile . \
-            --build-arg GOFLAGS=-ldflags="-w -s"
+            --build-arg GOFLAGS=-ldflags="-w -s" \
             --push
       
       - name: Build and push Docker image (client)
@@ -40,7 +40,7 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t jeffry688/narvis-client:${{ github.event.release.tag_name }} \
             -f client/Dockerfile . \
-            --build-arg GOFLAGS=-ldflags="-w -s"
+            --build-arg GOFLAGS=-ldflags="-w -s" \
             --push
       
       - name: Build and push Docker image (bootstrap)
@@ -49,5 +49,5 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t jeffry688/narvis-bootstrap:${{ github.event.release.tag_name }} \
             -f server/cmd/bootstrap/Dockerfile . \
-            --build-arg GOFLAGS=-ldflags="-w -s"
+            --build-arg GOFLAGS=-ldflags="-w -s" \
             --push
