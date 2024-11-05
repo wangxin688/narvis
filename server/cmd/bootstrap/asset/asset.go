@@ -405,7 +405,7 @@ func templatesTemplate_interface_basicYaml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/template_interface_basic.yaml", size: 30370, mode: os.FileMode(0644), modTime: time.Unix(1730557350, 0)}
+	info := bindataFileInfo{name: "templates/template_interface_basic.yaml", size: 30370, mode: os.FileMode(0644), modTime: time.Unix(1730557602, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xc9, 0xe0, 0x8b, 0xd7, 0x23, 0x94, 0x5e, 0x77, 0x74, 0x14, 0x13, 0x42, 0xa, 0xec, 0x1, 0x2a, 0xe4, 0x37, 0xe0, 0xd5, 0xb6, 0xd, 0xb, 0x84, 0xc8, 0x66, 0x87, 0x4b, 0x2e, 0x12, 0x27, 0xaa}}
 	return a, nil
 }
