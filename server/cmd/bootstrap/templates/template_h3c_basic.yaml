@@ -30,6 +30,36 @@ zabbix_export:
       groups:
         - name: Templates/narvis
       items:
+        - uuid: d1d9e956851c478e97be1e1173f14352
+          name: cpu_utilization
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.25506.8.35.18.1.3.0
+          key: h3c.cpu.usage
+          delay: 3m
+          history: 7d
+          trends: '0'
+          units: '%'
+          triggers:
+            - uuid: a6f5ae8918be443ab5c4fd677bba3e28
+              expression: 'min(/template_h3c_basic/h3c.cpu.usage,#3:now-10m)>={$CPU.USAGE.HIGH}'
+              name: high_cpu_utilization
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: 4ae7f889a2994372a202ac05b1435f46
+          name: memory_utilization
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.25506.8.35.18.1.16.0
+          key: h3c.mem.usage
+          delay: 3m
+          history: 7d
+          trends: '0'
+          units: '%'
+          triggers:
+            - uuid: c43de262c1da4005b2851d32b01e503a
+              expression: 'min(/template_h3c_basic/h3c.mem.usage,#3:now-10m)>{$MEMORY.UTIL.HIGH}'
+              name: high_memory_utilization
+              priority: WARNING
+              manual_close: 'YES'
         - uuid: b7f2ffcc9a394c1596ca5464175c2a7d
           name: icmp_ping
           type: SIMPLE
@@ -45,9 +75,6 @@ zabbix_export:
               priority: HIGH
               description: 'Last three attempts returned timeout.  Please check device connectivity.'
               manual_close: 'YES'
-              tags:
-                - tag: scope
-                  value: availability
         - uuid: 243183032a384a56a782741f3e36d035
           name: icmp_loss
           type: SIMPLE
@@ -86,11 +113,6 @@ zabbix_export:
                   expression: 'min(/template_h3c_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_h3c_basic/icmppingloss,5m)<100'
                 - name: unavailable_by_icmp_ping
                   expression: 'max(/template_h3c_basic/icmpping,#3)=0'
-              tags:
-                - tag: scope
-                  value: availability
-                - tag: scope
-                  value: performance
         - uuid: 48ba370fc79747e5b87827b2a89d218a
           name: uptime
           type: SNMP_AGENT
@@ -142,9 +164,6 @@ zabbix_export:
               dependencies:
                 - name: unavailable_by_icmp_ping
                   expression: 'max(/template_h3c_basic/icmpping,#3)=0'
-              tags:
-                - tag: scope
-                  value: availability
       discovery_rules:
         - uuid: f27956645f4649ab9a97e83fe09e37e4
           name: fan_discovery

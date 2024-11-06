@@ -22,7 +22,7 @@ func (r *RBACService) PasswordLogin(login schemas.Oauth2PasswordRequest) (*secur
 			if err != nil {
 				return nil, errors.NewError(errors.CodeNotFound, errors.MsgNotFound, "organization", "domain_name", *login.DomainName)
 			}
-			if !org.Active {
+			if org == nil || !org.Active {
 				return nil, errors.NewError(errors.CodeNotFound, errors.MsgNotFound, "organization", "domain_name", *login.DomainName)
 			}
 			orgId = org.Id
@@ -32,7 +32,7 @@ func (r *RBACService) PasswordLogin(login schemas.Oauth2PasswordRequest) (*secur
 			if err != nil {
 				return nil, errors.NewError(errors.CodeNotFound, errors.MsgNotFound, "organization", "enterprise_code", *login.EnterpriseCode)
 			}
-			if !org.Active {
+			if org == nil || !org.Active {
 				return nil, errors.NewError(errors.CodeNotFound, errors.MsgNotFound, "organization", "enterprise_code", *login.EnterpriseCode)
 			}
 			orgId = org.Id
@@ -40,7 +40,7 @@ func (r *RBACService) PasswordLogin(login schemas.Oauth2PasswordRequest) (*secur
 	}
 	if orgId != "" {
 		user, err := gen.User.Where(gen.User.Email.Eq(login.Username), gen.User.OrganizationId.Eq(orgId)).First()
-		if err != nil {
+		if err != nil || user == nil {
 			return nil, errors.NewError(errors.CodeNotFound, errors.MsgNotFound, "user", "email", login.Username)
 		}
 		if user.Status != "Active" {
@@ -55,12 +55,12 @@ func (r *RBACService) PasswordLogin(login schemas.Oauth2PasswordRequest) (*secur
 	if err != nil {
 		return nil, errors.NewError(errors.CodeNotFound, errors.MsgNotFound, "user", "email", login.Username)
 	}
-	if len(users) > 1 {
+	if len(users) != 1 || users[0] == nil {
 		return nil, errors.NewError(errors.CodeNotFound, errors.MsgNotFound, "user", "email", login.Username)
 	}
 	user := users[0]
 	if user.Status == "Active" && security.VerifyPasswordHash(login.Password, user.Password) {
-		return security.GenerateTokenResponse(users[0].Id, users[0].Username), nil
+		return security.GenerateTokenResponse(user.Id, user.Username), nil
 	}
 	if user.Status != "Active" {
 		return nil, errors.NewError(errors.CodeForbidden, errors.MsgForbidden)

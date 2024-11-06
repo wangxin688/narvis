@@ -239,6 +239,10 @@ func (sd *SnmpDiscovery) Interfaces() (interfaces []*DeviceInterface, errors []s
 	indexIfAddrNetMask := ExtractString(IfAdEntNetMask, ifAddrNetMask)
 	for i, v := range indexIfIndex {
 		var _ifAddrIndex string
+		ifTypeString := GetIfTypeValue(indexIfType[i])
+		if lo.Contains([]string{"other", "softwareLoopback"}, ifTypeString) {
+			continue
+		}
 		itemIfAddrIndex := indexIfAddrIndex[i]
 		itemIfAddrNetMask := indexIfAddrNetMask[itemIfAddrIndex]
 		if itemIfAddrIndex == "" || itemIfAddrNetMask == "" {
@@ -250,7 +254,7 @@ func (sd *SnmpDiscovery) Interfaces() (interfaces []*DeviceInterface, errors []s
 			IfIndex:       v,
 			IfName:        indexIfName[i],
 			IfDescr:       indexIfDesc[i],
-			IfType:        GetIfTypeValue(indexIfType[i]),
+			IfType:        ifTypeString,
 			IfMtu:         indexIfMtu[i],
 			IfSpeed:       indexIfSpeed[i],
 			IfPhysAddr:    indexIfPhysAddr[i],

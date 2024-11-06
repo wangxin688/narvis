@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -92,7 +93,11 @@ func GinRecovery(logger *zap.Logger, logStack bool) gin.HandlerFunc {
 					zap.String("request", string(dump)),
 					zap.String("stack", stack),
 				)
-				c.AbortWithStatus(http.StatusInternalServerError)
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+					"code":    500,
+					"message": fmt.Sprintf("Internal Server Error, requestId: %s", global.XRequestId.Get()),
+					"data":    err,
+				})
 			}
 		}()
 		c.Next()
