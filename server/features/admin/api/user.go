@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/wangxin688/narvis/server/features/admin/biz"
 	"github.com/wangxin688/narvis/server/features/admin/schemas"
+	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -36,6 +37,27 @@ func createUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newUser.Id})
+}
+
+// @Tags Admin
+// @Summary Get user me
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Success 200 {object} schemas.User
+// @Router /admin/users/me [get]
+func getUserMe(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	user, err := biz.NewUserService().GetUserMe(global.UserId.Get())
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
 
 // @Tags Admin

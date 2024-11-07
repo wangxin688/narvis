@@ -2295,6 +2295,22 @@ paths:
       summary: Update user
       tags:
       - Admin
+  /admin/users/me:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.User'
+      security:
+      - BearerAuth: []
+      summary: Get user me
+      tags:
+      - Admin
   /alert/action-logs:
     post:
       consumes:
