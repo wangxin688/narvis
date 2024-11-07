@@ -29,7 +29,7 @@ jobs:
         if: startsWith(github.event.release.tag_name, 'server-') || startsWith(github.event.release.tag_name, 'all-')
         run: |
           docker buildx build --platform linux/amd64,linux/arm64 \
-            -t jeffry688/narvis-server:${{ github.event.release.tag_name }} \
+            -t jeffry688/narvis-server:${{ github.event.release.tag_name }} jeffry688/narvis-server:latest \
             -f server/Dockerfile . \
             --build-arg GOFLAGS=-ldflags="-w -s" \
             --push
@@ -38,7 +38,7 @@ jobs:
         if: startsWith(github.event.release.tag_name, 'proxy-') || startsWith(github.event.release.tag_name, 'all-')
         run: |
           docker buildx build --platform linux/amd64,linux/arm64 \
-            -t jeffry688/narvis-proxy:${{ github.event.release.tag_name }} \
+            -t jeffry688/narvis-proxy:${{ github.event.release.tag_name }} jeffry688/narvis-proxy:latest \
             -f client/Dockerfile . \
             --build-arg GOFLAGS=-ldflags="-w -s" \
             --push
@@ -47,7 +47,7 @@ jobs:
         if: startsWith(github.event.release.tag_name, 'bootstrap-') || startsWith(github.event.release.tag_name, 'all-')
         run: |
           docker buildx build --platform linux/amd64,linux/arm64 \
-            -t jeffry688/narvis-bootstrap:${{ github.event.release.tag_name }} \
+            -t jeffry688/narvis-bootstrap:${{ github.event.release.tag_name }} jeffry688/narvis-bootstrap:latest \
             -f server/cmd/bootstrap/Dockerfile . \
             --build-arg GOFLAGS=-ldflags="-w -s" \
             --push
