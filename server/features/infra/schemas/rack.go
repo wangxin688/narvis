@@ -39,3 +39,22 @@ type RackShort struct {
 }
 
 type RackShortList []RackShort
+
+type RackElevation struct {
+	Id                 string               `json:"id"`
+	Name               string               `json:"name"`
+	SerialNumber       *string              `json:"serialNumber"`
+	UHeight            uint8                `json:"uHeight"`
+	SiteId             string               `json:"siteId"`
+	Items              []*RackElevationItem `json:"items"`
+	AvailablePositions []uint8              `json:"availablePositions"`
+}
+
+type RackElevationItem struct {
+	Id              string  `json:"deviceId"`
+	Name            string  `json:"name"`
+	ManagementIp    string  `json:"managementIp"`
+	DeviceRole      string  `json:"deviceRole"`
+	OperatingStatus string  `json:"operatingStatus"`
+	Position        []uint8 `json:"position"`
+}

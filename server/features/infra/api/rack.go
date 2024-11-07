@@ -45,7 +45,7 @@ func createRack(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param rackId path string true "rackId"
-// @Success 200 {object} schemas.Rack
+// @Success 200 {object} schemas.RackElevation
 // @Router /infra/racks/{id} [get]
 func getRack(c *gin.Context) {
 	var err error
@@ -58,7 +58,7 @@ func getRack(c *gin.Context) {
 	if err := helpers.ValidateUuidString(rackId); err != nil {
 		return
 	}
-	rack, err := biz.NewRackService().GetRackByID(rackId)
+	rack, err := biz.NewRackService().GetRackElevation(rackId)
 	if err != nil {
 		return
 	}

@@ -15,6 +15,7 @@ func RegisterAdminRoutes(e *gin.Engine) {
 		router.GET("/users", listUsers)
 		router.GET("/users/me", getUserMe)
 		router.GET("/users/:id", getUser)
+		router.PUT("/users/me", updateUserMe)
 		router.PUT("/users/:id", updateUser)
 		router.DELETE("/users/:id", deleteUser)
 

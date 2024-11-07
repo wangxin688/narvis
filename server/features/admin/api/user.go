@@ -116,6 +116,37 @@ func listUsers(c *gin.Context) {
 }
 
 // @Tags Admin
+// @Summary Update user me
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param user body schemas.UserUpdateMe true "user"
+// @Success 200 {object} ts.IdResponse
+// @Router /admin/users/me [put]
+func updateUserMe(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var user schemas.UserUpdateMe
+	if err = c.ShouldBindJSON(&user); err != nil {
+		return
+	}
+	err = biz.NewUserService().UpdateUser(global.UserId.Get(), &schemas.UserUpdate{
+		Password: user.Password,
+		Email:    user.Email,
+		Avatar:   user.Avatar,
+		Username: user.Username,
+	})
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdResponse{Id: global.UserId.Get()})
+}
+
+// @Tags Admin
 // @Summary Update user
 // @Security BearerAuth
 // @Accept json

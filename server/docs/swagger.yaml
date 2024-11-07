@@ -1354,6 +1354,44 @@ definitions:
     required:
     - name
     type: object
+  schemas.RackElevation:
+    properties:
+      availablePositions:
+        items:
+          type: integer
+        type: array
+      id:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/schemas.RackElevationItem'
+        type: array
+      name:
+        type: string
+      serialNumber:
+        type: string
+      siteId:
+        type: string
+      uHeight:
+        type: integer
+    type: object
+  schemas.RackElevationItem:
+    properties:
+      deviceId:
+        type: string
+      deviceRole:
+        type: string
+      managementIp:
+        type: string
+      name:
+        type: string
+      operatingStatus:
+        type: string
+      position:
+        items:
+          type: integer
+        type: array
+    type: object
   schemas.RackUpdate:
     properties:
       name:
@@ -1936,6 +1974,17 @@ definitions:
       username:
         type: string
     type: object
+  schemas.UserUpdateMe:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   security.AccessToken:
     properties:
       accessToken:
@@ -2316,6 +2365,28 @@ paths:
       security:
       - BearerAuth: []
       summary: Get user me
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.UserUpdateMe'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user me
       tags:
       - Admin
   /alert/action-logs:
@@ -3954,7 +4025,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/schemas.Rack'
+            $ref: '#/definitions/schemas.RackElevation'
       security:
       - BearerAuth: []
       summary: Get rack

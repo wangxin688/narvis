@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"github.com/samber/lo"
+	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
@@ -11,6 +12,7 @@ import (
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
+	"go.uber.org/zap"
 )
 
 type RackService struct{}
@@ -211,6 +213,77 @@ func (r *RackService) GetRackDevices(rackIds []string) (map[string]*models.Devic
 	result := make(map[string]*models.Device, 0)
 	for _, device := range devices {
 		result[device.Id] = device
+	}
+	return result, nil
+}
+
+func (r *RackService) GetRackElevation(rackId string) (*schemas.RackElevation, error) {
+	rack, err := r.GetRackByID(rackId)
+	if err != nil {
+		return nil, err
+	}
+	rackElevation, err := r.getRackElevation(rackId)
+	if err != nil {
+		return nil, err
+	}
+	usedPositions := make([]uint8, 0)
+	for _, item := range rackElevation {
+		usedPositions = append(usedPositions, item.Position...)
+	}
+	totalPositions := make([]uint8, 0)
+	for i := uint8(1); i <= rack.UHeight; i++ {
+		totalPositions = append(totalPositions, i)
+	}
+	availablePositions := lo.Without(totalPositions, usedPositions...)
+	slices.Sort(availablePositions)
+	return &schemas.RackElevation{
+		Id:                 rack.Id,
+		Name:               rack.Name,
+		SerialNumber:       rack.SerialNumber,
+		UHeight:            rack.UHeight,
+		SiteId:             rack.SiteId,
+		Items:              rackElevation,
+		AvailablePositions: availablePositions,
+	}, nil
+}
+
+func (r *RackService) getRackElevation(rackId string) ([]*schemas.RackElevationItem, error) {
+	orgId := global.OrganizationId.Get()
+	devices, err := gen.Device.Select(
+		gen.Device.Id,
+		gen.Device.Name,
+		gen.AP.DeviceRole,
+		gen.Device.RackPosition,
+		gen.Device.ManagementIp,
+	).Where(gen.Device.RackId.Eq(rackId), gen.Device.OrganizationId.Eq(orgId)).Find()
+	if err != nil {
+		return nil, err
+	}
+	if len(devices) == 0 {
+		return nil, nil
+	}
+	deviceIds := lo.Map(devices, func(device *models.Device, _ int) string {
+		return device.Id
+	})
+
+	opStatus, err := GetDeviceOpStatus(deviceIds, orgId)
+	if err != nil {
+		core.Logger.Error("[infraDeviceService]: failed to get device op status", zap.Error(err))
+		return nil, err
+	}
+	result := make([]*schemas.RackElevationItem, 0)
+	for _, device := range devices {
+		if device.RackPosition != nil {
+			ps, _ := infra_utils.ParseUint8s(*device.RackPosition)
+			result = append(result, &schemas.RackElevationItem{
+				Id:              device.Id,
+				Name:            device.Name,
+				DeviceRole:      device.DeviceRole,
+				ManagementIp:    device.ManagementIp,
+				Position:        ps,
+				OperatingStatus: opStatus[device.Id],
+			})
+		}
 	}
 	return result, nil
 }

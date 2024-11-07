@@ -456,6 +456,42 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update user me",
+                "parameters": [
+                    {
+                        "description": "user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.UserUpdateMe"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
             }
         },
         "/admin/users/{id}": {
@@ -3154,7 +3190,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/schemas.Rack"
+                            "$ref": "#/definitions/schemas.RackElevation"
                         }
                     }
                 }
@@ -7074,6 +7110,64 @@ const docTemplate = `{
                 }
             }
         },
+        "schemas.RackElevation": {
+            "type": "object",
+            "properties": {
+                "availablePositions": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/schemas.RackElevationItem"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "uHeight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "schemas.RackElevationItem": {
+            "type": "object",
+            "properties": {
+                "deviceId": {
+                    "type": "string"
+                },
+                "deviceRole": {
+                    "type": "string"
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operatingStatus": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "schemas.RackUpdate": {
             "type": "object",
             "properties": {
@@ -7932,6 +8026,23 @@ const docTemplate = `{
                         "Active",
                         "Inactive"
                     ]
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.UserUpdateMe": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 },
                 "username": {
                     "type": "string"
