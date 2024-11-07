@@ -1213,6 +1213,13 @@ definitions:
     - password
     - username
     type: object
+  schemas.Oauth2RefreshRequest:
+    properties:
+      refreshToken:
+        type: string
+    required:
+    - refreshToken
+    type: object
   schemas.Organization:
     properties:
       active:
@@ -4865,6 +4872,23 @@ paths:
           schema:
             $ref: '#/definitions/security.AccessToken'
       summary: Username Password Login
+      tags:
+      - Auth
+  /login/refresh:
+    post:
+      parameters:
+      - description: Generate refresh token
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.Oauth2RefreshRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/security.AccessToken'
+      summary: Generate refresh token
       tags:
       - Auth
   /monitor/time-series:

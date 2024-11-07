@@ -32,4 +32,5 @@ func RegisterLoginRoutes(e *gin.Engine) {
 	{
 		router.POST("/password", passwordLogin)
 	}
+	router.POST("/refresh", refreshToken, middleware.AuthMiddleware())
 }

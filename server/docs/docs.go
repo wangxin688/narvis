@@ -4675,6 +4675,33 @@ const docTemplate = `{
                 }
             }
         },
+        "/login/refresh": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Generate refresh token",
+                "parameters": [
+                    {
+                        "description": "Generate refresh token",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Oauth2RefreshRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/security.AccessToken"
+                        }
+                    }
+                }
+            }
+        },
         "/monitor/time-series": {
             "get": {
                 "security": [
@@ -6839,6 +6866,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.Oauth2RefreshRequest": {
+            "type": "object",
+            "required": [
+                "refreshToken"
+            ],
+            "properties": {
+                "refreshToken": {
                     "type": "string"
                 }
             }

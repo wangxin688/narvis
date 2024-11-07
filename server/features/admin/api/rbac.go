@@ -32,5 +32,28 @@ func passwordLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, token)
 }
 
+// @Tags Auth
+// @Summary Generate refresh token
+// @param body body schemas.Oauth2RefreshRequest true "Generate refresh token"
+// @Success 200 {object} security.AccessToken
+// @Router /login/refresh [post]
+func refreshToken(c *gin.Context) {
+	var req schemas.Oauth2RefreshRequest
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	if err = c.ShouldBind(&req); err != nil {
+		return
+	}
+	token, err := biz.NewRBACService().CreateRefreshToken(req.RefreshToken)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, token)
+}
+
 
 // google auth https://console.cloud.google.com/apis/credentials/consent/edit;newAppInternalUser=false?hl=zh-cn&project=smart-seer-431515-a0

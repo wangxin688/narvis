@@ -6,3 +6,7 @@ type Oauth2PasswordRequest struct {
 	EnterpriseCode *string `form:"enterpriseCode" binding:"omitempty"`
 	DomainName     *string `form:"domainName" binding:"omitempty"`
 }
+
+type Oauth2RefreshRequest struct {
+	RefreshToken string `form:"refreshToken" binding:"required"`
+}

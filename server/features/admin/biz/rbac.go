@@ -67,3 +67,7 @@ func (r *RBACService) PasswordLogin(login schemas.Oauth2PasswordRequest) (*secur
 	}
 	return nil, errors.NewError(errors.CodePasswordIncorrect, errors.MsgPasswordIncorrect)
 }
+
+func (r *RBACService) CreateRefreshToken(refreshToken string) (*security.AccessToken, error) {
+	return security.GenerateRefreshTokenResponse(refreshToken), nil
+}
