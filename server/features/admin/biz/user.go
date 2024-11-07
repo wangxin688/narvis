@@ -70,6 +70,7 @@ func (u *UserService) GetUserById(id string) (*schemas.User, error) {
 		Username: user.Username,
 		Email:    user.Email,
 		AuthType: user.AuthType,
+		Avatar:   user.Avatar,
 		Role: schemas.RoleShort{
 			Id:   user.Role.Id,
 			Name: user.Role.Name,
