@@ -18,7 +18,12 @@ func licenseUsage(orgId string) (uint32, error) {
 	if err != nil {
 		return 0, err
 	}
-	return uint32(deviceCount) + uint32(apCount), nil
+	serverCount, err := gen.Server.Where(
+		gen.Server.OrganizationId.Eq(global.OrganizationId.Get())).Count()
+	if err != nil {
+		return 0, err
+	}
+	return uint32(deviceCount) + uint32(apCount) + uint32(serverCount), nil
 }
 
 // LicenseUsageDepends checks if the new device can be added to the organization

@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// @Tags Infra
+// @Tags Infra.Site
 // @Summary Create new site
 // @Description Create new site
 // @Security BearerAuth
@@ -48,7 +48,7 @@ func createSite(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newSite})
 }
 
-// @Tags Infra
+// @Tags Infra.Site
 // @Summary Get site
 // @Description Get site
 // @Security BearerAuth
@@ -75,7 +75,7 @@ func getSite(c *gin.Context) {
 	c.JSON(http.StatusOK, site)
 }
 
-// @Tags Infra
+// @Tags Infra.Site
 // @Summary List sites
 // @Description List sites
 // @Security BearerAuth
@@ -105,7 +105,7 @@ func listSites(c *gin.Context) {
 	})
 }
 
-// @Tags Infra
+// @Tags Infra.Site
 // @Summary Update site
 // @Description Update site
 // @Security BearerAuth
@@ -140,7 +140,7 @@ func updateSite(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: siteId})
 }
 
-// @Tags Infra
+// @Tags Infra.Site
 // @Summary Delete site
 // @Description Delete site
 // @Security BearerAuth

@@ -17,6 +17,7 @@ import (
 	"github.com/wangxin688/narvis/server/features/organization/hooks"
 	"github.com/wangxin688/narvis/server/features/organization/schemas"
 	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/pkg/zbx"
 	"github.com/wangxin688/narvis/server/pkg/zbx/zschema"
@@ -36,16 +37,24 @@ func main() {
 	}()
 	core.SetUpConfig()
 	core.SetUpLogger()
-	gen.SetDefault(connectDB())
+	db := connectDB()
+	gen.SetDefault(db)
 	initMacAddress()
 	initZbx()
 	initRabbitMQ()
+	err = infra.AutoMigration(db)
+	if err != nil {
+		return
+	}
 	if core.Settings.Env == "on_prem" {
 		orgId := initOrganization()
 		core.SetUpConfig()
 		initProxy(orgId)
-		initNarvisCliCredential(orgId)  //nolint: errcheck
-		initNarvisSnmpCredential(orgId) //nolint: errcheck
+		initNarvisCliCredential(orgId)        //nolint: errcheck
+		initNarvisSnmpCredential(orgId)       //nolint: errcheck
+		initNarvisServerCredential(orgId)     //nolint: errcheck
+		initNarvisServerSnmpCredential(orgId) //nolint: errcheck
+
 	}
 	core.SetUpConfig()
 	err = initZbxTemplates()
@@ -686,6 +695,56 @@ func initNarvisCliCredential(orgId string) error {
 		return err
 	}
 	core.Logger.Info("[bootstrap]: client credential created", zap.String("id", clientCred.Id))
+	return nil
+}
+
+func initNarvisServerCredential(orgId string) error {
+	cred, err := gen.ServerCredential.Where(gen.ServerCredential.OrganizationId.Eq(orgId)).Find()
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to get server credential", zap.Error(err))
+		return err
+	}
+	if len(cred) > 0 {
+		core.Logger.Info("[bootstrap]: server credential already exists", zap.String("id", cred[0].Id))
+		return nil
+	}
+	serverCred := &models.ServerCredential{
+		OrganizationId: orgId,
+		Username:       core.Settings.BootstrapConfig.CliUser,
+		Password:       &core.Settings.BootstrapConfig.CliPassword,
+	}
+	err = gen.ServerCredential.Create(serverCred)
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to create server credential", zap.Error(err))
+		return err
+	}
+	core.Logger.Info("[bootstrap]: server credential created", zap.String("id", serverCred.Id))
+	return nil
+}
+
+func initNarvisServerSnmpCredential(orgId string) error {
+	cred, err := gen.ServerSnmpCredential.Where(gen.ServerSnmpCredential.OrganizationId.Eq(orgId)).Find()
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to get server snmp credential", zap.Error(err))
+		return err
+	}
+	if len(cred) > 0 {
+		core.Logger.Info("[bootstrap]: server snmp credential already exists", zap.String("id", cred[0].Id))
+		return nil
+	}
+	serverSnmpCred := &models.ServerSnmpCredential{
+		OrganizationId: orgId,
+		Community:      core.Settings.BootstrapConfig.SnmpCommunity,
+		MaxRepetitions: 50,
+		Timeout:        core.Settings.BootstrapConfig.SnmpTimeout,
+		Port:           core.Settings.BootstrapConfig.SnmpPort,
+	}
+	err = gen.ServerSnmpCredential.Create(serverSnmpCred)
+	if err != nil {
+		core.Logger.Error("[bootstrap]: failed to create server snmp credential", zap.Error(err))
+		return err
+	}
+	core.Logger.Info("[bootstrap]: server snmp credential created", zap.String("id", serverSnmpCred.Id))
 	return nil
 }
 

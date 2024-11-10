@@ -6,10 +6,14 @@ import (
 	"testing"
 
 	"github.com/gosnmp/gosnmp"
+	"github.com/wangxin688/narvis/client/config"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+	"github.com/wangxin688/narvis/client/utils/logger"
 )
 
 func TestDispatcher(t *testing.T) {
+	logger.SetUpLogger()
+	config.SetupConfig()
 	community := "public"
 	dispatcher := NewDispatcher([]string{"127.0.0.1"}, factory.BaseSnmpConfig{
 		Port:           161,

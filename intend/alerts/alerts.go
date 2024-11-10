@@ -38,6 +38,9 @@ const (
 	NodePingTimeout          AlertNameEnum = "unavailable_by_icmp_ping"
 	ApDown                   AlertNameEnum = "wireless_access_point_down"
 	Unknown                  AlertNameEnum = "unknown"
+	HighSwapSpaceUtilization AlertNameEnum = "high_swap_space_utilization"
+	HighSystemLoadAverage    AlertNameEnum = "high_system_load_average"
+	HighINodeUtilization     AlertNameEnum = "high_inode_utilization"
 )
 
 type AlertName struct {
@@ -247,6 +250,33 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 			},
 			Severity: SeverityInfo,
 		},
+		HighSwapSpaceUtilization: {
+			Name:  HighSwapSpaceUtilization,
+			Title: common.I18n{En: "High swap space utilization", Zh: "swap空间占用率高"},
+			Suggestion: common.I18n{
+				En: "1.Check swap space utilization",
+				Zh: "1. 检查swap空间占用率",
+			},
+			Severity: SeverityWarning,
+		},
+		HighSystemLoadAverage: {
+			Name:  HighSystemLoadAverage,
+			Title: common.I18n{En: "High system load average", Zh: "系统负载平均值高"},
+			Suggestion: common.I18n{
+				En: "1.Check system load average",
+				Zh: "1. 检查系统负载平均值",
+			},
+			Severity: SeverityWarning,
+		},
+		HighINodeUtilization: {
+			Name:  HighINodeUtilization,
+			Title: common.I18n{En: "High inode utilization", Zh: "Inode利用率高"},
+			Suggestion: common.I18n{
+				En: "1.Check inode utilization",
+				Zh: "1. 检查inode占用率",
+			},
+			Severity: SeverityWarning,
+		},
 	}
 	return alertNameMeta
 }
@@ -290,6 +320,9 @@ func GetAlertEnumNames() []AlertNameEnum {
 		NodePingTimeout,
 		ApDown,
 		Unknown,
+		HighSwapSpaceUtilization,
+		HighSystemLoadAverage,
+		HighINodeUtilization,
 	}
 }
 

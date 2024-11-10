@@ -11,7 +11,7 @@ import (
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
-// @Tags Infra
+// @Tags Infra.Rack
 // @Summary Create new rack
 // @Description Create new rack
 // @Security BearerAuth
@@ -38,13 +38,13 @@ func createRack(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newRack})
 }
 
-// @Tags Infra
+// @Tags Infra.Rack
 // @Summary Get rack
 // @Description Get rack
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param rackId path string true "rackId"
+// @Param id path string true "rackId"
 // @Success 200 {object} schemas.RackElevation
 // @Router /infra/racks/{id} [get]
 func getRack(c *gin.Context) {
@@ -54,7 +54,7 @@ func getRack(c *gin.Context) {
 			errors.ResponseErrorHandler(c, err)
 		}
 	}()
-	rackId := c.Param("rackId")
+	rackId := c.Param("id")
 	if err := helpers.ValidateUuidString(rackId); err != nil {
 		return
 	}
@@ -65,7 +65,7 @@ func getRack(c *gin.Context) {
 	c.JSON(http.StatusOK, rack)
 }
 
-// @Tags Infra
+// @Tags Infra.Rack
 // @Summary List racks
 // @Description List racks
 // @Security BearerAuth
@@ -95,13 +95,13 @@ func listRacks(c *gin.Context) {
 	})
 }
 
-// @Tags Infra
+// @Tags Infra.Rack
 // @Summary Update rack
 // @Description Update rack
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param rackId path string true "rackId"
+// @Param id path string true "rackId"
 // @Param rack body schemas.RackUpdate true "rack"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/racks/{id} [put]
@@ -112,7 +112,7 @@ func updateRack(c *gin.Context) {
 			errors.ResponseErrorHandler(c, err)
 		}
 	}()
-	rackId := c.Param("rackId")
+	rackId := c.Param("id")
 	var rack schemas.RackUpdate
 	if err = c.ShouldBindJSON(&rack); err != nil {
 		return
@@ -124,13 +124,13 @@ func updateRack(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: rackId})
 }
 
-// @Tags Infra
+// @Tags Infra.Rack
 // @Summary Delete rack
 // @Description Delete rack
 // @Security BearerAuth
 // @Accept json
 // @Produce json
-// @Param rackId path string true "rackId"
+// @Param id path string true "rackId"
 // @Success 200 {object} ts.IdResponse
 // @Router /infra/racks/{id} [delete]
 func deleteRack(c *gin.Context) {
@@ -140,7 +140,7 @@ func deleteRack(c *gin.Context) {
 			errors.ResponseErrorHandler(c, err)
 		}
 	}()
-	rackId := c.Param("rackId")
+	rackId := c.Param("id")
 	if err = helpers.ValidateUuidString(rackId); err != nil {
 		return
 	}

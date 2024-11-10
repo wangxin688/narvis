@@ -101,9 +101,9 @@ func (r *RackService) DeleteRack(rackId string) error {
 	return err
 }
 
-func (r *RackService) GetRackByID(rackID string) (*schemas.Rack, error) {
+func (r *RackService) GetRackById(rackId string) (*schemas.Rack, error) {
 	rack, err := gen.Rack.Select().Where(
-		gen.Rack.Id.Eq(rackID),
+		gen.Rack.Id.Eq(rackId),
 		gen.Rack.OrganizationId.Eq(global.OrganizationId.Get()),
 	).First()
 	if err != nil {
@@ -160,18 +160,28 @@ func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *[]*schemas.R
 	return count, &res, nil
 }
 
-func (r *RackService) ValidateDeviceCreateRackReservation(rackId string, uHeight uint8, positions []uint8) bool {
+func (r *RackService) ValidateCreateRackReservation(rackId string, uHeight uint8, positions []uint8) bool {
 	devices, err := gen.Device.Select(gen.Device.RackPosition).Where(gen.Device.RackId.Eq(rackId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).Find()
 	if err != nil {
 		return false
 	}
-	if len(devices) == 0 && len(positions) <= int(uHeight) {
+	servers, err := gen.Server.Select(gen.Server.RackPosition).Where(gen.Server.RackId.Eq(rackId), gen.Server.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+	if err != nil {
+		return false
+	}
+	if len(devices)+len(servers) == 0 && len(positions) <= int(uHeight) {
 		return true
 	}
 	usedPositions := make([]uint8, 0)
 	for _, device := range devices {
 		if device.RackPosition != nil {
 			ps, _ := infra_utils.ParseUint8s(*device.RackPosition)
+			usedPositions = append(usedPositions, ps...)
+		}
+	}
+	for _, server := range servers {
+		if server.RackPosition != nil {
+			ps, _ := infra_utils.ParseUint8s(*server.RackPosition)
 			usedPositions = append(usedPositions, ps...)
 		}
 	}
@@ -218,7 +228,7 @@ func (r *RackService) GetRackDevices(rackIds []string) (map[string]*models.Devic
 }
 
 func (r *RackService) GetRackElevation(rackId string) (*schemas.RackElevation, error) {
-	rack, err := r.GetRackByID(rackId)
+	rack, err := r.GetRackById(rackId)
 	if err != nil {
 		return nil, err
 	}

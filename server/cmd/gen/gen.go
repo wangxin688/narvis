@@ -44,7 +44,7 @@ type Filter interface {
 
 func main() {
 	g := gen.NewGenerator(gen.Config{
-		OutPath:        "../../dal/gen",
+		OutPath:        "dal/gen",
 		Mode:           gen.WithDefaultQuery | gen.WithQueryInterface | gen.WithoutContext,
 		FieldNullable:  true,
 		FieldCoverable: true,
@@ -72,6 +72,9 @@ func main() {
 		&models.AP{},
 		&models.MacAddress{},
 		&models.ScanDevice{},
+		&models.Server{},
+		&models.ServerCredential{},
+		&models.ServerSnmpCredential{},
 		&models.Circuit{},
 		&models.Prefix{},
 		&models.IpAddress{},

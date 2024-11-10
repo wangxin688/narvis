@@ -45,6 +45,7 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 		Floor:          device.Floor,
 		SiteId:         device.SiteId,
 		OrganizationId: orgId,
+		Description:    device.Description,
 	}
 	if device.RackId != nil && device.RackPosition != nil {
 		newDevice.RackId = device.RackId
@@ -53,11 +54,11 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 			return "", err
 		}
 		rackService := NewRackService()
-		rack, err := rackService.GetRackByID(*device.RackId)
+		rack, err := rackService.GetRackById(*device.RackId)
 		if err != nil {
 			return "", err
 		}
-		if !NewRackService().ValidateDeviceCreateRackReservation(*device.RackId, rack.UHeight, *device.RackPosition) {
+		if !rackService.ValidateCreateRackReservation(*device.RackId, rack.UHeight, *device.RackPosition) {
 			return "", errors.NewError(errors.CodeRackPositionOccupied, errors.MsgRackPositionOccupied)
 		}
 		newDevice.RackPosition = &position

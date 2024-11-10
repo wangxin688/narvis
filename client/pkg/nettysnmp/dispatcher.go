@@ -171,7 +171,15 @@ func (d *Dispatcher) SshReachable(address string) bool {
 		logger.Logger.Info("[dispatcher]: SshReachable failed", zap.String("target", address), zap.Error(err))
 		return false
 	}
-	defer conn.Close()
+	if conn == nil {
+		logger.Logger.Info("[dispatcher]: SshReachable failed", zap.String("target", address), zap.String("reason", "connection is nil"))
+		return false
+	}
+	defer func() {
+		if conn != nil {
+			_ = conn.Close()
+		}
+	}()
 	return true
 }
 

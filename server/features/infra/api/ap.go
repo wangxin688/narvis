@@ -11,7 +11,7 @@ import (
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
-// @Tags Infra
+// @Tags Infra.AP
 // @Summary Get ap
 // @Description get ap
 // @Security BearerAuth
@@ -41,7 +41,7 @@ func getAp(c *gin.Context) {
 
 }
 
-// @Tags Infra
+// @Tags Infra.AP
 // @Summary List aps
 // @Description List aps
 // @Security BearerAuth
@@ -68,7 +68,7 @@ func listAp(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.ListResponse{Total: count, Results: aps})
 }
 
-// @Tags Infra
+// @Tags Infra.AP
 // @Summary Update ap
 // @Description Update ap
 // @Security BearerAuth
@@ -100,7 +100,7 @@ func updateAp(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: apId})
 }
 
-// @Tags Infra
+// @Tags Infra.AP
 // @Summary Batch Update ap
 // @Description Batch Update ap
 // @Security BearerAuth
@@ -127,7 +127,7 @@ func batchUpdateAp(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdsResponse{Ids: ids})
 }
 
-// @Tags Infra
+// @Tags Infra.AP
 // @Summary Batch Delete ap
 // @Description Batch Delete ap
 // @Security BearerAuth
@@ -154,7 +154,7 @@ func batchDeleteAp(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdsResponse{Ids: ids})
 }
 
-// @Tags Infra
+// @Tags Infra.AP
 // @Summary Delete ap
 // @Description Delete ap
 // @Security BearerAuth

@@ -14,7 +14,7 @@ import (
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Scan Device Create
 // @Description Scan Device Create
 // @Security BearerAuth
@@ -43,7 +43,7 @@ func createScanDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, schemas.ScanDeviceCreateResponse{TaskIds: taskIds})
 }
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Scan Device Update
 // @Description Scan Device Update
 // @Security BearerAuth
@@ -75,7 +75,7 @@ func updateScanDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Scan Device Batch Update
 // @Description Scan Device Batch Update
 // @Security BearerAuth
@@ -102,7 +102,7 @@ func batchUpdateScanDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdsResponse{Ids: ids})
 }
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Scan Device List
 // @Description Scan Device List
 // @Security BearerAuth
@@ -129,7 +129,7 @@ func listScanDevices(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.ListResponse{Total: count, Results: scanDevices})
 }
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Scan Device Get
 // @Description Scan Device Get
 // @Security BearerAuth
@@ -156,7 +156,7 @@ func getScanDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, scanDevice)
 }
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Scan Device Delete
 // @Description Scan Device Delete
 // @Security BearerAuth
@@ -183,7 +183,7 @@ func deleteScanDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Scan Device Batch Delete
 // @Description Scan Device Batch Delete
 // @Security BearerAuth
@@ -210,7 +210,7 @@ func batchDeleteScanDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdsResponse{Ids: ids})
 }
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Scan AP
 // @Description Scan AP
 // @Security BearerAuth
@@ -238,7 +238,7 @@ func createScanAP(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdsResponse{Ids: taskIds})
 }
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Scan device details
 // @Description Scan device details
 // @Security BearerAuth
@@ -265,7 +265,7 @@ func scanDeviceDetails(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdsResponse{Ids: taskIds})
 }
 
-// @Tags Infra
+// @Tags Infra.ScanDevice
 // @Summary Device Configuration backup
 // @Description Device Configuration backup
 // @Security BearerAuth

@@ -53,6 +53,24 @@ func circuitTemplateSelect() (string, error) {
 	return template.TemplateId, nil
 }
 
+func serverTemplateSelect(osVersion string) (string, error) {
+	templateName := ""
+	if strings.Contains(strings.ToLower(osVersion), "windows") {
+		templateName = "template_windows_by_icmp" // not support yet
+	} else {
+		templateName = "template_linux_by_icmp"
+	}
+
+	template, err := gen.Template.Where(
+		gen.Template.TemplateName.Eq(templateName),
+	).First()
+	if err != nil {
+		core.Logger.Error("templateChoice failed", zap.Error(err))
+		return "", err
+	}
+	return template.TemplateId, nil
+}
+
 func circuitHostTemplateSelect() (string, error) {
 	template, err := gen.Template.Where(
 		gen.Template.TemplateName.Eq("template_interface_circuit"),
@@ -98,6 +116,19 @@ func snmpV2CommunitySelect(deviceId string, orgId string) (community string, por
 			return "{$SNMP_COMMUNITY}", 161
 		}
 		return getGlobalCommunityMacroName(enterpriseCode), 161
+	}
+	return cred[0].Community, cred[0].Port
+}
+
+func serverSnmpV2CommunitySelect(serverId string) (community string, port uint16) {
+	cred, err := gen.ServerSnmpCredential.Where(
+		gen.ServerSnmpCredential.ServerId.Eq(serverId)).Find()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpV2CommunitySelect]: serverSnmpV2CommunitySelect for server failed with server %s", serverId), zap.Error(err))
+		return "", 161
+	}
+	if len(cred) == 0 {
+		return "{$SNMP_COMMUNITY}", 161
 	}
 	return cred[0].Community, cred[0].Port
 }
@@ -171,6 +202,20 @@ func genCircuitTags(circuit *models.Circuit) *[]zschema.Tag {
 	tags = append(tags, zschema.Tag{
 		Tag:   "organizationId",
 		Value: circuit.OrganizationId,
+	})
+	return &tags
+}
+
+func genServerTags(server *models.Server) *[]zschema.Tag {
+
+	tags := make([]zschema.Tag, 0)
+	tags = append(tags, zschema.Tag{
+		Tag:   "name",
+		Value: server.Name,
+	})
+	tags = append(tags, zschema.Tag{
+		Tag:   "organizationId",
+		Value: server.OrganizationId,
 	})
 	return &tags
 }

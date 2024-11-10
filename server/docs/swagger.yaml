@@ -35,6 +35,9 @@ definitions:
     - unavailable_by_icmp_ping
     - wireless_access_point_down
     - unknown
+    - high_swap_space_utilization
+    - high_system_load_average
+    - high_inode_utilization
     type: string
     x-enum-varnames:
     - HighCpuUtilization
@@ -58,6 +61,9 @@ definitions:
     - NodePingTimeout
     - ApDown
     - Unknown
+    - HighSwapSpaceUtilization
+    - HighSystemLoadAverage
+    - HighINodeUtilization
   alerts.SeverityEnum:
     enum:
     - P1
@@ -1606,6 +1612,129 @@ definitions:
     - siteId
     - status
     type: object
+  schemas.Server:
+    properties:
+      cpu:
+        type: integer
+      createdAt:
+        type: string
+      description:
+        type: string
+      disk:
+        description: MB
+        type: integer
+      healthStatus:
+        type: string
+      id:
+        type: string
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      memory:
+        description: MB
+        type: integer
+      monitorId:
+        type: string
+      name:
+        type: string
+      operStatus:
+        type: string
+      osVersion:
+        type: string
+      rackId:
+        type: string
+      rackPosition:
+        items:
+          type: integer
+        type: array
+      serialNumber:
+        type: string
+      siteId:
+        type: string
+      status:
+        type: string
+      templateId:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  schemas.ServerCreate:
+    properties:
+      cpu:
+        type: integer
+      description:
+        type: string
+      disk:
+        description: MB
+        type: integer
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      memory:
+        description: MB
+        type: integer
+      name:
+        type: string
+      osVersion:
+        type: string
+      rackId:
+        type: string
+      rackPosition:
+        items:
+          type: integer
+        type: array
+      siteId:
+        type: string
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
+    required:
+    - cpu
+    - disk
+    - managementIp
+    - memory
+    - name
+    - siteId
+    - status
+    type: object
+  schemas.ServerUpdate:
+    properties:
+      cpu:
+        type: integer
+      description:
+        type: string
+      disk:
+        description: MB
+        type: integer
+      managementIp:
+        type: string
+      manufacturer:
+        type: string
+      memory:
+        description: MB
+        type: integer
+      name:
+        type: string
+      osVersion:
+        type: string
+      rackId:
+        type: string
+      rackPosition:
+        items:
+          type: integer
+        type: array
+      serialNumber:
+        type: string
+      status:
+        enum:
+        - Active
+        - Inactive
+        type: string
+    type: object
   schemas.SiteCreate:
     properties:
       address:
@@ -2956,7 +3085,7 @@ paths:
       - BearerAuth: []
       summary: Batch Delete ap
       tags:
-      - Infra
+      - Infra.AP
     get:
       consumes:
       - application/json
@@ -3040,7 +3169,7 @@ paths:
       - BearerAuth: []
       summary: List aps
       tags:
-      - Infra
+      - Infra.AP
     put:
       consumes:
       - application/json
@@ -3065,7 +3194,7 @@ paths:
       - BearerAuth: []
       summary: Batch Update ap
       tags:
-      - Infra
+      - Infra.AP
   /infra/aps/{id}:
     delete:
       consumes:
@@ -3088,7 +3217,7 @@ paths:
       - BearerAuth: []
       summary: Delete ap
       tags:
-      - Infra
+      - Infra.AP
     get:
       consumes:
       - application/json
@@ -3110,7 +3239,7 @@ paths:
       - BearerAuth: []
       summary: Get ap
       tags:
-      - Infra
+      - Infra.AP
     put:
       consumes:
       - application/json
@@ -3138,7 +3267,7 @@ paths:
       - BearerAuth: []
       summary: Update ap
       tags:
-      - Infra
+      - Infra.AP
   /infra/circuits:
     get:
       description: List circuits
@@ -3253,7 +3382,7 @@ paths:
       - BearerAuth: []
       summary: List circuits
       tags:
-      - Infra
+      - Infra.Circuit
     post:
       consumes:
       - application/json
@@ -3276,7 +3405,7 @@ paths:
       - BearerAuth: []
       summary: Create new circuit
       tags:
-      - Infra
+      - Infra.Circuit
   /infra/circuits/{id}:
     delete:
       consumes:
@@ -3297,7 +3426,7 @@ paths:
       security:
       - BearerAuth: []
       tags:
-      - Infra
+      - Infra.Circuit
     get:
       consumes:
       - application/json
@@ -3319,7 +3448,7 @@ paths:
       - BearerAuth: []
       summary: Get circuit
       tags:
-      - Infra
+      - Infra.Circuit
     put:
       consumes:
       - application/json
@@ -3347,7 +3476,7 @@ paths:
       - BearerAuth: []
       summary: Update circuit
       tags:
-      - Infra
+      - Infra.Circuit
   /infra/device-config-backup:
     post:
       consumes:
@@ -3371,7 +3500,7 @@ paths:
       - BearerAuth: []
       summary: Device Configuration backup
       tags:
-      - Infra
+      - Infra.ScanDevice
   /infra/devices:
     get:
       consumes:
@@ -3471,7 +3600,7 @@ paths:
       - BearerAuth: []
       summary: List devices
       tags:
-      - Infra
+      - Infra.Device
     post:
       consumes:
       - application/json
@@ -3494,7 +3623,7 @@ paths:
       - BearerAuth: []
       summary: Create device
       tags:
-      - Infra
+      - Infra.Device
   /infra/devices/{id}:
     delete:
       consumes:
@@ -3517,7 +3646,7 @@ paths:
       - BearerAuth: []
       summary: Delete device
       tags:
-      - Infra
+      - Infra.Device
     get:
       consumes:
       - application/json
@@ -3539,7 +3668,7 @@ paths:
       - BearerAuth: []
       summary: Get device
       tags:
-      - Infra
+      - Infra.Device
     put:
       consumes:
       - application/json
@@ -3567,7 +3696,7 @@ paths:
       - BearerAuth: []
       summary: Update device
       tags:
-      - Infra
+      - Infra.Device
   /infra/devices/{id}/cli:
     delete:
       consumes:
@@ -3590,7 +3719,7 @@ paths:
       - BearerAuth: []
       summary: Delete device cli credential
       tags:
-      - Infra
+      - Infra.Device
     get:
       consumes:
       - application/json
@@ -3612,7 +3741,7 @@ paths:
       - BearerAuth: []
       summary: Get device cli credential
       tags:
-      - Infra
+      - Infra.Device
     post:
       consumes:
       - application/json
@@ -3640,7 +3769,7 @@ paths:
       - BearerAuth: []
       summary: Create device new cli credential
       tags:
-      - Infra
+      - Infra.Device
     put:
       consumes:
       - application/json
@@ -3668,7 +3797,7 @@ paths:
       - BearerAuth: []
       summary: Update device cli credential
       tags:
-      - Infra
+      - Infra.Device
   /infra/devices/{id}/interfaces:
     get:
       consumes:
@@ -3693,7 +3822,7 @@ paths:
       - BearerAuth: []
       summary: Get device interfaces
       tags:
-      - Infra
+      - Infra.Device
   /infra/devices/{id}/restconf:
     delete:
       consumes:
@@ -3716,7 +3845,7 @@ paths:
       - BearerAuth: []
       summary: Delete device restconf credential
       tags:
-      - Infra
+      - Infra.Device
     get:
       consumes:
       - application/json
@@ -3738,7 +3867,7 @@ paths:
       - BearerAuth: []
       summary: Get device restconf credential
       tags:
-      - Infra
+      - Infra.Device
     post:
       consumes:
       - application/json
@@ -3766,7 +3895,7 @@ paths:
       - BearerAuth: []
       summary: Create new device restconf credential
       tags:
-      - Infra
+      - Infra.Device
     put:
       consumes:
       - application/json
@@ -3794,7 +3923,7 @@ paths:
       - BearerAuth: []
       summary: Update device restconf credential
       tags:
-      - Infra
+      - Infra.Device
   /infra/devices/{id}/snmpv2:
     delete:
       consumes:
@@ -3817,7 +3946,7 @@ paths:
       - BearerAuth: []
       summary: Delete device snmpV2 credential
       tags:
-      - Infra
+      - Infra.Device
     get:
       consumes:
       - application/json
@@ -3839,7 +3968,7 @@ paths:
       - BearerAuth: []
       summary: Get device snmpV2 credential
       tags:
-      - Infra
+      - Infra.Device
     post:
       consumes:
       - application/json
@@ -3867,7 +3996,7 @@ paths:
       - BearerAuth: []
       summary: Create new device snmpV2 credential
       tags:
-      - Infra
+      - Infra.Device
     put:
       consumes:
       - application/json
@@ -3895,7 +4024,7 @@ paths:
       - BearerAuth: []
       summary: Update device snmpV2 credential
       tags:
-      - Infra
+      - Infra.Device
   /infra/racks:
     get:
       consumes:
@@ -3962,7 +4091,7 @@ paths:
       - BearerAuth: []
       summary: List racks
       tags:
-      - Infra
+      - Infra.Rack
     post:
       consumes:
       - application/json
@@ -3985,7 +4114,7 @@ paths:
       - BearerAuth: []
       summary: Create new rack
       tags:
-      - Infra
+      - Infra.Rack
   /infra/racks/{id}:
     delete:
       consumes:
@@ -3994,7 +4123,7 @@ paths:
       parameters:
       - description: rackId
         in: path
-        name: rackId
+        name: id
         required: true
         type: string
       produces:
@@ -4008,7 +4137,7 @@ paths:
       - BearerAuth: []
       summary: Delete rack
       tags:
-      - Infra
+      - Infra.Rack
     get:
       consumes:
       - application/json
@@ -4016,7 +4145,7 @@ paths:
       parameters:
       - description: rackId
         in: path
-        name: rackId
+        name: id
         required: true
         type: string
       produces:
@@ -4030,7 +4159,7 @@ paths:
       - BearerAuth: []
       summary: Get rack
       tags:
-      - Infra
+      - Infra.Rack
     put:
       consumes:
       - application/json
@@ -4038,7 +4167,7 @@ paths:
       parameters:
       - description: rackId
         in: path
-        name: rackId
+        name: id
         required: true
         type: string
       - description: rack
@@ -4058,7 +4187,7 @@ paths:
       - BearerAuth: []
       summary: Update rack
       tags:
-      - Infra
+      - Infra.Rack
   /infra/scan-aps:
     post:
       consumes:
@@ -4082,7 +4211,7 @@ paths:
       - BearerAuth: []
       summary: Scan AP
       tags:
-      - Infra
+      - Infra.ScanDevice
   /infra/scan-device-details:
     post:
       consumes:
@@ -4106,7 +4235,7 @@ paths:
       - BearerAuth: []
       summary: Scan device details
       tags:
-      - Infra
+      - Infra.ScanDevice
   /infra/scan-devices:
     delete:
       consumes:
@@ -4132,7 +4261,7 @@ paths:
       - BearerAuth: []
       summary: Scan Device Batch Delete
       tags:
-      - Infra
+      - Infra.ScanDevice
     get:
       consumes:
       - application/json
@@ -4207,7 +4336,7 @@ paths:
       - BearerAuth: []
       summary: Scan Device List
       tags:
-      - Infra
+      - Infra.ScanDevice
     post:
       consumes:
       - application/json
@@ -4230,7 +4359,7 @@ paths:
       - BearerAuth: []
       summary: Scan Device Create
       tags:
-      - Infra
+      - Infra.ScanDevice
     put:
       consumes:
       - application/json
@@ -4253,7 +4382,7 @@ paths:
       - BearerAuth: []
       summary: Scan Device Batch Update
       tags:
-      - Infra
+      - Infra.ScanDevice
   /infra/scan-devices/{id}:
     delete:
       consumes:
@@ -4276,7 +4405,7 @@ paths:
       - BearerAuth: []
       summary: Scan Device Delete
       tags:
-      - Infra
+      - Infra.ScanDevice
     get:
       consumes:
       - application/json
@@ -4298,7 +4427,7 @@ paths:
       - BearerAuth: []
       summary: Scan Device Get
       tags:
-      - Infra
+      - Infra.ScanDevice
     put:
       consumes:
       - application/json
@@ -4326,7 +4455,191 @@ paths:
       - BearerAuth: []
       summary: Scan Device Update
       tags:
-      - Infra
+      - Infra.ScanDevice
+  /infra/servers:
+    get:
+      consumes:
+      - application/json
+      description: Get servers
+      parameters:
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: id
+        type: array
+      - in: query
+        name: keyword
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: managementIp
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: manufacturer
+        type: array
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: name
+        type: array
+      - enum:
+        - asc
+        - desc
+        in: query
+        name: order
+        type: string
+      - in: query
+        name: orderBy
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: string
+        name: osVersion
+        type: array
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        maximum: 1000
+        minimum: 1
+        name: pageSize
+        type: integer
+      - in: query
+        name: rackId
+        type: string
+      - in: query
+        name: siteId
+        type: string
+      - enum:
+        - Active
+        - Inactive
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/schemas.ListResponse'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/schemas.Server'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get servers
+      tags:
+      - Infra.Server
+    post:
+      consumes:
+      - application/json
+      description: Create new server
+      parameters:
+      - description: server
+        in: body
+        name: server
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.ServerCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create new server
+      tags:
+      - Infra.Server
+  /infra/servers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete server
+      parameters:
+      - description: uuid formatted serverId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete server
+      tags:
+      - Infra.Server
+    get:
+      consumes:
+      - application/json
+      description: Get server
+      parameters:
+      - description: uuid formatted serverId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.Server'
+      security:
+      - BearerAuth: []
+      summary: Get server
+      tags:
+      - Infra.Server
+    put:
+      consumes:
+      - application/json
+      description: Update server
+      parameters:
+      - description: uuid formatted serverId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: server
+        in: body
+        name: server
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.ServerUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update server
+      tags:
+      - Infra.Server
   /infra/sites:
     get:
       consumes:
@@ -4402,7 +4715,7 @@ paths:
       - BearerAuth: []
       summary: List sites
       tags:
-      - Infra
+      - Infra.Site
     post:
       consumes:
       - application/json
@@ -4425,7 +4738,7 @@ paths:
       - BearerAuth: []
       summary: Create new site
       tags:
-      - Infra
+      - Infra.Site
   /infra/sites/{id}:
     delete:
       consumes:
@@ -4448,7 +4761,7 @@ paths:
       - BearerAuth: []
       summary: Delete site
       tags:
-      - Infra
+      - Infra.Site
     get:
       consumes:
       - application/json
@@ -4470,7 +4783,7 @@ paths:
       - BearerAuth: []
       summary: Get site
       tags:
-      - Infra
+      - Infra.Site
     put:
       consumes:
       - application/json
@@ -4498,7 +4811,7 @@ paths:
       - BearerAuth: []
       summary: Update site
       tags:
-      - Infra
+      - Infra.Site
   /intend/device-roles:
     get:
       parameters:

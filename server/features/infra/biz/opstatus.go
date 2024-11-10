@@ -105,6 +105,38 @@ func GetDeviceOpStatus(deviceIds []string, orgId string) (map[string]string, err
 	return res, nil
 }
 
+func GetServerOpStatus(serverIds []string, orgId string) (map[string]string, error) {
+	res := make(map[string]string)
+	for _, server := range serverIds {
+		res[server] = "nodata"
+	}
+	ql := vtm.NewPromQLBuilder(string(metrics.ICMPPing))
+	query, err := ql.WithFuncName("last_over_time").WithLabels(
+		vtm.Label{
+			Name:    "serverId",
+			Value:   strings.Join(serverIds, "|"),
+			Matcher: vtm.LikeMatcher,
+		},
+	).WithWindow("5m").Build()
+
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to build server operation status query", zap.Error(err))
+		return res, err
+	}
+	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, &orgId)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get server operation status", zap.Error(err))
+		return res, err
+	}
+	if len(vectors) == 0 {
+		return res, nil
+	}
+	for _, v := range vectors {
+		res[v.Metric["serverId"]] = OpStatusMapping(v.Value[1].(string))
+	}
+	return res, nil
+}
+
 // GetApIdsByOpStatus get ap Ids by ap operational status
 func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string, error) {
 	query, err := vtm.NewPromQLBuilder(string(metrics.ApStatus)).
@@ -235,6 +267,64 @@ func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 		})
 	}
 	return deviceIds, nil
+}
+
+func GetServerIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string, error) {
+	query, err := vtm.NewPromQLBuilder(string(metrics.ICMPPing)).
+		WithFuncName("last_over_time").
+		WithLabels(vtm.Label{Name: "siteId", Value: siteId, Matcher: vtm.EqualMatcher}).
+		WithWindow("5m").Build()
+
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to build server operation status query", zap.Error(err))
+		return nil, err
+	}
+	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, nil)
+	if err != nil {
+		core.Logger.Error("[metricService]: failed to get server operation status", zap.Error(err))
+		return nil, err
+	}
+	if len(vectors) == 0 {
+		if opStatus == "nodata" {
+			return NewServerService().GetAllServerIdsBySiteId(siteId)
+		}
+		return []string{}, nil
+	}
+	if opStatus == "nodata" {
+		allServerIdsWithData := lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
+			return v.Metric["serverId"]
+		})
+		allServerIds, err := NewServerService().GetAllServerIdsBySiteId(siteId)
+		if err != nil {
+			core.Logger.Error("[metricService]: failed to get server ids by site id", zap.String("siteId", siteId), zap.Error(err))
+			return nil, err
+		}
+		subServerIds := lo.Intersect(allServerIds, allServerIdsWithData)
+		return subServerIds, nil
+	}
+	var serverIds []string
+	if opStatus == "up" {
+		serverIds = lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
+			if v.Value[1] == "1" {
+				return v.Metric["serverId"]
+			}
+			return ""
+		})
+		serverIds = lo.Filter(serverIds, func(item string, _ int) bool {
+			return item != ""
+		})
+	} else if opStatus == "down" {
+		serverIds = lo.Map(vectors, func(v *vtm.VectorResponse, _ int) string {
+			if v.Value[1] == "0" {
+				return v.Metric["serverId"]
+			}
+			return ""
+		})
+		serverIds = lo.Filter(serverIds, func(item string, _ int) bool {
+			return item != ""
+		})
+	}
+	return serverIds, nil
 }
 
 func GetApAssociatedClients(apNames []string, siteId string, orgId string) (map[string]*schemas.ApClientItem, error) {

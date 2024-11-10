@@ -1494,7 +1494,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.AP"
                 ],
                 "summary": "List aps",
                 "parameters": [
@@ -1629,7 +1629,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.AP"
                 ],
                 "summary": "Batch Update ap",
                 "parameters": [
@@ -1669,7 +1669,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.AP"
                 ],
                 "summary": "Batch Delete ap",
                 "parameters": [
@@ -1711,7 +1711,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.AP"
                 ],
                 "summary": "Get ap",
                 "parameters": [
@@ -1746,7 +1746,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.AP"
                 ],
                 "summary": "Update ap",
                 "parameters": [
@@ -1790,7 +1790,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.AP"
                 ],
                 "summary": "Delete ap",
                 "parameters": [
@@ -1821,7 +1821,7 @@ const docTemplate = `{
                 ],
                 "description": "List circuits",
                 "tags": [
-                    "Infra"
+                    "Infra.Circuit"
                 ],
                 "summary": "List circuits",
                 "parameters": [
@@ -2003,7 +2003,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Circuit"
                 ],
                 "summary": "Create new circuit",
                 "parameters": [
@@ -2042,7 +2042,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Circuit"
                 ],
                 "summary": "Get circuit",
                 "parameters": [
@@ -2077,7 +2077,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Circuit"
                 ],
                 "summary": "Update circuit",
                 "parameters": [
@@ -2120,7 +2120,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Circuit"
                 ],
                 "parameters": [
                     {
@@ -2156,7 +2156,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Device Configuration backup",
                 "parameters": [
@@ -2195,7 +2195,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "List devices",
                 "parameters": [
@@ -2353,7 +2353,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Create device",
                 "parameters": [
@@ -2392,7 +2392,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Get device",
                 "parameters": [
@@ -2427,7 +2427,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Update device",
                 "parameters": [
@@ -2471,7 +2471,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Delete device",
                 "parameters": [
@@ -2508,7 +2508,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Get device cli credential",
                 "parameters": [
@@ -2543,7 +2543,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Update device cli credential",
                 "parameters": [
@@ -2587,7 +2587,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Create device new cli credential",
                 "parameters": [
@@ -2631,7 +2631,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Delete device cli credential",
                 "parameters": [
@@ -2668,7 +2668,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Get device interfaces",
                 "parameters": [
@@ -2708,7 +2708,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Get device restconf credential",
                 "parameters": [
@@ -2743,7 +2743,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Update device restconf credential",
                 "parameters": [
@@ -2787,7 +2787,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Create new device restconf credential",
                 "parameters": [
@@ -2831,7 +2831,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Delete device restconf credential",
                 "parameters": [
@@ -2868,7 +2868,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Get device snmpV2 credential",
                 "parameters": [
@@ -2903,7 +2903,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Update device snmpV2 credential",
                 "parameters": [
@@ -2947,7 +2947,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Create new device snmpV2 credential",
                 "parameters": [
@@ -2991,7 +2991,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Device"
                 ],
                 "summary": "Delete device snmpV2 credential",
                 "parameters": [
@@ -3028,7 +3028,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Rack"
                 ],
                 "summary": "List racks",
                 "parameters": [
@@ -3135,7 +3135,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Rack"
                 ],
                 "summary": "Create new rack",
                 "parameters": [
@@ -3174,14 +3174,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Rack"
                 ],
                 "summary": "Get rack",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "rackId",
-                        "name": "rackId",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -3209,14 +3209,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Rack"
                 ],
                 "summary": "Update rack",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "rackId",
-                        "name": "rackId",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -3253,14 +3253,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Rack"
                 ],
                 "summary": "Delete rack",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "rackId",
-                        "name": "rackId",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -3290,7 +3290,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Scan AP",
                 "parameters": [
@@ -3329,7 +3329,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Scan device details",
                 "parameters": [
@@ -3368,7 +3368,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Scan Device List",
                 "parameters": [
@@ -3488,7 +3488,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Scan Device Batch Update",
                 "parameters": [
@@ -3525,7 +3525,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Scan Device Create",
                 "parameters": [
@@ -3562,7 +3562,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Scan Device Batch Delete",
                 "parameters": [
@@ -3604,7 +3604,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Scan Device Get",
                 "parameters": [
@@ -3639,7 +3639,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Scan Device Update",
                 "parameters": [
@@ -3683,13 +3683,307 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.ScanDevice"
                 ],
                 "summary": "Scan Device Delete",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "uuid formatted scanDeviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/servers": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get servers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra.Server"
+                ],
+                "summary": "Get servers",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "managementIp",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "manufacturer",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "asc",
+                            "desc"
+                        ],
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "orderBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "osVersion",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 1000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "rackId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "siteId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "Active",
+                            "Inactive"
+                        ],
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/schemas.ListResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/schemas.Server"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create new server",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra.Server"
+                ],
+                "summary": "Create new server",
+                "parameters": [
+                    {
+                        "description": "server",
+                        "name": "server",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ServerCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/infra/servers/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get server",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra.Server"
+                ],
+                "summary": "Get server",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted serverId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.Server"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update server",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra.Server"
+                ],
+                "summary": "Update server",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted serverId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "server",
+                        "name": "server",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.ServerUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete server",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra.Server"
+                ],
+                "summary": "Delete server",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted serverId",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -3720,7 +4014,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Site"
                 ],
                 "summary": "List sites",
                 "parameters": [
@@ -3840,7 +4134,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Site"
                 ],
                 "summary": "Create new site",
                 "parameters": [
@@ -3879,7 +4173,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Site"
                 ],
                 "summary": "Get site",
                 "parameters": [
@@ -3914,7 +4208,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Site"
                 ],
                 "summary": "Update site",
                 "parameters": [
@@ -3958,7 +4252,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Infra"
+                    "Infra.Site"
                 ],
                 "summary": "Delete site",
                 "parameters": [
@@ -5174,7 +5468,10 @@ const docTemplate = `{
                 "no_snmp_data_collection",
                 "unavailable_by_icmp_ping",
                 "wireless_access_point_down",
-                "unknown"
+                "unknown",
+                "high_swap_space_utilization",
+                "high_system_load_average",
+                "high_inode_utilization"
             ],
             "x-enum-varnames": [
                 "HighCpuUtilization",
@@ -5197,7 +5494,10 @@ const docTemplate = `{
                 "SnmpAgentTimeout",
                 "NodePingTimeout",
                 "ApDown",
-                "Unknown"
+                "Unknown",
+                "HighSwapSpaceUtilization",
+                "HighSystemLoadAverage",
+                "HighINodeUtilization"
             ]
         },
         "alerts.SeverityEnum": {
@@ -7479,6 +7779,185 @@ const docTemplate = `{
                     }
                 },
                 "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
+                }
+            }
+        },
+        "schemas.Server": {
+            "type": "object",
+            "properties": {
+                "cpu": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disk": {
+                    "description": "MB",
+                    "type": "integer"
+                },
+                "healthStatus": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "memory": {
+                    "description": "MB",
+                    "type": "integer"
+                },
+                "monitorId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operStatus": {
+                    "type": "string"
+                },
+                "osVersion": {
+                    "type": "string"
+                },
+                "rackId": {
+                    "type": "string"
+                },
+                "rackPosition": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "templateId": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "schemas.ServerCreate": {
+            "type": "object",
+            "required": [
+                "cpu",
+                "disk",
+                "managementIp",
+                "memory",
+                "name",
+                "siteId",
+                "status"
+            ],
+            "properties": {
+                "cpu": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disk": {
+                    "description": "MB",
+                    "type": "integer"
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "memory": {
+                    "description": "MB",
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "osVersion": {
+                    "type": "string"
+                },
+                "rackId": {
+                    "type": "string"
+                },
+                "rackPosition": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Active",
+                        "Inactive"
+                    ]
+                }
+            }
+        },
+        "schemas.ServerUpdate": {
+            "type": "object",
+            "properties": {
+                "cpu": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disk": {
+                    "description": "MB",
+                    "type": "integer"
+                },
+                "managementIp": {
+                    "type": "string"
+                },
+                "manufacturer": {
+                    "type": "string"
+                },
+                "memory": {
+                    "description": "MB",
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "osVersion": {
+                    "type": "string"
+                },
+                "rackId": {
+                    "type": "string"
+                },
+                "rackPosition": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "serialNumber": {
                     "type": "string"
                 },
                 "status": {

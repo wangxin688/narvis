@@ -45,11 +45,6 @@ func InitDB() error {
 	}
 
 	// set db to global variable
-	err = migrations.Migrate(db)
-	if err != nil {
-		core.Logger.Fatal("[infraConnectDb]: failed to migrate database", zap.Error(err))
-		return err
-	}
 
 	registerAuditLogMixin(db)
 	DB = db
@@ -69,7 +64,20 @@ func registerAuditLogMixin(db *gorm.DB) {
 		models.RestconfCredentialTableName,
 		models.CircuitTableName,
 		models.PrefixTableName,
+		models.ServerTableName,
+		models.ServerCredentialTableName,
+		models.ServerSnmpCredentialTableName,
 	}
 	newAuditLogMixin.AuditTableRegister(registeredTables)
 	newAuditLogMixin.RegisterCallbacks(db)
+}
+
+func AutoMigration(db *gorm.DB) error {
+	err = migrations.Migrate(db)
+	if err != nil {
+		core.Logger.Fatal("[infraConnectDb]: failed to migrate database", zap.Error(err))
+		return err
+	}
+	core.Logger.Info("[infraConnectDb]: database migrated")
+	return nil
 }

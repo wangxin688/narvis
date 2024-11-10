@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gosnmp/gosnmp"
-	"go.uber.org/zap"
 )
 
 func TestSnmpDiscovery_SysDescr(t *testing.T) {
@@ -26,7 +25,7 @@ func TestSnmpDiscovery_SysDescr(t *testing.T) {
 	}
 	session, err := NewSnmpDiscovery(snmpConfig)
 	if err != nil {
-		t.Fatalf("failed to create snmp session: %s", zap.Error(err))
+		t.Fatalf("failed to create snmp session: %s", err)
 	}
 	discovery := session.Discovery()
 
@@ -47,12 +46,12 @@ func TestGetSysDescr(t *testing.T) {
 	}
 	err := session.Connect()
 	if err != nil {
-		t.Fatalf("failed to connect: %s", zap.Error(err))
+		t.Fatalf("failed to connect: %s", err)
 	}
 	defer session.Conn.Close()
 	result, err := session.Get([]string{SysDescr})
 	if err != nil {
-		t.Fatalf("failed to get sysDescr: %s", zap.Error(err))
+		t.Fatalf("failed to get sysDescr: %s", err)
 	}
 	t.Logf("sysDescr: %s", result.Variables[0].Value)
 }
@@ -70,12 +69,12 @@ func TestMac(t *testing.T) {
 	}
 	err := session.Connect()
 	if err != nil {
-		t.Fatalf("failed to connect: %s", zap.Error(err))
+		t.Fatalf("failed to connect: %s", err)
 	}
 	defer session.Conn.Close()
 	result, err := session.BulkWalkAll(".1.3.6.1.2.1.2.2.1.1")
 	if err != nil {
-		t.Fatalf("failed to get sysDescr: %s", zap.Error(err))
+		t.Fatalf("failed to get sysDescr: %s", err)
 	}
 	for _, variable := range result {
 		value := variable.Value.([]byte)

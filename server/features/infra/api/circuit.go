@@ -13,7 +13,7 @@ import (
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
-// @Tags Infra
+// @Tags Infra.Circuit
 // @Summary Create new circuit
 // @Description Create new circuit
 // @Security BearerAuth
@@ -43,7 +43,7 @@ func createCircuit(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.Circuit
 // @Summary Get circuit
 // @Description Get circuit
 // @Security BearerAuth
@@ -70,7 +70,7 @@ func getCircuit(c *gin.Context) {
 	c.JSON(http.StatusOK, circuit)
 }
 
-// @Tags Infra
+// @Tags Infra.Circuit
 // @Summary List circuits
 // @Description List circuits
 // @Security BearerAuth
@@ -97,7 +97,7 @@ func listCircuit(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.ListResponse{Total: count, Results: circuits})
 }
 
-// @Tags Infra
+// @Tags Infra.Circuit
 // @Summary Update circuit
 // @Description Update circuit
 // @Security BearerAuth
@@ -132,7 +132,7 @@ func updateCircuit(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.Circuit
 // @Summary: Delete circuit
 // @Description: Delete circuit
 // @Security BearerAuth

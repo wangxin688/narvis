@@ -15,6 +15,7 @@ type RoutingMetrics MetricNameEnum
 type WirelessMetrics MetricNameEnum
 type SecurityMetrics MetricNameEnum
 type Device360Metrics MetricNameEnum
+type ServerMetrics MetricNameEnum
 
 const (
 	ICMPPing         ICMPMetrics = "icmp_ping"
@@ -99,6 +100,19 @@ const (
 	IfOperStatusScore   Device360Metrics = "interface_oper_status_score"
 	IfOperStatusAnomaly Device360Metrics = "interface_oper_status_anomaly"
 )
+const (
+	LoadAverage1m            ServerMetrics = "load_average_1m"
+	LoadAverage5m            ServerMetrics = "load_average_5m"
+	LoadAverage15m           ServerMetrics = "load_average_15m"
+	ContextSwitchesPerSecond ServerMetrics = "context_switches_per_second"
+	InterruptsPerSecond      ServerMetrics = "interrupts_per_second"
+	SwapSpaceUtilization     ServerMetrics = "swap_space_utilization"
+	DiskReadRate             ServerMetrics = "disk_read_rate"
+	DiskWriteRate            ServerMetrics = "disk_write_rate"
+	DiskUtilization          ServerMetrics = "disk_utilization"
+	InodesFree               ServerMetrics = "inodes_free"
+	FileSystemUtilization    ServerMetrics = "file_system_utilization"
+)
 
 type Metric struct {
 	Name                      MetricNameEnum
@@ -144,7 +158,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "ICMP ping", Zh: "ICMP连通性"},
 			Unit:                      nil,
 			ValueMapping:              &opStatus,
-			Legend:                    "{device_name} ICMP Ping",
+			Legend:                    "{deviceName} ICMP Ping",
 			DefaultQueryRangeFunction: "min_over_time",
 		},
 		MetricNameEnum(ICMPResponseTime): {
@@ -152,7 +166,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "ICMP response time", Zh: "ICMP响应时间"},
 			Unit:                      &ms,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} ICMP Response Time",
+			Legend:                    "{deviceName} ICMP Response Time",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ICMPPacketLoss): {
@@ -160,7 +174,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "ICMP packet loss", Zh: "ICMP丢包率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} ICMP Packet Loss",
+			Legend:                    "{deviceName} ICMP Packet Loss",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -169,7 +183,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Rx Bits", Zh: "下行流量"},
 			Unit:                      &bps,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Rx Bits",
+			Legend:                    "{deviceName} {interface}:{description} Rx Bits",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(TxBits): {
@@ -177,7 +191,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Tx Bits", Zh: "上行流量"},
 			Unit:                      &bps,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Tx Bits",
+			Legend:                    "{deviceName} {interface}:{description} Tx Bits",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -186,7 +200,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Rx Packet Discards", Zh: "下行丢包数"},
 			Unit:                      &cs,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Rx Packet Discards",
+			Legend:                    "{deviceName} {interface}:{description} Rx Packet Discards",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -195,7 +209,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Tx Packet Discards", Zh: "上行丢包数"},
 			Unit:                      &cs,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Tx Packet Discards",
+			Legend:                    "{deviceName} {interface}:{description} Tx Packet Discards",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -204,7 +218,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Rx Packet Errors", Zh: "下行错包数"},
 			Unit:                      &cs,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Rx Packet Errors",
+			Legend:                    "{deviceName} {interface}:{description} Rx Packet Errors",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -213,7 +227,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Tx Packet Errors", Zh: "上行错包数"},
 			Unit:                      &cs,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Tx Packet Errors",
+			Legend:                    "{deviceName} {interface}:{description} Tx Packet Errors",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -222,7 +236,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Rx Rate", Zh: "下行带宽利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Rx Rate",
+			Legend:                    "{deviceName} {interface}:{description} Rx Rate",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(TxRate): {
@@ -230,7 +244,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Tx Rate", Zh: "上行带宽利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Tx Rate",
+			Legend:                    "{deviceName} {interface}:{description} Tx Rate",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(OperationalStatus): {
@@ -238,7 +252,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Operational Status", Zh: "运行状态"},
 			Unit:                      nil,
 			ValueMapping:              &opStatus,
-			Legend:                    "{device_name} {interface}:{description} Operational Status",
+			Legend:                    "{deviceName} {interface}:{description} Operational Status",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -247,7 +261,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Port Speed", Zh: "接口速率"},
 			Unit:                      &mbps,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} {interface}:{description} Port Speed",
+			Legend:                    "{deviceName} {interface}:{description} Port Speed",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(DuplexStatus): {
@@ -255,7 +269,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Duplex Status", Zh: "接口双工状态"},
 			Unit:                      nil,
 			ValueMapping:              &duplexStatus,
-			Legend:                    "{device_name} {interface}:{description} Duplex Status",
+			Legend:                    "{deviceName} {interface}:{description} Duplex Status",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -264,7 +278,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "CPU Usage", Zh: "CPU利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} CPU#{cpu} CPU Usage",
+			Legend:                    "{deviceName} CPU#{cpu} CPU Usage",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(MemoryUtilization): {
@@ -272,7 +286,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Memory Usage", Zh: "内存利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} Memory Usage",
+			Legend:                    "{deviceName} Memory Usage",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -281,7 +295,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Disk Usage", Zh: "磁盘利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} Disk Usage",
+			Legend:                    "{deviceName} Disk Usage",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -290,7 +304,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "System Load", Zh: "系统负载"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} System Load",
+			Legend:                    "{deviceName} System Load",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -299,7 +313,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Fan Status", Zh: "风扇状态"},
 			Unit:                      nil,
 			ValueMapping:              &entityStatus,
-			Legend:                    "{device_name} Fan#{entity} Status",
+			Legend:                    "{deviceName} Fan#{entity} Status",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -308,7 +322,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Power Supply Status", Zh: "电源状态"},
 			Unit:                      nil,
 			ValueMapping:              &entityStatus,
-			Legend:                    "{device_name} Power Supply#{entity} Status",
+			Legend:                    "{deviceName} Power Supply#{entity} Status",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 
@@ -317,7 +331,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Temperature", Zh: "温度"},
 			Unit:                      &celsius,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} Temperature",
+			Legend:                    "{deviceName} Temperature",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(SnmpAgentStatus): {
@@ -325,7 +339,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "SNMP Agent Status", Zh: "SNMP Agent状态"},
 			Unit:                      nil,
 			ValueMapping:              &entityStatus,
-			Legend:                    "{device_name} SNMP Agent Status",
+			Legend:                    "{deviceName} SNMP Agent Status",
 			DefaultQueryRangeFunction: "min_over_time",
 		},
 		MetricNameEnum(Uptime): {
@@ -333,7 +347,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Uptime", Zh: "运行时间"},
 			Unit:                      &seconds,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} Uptime",
+			Legend:                    "{deviceName} Uptime",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ApStatus): {
@@ -341,7 +355,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "AP Status", Zh: "AP运行状态"},
 			Unit:                      nil,
 			ValueMapping:              &opStatus,
-			Legend:                    "{device_name} Status",
+			Legend:                    "{apName} Status",
 			DefaultQueryRangeFunction: "min_over_time",
 		},
 		MetricNameEnum(ApUptime): {
@@ -349,7 +363,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "AP Uptime", Zh: "AP运行时间"},
 			Unit:                      &seconds,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} Uptime",
+			Legend:                    "{name} Uptime",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ChannelUtilization): {
@@ -357,7 +371,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Channel Utilization", Zh: "信道利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Utilization",
+			Legend:                    "{apName}(channel) Channel Utilization",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ChannelNoise): {
@@ -365,7 +379,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Channel Noise", Zh: "信道噪声"},
 			Unit:                      &dBm,
 			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Noise",
+			Legend:                    "{apName}(channel) Channel Noise",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ChannelTransmitPower): {
@@ -373,7 +387,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Channel Transmit Power", Zh: "信道发射功率"},
 			Unit:                      &dBm,
 			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Transmit Power",
+			Legend:                    "{apName}(channel) Channel Transmit Power",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ChannelInterferenceRate): {
@@ -381,7 +395,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Channel Interference", Zh: "信道干扰"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Interference",
+			Legend:                    "{apName}(channel) Channel Interference",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ChannelAssociationClients): {
@@ -389,7 +403,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "Channel Association Clients", Zh: "信道关联客户端"},
 			Unit:                      nil,
 			ValueMapping:              nil,
-			Legend:                    "{device_name}(channel) Channel Association Clients",
+			Legend:                    "{apName}(channel) Channel Association Clients",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ApCpuUtilization): {
@@ -397,7 +411,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "AP CPU utilization", Zh: "AP CPU利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} AP CPU utilization",
+			Legend:                    "{apName} AP CPU utilization",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 		MetricNameEnum(ApMemoryUtilization): {
@@ -405,7 +419,95 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 			Description:               common.I18n{En: "AP Memory utilization", Zh: "AP 内存利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
-			Legend:                    "{device_name} AP Memory utilization",
+			Legend:                    "{apName} AP Memory utilization",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(LoadAverage1m): {
+			Name:                      MetricNameEnum(LoadAverage1m),
+			Description:               common.I18n{En: "Load average 1m", Zh: "负载平均值 1m"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Load average 1m",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(LoadAverage5m): {
+			Name:                      MetricNameEnum(LoadAverage5m),
+			Description:               common.I18n{En: "Load average 5m", Zh: "负载平均值 5m"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Load average 5m",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(LoadAverage15m): {
+			Name:                      MetricNameEnum(LoadAverage15m),
+			Description:               common.I18n{En: "Load average 15m", Zh: "负载平均值 15m"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Load average 15m",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(ContextSwitchesPerSecond): {
+			Name:                      MetricNameEnum(ContextSwitchesPerSecond),
+			Description:               common.I18n{En: "Context Switches per second", Zh: "上下文切换频率"},
+			Unit:                      nil,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Context Switches per second",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(InterruptsPerSecond): {
+			Name:                      MetricNameEnum(InterruptsPerSecond),
+			Description:               common.I18n{En: "Interrupts per second", Zh: "中断频率"},
+			Unit:                      nil,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Interrupts per second",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(SwapSpaceUtilization): {
+			Name:                      MetricNameEnum(SwapSpaceUtilization),
+			Description:               common.I18n{En: "Swap Space Utilization", Zh: "交换空间占用率"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Swap Space Utilization",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(DiskReadRate): {
+			Name:                      MetricNameEnum(DiskReadRate),
+			Description:               common.I18n{En: "Disk Read Rate", Zh: "磁盘读取速率"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Disk Read Rate",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(DiskWriteRate): {
+			Name:                      MetricNameEnum(DiskWriteRate),
+			Description:               common.I18n{En: "Disk Write Rate", Zh: "磁盘写入速率"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Disk Write Rate",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(DiskUtilization): {
+			Name:                      MetricNameEnum(DiskUtilization),
+			Description:               common.I18n{En: "Disk Utilization", Zh: "磁盘利用率"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Disk Utilization",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(InodesFree): {
+			Name:                      MetricNameEnum(InodesFree),
+			Description:               common.I18n{En: "Inodes Free", Zh: "inode空闲数量"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} Inodes Free",
+			DefaultQueryRangeFunction: "max_over_time",
+		},
+		MetricNameEnum(FileSystemUtilization): {
+			Name:                      MetricNameEnum(FileSystemUtilization),
+			Description:               common.I18n{En: "File System Utilization", Zh: "文件系统利用率"},
+			Unit:                      &percent,
+			ValueMapping:              nil,
+			Legend:                    "{serverName} {filesystem} File System Utilization",
 			DefaultQueryRangeFunction: "max_over_time",
 		},
 	}

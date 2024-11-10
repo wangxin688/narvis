@@ -58,5 +58,6 @@
     {"platform": "*1", "deviceRole": "*2", "basicTemplate": "template_icmp_ping_circuit"},
     {"platform": "*3", "deviceRole": "*4", "basicTemplate": "template_icmp_ping"},
     {"platform": "*5", "deviceRole": "*6", "basicTemplate": "template_interface_basic"},
-    {"platform": "*7", "deviceRole": "*8", "basicTemplate": "template_interface_circuit"}
+    {"platform": "*7", "deviceRole": "*8", "basicTemplate": "template_interface_circuit"},
+    {"platform": "*9", "deviceRole": "*10", "basicTemplate": "template_linux_by_snmp"}
 ]

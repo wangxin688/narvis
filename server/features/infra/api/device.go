@@ -13,7 +13,7 @@ import (
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Create device
 // @Description Create device
 // @Security BearerAuth
@@ -44,7 +44,7 @@ func createDevice(c *gin.Context) {
 
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Update device
 // @Description Update device
 // @Security BearerAuth
@@ -62,6 +62,9 @@ func updateDevice(c *gin.Context) {
 		}
 	}()
 	deviceId := c.Param("id")
+	if err := helpers.ValidateUuidString(deviceId); err != nil {
+		return
+	}
 	var device schemas.DeviceUpdate
 	if err = c.ShouldBindJSON(&device); err != nil {
 		return
@@ -76,7 +79,7 @@ func updateDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: deviceId})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Get device
 // @Description get device
 // @Security BearerAuth
@@ -103,7 +106,7 @@ func getDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, device)
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Delete device
 // @Description Delete device
 // @Security BearerAuth
@@ -133,7 +136,7 @@ func deleteDevice(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: deviceId})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary List devices
 // @Description List devices
 // @Security BearerAuth
@@ -160,7 +163,7 @@ func listDevices(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.ListResponse{Total: count, Results: devices})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Get device interfaces
 // @Description Get device interfaces
 // @Security BearerAuth
@@ -187,7 +190,7 @@ func getDeviceInterfaces(c *gin.Context) {
 	c.JSON(http.StatusOK, interfaces)
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Create new device restconf credential
 // @Description Create new device restconf credential
 // @Security BearerAuth
@@ -219,7 +222,7 @@ func createRestconfCredential(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Get device restconf credential
 // @Description Get device restconf credential
 // @Security BearerAuth
@@ -246,7 +249,7 @@ func getRestconfCredential(c *gin.Context) {
 	c.JSON(http.StatusOK, credential)
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Update device restconf credential
 // @Description Update device restconf credential
 // @Security BearerAuth
@@ -278,7 +281,7 @@ func updateRestconfCredential(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Delete device restconf credential
 // @Description Delete device restconf credential
 // @Security BearerAuth
@@ -305,7 +308,7 @@ func deleteRestconfCredential(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Create device new cli credential
 // @Description Create device new cli credential
 // @Security BearerAuth
@@ -337,7 +340,7 @@ func createCliCredential(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Get device cli credential
 // @Description Get device cli credential
 // @Security BearerAuth
@@ -364,7 +367,7 @@ func getCliCredential(c *gin.Context) {
 	c.JSON(http.StatusOK, credential)
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Update device cli credential
 // @Description Update device cli credential
 // @Security BearerAuth
@@ -396,7 +399,7 @@ func updateCliCredential(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Delete device cli credential
 // @Description Delete device cli credential
 // @Security BearerAuth
@@ -423,7 +426,7 @@ func deleteCliCredential(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Create new device snmpV2 credential
 // @Description Create device new snmpV2 credential
 // @Security BearerAuth
@@ -456,7 +459,7 @@ func createSnmpV2Credential(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: deviceId})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Get device snmpV2 credential
 // @Description Get device snmpV2 credential
 // @Security BearerAuth
@@ -483,7 +486,7 @@ func getSnmpV2Credential(c *gin.Context) {
 	c.JSON(http.StatusOK, credential)
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Update device snmpV2 credential
 // @Description Update device snmpV2 credential
 // @Security BearerAuth
@@ -518,7 +521,7 @@ func updateSnmpV2Credential(c *gin.Context) {
 	c.JSON(http.StatusOK, ts.IdResponse{Id: deviceId})
 }
 
-// @Tags Infra
+// @Tags Infra.Device
 // @Summary Delete device snmpV2 credential
 // @Description Delete device snmpV2 credential
 // @Security BearerAuth
