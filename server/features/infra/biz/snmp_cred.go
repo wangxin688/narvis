@@ -36,6 +36,23 @@ func (s *SnmpCredentialService) CreateSnmpCredential(deviceId string, snmp *sche
 	return cred.Id, nil
 }
 
+func (s *SnmpCredentialService) CreateServerSnmpCredential(serverId string, snmp *schemas.SnmpV2CredentialCreate) (string, error) {
+	snmp.SetDefaultValue()
+	cred := &models.ServerSnmpCredential{
+		OrganizationId: global.OrganizationId.Get(),
+		ServerId:       &serverId,
+		Community:      snmp.Community,
+		Port:           *snmp.Port,
+		Timeout:        *snmp.Timeout,
+		MaxRepetitions: *snmp.MaxRepetitions,
+	}
+	err := gen.ServerSnmpCredential.Create(cred)
+	if err != nil {
+		return "", err
+	}
+	return cred.Id, nil
+}
+
 // func (s *SnmpCredentialService) validateCreateSnmpCredential(snmp *schemas.SnmpV2CredentialCreate) error {
 
 // 	if snmp.DeviceId == nil {
@@ -89,8 +106,58 @@ func (s *SnmpCredentialService) UpdateSnmpCredential(deviceId string, snmp *sche
 	return dbCred.Id, diffValue, nil
 }
 
+func (s *SnmpCredentialService) UpdateServerSnmpCredential(serverId string, snmp *schemas.SnmpV2CredentialUpdate) (credId string, diff map[string]map[string]*ts.OrmDiff, err error) {
+	dbCred, err := gen.ServerSnmpCredential.Where(
+		gen.ServerSnmpCredential.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.ServerSnmpCredential.ServerId.Eq(serverId),
+	).First()
+	if err != nil {
+		return "", nil, err
+	}
+	updateFields := make(map[string]*ts.OrmDiff)
+
+	if snmp.Community != nil && dbCred.Community != *snmp.Community {
+		updateFields["community"] = &ts.OrmDiff{Before: dbCred.Community, After: *snmp.Community}
+		dbCred.Community = *snmp.Community
+	}
+	if snmp.Port != nil && dbCred.Port != *snmp.Port {
+		updateFields["port"] = &ts.OrmDiff{Before: dbCred.Port, After: *snmp.Port}
+		dbCred.Port = *snmp.Port
+	}
+	if snmp.Timeout != nil && dbCred.Timeout != *snmp.Timeout {
+		updateFields["timeout"] = &ts.OrmDiff{Before: dbCred.Timeout, After: *snmp.Timeout}
+		dbCred.Timeout = *snmp.Timeout
+	}
+	if snmp.MaxRepetitions != nil && dbCred.MaxRepetitions != *snmp.MaxRepetitions {
+		updateFields["max_repetitions"] = &ts.OrmDiff{Before: dbCred.MaxRepetitions, After: *snmp.MaxRepetitions}
+		dbCred.MaxRepetitions = *snmp.MaxRepetitions
+	}
+	if len(updateFields) == 0 {
+		return "", nil, nil
+	}
+	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue[dbCred.Id] = updateFields
+	global.OrmDiff.Set(diffValue)
+	err = gen.ServerSnmpCredential.UnderlyingDB().Save(dbCred).Error
+	if err != nil {
+		return "", nil, err
+	}
+	return dbCred.Id, diffValue, nil
+}
+
 func (s *SnmpCredentialService) GetCredentialByOrgId(orgId string) (*models.SnmpV2Credential, error) {
 	cred, err := gen.SnmpV2Credential.Where(gen.SnmpV2Credential.OrganizationId.Eq(orgId)).First()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return cred, err
+}
+
+func (s *SnmpCredentialService) GetServerCredentialByOrgId(orgId string) (*models.ServerSnmpCredential, error) {
+	cred, err := gen.ServerSnmpCredential.Where(gen.ServerSnmpCredential.OrganizationId.Eq(orgId)).First()
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
@@ -115,6 +182,21 @@ func (s *SnmpCredentialService) DeleteCredential(deviceId string) (cred *models.
 	return dbCred, nil
 }
 
+func (s *SnmpCredentialService) DeleteServerCredential(serverId string) (cred *models.ServerSnmpCredential, err error) {
+	dbCred, err := gen.ServerSnmpCredential.Where(
+		gen.ServerSnmpCredential.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.ServerSnmpCredential.ServerId.Eq(serverId),
+	).First()
+	if err != nil {
+		return nil, err
+	}
+	_, err = gen.ServerSnmpCredential.Delete(dbCred)
+	if err != nil {
+		return nil, err
+	}
+	return dbCred, nil
+}
+
 func (s *SnmpCredentialService) GetCredentialByDeviceId(deviceId string) (*schemas.SnmpV2Credential, error) {
 	orgId := global.OrganizationId.Get()
 	cred, err := gen.SnmpV2Credential.Where(
@@ -129,6 +211,40 @@ func (s *SnmpCredentialService) GetCredentialByDeviceId(deviceId string) (*schem
 			}
 			if globalCred == nil {
 				return nil, te.NewError(te.CodeNotFound, te.MsgNotFound, gen.SnmpV2Credential.TableName(), "deviceId", deviceId)
+			}
+			return &schemas.SnmpV2Credential{
+				Community:      globalCred.Community,
+				MaxRepetitions: globalCred.MaxRepetitions,
+				Timeout:        globalCred.Timeout,
+				Port:           globalCred.Port,
+				InheritFromOrg: true,
+			}, nil
+		}
+		return nil, err
+	}
+	return &schemas.SnmpV2Credential{
+		Community:      cred.Community,
+		MaxRepetitions: cred.MaxRepetitions,
+		Timeout:        cred.Timeout,
+		Port:           cred.Port,
+		InheritFromOrg: false,
+	}, err
+}
+
+func (s *SnmpCredentialService) GetServerCredentialByDeviceId(deviceId string) (*schemas.SnmpV2Credential, error) {
+	orgId := global.OrganizationId.Get()
+	cred, err := gen.ServerSnmpCredential.Where(
+		gen.ServerSnmpCredential.OrganizationId.Eq(orgId),
+		gen.ServerSnmpCredential.ServerId.Eq(deviceId),
+	).First()
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			globalCred, err := s.GetServerCredentialByOrgId(orgId)
+			if err != nil {
+				return nil, err
+			}
+			if globalCred == nil {
+				return nil, te.NewError(te.CodeNotFound, te.MsgNotFound, gen.ServerSnmpCredential.TableName(), "deviceId", deviceId)
 			}
 			return &schemas.SnmpV2Credential{
 				Community:      globalCred.Community,
@@ -199,6 +315,63 @@ func (s *SnmpCredentialService) GetCredentialByDeviceIds(deviceIds []string) (ma
 	if len(missing) > 0 {
 		for _, deviceId := range missing {
 			results[deviceId] = &schemas.SnmpV2Credential{
+				Community:      orgCred.Community,
+				MaxRepetitions: orgCred.MaxRepetitions,
+				Timeout:        orgCred.Timeout,
+				Port:           orgCred.Port,
+				InheritFromOrg: true,
+			}
+		}
+	}
+	return results, nil
+}
+
+func (s *SnmpCredentialService) GetCredentialByServerIds(serverIds []string) (map[string]*schemas.SnmpV2Credential, error) {
+	serverIds = lo.Uniq(serverIds) // remove duplicates serverIds
+	orgId := global.OrganizationId.Get()
+	creds, err := gen.ServerSnmpCredential.Where(
+		gen.ServerSnmpCredential.OrganizationId.Eq(orgId),
+		gen.ServerSnmpCredential.ServerId.In(serverIds...),
+	).Find()
+	if err != nil {
+		return nil, err
+	}
+	if len(creds) == len(serverIds) {
+		results := make(map[string]*schemas.SnmpV2Credential)
+		for _, cred := range creds {
+			results[*cred.ServerId] = &schemas.SnmpV2Credential{
+				Community:      cred.Community,
+				MaxRepetitions: cred.MaxRepetitions,
+				Timeout:        cred.Timeout,
+				Port:           cred.Port,
+				InheritFromOrg: false,
+			}
+		}
+		return results, nil
+	}
+	orgCred, err := s.GetCredentialByOrgId(orgId)
+	if err != nil {
+		return nil, err
+	}
+	results := make(map[string]*schemas.SnmpV2Credential)
+	for _, cred := range creds {
+		results[*cred.ServerId] = &schemas.SnmpV2Credential{
+			Community:      cred.Community,
+			MaxRepetitions: cred.MaxRepetitions,
+			Timeout:        cred.Timeout,
+			Port:           cred.Port,
+			InheritFromOrg: false,
+		}
+	}
+	var missing []string
+	for _, serverId := range serverIds {
+		if _, ok := results[serverId]; !ok {
+			missing = append(missing, serverId)
+		}
+	}
+	if len(missing) > 0 {
+		for _, serverId := range missing {
+			results[serverId] = &schemas.SnmpV2Credential{
 				Community:      orgCred.Community,
 				MaxRepetitions: orgCred.MaxRepetitions,
 				Timeout:        orgCred.Timeout,

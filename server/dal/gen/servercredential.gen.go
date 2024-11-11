@@ -31,14 +31,13 @@ func newServerCredential(db *gorm.DB, opts ...gen.DOOption) serverCredential {
 	_serverCredential.UpdatedAt = field.NewTime(tableName, "updatedAt")
 	_serverCredential.Username = field.NewString(tableName, "username")
 	_serverCredential.Password = field.NewString(tableName, "password")
-	_serverCredential.PublicAuthKey = field.NewString(tableName, "publicAuthKey")
 	_serverCredential.Port = field.NewUint16(tableName, "port")
-	_serverCredential.DeviceId = field.NewString(tableName, "deviceId")
+	_serverCredential.ServerId = field.NewString(tableName, "serverId")
 	_serverCredential.OrganizationId = field.NewString(tableName, "organizationId")
-	_serverCredential.Device = serverCredentialBelongsToDevice{
+	_serverCredential.Server = serverCredentialBelongsToServer{
 		db: db.Session(&gorm.Session{}),
 
-		RelationField: field.NewRelation("Device", "models.Device"),
+		RelationField: field.NewRelation("Server", "models.Server"),
 		Rack: struct {
 			field.RelationField
 			Site struct {
@@ -51,40 +50,40 @@ func newServerCredential(db *gorm.DB, opts ...gen.DOOption) serverCredential {
 				field.RelationField
 			}
 		}{
-			RelationField: field.NewRelation("Device.Rack", "models.Rack"),
+			RelationField: field.NewRelation("Server.Rack", "models.Rack"),
 			Site: struct {
 				field.RelationField
 				Organization struct {
 					field.RelationField
 				}
 			}{
-				RelationField: field.NewRelation("Device.Rack.Site", "models.Site"),
+				RelationField: field.NewRelation("Server.Rack.Site", "models.Site"),
 				Organization: struct {
 					field.RelationField
 				}{
-					RelationField: field.NewRelation("Device.Rack.Site.Organization", "models.Organization"),
+					RelationField: field.NewRelation("Server.Rack.Site.Organization", "models.Organization"),
 				},
 			},
 			Organization: struct {
 				field.RelationField
 			}{
-				RelationField: field.NewRelation("Device.Rack.Organization", "models.Organization"),
+				RelationField: field.NewRelation("Server.Rack.Organization", "models.Organization"),
 			},
 		},
 		Template: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("Device.Template", "models.Template"),
+			RelationField: field.NewRelation("Server.Template", "models.Template"),
 		},
 		Site: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("Device.Site", "models.Site"),
+			RelationField: field.NewRelation("Server.Site", "models.Site"),
 		},
 		Organization: struct {
 			field.RelationField
 		}{
-			RelationField: field.NewRelation("Device.Organization", "models.Organization"),
+			RelationField: field.NewRelation("Server.Organization", "models.Organization"),
 		},
 	}
 
@@ -108,11 +107,10 @@ type serverCredential struct {
 	UpdatedAt      field.Time
 	Username       field.String
 	Password       field.String
-	PublicAuthKey  field.String
 	Port           field.Uint16
-	DeviceId       field.String
+	ServerId       field.String
 	OrganizationId field.String
-	Device         serverCredentialBelongsToDevice
+	Server         serverCredentialBelongsToServer
 
 	Organization serverCredentialBelongsToOrganization
 
@@ -136,9 +134,8 @@ func (s *serverCredential) updateTableName(table string) *serverCredential {
 	s.UpdatedAt = field.NewTime(table, "updatedAt")
 	s.Username = field.NewString(table, "username")
 	s.Password = field.NewString(table, "password")
-	s.PublicAuthKey = field.NewString(table, "publicAuthKey")
 	s.Port = field.NewUint16(table, "port")
-	s.DeviceId = field.NewString(table, "deviceId")
+	s.ServerId = field.NewString(table, "serverId")
 	s.OrganizationId = field.NewString(table, "organizationId")
 
 	s.fillFieldMap()
@@ -156,15 +153,14 @@ func (s *serverCredential) GetFieldByName(fieldName string) (field.OrderExpr, bo
 }
 
 func (s *serverCredential) fillFieldMap() {
-	s.fieldMap = make(map[string]field.Expr, 11)
+	s.fieldMap = make(map[string]field.Expr, 10)
 	s.fieldMap["id"] = s.Id
 	s.fieldMap["createdAt"] = s.CreatedAt
 	s.fieldMap["updatedAt"] = s.UpdatedAt
 	s.fieldMap["username"] = s.Username
 	s.fieldMap["password"] = s.Password
-	s.fieldMap["publicAuthKey"] = s.PublicAuthKey
 	s.fieldMap["port"] = s.Port
-	s.fieldMap["deviceId"] = s.DeviceId
+	s.fieldMap["serverId"] = s.ServerId
 	s.fieldMap["organizationId"] = s.OrganizationId
 
 }
@@ -179,7 +175,7 @@ func (s serverCredential) replaceDB(db *gorm.DB) serverCredential {
 	return s
 }
 
-type serverCredentialBelongsToDevice struct {
+type serverCredentialBelongsToServer struct {
 	db *gorm.DB
 
 	field.RelationField
@@ -207,7 +203,7 @@ type serverCredentialBelongsToDevice struct {
 	}
 }
 
-func (a serverCredentialBelongsToDevice) Where(conds ...field.Expr) *serverCredentialBelongsToDevice {
+func (a serverCredentialBelongsToServer) Where(conds ...field.Expr) *serverCredentialBelongsToServer {
 	if len(conds) == 0 {
 		return &a
 	}
@@ -220,27 +216,27 @@ func (a serverCredentialBelongsToDevice) Where(conds ...field.Expr) *serverCrede
 	return &a
 }
 
-func (a serverCredentialBelongsToDevice) WithContext(ctx context.Context) *serverCredentialBelongsToDevice {
+func (a serverCredentialBelongsToServer) WithContext(ctx context.Context) *serverCredentialBelongsToServer {
 	a.db = a.db.WithContext(ctx)
 	return &a
 }
 
-func (a serverCredentialBelongsToDevice) Session(session *gorm.Session) *serverCredentialBelongsToDevice {
+func (a serverCredentialBelongsToServer) Session(session *gorm.Session) *serverCredentialBelongsToServer {
 	a.db = a.db.Session(session)
 	return &a
 }
 
-func (a serverCredentialBelongsToDevice) Model(m *models.ServerCredential) *serverCredentialBelongsToDeviceTx {
-	return &serverCredentialBelongsToDeviceTx{a.db.Model(m).Association(a.Name())}
+func (a serverCredentialBelongsToServer) Model(m *models.ServerCredential) *serverCredentialBelongsToServerTx {
+	return &serverCredentialBelongsToServerTx{a.db.Model(m).Association(a.Name())}
 }
 
-type serverCredentialBelongsToDeviceTx struct{ tx *gorm.Association }
+type serverCredentialBelongsToServerTx struct{ tx *gorm.Association }
 
-func (a serverCredentialBelongsToDeviceTx) Find() (result *models.Device, err error) {
+func (a serverCredentialBelongsToServerTx) Find() (result *models.Server, err error) {
 	return result, a.tx.Find(&result)
 }
 
-func (a serverCredentialBelongsToDeviceTx) Append(values ...*models.Device) (err error) {
+func (a serverCredentialBelongsToServerTx) Append(values ...*models.Server) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -248,7 +244,7 @@ func (a serverCredentialBelongsToDeviceTx) Append(values ...*models.Device) (err
 	return a.tx.Append(targetValues...)
 }
 
-func (a serverCredentialBelongsToDeviceTx) Replace(values ...*models.Device) (err error) {
+func (a serverCredentialBelongsToServerTx) Replace(values ...*models.Server) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -256,7 +252,7 @@ func (a serverCredentialBelongsToDeviceTx) Replace(values ...*models.Device) (er
 	return a.tx.Replace(targetValues...)
 }
 
-func (a serverCredentialBelongsToDeviceTx) Delete(values ...*models.Device) (err error) {
+func (a serverCredentialBelongsToServerTx) Delete(values ...*models.Server) (err error) {
 	targetValues := make([]interface{}, len(values))
 	for i, v := range values {
 		targetValues[i] = v
@@ -264,11 +260,11 @@ func (a serverCredentialBelongsToDeviceTx) Delete(values ...*models.Device) (err
 	return a.tx.Delete(targetValues...)
 }
 
-func (a serverCredentialBelongsToDeviceTx) Clear() error {
+func (a serverCredentialBelongsToServerTx) Clear() error {
 	return a.tx.Clear()
 }
 
-func (a serverCredentialBelongsToDeviceTx) Count() int64 {
+func (a serverCredentialBelongsToServerTx) Count() int64 {
 	return a.tx.Count()
 }
 

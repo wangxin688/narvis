@@ -711,7 +711,7 @@ func initNarvisServerCredential(orgId string) error {
 	serverCred := &models.ServerCredential{
 		OrganizationId: orgId,
 		Username:       core.Settings.BootstrapConfig.CliUser,
-		Password:       &core.Settings.BootstrapConfig.CliPassword,
+		Password:       core.Settings.BootstrapConfig.CliPassword,
 	}
 	err = gen.ServerCredential.Create(serverCred)
 	if err != nil {

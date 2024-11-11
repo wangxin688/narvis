@@ -34,12 +34,11 @@ func (Server) TableName() string {
 type ServerCredential struct {
 	BaseDbModel
 	Username       string       `gorm:"column:username;not null"`
-	Password       *string      `gorm:"column:password;default:nul"`
-	PublicAuthKey  *string      `gorm:"column:publicAuthKey;default:null"`
+	Password       string       `gorm:"column:password;not null"`
 	Port           uint16       `gorm:"column:port;not null;default:22"`
-	DeviceId       *string      `gorm:"column:deviceId;type:uuid;default:null;uniqueIndex:idx_device_id_organization_id;index"` // when device_id is null, the config is global
-	Device         Device       `gorm:"constraint:Ondelete:CASCADE"`
-	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
+	ServerId       *string      `gorm:"column:serverId;type:uuid;default:null;uniqueIndex:idx_server_id_organization_id;index"` // when device_id is null, the config is global
+	Server         Server       `gorm:"constraint:Ondelete:CASCADE"`
+	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_server_id_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
 }
 

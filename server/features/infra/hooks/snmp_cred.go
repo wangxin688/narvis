@@ -72,6 +72,50 @@ func SnmpCredCreateHooks(credId string) {
 
 }
 
+func ServerSnmpCredCreateHooks(credId string) {
+	cred, err := gen.ServerSnmpCredential.Where(gen.ServerSnmpCredential.Id.Eq(credId)).First()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredCreateHooks]: get server snmp cred failed with cred %s", credId), zap.Error(err))
+		return
+	}
+
+	client := zbx.NewZbxClient()
+	if cred.ServerId == nil || *cred.ServerId == "" {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredCreateHooks]: server id is empty for cred %s", credId))
+		return
+	}
+	server, err := gen.Server.Where(gen.Server.Id.Eq(*cred.ServerId), gen.Server.MonitorId.IsNotNull()).First()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredCreateHooks]: get server failed with cred %s", credId), zap.Error(err))
+		return
+	}
+	zbxInterfaces, err := client.HostInterfaceGet(&zschema.HostInterfaceGet{
+		HostIDs: []string{*server.MonitorId},
+	})
+	if err != nil || len(zbxInterfaces) <= 0 {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredCreateHooks]: failed to update delete due to get host interface failed for server %s", server.Id), zap.Error(err))
+		return
+	}
+	hostInterfaceId := zbxInterfaces[0].InterfaceId
+	hostInterfaces := make([]zschema.HostInterfaceUpdate, 0)
+	hostInterfaces = append(hostInterfaces, zschema.HostInterfaceUpdate{
+		InterfaceID: hostInterfaceId,
+		Details: &zschema.Details{
+			Community:      cred.Community,
+			MaxRepetitions: &cred.MaxRepetitions,
+		},
+	})
+	updateSchema := zschema.HostUpdate{HostID: *server.MonitorId}
+	updateSchema.Interfaces = &hostInterfaces
+	_, err = client.HostUpdate(&updateSchema)
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredCreateHooks]: update host failed for cred %s", credId), zap.Error(err))
+		return
+	}
+	core.Logger.Info(fmt.Sprintf("[serverSnmpCredCreateHooks]: update host success for cred %s", credId))
+
+}
+
 func SnmpCredUpdateHooks(credId string, diff map[string]*ts.OrmDiff) {
 	if len(diff) == 0 {
 		core.Logger.Info("[snmpCredUpdateHooks]: no diff found for cred skip update ", zap.String("credId", credId))
@@ -134,6 +178,52 @@ func SnmpCredUpdateHooks(credId string, diff map[string]*ts.OrmDiff) {
 	}
 }
 
+func ServerSnmpCredUpdateHooks(credId string, diff map[string]*ts.OrmDiff) {
+	if len(diff) == 0 {
+		core.Logger.Info("[serverSnmpCredUpdateHooks]: no diff found for cred skip update ", zap.String("credId", credId))
+		return
+	}
+	cred, err := gen.ServerSnmpCredential.Where(gen.ServerSnmpCredential.Id.Eq(credId)).First()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredUpdateHooks]: get server snmp cred failed with cred %s", credId), zap.Error(err))
+		return
+	}
+	client := zbx.NewZbxClient()
+	if _community, ok := diff["community"]; ok {
+		community := _community.After.(string)
+		if cred.ServerId == nil || *cred.ServerId == "" {
+			server, err := gen.Server.Where(gen.Server.Id.Eq(*cred.ServerId), gen.Server.MonitorId.IsNotNull()).First()
+			if err != nil {
+				core.Logger.Error(fmt.Sprintf("[serverSnmpCredCreateHooks]: get server failed with cred %s", credId), zap.Error(err))
+				return
+			}
+			zbxInterfaces, err := client.HostInterfaceGet(&zschema.HostInterfaceGet{
+				HostIDs: []string{*server.MonitorId},
+			})
+			if err != nil || len(zbxInterfaces) <= 0 {
+				core.Logger.Error(fmt.Sprintf("[serverSnmpCredCreateHooks]: failed to update delete due to get host interface failed for server %s", server.Id), zap.Error(err))
+				return
+			}
+			hostInterfaceId := zbxInterfaces[0].InterfaceId
+			hostInterfaces := make([]zschema.HostInterfaceUpdate, 0)
+			hostInterfaces = append(hostInterfaces, zschema.HostInterfaceUpdate{
+				InterfaceID: hostInterfaceId,
+				Details: &zschema.Details{
+					Community:      community,
+					MaxRepetitions: &cred.MaxRepetitions,
+				},
+			})
+			updateSchema := zschema.HostUpdate{HostID: *server.MonitorId}
+			updateSchema.Interfaces = &hostInterfaces
+			_, err = client.HostUpdate(&updateSchema)
+			if err != nil {
+				core.Logger.Error(fmt.Sprintf("[serverSnmpCredCreateHooks]: update host failed for cred %s", credId), zap.Error(err))
+				return
+			}
+		}
+	}
+}
+
 // when delete host cred, use global cred as default
 // global cred will not be deleted
 func SnmpCredDeleteHooks(cred *models.SnmpV2Credential) {
@@ -175,4 +265,45 @@ func SnmpCredDeleteHooks(cred *models.SnmpV2Credential) {
 		return
 	}
 	core.Logger.Info(fmt.Sprintf("[snmpCredDeleteHooks]: update host success for cred %s", cred.Id))
+}
+
+func ServerSnmpCredDeleteHooks(cred *models.ServerSnmpCredential) {
+	globalCred, err := gen.ServerSnmpCredential.Where(
+		gen.ServerSnmpCredential.OrganizationId.Eq(cred.OrganizationId),
+		gen.ServerSnmpCredential.ServerId.IsNull()).First()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredDeleteHooks]: get server snmp global cred failed with cred %s", cred.Id), zap.Error(err))
+		return
+	}
+	server, err := gen.Server.Where(gen.Server.Id.Eq(*cred.ServerId), gen.Server.MonitorId.IsNotNull()).First()
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredDeleteHooks]: get server failed with cred %s", cred.Id), zap.Error(err))
+		return
+	}
+
+	client := zbx.NewZbxClient()
+	zbxInterfaces, err := client.HostInterfaceGet(&zschema.HostInterfaceGet{
+		HostIDs: []string{*server.MonitorId},
+	})
+	if err != nil || len(zbxInterfaces) <= 0 {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredDeleteHooks]: failed to update delete due to get host interface failed for server %s", server.Id), zap.Error(err))
+		return
+	}
+	hostInterfaceId := zbxInterfaces[0].InterfaceId
+	hostInterfaces := make([]zschema.HostInterfaceUpdate, 0)
+	hostInterfaces = append(hostInterfaces, zschema.HostInterfaceUpdate{
+		InterfaceID: hostInterfaceId,
+		Details: &zschema.Details{
+			Community:      globalCred.Community,
+			MaxRepetitions: &globalCred.MaxRepetitions,
+		},
+	})
+	updateSchema := zschema.HostUpdate{HostID: *server.MonitorId}
+	updateSchema.Interfaces = &hostInterfaces
+	_, err = client.HostUpdate(&updateSchema)
+	if err != nil {
+		core.Logger.Error(fmt.Sprintf("[serverSnmpCredDeleteHooks]: update host failed for cred %s", cred.Id), zap.Error(err))
+		return
+	}
+	core.Logger.Info(fmt.Sprintf("[serverSnmpCredDeleteHooks]: update host success for cred %s", cred.Id))
 }

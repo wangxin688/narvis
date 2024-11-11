@@ -70,10 +70,20 @@ func RegisterInfraRoutes(e *gin.Engine) {
 		router.POST("/scan-device-details", scanDeviceDetails)
 		router.POST("/config-backup", configBackUp)
 
-		router.POST(("/servers"), createServer)
-		router.GET(("/servers"), listServers)
-		router.GET(("/servers/:id"), getServer)
-		router.PUT(("/servers/:id"), updateServer)
-		router.DELETE(("/servers/:id"), deleteServer)
+		router.POST("/servers", createServer)
+		router.GET("/servers", listServers)
+		router.GET("/servers/:id", getServer)
+		router.PUT("/servers/:id", updateServer)
+		router.DELETE("/servers/:id", deleteServer)
+
+		router.POST("/servers/:id/cli", createCliCredentialForServer)
+		router.GET("/servers/:id/cli", getCliCredentialForServer)
+		router.DELETE("/servers/:id/cli", deleteCliCredentialForServer)
+		router.PUT("/servers/:id/cli", updateCliCredentialForServer)
+
+		router.POST("servers/:id/snmpv2", createSnmpV2CredentialForServer)
+		router.GET("servers/:id/snmpv2", getSnmpV2CredentialForServer)
+		router.PUT("servers/:id/snmpv2", updateSnmpV2CredentialForServer)
+		router.DELETE("servers/:id/snmpv2", deleteSnmpV2CredentialForServer)
 	}
 }

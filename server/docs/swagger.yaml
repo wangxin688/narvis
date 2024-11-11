@@ -4640,6 +4640,208 @@ paths:
       summary: Update server
       tags:
       - Infra.Server
+  /infra/servers/{id}/cli:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Server cli credential
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete Server cli credential
+      tags:
+      - Infra.Server
+    get:
+      consumes:
+      - application/json
+      description: Get Server cli credential
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.CliCredential'
+      security:
+      - BearerAuth: []
+      summary: Get Server cli credential
+      tags:
+      - Infra.Server
+    post:
+      consumes:
+      - application/json
+      description: Create Server new cli credential
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.CliCredentialCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create Server new cli credential
+      tags:
+      - Infra.Server
+    put:
+      consumes:
+      - application/json
+      description: Update Server cli credential
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.CliCredentialUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update Server cli credential
+      tags:
+      - Infra.Server
+  /infra/servers/{id}/snmpv2:
+    delete:
+      consumes:
+      - application/json
+      description: Delete server snmpV2 credential
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Delete server snmpV2 credential
+      tags:
+      - Infra.Server
+    get:
+      consumes:
+      - application/json
+      description: Get server snmpV2 credential
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.SnmpV2Credential'
+      security:
+      - BearerAuth: []
+      summary: Get server snmpV2 credential
+      tags:
+      - Infra.Server
+    post:
+      consumes:
+      - application/json
+      description: Create server new snmpV2 credential
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.SnmpV2CredentialCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Create server new snmpV2 credential
+      tags:
+      - Infra.Server
+    put:
+      consumes:
+      - application/json
+      description: Update server snmpV2 credential
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.SnmpV2CredentialUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update server snmpV2 credential
+      tags:
+      - Infra.Server
   /infra/sites:
     get:
       consumes:

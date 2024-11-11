@@ -161,3 +161,247 @@ func listServers(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, ts.ListResponse{Total: count, Results: servers})
 }
+
+// @Tags Infra.Server
+// @Summary Create Server new cli credential
+// @Description Create Server new cli credential
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted deviceId"
+// @Param credential body schemas.CliCredentialCreate true "Credential"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/servers/{id}/cli [post]
+func createCliCredentialForServer(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var credential schemas.CliCredentialCreate
+	serverId := c.Param("id")
+	if err = helpers.ValidateUuidString(serverId); err != nil {
+		return
+	}
+	if err = c.ShouldBindJSON(&credential); err != nil {
+		return
+	}
+	id, err := infra_biz.NewCliCredentialService().CreateServerCredential(serverId, &credential)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
+}
+
+// @Tags Infra.Server
+// @Summary Update Server cli credential
+// @Description Update Server cli credential
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted deviceId"
+// @Param credential body schemas.CliCredentialUpdate true "Credential"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/servers/{id}/cli [put]
+func updateCliCredentialForServer(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	id := c.Param("id")
+	if err = helpers.ValidateUuidString(id); err != nil {
+		return
+	}
+	var credential schemas.CliCredentialUpdate
+	if err = c.ShouldBindJSON(&credential); err != nil {
+		return
+	}
+	_, err = infra_biz.NewCliCredentialService().UpdateServerCredential(id, &credential)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
+}
+
+// @Tags Infra.Server
+// @Summary Delete Server cli credential
+// @Description Delete Server cli credential
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted deviceId"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/servers/{id}/cli [delete]
+func deleteCliCredentialForServer(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	id := c.Param("id")
+	if err = helpers.ValidateUuidString(id); err != nil {
+		return
+	}
+	err = infra_biz.NewCliCredentialService().DeleteServerCredential(id)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
+}
+
+// @Tags Infra.Server
+// @Summary Get Server cli credential
+// @Description Get Server cli credential
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted deviceId"
+// @Success 200 {object} schemas.CliCredential
+// @Router /infra/servers/{id}/cli [get]
+func getCliCredentialForServer(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	id := c.Param("id")
+	if err = helpers.ValidateUuidString(id); err != nil {
+		return
+	}
+	credential, err := infra_biz.NewCliCredentialService().GetCredentialByDeviceId(id)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, credential)
+}
+
+// @Tags Infra.Server
+// @Summary Create server new snmpV2 credential
+// @Description Create server new snmpV2 credential
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted deviceId"
+// @Param credential body schemas.SnmpV2CredentialCreate true "Credential"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/servers/{id}/snmpv2 [post]
+func createSnmpV2CredentialForServer(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var credential schemas.SnmpV2CredentialCreate
+	serverId := c.Param("id")
+	if err = helpers.ValidateUuidString(serverId); err != nil {
+		return
+	}
+	if err = c.ShouldBindJSON(&credential); err != nil {
+		return
+	}
+	id, err := infra_biz.NewSnmpCredentialService().CreateServerSnmpCredential(serverId, &credential)
+	if err != nil {
+		return
+	}
+	hooks.ServerSnmpCredCreateHooks(id)
+	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
+}
+
+// @Tags Infra.Server
+// @Summary Update server snmpV2 credential
+// @Description Update server snmpV2 credential
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted deviceId"
+// @Param credential body schemas.SnmpV2CredentialUpdate true "Credential"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/servers/{id}/snmpv2 [put]
+func updateSnmpV2CredentialForServer(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	serverId := c.Param("id")
+	if err = helpers.ValidateUuidString(serverId); err != nil {
+		return
+	}
+	var credential schemas.SnmpV2CredentialUpdate
+	if err = c.ShouldBindJSON(&credential); err != nil {
+		return
+	}
+	credId, diff, err := infra_biz.NewSnmpCredentialService().UpdateServerSnmpCredential(serverId, &credential)
+	if err != nil {
+		return
+	}
+	tools.BackgroundTask(func() {
+		hooks.ServerSnmpCredUpdateHooks(credId, diff[credId])
+	})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: serverId})
+}
+
+// @Tags Infra.Server
+// @Summary Delete server snmpV2 credential
+// @Description Delete server snmpV2 credential
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted deviceId"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/servers/{id}/snmpv2 [delete]
+func deleteSnmpV2CredentialForServer(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	serverId := c.Param("id")
+	if err = helpers.ValidateUuidString(serverId); err != nil {
+		return
+	}
+	cred, err := infra_biz.NewSnmpCredentialService().DeleteServerCredential(serverId)
+	if err != nil {
+		return
+	}
+	tools.BackgroundTask(func() {
+		hooks.ServerSnmpCredDeleteHooks(cred)
+	})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: serverId})
+}
+
+// @Tags Infra.Server
+// @Summary Get server snmpV2 credential
+// @Description Get server snmpV2 credential
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted deviceId"
+// @Success 200 {object} schemas.SnmpV2Credential
+// @Router /infra/servers/{id}/snmpv2 [get]
+func getSnmpV2CredentialForServer(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	serverId := c.Param("id")
+	if err = helpers.ValidateUuidString(serverId); err != nil {
+		return
+	}
+	credential, err := infra_biz.NewSnmpCredentialService().GetCredentialByDeviceId(serverId)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, credential)
+}
