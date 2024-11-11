@@ -5670,7 +5670,7 @@ paths:
       tags:
       - Task
   /webssh/proxy/{sessionId}:
-    post:
+    get:
       consumes:
       - application/json
       description: WebSSH Proxy

@@ -46,7 +46,7 @@ func webSSH(c *gin.Context) {
 // @Produce json
 // @Param sessionId path string true "session id"
 // @Success 200 {string} string "success"
-// @Router /webssh/proxy/{sessionId} [post]
+// @Router /webssh/proxy/{sessionId} [get]
 func proxyWebSSH(c *gin.Context) {
 	var err error
 	defer func() {

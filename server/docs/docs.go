@@ -5660,7 +5660,7 @@ const docTemplate = `{
             }
         },
         "/webssh/proxy/{sessionId}": {
-            "post": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []

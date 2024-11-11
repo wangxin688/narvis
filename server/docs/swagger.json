@@ -5652,7 +5652,7 @@
             }
         },
         "/webssh/proxy/{sessionId}": {
-            "post": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
