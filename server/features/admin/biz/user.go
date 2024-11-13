@@ -61,7 +61,7 @@ func (u *UserService) CreateAdminUser(enterpriseCode string, orgId string, passw
 
 func (u *UserService) GetUserById(id string) (*schemas.User, error) {
 	orgId := global.OrganizationId.Get()
-	user, err := u.Where(gen.User.Id.Eq(id), gen.User.OrganizationId.Eq(orgId)).Preload(gen.User.Role).First()
+	user, err := gen.User.Where(gen.User.Id.Eq(id), gen.User.OrganizationId.Eq(orgId)).Preload(gen.User.Role).First()
 	if err != nil {
 		return nil, err
 	}
