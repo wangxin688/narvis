@@ -531,3 +531,7 @@ func (sd *SnmpDiscovery) DiscoveryBasicInfo() *DiscoveryBasicResponse {
 	}
 	return response
 }
+
+func (sd *SnmpDiscovery) WlanUsers() (wlanUsers *WlanUserResponse) {
+	return nil
+}

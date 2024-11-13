@@ -322,3 +322,33 @@ func EnrichMacAddress(macAddresses *map[uint64][]string, interfaces []*DeviceInt
 func shouldIncludeMacAddress(iface *DeviceInterface, lldpInterfaces []string) bool {
 	return iface.IfType == "ethernetCsmacd" && !lo.Contains(lldpInterfaces, iface.IfName)
 }
+
+func SnmpIndexToMacAndIp(snmpIndex string) (string, string) {
+	parts := strings.Split(snmpIndex, ".")
+	macParts := make([]string, 6)
+	for i := 0; i < 6; i++ {
+		macParts[i] = fmt.Sprintf("%02x", parseInt(parts[i]))
+	}
+	mac := strings.Join(macParts, ":")
+	ip := strings.Join(parts[6:], ".")
+	return mac, ip
+
+}
+func parseInt(s string) byte {
+	var n int
+	fmt.Sscanf(s, "%d", &n)
+	return byte(n)
+}
+
+func ChannelToRadioType(channel uint64) string {
+	channel24G := []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
+	channel5G := []uint64{36, 40, 44, 48, 52, 56, 60, 64, 100, 104,
+		108, 112, 116, 132, 136, 140, 149, 153, 157, 161, 165}
+	if lo.Contains(channel24G, channel) {
+		return "2.4GHz"
+	} else if lo.Contains(channel5G, channel) {
+		return "5GHz"
+	} else {
+		return "6GHz"
+	}
+}

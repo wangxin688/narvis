@@ -30,6 +30,17 @@ const vmVlan = ".1.3.6.1.4.1.9.9.68.1.2.2.1.2"
 const vlanTrunkPortIfIndex = ".1.3.6.1.4.1.9.9.46.1.6.1.1.1"
 const vlanTrunkPortDynamicStatus = ".1.3.6.1.4.1.9.9.46.1.6.1.1.14"
 
+const bsnMobileStationSsid = ".1.3.6.1.4.1.14179.2.1.4.1.7"
+const bsnMobileStationAPMacAddr = ".1.3.6.1.4.1.14179.2.1.4.1.4"
+const bsnMobileStationAPIfSlotId = ".1.3.6.1.4.1.14179.2.1.4.1.5"
+const bsnMobileStationMacAddress = ".1.3.6.1.4.1.14179.2.1.4.1.1"
+const bsnMobileStationIpAddress = ".1.3.6.1.4.1.14179.2.1.4.1.2"
+const bsnMobileStationUserName = ".1.3.6.1.4.1.14179.2.1.4.1.3"
+const bsnMobileStationRSSI = ".1.3.6.1.4.1.14179.2.1.6.1.1"
+const bsnMobileStationBytesReceived = "..1.3.6.1.4.1.14179.2.1.6.1.2"
+const bsnMobileStationSnr = ".1.3.6.1.4.1.14179.2.1.6.1.26"
+const bsnMobileStationBytesSent = ".1.3.6.1.4.1.14179.2.1.6.1.3"
+
 type CiscoBaseDriver struct {
 	factory.SnmpDiscovery
 }

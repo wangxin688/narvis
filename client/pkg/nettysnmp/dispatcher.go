@@ -381,6 +381,46 @@ func (d *Dispatcher) DispatchApScan() []*factory.DispatchApScanResponse {
 	return responses
 }
 
+func (d *Dispatcher) dispatchWlanUser(config factory.SnmpConfig, plat platform.Platform) *factory.WlanUserResponse {
+	var response = &factory.WlanUserResponse{}
+	session, err := d.Session(&config)
+	if err != nil || session == nil {
+		response.SnmpReachable = false
+	} else {
+		response.SnmpReachable = d.SnmpReachable(session)
+	}
+	if !response.SnmpReachable {
+		return response
+	}
+	driver, err := d.getFactory(plat, config)
+	if err != nil {
+		return response
+	}
+	wlanUsers := driver.WlanUsers()
+	return wlanUsers
+}
+
+func (d *Dispatcher) DispatchWlanUser(plat platform.Platform) []*factory.WlanUserResponse {
+	var wg sync.WaitGroup
+	ch := make(chan struct{}, 100)
+	var responses []*factory.WlanUserResponse
+	for _, target := range d.Targets {
+		ch <- struct{}{}
+		wg.Add(1)
+		go func(target string) {
+			defer wg.Done()
+			response := d.dispatchWlanUser(factory.SnmpConfig{
+				IpAddress:      target,
+				BaseSnmpConfig: d.Config,
+			}, plat)
+			responses = append(responses, response)
+			<-ch
+		}(target)
+	}
+	wg.Wait()
+	return responses
+}
+
 func NewDispatcher(targets []string, config factory.BaseSnmpConfig) *Dispatcher {
 	return &Dispatcher{
 		Targets: targets,

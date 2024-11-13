@@ -14,6 +14,7 @@ type SnmpDriver interface {
 	ArpTable() (arp []*ArpItem, errors []string)
 	Vlans() (vlans []*VlanItem, errors []string)
 	APs() (ap []*ApItem, errors []string)
+	WlanUsers() (wlanUsers *WlanUserResponse)
 	Discovery() *DiscoveryResponse
 	DiscoveryBasicInfo() *DiscoveryBasicResponse
 }

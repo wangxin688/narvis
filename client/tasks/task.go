@@ -311,3 +311,4 @@ func configurationBackupTask(data []byte) *intendtask.ConfigurationBackupTaskRes
 	return result
 
 }
+

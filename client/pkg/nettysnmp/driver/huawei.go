@@ -32,6 +32,20 @@ const hwL2IfPortIfIndex = ".1.3.6.1.4.1.2011.5.25.42.1.1.1.3.1.2"
 const hwL2IfPortType = ".1.3.6.1.4.1.2011.5.25.42.1.1.1.3.1.3"
 const hwL2IfPVID = ".1.3.6.1.4.1.2011.5.25.42.1.1.1.3.1.4"
 
+const hwWlanStaMac = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.1"
+const hwWlanStaUsername = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.2"
+const hwWlanStaApMac = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.3"
+const hwWlanStaApName = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.4"
+const hwWlanStaAssocBand = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.7"
+const hwWlanStaAccessChannel = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.9"
+const hwWlanStaEssName = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.16"
+const hwWlanStaVlan = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.24"
+const hwWlanStaRssi = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.42"
+const hwWlanStaSnrUs = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.44"
+const hwWlanStaWirelessTxBytes = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.37"
+const hwWlanStaWirelessRxBytes = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.34"
+const hwWlanStaOnlineTime = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.30"
+
 type HuaweiDriver struct {
 	factory.SnmpDiscovery
 }

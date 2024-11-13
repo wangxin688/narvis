@@ -22,6 +22,16 @@ const wlsxSysExtModelName string = ".1.3.6.1.4.1.14823.2.2.1.2.1.3.0"
 const wlsxSysExtSwVersion string = ".1.3.6.1.4.1.14823.2.2.1.2.1.28.0"
 const wlsxSysExtSerialNumber string = ".1.3.6.1.4.1.14823.2.2.1.2.1.29.0"
 
+const nUserName = ".1.3.6.1.4.1.14823.2.2.1.4.1.2.1.3"
+const nUserAssignedVlan = ".1.3.6.1.4.1.14823.2.2.1.4.1.2.1.17"
+const nUserApBSSID = ".1.3.6.1.4.1.14823.2.2.1.4.1.2.1.11"
+const wlanStaAccessPointESSID = ".1.3.6.1.4.1.14823.2.2.1.5.2.2.1.1.12"
+const wlanStaRSSI = ".1.3.6.1.4.1.14823.2.2.1.5.2.2.1.1.14"
+const wlanStaUpTime = ".1.3.6.1.4.1.14823.2.2.1.5.2.2.1.1.15"
+const wlanStaChannel = ".1.3.6.1.4.1.14823.2.2.1.5.2.2.1.1.6"
+const wlanStaTxBytes = ".1.3.6.1.4.1.14823.2.2.1.5.3.2.1.1.3"
+const wlanStaRxBytes = ".1.3.6.1.4.1.14823.2.2.1.5.3.2.1.1.5"
+
 type ArubaDriver struct {
 	factory.SnmpDiscovery
 }
@@ -179,4 +189,70 @@ func (ad *ArubaDriver) Discovery() *factory.DiscoveryResponse {
 		response.Errors = append(response.Errors, VlanError...)
 	}
 	return response
+}
+
+func (ad *ArubaDriver) WlanUsers() (wlanUsers *factory.WlanUserResponse) {
+	results := make([]*factory.WlanUser, 0)
+	errors := make([]string, 0)
+	userNames, err := ad.Session.BulkWalkAll(nUserName)
+	if err != nil {
+		return &factory.WlanUserResponse{
+			Errors:    []string{fmt.Sprintf("failed to get users from %s", ad.IpAddress), err.Error()},
+			WlanUsers: results,
+		}
+	}
+	userUptime, errUptime := ad.Session.BulkWalkAll(wlanStaUpTime)
+	userAssignedVlan, errAssignedVlan := ad.Session.BulkWalkAll(nUserAssignedVlan)
+	userRSSI, errRSSI := ad.Session.BulkWalkAll(wlanStaRSSI)
+	userBSSID, errBSSID := ad.Session.BulkWalkAll(nUserApBSSID)
+	userESSID, errESSID := ad.Session.BulkWalkAll(wlanStaAccessPointESSID)
+	userChannel, errChannel := ad.Session.BulkWalkAll(wlanStaChannel)
+	userTxBytes, errTxBytes := ad.Session.BulkWalkAll(wlanStaTxBytes)
+	userRxBytes, errRxBytes := ad.Session.BulkWalkAll(wlanStaRxBytes)
+
+	if errUptime != nil || errAssignedVlan != nil || errRSSI != nil ||
+		errBSSID != nil || errESSID != nil || errChannel != nil || errTxBytes != nil || errRxBytes != nil {
+		errors = append(errors, errUptime.Error())
+		errors = append(errors, errAssignedVlan.Error())
+		errors = append(errors, errBSSID.Error())
+		errors = append(errors, errESSID.Error())
+		errors = append(errors, errChannel.Error())
+		errors = append(errors, errTxBytes.Error())
+		errors = append(errors, errRxBytes.Error())
+	}
+	indexUserName := factory.ExtractString(nUserName, userNames)
+	indexUserUptime := factory.ExtractInteger(wlanStaUpTime, userUptime)
+	indexUserVlan := factory.ExtractInteger(nUserAssignedVlan, userAssignedVlan)
+	indexBSSID := factory.ExtractMacAddress(nUserApBSSID, userBSSID)
+	indexESSID := factory.ExtractString(wlanStaAccessPointESSID, userESSID)
+	indexRSSI := factory.ExtractInteger(wlanStaRSSI, userRSSI)
+	indexChannel := factory.ExtractInteger(wlanStaChannel, userChannel)
+	indexTxBytes := factory.ExtractInteger(wlanStaTxBytes, userTxBytes)
+	indexRxBytes := factory.ExtractInteger(wlanStaRxBytes, userRxBytes)
+	for i, v := range indexUserName {
+		mac, ip := factory.SnmpIndexToMacAndIp(i)
+		macIndex := "." + mac
+		bssid := indexBSSID[i]
+		vlan := indexUserVlan[i]
+		channel := indexChannel[macIndex]
+		user := factory.WlanUser{
+			StationMac:        mac,
+			StationIp:         ip,
+			StationUsername:   v,
+			StationESSID:      indexESSID[macIndex],
+			StationBSSID:      &bssid,
+			StationRSSI:       indexRSSI[macIndex],
+			StationVlan:       &vlan,
+			StationOnlineTime: indexUserUptime[macIndex],
+			StationChannel:    channel,
+			StationRxBytes:    indexRxBytes[macIndex],
+			StationTxBytes:    indexTxBytes[macIndex],
+			StationRadioType:  factory.ChannelToRadioType(channel),
+		}
+		results = append(results, &user)
+	}
+	return &factory.WlanUserResponse{
+		WlanUsers: results,
+		Errors:    errors,
+	}
 }

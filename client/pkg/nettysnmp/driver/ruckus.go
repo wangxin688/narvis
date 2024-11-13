@@ -12,6 +12,19 @@ const ruckusZDWLANAPSWversion = ".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.7"
 const ruckusZDWLANAPModel = ".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.4"
 const ruckusZDWLANAPSerialNumber = ".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.5"
 
+const ruckusZDWLANStaMacAddr = "1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.1"
+const ruckusZDWLANStaAPMacAddr = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.2"
+const ruckusZDWLANStaSSID = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.4"
+const ruckusZDWLANStaUser = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.5"
+const ruckusZDWLANStaChannel = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.7"
+const ruckusZDWLANStaIPAddr = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.8"
+const ruckusZDWLANStaAvgRSSI = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.9"
+const ruckusZDWLANStaSNR = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.21"
+const ruckusZDWLANStaRxBytes = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.11"
+const ruckusZDWLANStaTxBytes = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.13"
+const ruckusZDWLANStaAssocTime = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.15"
+const ruckusZDWLANStaVlanID = ".1.3.6.1.4.1.25053.1.2.2.1.1.3.1.1.30"
+
 type RuckusDriver struct {
 	factory.SnmpDiscovery
 }
