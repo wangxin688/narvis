@@ -120,6 +120,24 @@ func configBackUpCallback(data *intendtask.ConfigurationBackupTaskResult, taskId
 	logger.Logger.Info(fmt.Sprintf("[configBackUpCallback] [%s]: post result to server success", taskId))
 }
 
+func wlanUsersCallback(data *intendtask.WlanUserTaskResult, taskId string) {
+	server := newServer()
+	if server == nil {
+		logger.Logger.Error(fmt.Sprintf("[wlanUsersCallback] [%s]: failed to create server", taskId))
+		return
+	}
+	resp, err := server.R().SetBody(data).SetHeader(xTaskID, taskId).Post(intendtask.WlanUserCbUrl)
+	if err != nil {
+		logger.Logger.Error(fmt.Sprintf("[wlanUsersCallback] [%s]: failed to post", taskId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[wlanUsersCallback] [%s]: server response", taskId), zap.Any("response", resp.String()))
+		return
+	}
+	if !resp.IsSuccessState() {
+		logger.Logger.Error(fmt.Sprintf("[wlanUsersCallback] [%s]: failed to post result to server", taskId), zap.String("response", resp.String()))
+	}
+	logger.Logger.Info(fmt.Sprintf("[wlanUsersCallback] [%s]: post result to server success", taskId))
+}
+
 func newServer() *req.Client {
 	once.Do(func() {
 		token, err := security.ProxyToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY)

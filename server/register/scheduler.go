@@ -7,6 +7,7 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	device360_tasks "github.com/wangxin688/narvis/server/features/device360/tasks"
 	infra_scheduler "github.com/wangxin688/narvis/server/features/infra/scheduler"
+	monitor_scheduler "github.com/wangxin688/narvis/server/features/monitor/scheduler"
 	"go.uber.org/zap"
 )
 
@@ -27,7 +28,6 @@ func RegisterScheduler() {
 	)
 	if err != nil {
 		core.Logger.Error("[registerScheduler]: failed to create device360 offline job", zap.Error(err))
-		panic(err)
 	}
 	core.Logger.Info("[registerScheduler]: create device360 offline job success", zap.String("jobId", device360OfflineJob.ID().String()))
 
@@ -41,7 +41,6 @@ func RegisterScheduler() {
 	)
 	if err != nil {
 		core.Logger.Error("[registerScheduler]: failed to create device info job", zap.Error(err))
-		panic(err)
 	}
 	core.Logger.Info("[registerScheduler]: create device info job success", zap.String("jobId", deviceInfoJob.ID().String()))
 
@@ -55,7 +54,6 @@ func RegisterScheduler() {
 	)
 	if err != nil {
 		core.Logger.Error("[registerScheduler]: failed to create ap info job", zap.Error(err))
-		panic(err)
 	}
 	core.Logger.Info("[registerScheduler]: create ap info job success", zap.String("jobId", apInfoJob.ID().String()))
 
@@ -69,9 +67,34 @@ func RegisterScheduler() {
 	)
 	if err != nil {
 		core.Logger.Error("[registerScheduler]: failed to create config backup job", zap.Error(err))
-		panic(err)
 	}
 	core.Logger.Info("[registerScheduler]: create config backup job success", zap.String("jobId", configBackupJob.ID().String()))
+
+	wlanUserJob, err := scheduler.NewJob(
+		gocron.DurationJob(5*time.Minute),
+		gocron.NewTask(
+			func() {
+				monitor_scheduler.WlanUserTask()
+			},
+		),
+	)
+	if err != nil {
+		core.Logger.Error("[registerScheduler]: failed to create wlan user job", zap.Error(err))
+	}
+	core.Logger.Info("[registerScheduler]: create wlan user job success", zap.String("jobId", wlanUserJob.ID().String()))
+
+	houseKeepingJob, err := scheduler.NewJob(
+		gocron.DurationJob(24*time.Hour),
+		gocron.NewTask(
+			func() {
+				infra_scheduler.HouseKeepingResultRecycle()
+			},
+		),
+	)
+	if err != nil {
+		core.Logger.Error("[registerScheduler]: failed to create house keeping job", zap.Error(err))
+	}
+	core.Logger.Info("[registerScheduler]: create house keeping job success", zap.String("jobId", houseKeepingJob.ID().String()))
 
 	scheduler.Start()
 	core.Logger.Info("[registerScheduler]: scheduler started")

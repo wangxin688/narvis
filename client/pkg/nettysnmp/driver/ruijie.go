@@ -1,6 +1,8 @@
 package driver
 
 import (
+	"fmt"
+
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
 )
 
@@ -78,79 +80,65 @@ func (d *RuiJieDriver) APs() (ap []*factory.ApItem, errors []string) {
 	return ap, errors
 }
 
-// func (d *RuiJieDriver) WlanUsers() *factory.WlanUserResponse {
-// 	results := make([]*factory.WlanUser, 0)
-// 	errors := make([]string, 0)
-// 	userNames, err := d.Session.BulkWalkAll(ruijieStaUsername)
-// 	if err != nil {
-// 		return &factory.WlanUserResponse{
-// 			Errors:    []string{fmt.Sprintf("failed to get users from %s", d.IpAddress), err.Error()},
-// 			WlanUsers: results,
-// 		}
-// 	}
-// 	userApMac, errApMac := d.Session.BulkWalkAll(ruijieStaApMacAddr)
-// 	userUptime, errUptime := d.Session.BulkWalkAll(ruijieStaOnlineTime)
-// 	userAssignedVlan, errAssignedVlan := d.Session.BulkWalkAll(ruijieStaVlan)
-// 	userRSSI, errRSSI := d.Session.BulkWalkAll(ruijieStaSsid)
-// 	userESSID, errESSID := d.Session.BulkWalkAll(ruijieStaSsid)
-// 	userChannel, errChannel := d.Session.BulkWalkAll(ruijieStaCurChan)
-// 	// userTxBytes, errTxBytes := d.Session.BulkWalkAll(hwWlanStaWirelessTxBytes)
-// 	// userRxBytes, errRxBytes := d.Session.BulkWalkAll(hwWlanStaWirelessRxBytes)
-// 	userIp, errIp := d.Session.BulkWalkAll(ruijieStaIp)
+func (d *RuiJieDriver) WlanUsers() *factory.WlanUserResponse {
+	results := make([]*factory.WlanUser, 0)
+	errors := make([]string, 0)
+	userNames, err := d.Session.BulkWalkAll(ruijieStaUsername)
+	if err != nil {
+		return &factory.WlanUserResponse{
+			Errors:    []string{fmt.Sprintf("failed to get users from %s", d.IpAddress), err.Error()},
+			WlanUsers: results,
+		}
+	}
+	userApMac, errApMac := d.Session.BulkWalkAll(ruijieStaApMacAddr)
+	userUptime, errUptime := d.Session.BulkWalkAll(ruijieStaOnlineTime)
+	userAssignedVlan, errAssignedVlan := d.Session.BulkWalkAll(ruijieStaVlan)
+	userRSSI, errRSSI := d.Session.BulkWalkAll(ruijieStaRssi)
+	userESSID, errESSID := d.Session.BulkWalkAll(ruijieStaSsid)
+	userChannel, errChannel := d.Session.BulkWalkAll(ruijieStaCurChan)
+	// userTxBytes, errTxBytes := d.Session.BulkWalkAll(hwWlanStaWirelessTxBytes)
+	// userRxBytes, errRxBytes := d.Session.BulkWalkAll(hwWlanStaWirelessRxBytes)
+	userIp, errIp := d.Session.BulkWalkAll(ruijieStaIp)
 
-// 	if errUptime != nil || errAssignedVlan != nil || errRSSI != nil || errSnr != nil ||
-// 		errBand != nil || errApName != nil || errESSID != nil || errIp != nil ||
-// 		errChannel != nil || errTxBytes != nil || errRxBytes != nil {
-// 		errors = append(errors, errUptime.Error())
-// 		errors = append(errors, errAssignedVlan.Error())
-// 		errors = append(errors, errBand.Error())
-// 		errors = append(errors, errApName.Error())
-// 		errors = append(errors, errSnr.Error())
-// 		errors = append(errors, errESSID.Error())
-// 		errors = append(errors, errChannel.Error())
-// 		errors = append(errors, errTxBytes.Error())
-// 		errors = append(errors, errRxBytes.Error())
-// 		errors = append(errors, errIp.Error())
-// 	}
-// 	indexUserName := factory.ExtractString(nUserName, userNames)
-// 	indexUserUptime := factory.ExtractInteger(wlanStaUpTime, userUptime)
-// 	indexUserVlan := factory.ExtractInteger(nUserAssignedVlan, userAssignedVlan)
-// 	indexBand := factory.ExtractInteger(hwWlanStaAssocBand, userBand)
-// 	indexSnr := factory.ExtractInteger(hwWlanStaSnrUs, userSnr)
-// 	indexApName := factory.ExtractString(hwWlanStaApName, userApName)
-// 	indexESSID := factory.ExtractString(wlanStaAccessPointESSID, userESSID)
-// 	indexRSSI := factory.ExtractInteger(wlanStaRSSI, userRSSI)
-// 	indexChannel := factory.ExtractInteger(wlanStaChannel, userChannel)
-// 	indexTxBytes := factory.ExtractInteger(wlanStaTxBytes, userTxBytes)
-// 	indexRxBytes := factory.ExtractInteger(wlanStaRxBytes, userRxBytes)
-// 	indexIp := factory.ExtractString(hwWlanStaIP, userIp)
-// 	for i, v := range indexUserName {
-
-// 		vlan := indexUserVlan[i]
-// 		channel := indexChannel[i]
-// 		snr := indexSnr[i]
-// 		ap_name := indexApName[i]
-// 		band := fmt.Sprintf("%sMHz", strconv.Itoa(int(indexBand[i])))
-// 		user := factory.WlanUser{
-// 			StationMac:           factory.StringToHexMac(i),
-// 			StationIp:            indexIp[i],
-// 			StationUsername:      v,
-// 			StationApName:        &ap_name,
-// 			StationESSID:         indexESSID[i],
-// 			StationChanBandWidth: &band,
-// 			StationSNR:           &snr,
-// 			StationRSSI:          indexRSSI[i],
-// 			StationVlan:          &vlan,
-// 			StationOnlineTime:    indexUserUptime[i],
-// 			StationChannel:       channel,
-// 			StationRxBytes:       indexRxBytes[i],
-// 			StationTxBytes:       indexTxBytes[i],
-// 			StationRadioType:     factory.ChannelToRadioType(channel),
-// 		}
-// 		results = append(results, &user)
-// 	}
-// 	return &factory.WlanUserResponse{
-// 		WlanUsers: results,
-// 		Errors:    errors,
-// 	}
-// }
+	if errUptime != nil || errAssignedVlan != nil || errRSSI != nil ||
+		errApMac != nil || errESSID != nil || errIp != nil ||
+		errChannel != nil {
+		errors = append(errors, errUptime.Error())
+		errors = append(errors, errAssignedVlan.Error())
+		errors = append(errors, errESSID.Error())
+		errors = append(errors, errChannel.Error())
+		errors = append(errors, errIp.Error())
+	}
+	indexApMac := factory.ExtractMacAddress(ruijieStaApMacAddr, userApMac)
+	indexUserName := factory.ExtractString(ruijieStaUsername, userNames)
+	indexUserUptime := factory.ExtractInteger(ruijieStaOnlineTime, userUptime)
+	indexUserVlan := factory.ExtractInteger(ruijieStaVlan, userAssignedVlan)
+	indexESSID := factory.ExtractString(ruijieStaSsid, userESSID)
+	indexRSSI := factory.ExtractInteger(ruijieStaRssi, userRSSI)
+	indexChannel := factory.ExtractInteger(ruijieStaCurChan, userChannel)
+	// indexTxBytes := factory.ExtractInteger(wlanStaTxBytes, userTxBytes)
+	// indexRxBytes := factory.ExtractInteger(wlanStaRxBytes, userRxBytes)
+	indexIp := factory.ExtractString(hwWlanStaIP, userIp)
+	for i, v := range indexUserName {
+		vlan := indexUserVlan[i]
+		channel := indexChannel[i]
+		ap_mac := indexApMac[i]
+		user := factory.WlanUser{
+			StationMac:        factory.StringToHexMac(i),
+			StationIp:         indexIp[i],
+			StationUsername:   v,
+			StationApMac:      &ap_mac,
+			StationESSID:      indexESSID[i],
+			StationRSSI:       indexRSSI[i],
+			StationVlan:       &vlan,
+			StationOnlineTime: indexUserUptime[i],
+			StationChannel:    channel,
+			StationRadioType:  factory.ChannelToRadioType(channel),
+		}
+		results = append(results, &user)
+	}
+	return &factory.WlanUserResponse{
+		WlanUsers: results,
+		Errors:    errors,
+	}
+}

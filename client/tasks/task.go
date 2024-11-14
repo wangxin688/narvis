@@ -15,6 +15,7 @@ import (
 	"github.com/wangxin688/narvis/client/pkg/gowebssh"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+	"github.com/wangxin688/narvis/client/pkg/vector"
 	"github.com/wangxin688/narvis/client/utils/helpers"
 	"github.com/wangxin688/narvis/client/utils/logger"
 	"github.com/wangxin688/narvis/client/utils/security"
@@ -312,3 +313,31 @@ func configurationBackupTask(data []byte) *intendtask.ConfigurationBackupTaskRes
 
 }
 
+func wlanUserTask(data []byte) *intendtask.WlanUserTaskResult {
+	task := &intendtask.BaseSnmpTask{}
+	err := json.Unmarshal(data, task)
+	result := &intendtask.WlanUserTaskResult{}
+	if err != nil {
+		logger.Logger.Error("[WlanUserTask]: Unmarshal err: ", zap.Error(err))
+		result.Errors = []string{fmt.Sprintf("failed to unmarshal task, error: %s", err.Error())}
+		return result
+	}
+	snmpConfig := factory.BaseSnmpConfig{
+		Port:           task.SnmpConfig.Port,
+		Version:        gosnmp.Version2c,
+		Timeout:        task.SnmpConfig.Timeout,
+		MaxRepetitions: int(task.SnmpConfig.MaxRepetitions),
+		Community:      &task.SnmpConfig.Community,
+	}
+	dispatcher := nettysnmp.NewDispatcher([]string{task.ManagementIp}, snmpConfig)
+	response := dispatcher.DispatchWlanUser()
+	if response == nil {
+		result.Errors = []string{fmt.Sprintf("not support for target device %s", task.ManagementIp)}
+	}
+	if response[0].Errors != nil {
+		result.Errors = response[0].Errors
+		return result
+	}
+	go vector.PostWlanUsers(response[0].WlanUsers)
+	return result
+}

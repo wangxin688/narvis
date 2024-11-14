@@ -77,3 +77,78 @@ func (r *RuckusDriver) APs() (ap []*factory.ApItem, errors []string) {
 	}
 	return ap, errors
 }
+
+func (r *RuckusDriver) WlanUsers() *factory.WlanUserResponse {
+
+	results := make([]*factory.WlanUser, 0)
+	errors := make([]string, 0)
+	userNames, err := r.Session.BulkWalkAll(ruckusZDWLANStaUser)
+	if err != nil {
+		return &factory.WlanUserResponse{
+			Errors:    []string{fmt.Sprintf("failed to get users from %s", r.IpAddress), err.Error()},
+			WlanUsers: results,
+		}
+	}
+	apMac, errMac := r.Session.BulkWalkAll(ruckusZDWLANStaAPMacAddr)
+	userUptime, errUptime := r.Session.BulkWalkAll(ruckusZDWLANStaAssocTime)
+	userAssignedVlan, errAssignedVlan := r.Session.BulkWalkAll(ruckusZDWLANStaVlanID)
+	userRSSI, errRSSI := r.Session.BulkWalkAll(ruckusZDWLANStaAvgRSSI)
+	userSnr, errSnr := r.Session.BulkWalkAll(ruckusZDWLANStaSNR)
+	userESSID, errESSID := r.Session.BulkWalkAll(ruckusZDWLANStaSSID)
+	userChannel, errChannel := r.Session.BulkWalkAll(ruckusZDWLANStaChannel)
+	userTxBytes, errTxBytes := r.Session.BulkWalkAll(ruckusZDWLANStaTxBytes)
+	userRxBytes, errRxBytes := r.Session.BulkWalkAll(ruckusZDWLANStaRxBytes)
+	userIp, errIp := r.Session.BulkWalkAll(ruckusZDWLANStaIPAddr)
+
+	if errUptime != nil || errAssignedVlan != nil || errRSSI != nil || errSnr != nil ||
+		errESSID != nil || errIp != nil || errMac != nil ||
+		errChannel != nil || errTxBytes != nil || errRxBytes != nil {
+		errors = append(errors, errUptime.Error())
+		errors = append(errors, errAssignedVlan.Error())
+		errors = append(errors, errSnr.Error())
+		errors = append(errors, errESSID.Error())
+		errors = append(errors, errChannel.Error())
+		errors = append(errors, errTxBytes.Error())
+		errors = append(errors, errRxBytes.Error())
+		errors = append(errors, errIp.Error())
+		errors = append(errors, errMac.Error())
+	}
+	indexApMac := factory.ExtractMacAddress(ruckusZDWLANStaAPMacAddr, apMac)
+	indexUserName := factory.ExtractString(ruckusZDWLANStaUser, userNames)
+	indexUserUptime := factory.ExtractInteger(ruckusZDWLANStaAssocTime, userUptime)
+	indexUserVlan := factory.ExtractInteger(ruckusZDWLANStaVlanID, userAssignedVlan)
+	indexSnr := factory.ExtractInteger(ruckusZDWLANStaSNR, userSnr)
+	indexESSID := factory.ExtractString(ruckusZDWLANStaSSID, userESSID)
+	indexRSSI := factory.ExtractInteger(ruckusZDWLANStaAvgRSSI, userRSSI)
+	indexChannel := factory.ExtractInteger(ruckusZDWLANStaChannel, userChannel)
+	indexTxBytes := factory.ExtractInteger(ruckusZDWLANStaTxBytes, userTxBytes)
+	indexRxBytes := factory.ExtractInteger(ruckusZDWLANStaRxBytes, userRxBytes)
+	indexIp := factory.ExtractString(ruckusZDWLANStaIPAddr, userIp)
+	for i, v := range indexUserName {
+
+		vlan := indexUserVlan[i]
+		channel := indexChannel[i]
+		snr := indexSnr[i]
+		ap_mac := indexApMac[i]
+		user := factory.WlanUser{
+			StationMac:        factory.StringToHexMac(i),
+			StationIp:         indexIp[i],
+			StationUsername:   v,
+			StationApMac:      &ap_mac,
+			StationESSID:      indexESSID[i],
+			StationSNR:        &snr,
+			StationRSSI:       indexRSSI[i],
+			StationVlan:       &vlan,
+			StationOnlineTime: indexUserUptime[i],
+			StationChannel:    channel,
+			StationRxBytes:    indexRxBytes[i],
+			StationTxBytes:    indexTxBytes[i],
+			StationRadioType:  factory.ChannelToRadioType(channel),
+		}
+		results = append(results, &user)
+	}
+	return &factory.WlanUserResponse{
+		WlanUsers: results,
+		Errors:    errors,
+	}
+}

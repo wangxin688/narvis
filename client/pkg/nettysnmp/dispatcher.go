@@ -381,7 +381,7 @@ func (d *Dispatcher) DispatchApScan() []*factory.DispatchApScanResponse {
 	return responses
 }
 
-func (d *Dispatcher) dispatchWlanUser(config factory.SnmpConfig, plat platform.Platform) *factory.WlanUserResponse {
+func (d *Dispatcher) dispatchWlanUser(config factory.SnmpConfig) *factory.WlanUserResponse {
 	var response = &factory.WlanUserResponse{}
 	session, err := d.Session(&config)
 	if err != nil || session == nil {
@@ -392,7 +392,12 @@ func (d *Dispatcher) dispatchWlanUser(config factory.SnmpConfig, plat platform.P
 	if !response.SnmpReachable {
 		return response
 	}
-	driver, err := d.getFactory(plat, config)
+	sysObjectId := d.SysObjectID(session)
+	if sysObjectId == "" {
+		return response
+	}
+	deviceType := GetDeviceModel(sysObjectId)
+	driver, err := d.getFactory(deviceType.Platform, config)
 	if err != nil {
 		return response
 	}
@@ -400,7 +405,7 @@ func (d *Dispatcher) dispatchWlanUser(config factory.SnmpConfig, plat platform.P
 	return wlanUsers
 }
 
-func (d *Dispatcher) DispatchWlanUser(plat platform.Platform) []*factory.WlanUserResponse {
+func (d *Dispatcher) DispatchWlanUser() []*factory.WlanUserResponse {
 	var wg sync.WaitGroup
 	ch := make(chan struct{}, 100)
 	var responses []*factory.WlanUserResponse
@@ -412,7 +417,7 @@ func (d *Dispatcher) DispatchWlanUser(plat platform.Platform) []*factory.WlanUse
 			response := d.dispatchWlanUser(factory.SnmpConfig{
 				IpAddress:      target,
 				BaseSnmpConfig: d.Config,
-			}, plat)
+			})
 			responses = append(responses, response)
 			<-ch
 		}(target)

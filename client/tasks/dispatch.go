@@ -59,11 +59,12 @@ func TaskDispatcher(data []byte) {
 			scanMacAddressTableCallback(results, taskId)
 		case intendtask.ConfigurationBackup:
 			results := configurationBackupTask(data)
-			if err != nil {
-				logger.Logger.Error("taskDispatcher]: configurationBackupTask err: ", zap.Error(err))
-			}
 			configBackUpCallback(results, taskId)
+		case intendtask.WlanUser:
+			results := wlanUserTask(data)
+			wlanUsersCallback(results, taskId)
 		}
+
 	}
 
 }

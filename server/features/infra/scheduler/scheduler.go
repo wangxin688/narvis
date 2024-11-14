@@ -1,8 +1,11 @@
 package infra_scheduler
 
 import (
+	"time"
+
 	"github.com/wangxin688/narvis/intend/intendtask"
 	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/server/dal/gen"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	infra_tasks "github.com/wangxin688/narvis/server/features/infra/tasks"
 	"github.com/wangxin688/narvis/server/global"
@@ -68,5 +71,15 @@ func SyncConfigBackupScheduler() {
 		if len(ids) > 0 {
 			core.Logger.Warn("[syncConfigBackupScheduler]: generate snmp task success", zap.Any("taskIds", ids))
 		}
+	}
+}
+
+// delete task results older than 30 days
+func HouseKeepingResultRecycle() {
+	_, err := gen.TaskResult.Where(
+		gen.TaskResult.CreatedAt.Lt(time.Now().AddDate(0, 0, -30)),
+	).Delete()
+	if err != nil {
+		core.Logger.Error("[houseKeepingResultRecycle]: delete history task results failed", zap.Error(err))
 	}
 }

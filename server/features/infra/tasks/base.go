@@ -80,6 +80,8 @@ func getDevicesByTaskName(siteId, taskName string) ([]*models.Device, error) {
 	switch taskName {
 	case intendtask.ScanAp:
 		return infra_biz.NewDeviceService().GetActiveWlanAC(siteId)
+	case intendtask.WlanUser:
+		return infra_biz.NewDeviceService().GetActiveWlanAC(siteId)
 	case intendtask.ScanDevice:
 		return infra_biz.NewDeviceService().GetActiveDevices(siteId)
 	case intendtask.ScanMacAddressTable:

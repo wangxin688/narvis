@@ -54,7 +54,6 @@ type BaseSnmpScanTask struct {
 	Range      string            `json:"range"` // CIDR
 }
 
-
 type WebSSHTask struct {
 	TaskName     string `json:"taskName"`
 	SessionId    string `json:"sessionId"`
@@ -271,4 +270,8 @@ func (a *ApScanResponse) CalApHash() string {
 	hash := md5.New()
 	_, _ = hash.Write([]byte(hashString))
 	return hex.EncodeToString(hash.Sum(nil))
+}
+
+type WlanUserTaskResult struct {
+	Errors []string `json:"errors"`
 }

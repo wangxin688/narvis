@@ -118,7 +118,7 @@ type WlanUser struct {
 	StationRSSI          uint64  `json:"stationRSSI"`                    // 终端RSSI
 	StationRxBytes       uint64  `json:"stationRxBytes"`                 // 终端下行流量
 	StationTxBytes       uint64  `json:"stationTxBytes"`                 // 终端上行流量
-	StationMaxSpeed      *string `json:"stationMaxSpeed,omitempty"`      // 终端协商速率
+	StationMaxSpeed      *uint64 `json:"stationMaxSpeed,omitempty"`      // 终端协商速率
 	StationOnlineTime    uint64  `json:"stationOnlineTime"`              // 终端在线时间
 }
 
