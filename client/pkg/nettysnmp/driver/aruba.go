@@ -230,8 +230,7 @@ func (ad *ArubaDriver) WlanUsers() (wlanUsers *factory.WlanUserResponse) {
 	indexTxBytes := factory.ExtractInteger(wlanStaTxBytes, userTxBytes)
 	indexRxBytes := factory.ExtractInteger(wlanStaRxBytes, userRxBytes)
 	for i, v := range indexUserName {
-		mac, ip := factory.SnmpIndexToMacAndIp(i)
-		macIndex := "." + mac
+		mac, ip, macIndex := factory.SnmpIndexToMacAndIp(i)
 		bssid := indexBSSID[i]
 		vlan := indexUserVlan[i]
 		channel := indexChannel[macIndex]

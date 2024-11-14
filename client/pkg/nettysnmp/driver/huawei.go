@@ -35,6 +35,7 @@ const hwL2IfPVID = ".1.3.6.1.4.1.2011.5.25.42.1.1.1.3.1.4"
 const hwWlanStaMac = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.1"
 const hwWlanStaUsername = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.2"
 const hwWlanStaApMac = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.3"
+const hwWlanStaIP = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.25"
 const hwWlanStaApName = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.4"
 const hwWlanStaAssocBand = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.7"
 const hwWlanStaAccessChannel = ".1.3.6.1.4.1.2011.6.139.18.1.2.1.9"
@@ -185,4 +186,84 @@ func (hd *HuaweiDriver) Discovery() *factory.DiscoveryResponse {
 		response.Errors = append(response.Errors, VlanError...)
 	}
 	return response
+}
+
+func (hd *HuaweiDriver) WlanUsers() *factory.WlanUserResponse {
+
+	results := make([]*factory.WlanUser, 0)
+	errors := make([]string, 0)
+	userNames, err := hd.Session.BulkWalkAll(hwWlanStaUsername)
+	if err != nil {
+		return &factory.WlanUserResponse{
+			Errors:    []string{fmt.Sprintf("failed to get users from %s", hd.IpAddress), err.Error()},
+			WlanUsers: results,
+		}
+	}
+	userUptime, errUptime := hd.Session.BulkWalkAll(hwWlanStaOnlineTime)
+	userAssignedVlan, errAssignedVlan := hd.Session.BulkWalkAll(hwWlanStaVlan)
+	userRSSI, errRSSI := hd.Session.BulkWalkAll(hwWlanStaRssi)
+	userBand, errBand := hd.Session.BulkWalkAll(hwWlanStaAssocBand)
+	userSnr, errSnr := hd.Session.BulkWalkAll(hwWlanStaSnrUs)
+	userApName, errApName := hd.Session.BulkWalkAll(hwWlanStaApName)
+	userESSID, errESSID := hd.Session.BulkWalkAll(hwWlanStaEssName)
+	userChannel, errChannel := hd.Session.BulkWalkAll(hwWlanStaAccessChannel)
+	userTxBytes, errTxBytes := hd.Session.BulkWalkAll(hwWlanStaWirelessTxBytes)
+	userRxBytes, errRxBytes := hd.Session.BulkWalkAll(hwWlanStaWirelessRxBytes)
+	userIp, errIp := hd.Session.BulkWalkAll(hwWlanStaIP)
+
+	if errUptime != nil || errAssignedVlan != nil || errRSSI != nil || errSnr != nil ||
+		errBand != nil || errApName != nil || errESSID != nil || errIp != nil ||
+		errChannel != nil || errTxBytes != nil || errRxBytes != nil {
+		errors = append(errors, errUptime.Error())
+		errors = append(errors, errAssignedVlan.Error())
+		errors = append(errors, errBand.Error())
+		errors = append(errors, errApName.Error())
+		errors = append(errors, errSnr.Error())
+		errors = append(errors, errESSID.Error())
+		errors = append(errors, errChannel.Error())
+		errors = append(errors, errTxBytes.Error())
+		errors = append(errors, errRxBytes.Error())
+		errors = append(errors, errIp.Error())
+	}
+	indexUserName := factory.ExtractString(nUserName, userNames)
+	indexUserUptime := factory.ExtractInteger(wlanStaUpTime, userUptime)
+	indexUserVlan := factory.ExtractInteger(nUserAssignedVlan, userAssignedVlan)
+	indexBand := factory.ExtractInteger(hwWlanStaAssocBand, userBand)
+	indexSnr := factory.ExtractInteger(hwWlanStaSnrUs, userSnr)
+	indexApName := factory.ExtractString(hwWlanStaApName, userApName)
+	indexESSID := factory.ExtractString(wlanStaAccessPointESSID, userESSID)
+	indexRSSI := factory.ExtractInteger(wlanStaRSSI, userRSSI)
+	indexChannel := factory.ExtractInteger(wlanStaChannel, userChannel)
+	indexTxBytes := factory.ExtractInteger(wlanStaTxBytes, userTxBytes)
+	indexRxBytes := factory.ExtractInteger(wlanStaRxBytes, userRxBytes)
+	indexIp := factory.ExtractString(hwWlanStaIP, userIp)
+	for i, v := range indexUserName {
+
+		vlan := indexUserVlan[i]
+		channel := indexChannel[i]
+		snr := indexSnr[i]
+		ap_name := indexApName[i]
+		band := fmt.Sprintf("%sMHz", strconv.Itoa(int(indexBand[i])))
+		user := factory.WlanUser{
+			StationMac:           factory.StringToHexMac(i),
+			StationIp:            indexIp[i],
+			StationUsername:      v,
+			StationApName:        &ap_name,
+			StationESSID:         indexESSID[i],
+			StationChanBandWidth: &band,
+			StationSNR:           &snr,
+			StationRSSI:          indexRSSI[i],
+			StationVlan:          &vlan,
+			StationOnlineTime:    indexUserUptime[i],
+			StationChannel:       channel,
+			StationRxBytes:       indexRxBytes[i],
+			StationTxBytes:       indexTxBytes[i],
+			StationRadioType:     factory.ChannelToRadioType(channel),
+		}
+		results = append(results, &user)
+	}
+	return &factory.WlanUserResponse{
+		WlanUsers: results,
+		Errors:    errors,
+	}
 }

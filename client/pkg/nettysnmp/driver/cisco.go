@@ -32,14 +32,16 @@ const vlanTrunkPortDynamicStatus = ".1.3.6.1.4.1.9.9.46.1.6.1.1.14"
 
 const bsnMobileStationSsid = ".1.3.6.1.4.1.14179.2.1.4.1.7"
 const bsnMobileStationAPMacAddr = ".1.3.6.1.4.1.14179.2.1.4.1.4"
-const bsnMobileStationAPIfSlotId = ".1.3.6.1.4.1.14179.2.1.4.1.5"
-const bsnMobileStationMacAddress = ".1.3.6.1.4.1.14179.2.1.4.1.1"
 const bsnMobileStationIpAddress = ".1.3.6.1.4.1.14179.2.1.4.1.2"
 const bsnMobileStationUserName = ".1.3.6.1.4.1.14179.2.1.4.1.3"
 const bsnMobileStationRSSI = ".1.3.6.1.4.1.14179.2.1.6.1.1"
 const bsnMobileStationBytesReceived = "..1.3.6.1.4.1.14179.2.1.6.1.2"
 const bsnMobileStationSnr = ".1.3.6.1.4.1.14179.2.1.6.1.26"
 const bsnMobileStationBytesSent = ".1.3.6.1.4.1.14179.2.1.6.1.3"
+const cldcClientUpTime = ".1.3.6.1.4.1.9.9.599.1.3.1.1.15"
+const cldcClientDeviceType = ".1.3.6.1.4.1.9.9.599.1.3.1.1.44"
+const cldcClientAccessVLAN = ".1.3.6.1.4.1.9.9.599.1.3.1.1.13"
+const cldcClientChannel = ".1.3.6.1.4.1.9.9.599.1.3.1.1.35"
 
 type CiscoBaseDriver struct {
 	factory.SnmpDiscovery
@@ -267,4 +269,76 @@ func (cd *CiscoBaseDriver) Discovery() *factory.DiscoveryResponse {
 		response.Errors = append(response.Errors, VlanError...)
 	}
 	return response
+}
+
+func (cd *CiscoBaseDriver) WlanUsers() *factory.WlanUserResponse {
+	results := make([]*factory.WlanUser, 0)
+	errors := make([]string, 0)
+	userNames, err := cd.Session.BulkWalkAll(bsnMobileStationUserName)
+	if err != nil {
+		return &factory.WlanUserResponse{
+			Errors:    []string{fmt.Sprintf("failed to get user name from %s", cd.IpAddress)},
+			WlanUsers: results,
+		}
+	}
+	userUptime, errUptime := cd.Session.BulkWalkAll(cldcClientUpTime)
+	userIp, errUserIp := cd.Session.BulkWalkAll(bsnMobileStationIpAddress)
+	userAssignedVlan, errAssignedVlan := cd.Session.BulkWalkAll(cldcClientAccessVLAN)
+	userRSSI, errRSSI := cd.Session.BulkWalkAll(bsnMobileStationRSSI)
+	apMac, errApMac := cd.Session.BulkWalkAll(bsnMobileStationAPMacAddr)
+	userESSID, errESSID := cd.Session.BulkWalkAll(bsnMobileStationSsid)
+	userChannel, errChannel := cd.Session.BulkWalkAll(cldcClientChannel)
+	userTxBytes, errTxBytes := cd.Session.BulkWalkAll(bsnMobileStationBytesSent)
+	userRxBytes, errRxBytes := cd.Session.BulkWalkAll(bsnMobileStationBytesReceived)
+	userSNR, errSnr := cd.Session.BulkWalkAll(bsnMobileStationSnr)
+
+	if errUptime != nil || errRSSI != nil ||
+		errUserIp != nil || errAssignedVlan != nil || errSnr != nil ||
+		errApMac != nil || errESSID != nil || errChannel != nil || errTxBytes != nil || errRxBytes != nil {
+		errors = append(errors, errUptime.Error())
+		errors = append(errors, errAssignedVlan.Error())
+		errors = append(errors, errRSSI.Error())
+		errors = append(errors, errApMac.Error())
+		errors = append(errors, errESSID.Error())
+		errors = append(errors, errChannel.Error())
+		errors = append(errors, errTxBytes.Error())
+		errors = append(errors, errRxBytes.Error())
+	}
+	indexUserName := factory.ExtractString(bsnMobileStationUserName, userNames)
+	indexUserIp := factory.ExtractString(bsnMobileStationIpAddress, userIp)
+	indexUserVlan := factory.ExtractInteger(cldcClientAccessVLAN, userAssignedVlan)
+	indexRssi := factory.ExtractInteger(bsnMobileStationRSSI, userRSSI)
+	indexApMAc := factory.ExtractMacAddress(bsnMobileStationAPMacAddr, apMac)
+	indexESSID := factory.ExtractString(bsnMobileStationSsid, userESSID)
+	indexChannel := factory.ExtractInteger(cldcClientChannel, userChannel)
+	indexTxBytes := factory.ExtractInteger(bsnMobileStationBytesSent, userTxBytes)
+	indexRxBytes := factory.ExtractInteger(bsnMobileStationBytesReceived, userRxBytes)
+	indexSnr := factory.ExtractInteger(bsnMobileStationSnr, userSNR)
+	indexUptime := factory.ExtractInteger(cldcClientUpTime, userUptime)
+	for i, v := range indexUserName {
+		vlan := indexUserVlan[i]
+		channel := indexChannel[i]
+		ap_mac := indexApMAc[i]
+		snr := indexSnr[i]
+		results = append(results, &factory.WlanUser{
+			StationMac:        factory.StringToHexMac(i),
+			StationApMac:      &ap_mac,
+			StationIp:         indexUserIp[i],
+			StationUsername:   v,
+			StationESSID:      indexESSID[i],
+			StationRSSI:       indexRssi[i],
+			StationSNR:        &snr,
+			StationVlan:       &vlan,
+			StationOnlineTime: indexUptime[i],
+			StationChannel:    channel,
+			StationRxBytes:    indexRxBytes[i],
+			StationTxBytes:    indexTxBytes[i],
+			StationRadioType:  factory.ChannelToRadioType(channel),
+		})
+	}
+
+	return &factory.WlanUserResponse{
+		WlanUsers: results,
+		Errors:    errors,
+	}
 }

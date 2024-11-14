@@ -323,15 +323,17 @@ func shouldIncludeMacAddress(iface *DeviceInterface, lldpInterfaces []string) bo
 	return iface.IfType == "ethernetCsmacd" && !lo.Contains(lldpInterfaces, iface.IfName)
 }
 
-func SnmpIndexToMacAndIp(snmpIndex string) (string, string) {
+// return mac, ip and macIndex
+func SnmpIndexToMacAndIp(snmpIndex string) (string, string, string) {
 	parts := strings.Split(snmpIndex, ".")
+	maxIndex := "." + strings.Join(parts[0:6], ".")
 	macParts := make([]string, 6)
 	for i := 0; i < 6; i++ {
 		macParts[i] = fmt.Sprintf("%02x", parseInt(parts[i]))
 	}
 	mac := strings.Join(macParts, ":")
 	ip := strings.Join(parts[6:], ".")
-	return mac, ip
+	return mac, ip, maxIndex
 
 }
 func parseInt(s string) byte {
