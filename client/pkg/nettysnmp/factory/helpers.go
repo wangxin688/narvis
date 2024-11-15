@@ -350,6 +350,8 @@ func ChannelToRadioType(channel uint64) string {
 		return "2.4GHz"
 	} else if lo.Contains(channel5G, channel) {
 		return "5GHz"
+	} else if channel == 0 {
+		return "Unknown"
 	} else {
 		return "6GHz"
 	}

@@ -30,18 +30,22 @@ const vmVlan = ".1.3.6.1.4.1.9.9.68.1.2.2.1.2"
 const vlanTrunkPortIfIndex = ".1.3.6.1.4.1.9.9.46.1.6.1.1.1"
 const vlanTrunkPortDynamicStatus = ".1.3.6.1.4.1.9.9.46.1.6.1.1.14"
 
+// some oid has bug if version lower than ios-xe 17.9.5
 const bsnMobileStationSsid = ".1.3.6.1.4.1.14179.2.1.4.1.7"
 const bsnMobileStationAPMacAddr = ".1.3.6.1.4.1.14179.2.1.4.1.4"
 const bsnMobileStationIpAddress = ".1.3.6.1.4.1.14179.2.1.4.1.2"
 const bsnMobileStationUserName = ".1.3.6.1.4.1.14179.2.1.4.1.3"
 const bsnMobileStationRSSI = ".1.3.6.1.4.1.14179.2.1.6.1.1"
-const bsnMobileStationBytesReceived = "..1.3.6.1.4.1.14179.2.1.6.1.2"
+const bsnMobileStationBytesReceived = ".1.3.6.1.4.1.14179.2.1.6.1.2"
 const bsnMobileStationSnr = ".1.3.6.1.4.1.14179.2.1.6.1.26"
 const bsnMobileStationBytesSent = ".1.3.6.1.4.1.14179.2.1.6.1.3"
 const cldcClientUpTime = ".1.3.6.1.4.1.9.9.599.1.3.1.1.15"
-const cldcClientDeviceType = ".1.3.6.1.4.1.9.9.599.1.3.1.1.44"
-const cldcClientAccessVLAN = ".1.3.6.1.4.1.9.9.599.1.3.1.1.13"
+
+// const cldcClientDeviceType = ".1.3.6.1.4.1.9.9.599.1.3.1.1.44"
+const bsnMobileStationVlanId = ".1.3.6.1.4.1.14179.2.1.4.1.29"
 const cldcClientChannel = ".1.3.6.1.4.1.9.9.599.1.3.1.1.35"
+
+// const bsnMobileStationProtocol = ".1.3.6.1.4.1.14179.2.1.4.1.25"
 
 type CiscoBaseDriver struct {
 	factory.SnmpDiscovery
@@ -125,8 +129,7 @@ func (cd *CiscoBaseDriver) Vlans() (vlan []*factory.VlanItem, errors []string) {
 		return nil, []string{fmt.Sprintf("failed to get vlan from %s", cd.IpAddress)}
 	}
 	l2VlanIfIndex, errIfIndex := cd.Session.BulkWalkAll(vtpVlanIfIndex)
-	if err != nil || errIfIndex != nil {
-		errors = append(errors, err.Error())
+	if errIfIndex != nil {
 		errors = append(errors, errIfIndex.Error())
 	}
 	indexL2Vlan := factory.ExtractString(vtpVlanName, l2Vlan)
@@ -283,7 +286,7 @@ func (cd *CiscoBaseDriver) WlanUsers() *factory.WlanUserResponse {
 	}
 	userUptime, errUptime := cd.Session.BulkWalkAll(cldcClientUpTime)
 	userIp, errUserIp := cd.Session.BulkWalkAll(bsnMobileStationIpAddress)
-	userAssignedVlan, errAssignedVlan := cd.Session.BulkWalkAll(cldcClientAccessVLAN)
+	userAssignedVlan, errAssignedVlan := cd.Session.BulkWalkAll(bsnMobileStationVlanId)
 	userRSSI, errRSSI := cd.Session.BulkWalkAll(bsnMobileStationRSSI)
 	apMac, errApMac := cd.Session.BulkWalkAll(bsnMobileStationAPMacAddr)
 	userESSID, errESSID := cd.Session.BulkWalkAll(bsnMobileStationSsid)
@@ -306,7 +309,7 @@ func (cd *CiscoBaseDriver) WlanUsers() *factory.WlanUserResponse {
 	}
 	indexUserName := factory.ExtractString(bsnMobileStationUserName, userNames)
 	indexUserIp := factory.ExtractString(bsnMobileStationIpAddress, userIp)
-	indexUserVlan := factory.ExtractInteger(cldcClientAccessVLAN, userAssignedVlan)
+	indexUserVlan := factory.ExtractInteger(bsnMobileStationVlanId, userAssignedVlan)
 	indexRssi := factory.ExtractInteger(bsnMobileStationRSSI, userRSSI)
 	indexApMAc := factory.ExtractMacAddress(bsnMobileStationAPMacAddr, apMac)
 	indexESSID := factory.ExtractString(bsnMobileStationSsid, userESSID)
