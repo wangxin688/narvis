@@ -34,4 +34,5 @@ func SetUpLogger() {
 
 	Logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 	zap.ReplaceGlobals(Logger)
+	Logger.Info("[LoggerSetup] logger set up successfully")
 }

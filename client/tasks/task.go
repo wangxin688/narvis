@@ -15,7 +15,6 @@ import (
 	"github.com/wangxin688/narvis/client/pkg/gowebssh"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	"github.com/wangxin688/narvis/client/pkg/vector"
 	"github.com/wangxin688/narvis/client/utils/helpers"
 	"github.com/wangxin688/narvis/client/utils/logger"
 	"github.com/wangxin688/narvis/client/utils/security"
@@ -316,7 +315,11 @@ func configurationBackupTask(data []byte) *intendtask.ConfigurationBackupTaskRes
 func wlanUserTask(data []byte) *intendtask.WlanUserTaskResult {
 	task := &intendtask.BaseSnmpTask{}
 	err := json.Unmarshal(data, task)
-	result := &intendtask.WlanUserTaskResult{}
+	result := &intendtask.WlanUserTaskResult{
+		DeviceId:       task.DeviceId,
+		SiteId:         task.SiteId,
+		OrganizationId: config.Settings.ORGANIZATION_ID,
+	}
 	if err != nil {
 		logger.Logger.Error("[WlanUserTask]: Unmarshal err: ", zap.Error(err))
 		result.Errors = []string{fmt.Sprintf("failed to unmarshal task, error: %s", err.Error())}
@@ -338,6 +341,23 @@ func wlanUserTask(data []byte) *intendtask.WlanUserTaskResult {
 		result.Errors = response[0].Errors
 		return result
 	}
-	go vector.PostWlanUsers(response[0].WlanUsers)
+	for _, user := range response[0].WlanUsers {
+		result.WlanUsers = append(result.WlanUsers, &intendtask.WlanUserItem{
+			StationMac:           user.StationMac,
+			StationIp:            user.StationIp,
+			StationUsername:      user.StationUsername,
+			StationApName:        user.StationApName,
+			StationESSID:         user.StationESSID,
+			StationChanBandWidth: user.StationChanBandWidth,
+			StationSNR:           user.StationSNR,
+			StationRSSI:          user.StationRSSI,
+			StationVlan:          user.StationVlan,
+			StationOnlineTime:    user.StationOnlineTime,
+			StationChannel:       user.StationChannel,
+			StationRxBits:        user.StationRxBytes * 8,
+			StationTxBits:        user.StationTxBytes * 8,
+			StationRadioType:     user.StationRadioType,
+		})
+	}
 	return result
 }

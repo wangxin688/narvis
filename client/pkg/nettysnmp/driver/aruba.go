@@ -2,8 +2,12 @@ package driver
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
+	"github.com/wangxin688/narvis/client/utils/logger"
+	"go.uber.org/zap"
 )
 
 // const wlanApMacAddress string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.1" not implement by aruba, replace with snmpIndex
@@ -15,6 +19,7 @@ const wlanAPModel string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.5"
 const wlanAPSerialNumber string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.6"
 const wlanAPSwitchIpAddress string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.39"
 const wlanAPSwVersion string = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.4.1.34"
+const wlanAPBssidAPMacAddress = ".1.3.6.1.4.1.14823.2.2.1.5.2.1.7.1.13"
 
 // WLSX-SYSTEMEXT-MIB
 const wlsxSysExtHostname string = ".1.3.6.1.4.1.14823.2.2.1.2.1.2.0"
@@ -101,6 +106,7 @@ func (ad *ArubaDriver) APs() (ap []*factory.ApItem, errors []string) {
 	apSerialNumber, errApSerialNumber := ad.Session.BulkWalkAll(wlanAPSerialNumber)
 	switchIp, errSwitchIp := ad.Session.BulkWalkAll(wlanAPSwitchIpAddress)
 	apVersion, errApVersion := ad.Session.BulkWalkAll(wlanAPSwVersion)
+	ad.cacheBssidApMac()
 
 	if errApName != nil || errApGroupName != nil || errApModel != nil || errApSerialNumber != nil || errSwitchIp != nil || errApVersion != nil {
 		errors = append(errors, errApName.Error())
@@ -118,10 +124,13 @@ func (ad *ArubaDriver) APs() (ap []*factory.ApItem, errors []string) {
 	indexSwitchIp := factory.ExtractString(wlanAPSwitchIpAddress, switchIp)
 	indexApVersion := factory.ExtractString(wlanAPSwVersion, apVersion)
 	for i, v := range indexApIp {
+		apMac := factory.StringToHexMac(i)
+		apName := indexApName[i]
+		mem_cache.MemCache.SetDefault(apMac, apName)
 		ap = append(ap, &factory.ApItem{
-			Name:            indexApName[i],
+			Name:            apName,
 			ManagementIp:    v,
-			MacAddress:      factory.StringToHexMac(i),
+			MacAddress:      apMac,
 			GroupName:       indexApGroupName[i],
 			DeviceModel:     indexApModel[i],
 			SerialNumber:    indexApSerialNumber[i],
@@ -234,12 +243,13 @@ func (ad *ArubaDriver) WlanUsers() (wlanUsers *factory.WlanUserResponse) {
 		bssid := indexBSSID[i]
 		vlan := indexUserVlan[i]
 		channel := indexChannel[macIndex]
+		ap_name := ad.getApNameByBssid(bssid)
 		user := factory.WlanUser{
 			StationMac:        mac,
 			StationIp:         ip,
 			StationUsername:   v,
 			StationESSID:      indexESSID[macIndex],
-			StationBSSID:      &bssid,
+			StationApName:     &ap_name,
 			StationRSSI:       indexRSSI[macIndex],
 			StationVlan:       &vlan,
 			StationOnlineTime: indexUserUptime[macIndex],
@@ -254,4 +264,30 @@ func (ad *ArubaDriver) WlanUsers() (wlanUsers *factory.WlanUserResponse) {
 		WlanUsers: results,
 		Errors:    errors,
 	}
+}
+
+func (ad *ArubaDriver) cacheBssidApMac() {
+	bssidResult, err := ad.Session.BulkWalkAll(wlanAPBssidAPMacAddress)
+	if err != nil {
+		logger.Logger.Error(fmt.Sprintf("failed to get bssid ap mac from %s", ad.IpAddress), zap.Error(err))
+	}
+	indexBssid := factory.ExtractMacAddress(wlanAPBssidAPMacAddress, bssidResult)
+	for i, v := range indexBssid {
+		bssidOid := strings.Split(i, ".")
+		bssid := factory.StringToHexMac("." + strings.Join(bssidOid[len(bssidOid)-6:], "."))
+		mem_cache.MemCache.SetDefault(bssid, v)
+	}
+}
+
+func (ad *ArubaDriver) getApNameByBssid(bssid string) (apName string) {
+	apMac, ok := mem_cache.MemCache.Get(bssid)
+	if !ok {
+		return ""
+	}
+	apMacString := apMac.(string)
+	apNameInterface, ok := mem_cache.MemCache.Get(apMacString)
+	if !ok {
+		return
+	}
+	return apNameInterface.(string)
 }

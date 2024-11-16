@@ -6,7 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/wangxin688/narvis/intend/intendtask"
 	infra_tasks "github.com/wangxin688/narvis/server/features/infra/tasks"
+	monitor_tasks "github.com/wangxin688/narvis/server/features/monitor/tasks"
 	task_biz "github.com/wangxin688/narvis/server/features/task/biz"
+	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -166,6 +168,44 @@ func configBackupCallback(c *gin.Context) {
 		if err != nil {
 			return
 		}
+	}
+	c.JSON(http.StatusOK, ts.SuccessResponse{Status: "ok"})
+}
+
+// @Tags Task
+// @Summary Wlan User Callback
+// @X-func {"name": "WlanUserCallback"}
+// @Description Wlan user callback
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param data body []intendtask.WlanUserTaskResult true "data"
+// @Success 200 {object} ts.SuccessResponse
+// @Router /task/wlan-users [post]
+func wlanUserCallback(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var wlanUser *intendtask.WlanUserTaskResult
+	taskId := c.GetHeader(xTaskID)
+	err = helpers.ValidateUuidString(taskId)
+	if err != nil {
+		return
+	}
+	if err = c.ShouldBindJSON(&wlanUser); err != nil {
+		return
+	}
+	err = task_biz.UpdateWlanUserResult(taskId, wlanUser)
+	if err != nil {
+		return
+	}
+	if wlanUser != nil {
+		tools.BackgroundTask(func() {
+			monitor_tasks.WlanUserCallback(wlanUser)
+		})
 	}
 	c.JSON(http.StatusOK, ts.SuccessResponse{Status: "ok"})
 }

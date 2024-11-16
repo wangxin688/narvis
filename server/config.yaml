@@ -9,6 +9,14 @@ postgres:
   max_idle_conns: 10
   max_open_conns: 100
   log_mode: silent
+clickhouse:
+  host: localhost
+  port: "9000"
+  username: narvis
+  password: ed763fd77e9da0e9b2509b1fc01fadde
+  database: narvis
+  dial_timeout: 15
+  read_timeout: 10
 jwt:
   secret_key: 9fdee1b8a3f18b7f86673938beec96e6
   public_auth_key: 414aed4f241504a3209222d4c82ceb3d36d1884a0b31902a3964920b8f0a8510

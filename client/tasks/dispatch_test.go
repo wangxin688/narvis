@@ -5,11 +5,13 @@ import (
 	"testing"
 
 	"github.com/wangxin688/narvis/client/config"
+	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
 	"github.com/wangxin688/narvis/intend/intendtask"
 )
 
 func TestDispatcher(t *testing.T) {
 	config.SetupConfig()
+	mem_cache.InitCache()
 
 	scanTask := map[string]any{
 		"taskId":   "e53db778-bb10-411c-ba47-d6e422060f29",

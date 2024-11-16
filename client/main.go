@@ -8,6 +8,7 @@ import (
 	"github.com/wagslane/go-rabbitmq"
 	"github.com/wangxin688/narvis/client/config"
 	"github.com/wangxin688/narvis/client/tasks"
+	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
 	"github.com/wangxin688/narvis/client/utils/helpers"
 	"github.com/wangxin688/narvis/client/utils/logger"
 	"go.uber.org/zap"
@@ -15,6 +16,7 @@ import (
 
 func main() {
 	logger.SetUpLogger()
+	mem_cache.InitCache()
 	if err := config.SetupConfig(); err != nil {
 		logger.Logger.Error("[setupConfig]: failed to setup config ", zap.Error(err))
 		os.Exit(1)

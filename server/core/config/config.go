@@ -11,19 +11,20 @@ const (
 )
 
 type Settings struct {
-	Zap             ZapConfig       `mapstructure:"zap" json:"zap" yaml:"zap"`
-	Postgres        PostgresConfig  `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
-	Jwt             JwtConfig       `mapstructure:"jwt" json:"jwt" yaml:"jwt"`
-	Redis           RedisConfig     `mapstructure:"redis" json:"redis" yaml:"redis"`
-	Cors            CORS            `mapstructure:"cors" json:"cors" yaml:"cors"`
-	System          SystemConfig    `mapstructure:"sys" json:"sys" yaml:"sys"`
-	Sentry          SentryConfig    `mapstructure:"sentry" json:"sentry" yaml:"sentry"`
-	Env             Env             `mapstructure:"env" json:"env" yaml:"env"`
-	Zbx             ZbxConfig       `mapstructure:"zbx" json:"zbx" yaml:"zbx"`
-	Vtm             VtmConfig       `mapstructure:"vtm" json:"vtm" yaml:"vtm"`
-	Atm             AtmConfig       `mapstructure:"atm" json:"atm" yaml:"atm"`
-	RabbitMQ        RabbitMQConfig  `mapstructure:"rmq" json:"rmq" yaml:"rmq"`
-	BootstrapConfig BootstrapConfig `mapstructure:"bootstrap" json:"bootstrap" yaml:"bootstrap"`
+	Zap             ZapConfig        `mapstructure:"zap" json:"zap" yaml:"zap"`
+	Postgres        PostgresConfig   `mapstructure:"postgres" json:"postgres" yaml:"postgres"`
+	Jwt             JwtConfig        `mapstructure:"jwt" json:"jwt" yaml:"jwt"`
+	Redis           RedisConfig      `mapstructure:"redis" json:"redis" yaml:"redis"`
+	Cors            CORS             `mapstructure:"cors" json:"cors" yaml:"cors"`
+	System          SystemConfig     `mapstructure:"sys" json:"sys" yaml:"sys"`
+	Sentry          SentryConfig     `mapstructure:"sentry" json:"sentry" yaml:"sentry"`
+	Env             Env              `mapstructure:"env" json:"env" yaml:"env"`
+	Zbx             ZbxConfig        `mapstructure:"zbx" json:"zbx" yaml:"zbx"`
+	Vtm             VtmConfig        `mapstructure:"vtm" json:"vtm" yaml:"vtm"`
+	Atm             AtmConfig        `mapstructure:"atm" json:"atm" yaml:"atm"`
+	RabbitMQ        RabbitMQConfig   `mapstructure:"rmq" json:"rmq" yaml:"rmq"`
+	BootstrapConfig BootstrapConfig  `mapstructure:"bootstrap" json:"bootstrap" yaml:"bootstrap"`
+	ClickHouse      ClickHouseConfig `mapstructure:"clickhouse" json:"clickhouse" yaml:"clickhouse"`
 }
 
 // alertManager config
@@ -123,4 +124,19 @@ type BootstrapConfig struct {
 	KafkaConnectorUrl string `mapstructure:"kafka_connector_url" json:"kafka_connector_url" yaml:"kafka_connector_url"`
 	KafkaUser         string `mapstructure:"kafka_user" json:"kafka_user" yaml:"kafka_user"`
 	KafkaPassword     string `mapstructure:"kafka_password" json:"kafka_password" yaml:"kafka_password"`
+}
+
+type ClickHouseConfig struct {
+	Host        string `mapstructure:"host" json:"host" yaml:"host"`
+	Port        string `mapstructure:"port" json:"port" yaml:"port"`
+	Username    string `mapstructure:"username" json:"username" yaml:"username"`
+	Password    string `mapstructure:"password" json:"password" yaml:"password"`
+	DataBase    string `mapstructure:"database" json:"database" yaml:"database"`
+	ReadTimeout uint8  `mapstructure:"read_timeout" json:"read_timeout" yaml:"read_timeout"`
+	DialTime    uint8  `mapstructure:"dial_timeout" json:"dial_timeout" yaml:"dial_timeout"`
+}
+
+func (cfg ClickHouseConfig) BuildClickHouseDsn() string {
+	return fmt.Sprintf(
+		"clickhouse://%s:%s@%s:%s/%s?dial_timeout=%ds&read_timeout=%ds", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DataBase, cfg.DialTime, cfg.ReadTimeout)
 }

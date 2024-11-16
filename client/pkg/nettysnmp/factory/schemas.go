@@ -109,7 +109,6 @@ type WlanUser struct {
 	StationApMac         *string `json:"stationApMac,omitempty"`         // AP MAC
 	StationApName        *string `json:"stationApName,omitempty"`        // AP 名称
 	StationESSID         string  `json:"stationESSID"`                   // ESSID
-	StationBSSID         *string `json:"stationBSSID,omitempty"`         // BSSID
 	StationVlan          *uint64 `json:"stationVlan,omitempty"`          // VLAN
 	StationChannel       uint64  `json:"stationChannel,omitempty"`       // 信道
 	StationChanBandWidth *string `json:"stationChanBandWidth,omitempty"` // 信道带宽

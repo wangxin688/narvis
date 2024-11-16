@@ -6020,6 +6020,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/task/wlan-users": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Wlan user callback",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Wlan User Callback",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/intendtask.WlanUserTaskResult"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SuccessResponse"
+                        }
+                    }
+                },
+                "X-func": {
+                    "name": "WlanUserCallback"
+                }
+            }
+        },
         "/webssh/proxy/{sessionId}": {
             "get": {
                 "security": [
@@ -6640,6 +6685,101 @@ const docTemplate = `{
                 },
                 "vlanName": {
                     "type": "string"
+                }
+            }
+        },
+        "intendtask.WlanUserItem": {
+            "type": "object",
+            "properties": {
+                "stationApMac": {
+                    "description": "AP MAC",
+                    "type": "string"
+                },
+                "stationApName": {
+                    "description": "AP 名称",
+                    "type": "string"
+                },
+                "stationChanBandWidth": {
+                    "description": "信道带宽",
+                    "type": "string"
+                },
+                "stationChannel": {
+                    "description": "信道",
+                    "type": "integer"
+                },
+                "stationESSID": {
+                    "description": "ESSID",
+                    "type": "string"
+                },
+                "stationIp": {
+                    "description": "终端IP",
+                    "type": "string"
+                },
+                "stationMac": {
+                    "description": "终端MAC",
+                    "type": "string"
+                },
+                "stationMaxSpeed": {
+                    "description": "终端协商速率",
+                    "type": "integer"
+                },
+                "stationOnlineTime": {
+                    "description": "终端在线时间",
+                    "type": "integer"
+                },
+                "stationRSSI": {
+                    "description": "终端RSSI",
+                    "type": "integer"
+                },
+                "stationRadioType": {
+                    "description": "radio类型",
+                    "type": "string"
+                },
+                "stationRxBits": {
+                    "description": "终端下行流量",
+                    "type": "integer"
+                },
+                "stationSNR": {
+                    "description": "终端NR",
+                    "type": "integer"
+                },
+                "stationTxBits": {
+                    "description": "终端上行流量",
+                    "type": "integer"
+                },
+                "stationUsername": {
+                    "description": "终端用户名",
+                    "type": "string"
+                },
+                "stationVlan": {
+                    "description": "VLAN",
+                    "type": "integer"
+                }
+            }
+        },
+        "intendtask.WlanUserTaskResult": {
+            "type": "object",
+            "properties": {
+                "deviceId": {
+                    "type": "string"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "organizationId": {
+                    "type": "string"
+                },
+                "siteId": {
+                    "type": "string"
+                },
+                "wlanUsers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/intendtask.WlanUserItem"
+                    }
                 }
             }
         },

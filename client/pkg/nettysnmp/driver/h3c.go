@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
 )
 
 // WLAN AP-MIB: https://www.h3c.com/cn/d_202401/2021242_30005_0.htm#_Toc146378887
@@ -70,6 +71,9 @@ func (hd *H3CDriver) APs() (ap []*factory.ApItem, errors []string) {
 	indexApGroup := factory.ExtractString(hh3cDot11CurrAPTemplateName, apGroup)
 	indexApVersion := factory.ExtractString(hh3cDot11CurrAPSoftwareVersion, apVersion)
 	for i, v := range indexApIP {
+		ap_mac := indexApMac[i]
+		ap_name := indexApName[i]
+		mem_cache.MemCache.SetDefault(ap_mac, ap_name)
 		ap = append(ap, &factory.ApItem{
 			Name:            indexApName[i],
 			ManagementIp:    v,
@@ -138,12 +142,14 @@ func (hd *H3CDriver) WlanUsers() *factory.WlanUserResponse {
 		channel := indexChannel[i]
 		snr := indexSnr[i]
 		ap_mac := indexApMac[i]
+		ap_name := hd.getApName(ap_mac)
 		speed := indexSpeed[i]
 		user := factory.WlanUser{
 			StationMac:        factory.StringToHexMac(i),
 			StationIp:         indexIp[i],
 			StationUsername:   v,
 			StationApMac:      &ap_mac,
+			StationApName:     &ap_name,
 			StationESSID:      indexESSID[i],
 			StationSNR:        &snr,
 			StationRSSI:       indexRSSI[i],
@@ -161,4 +167,12 @@ func (hd *H3CDriver) WlanUsers() *factory.WlanUserResponse {
 		WlanUsers: results,
 		Errors:    errors,
 	}
+}
+
+func (hd *H3CDriver) getApName(apMac string) string {
+	apName, ok := mem_cache.MemCache.Get(apMac)
+	if !ok {
+		return ""
+	}
+	return apName.(string)
 }

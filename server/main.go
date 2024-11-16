@@ -38,6 +38,11 @@ func main() {
 		core.Logger.Fatal("[mainStartHttpServer]: failed to initialize database", zap.Error(err))
 		panic(err)
 	}
+	err = infra.InitClickHouseDB()
+	if err != nil {
+		core.Logger.Fatal("[mainStartHttpServer]: failed to initialize clickhouse database", zap.Error(err))
+		panic(err)
+	}
 	gen.SetDefault(infra.DB)
 	core.Logger.Info("[mainStartHttpServer]: server started to run on port", zap.Int("port", core.Settings.System.ServerPort))
 	if core.Settings.Env == config.Prod || core.Settings.Env == config.OnPrem {

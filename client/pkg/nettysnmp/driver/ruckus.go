@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
 )
 
 const ruckusZDWLANAPIPAddr = ".1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.10"
@@ -66,6 +67,9 @@ func (r *RuckusDriver) APs() (ap []*factory.ApItem, errors []string) {
 	indexApSerialNumber := factory.ExtractString(ruckusZDWLANAPSerialNumber, apSerialNumber)
 	indexApVersion := factory.ExtractString(ruckusZDWLANAPSWversion, apVersion)
 	for i, v := range indexApIP {
+		ap_name := indexApName[i]
+		ap_mac := indexApMac[i]
+		mem_cache.MemCache.SetDefault(ap_mac, ap_name)
 		ap = append(ap, &factory.ApItem{
 			Name:         indexApName[i],
 			ManagementIp: v,
@@ -130,11 +134,13 @@ func (r *RuckusDriver) WlanUsers() *factory.WlanUserResponse {
 		channel := indexChannel[i]
 		snr := indexSnr[i]
 		ap_mac := indexApMac[i]
+		ap_name := r.getApName(ap_mac)
 		user := factory.WlanUser{
 			StationMac:        factory.StringToHexMac(i),
 			StationIp:         indexIp[i],
 			StationUsername:   v,
 			StationApMac:      &ap_mac,
+			StationApName:     &ap_name,
 			StationESSID:      indexESSID[i],
 			StationSNR:        &snr,
 			StationRSSI:       indexRSSI[i],
@@ -151,4 +157,12 @@ func (r *RuckusDriver) WlanUsers() *factory.WlanUserResponse {
 		WlanUsers: results,
 		Errors:    errors,
 	}
+}
+
+func (r *RuckusDriver) getApName(apMac string) string {
+	apName, ok := mem_cache.MemCache.Get(apMac)
+	if !ok {
+		return ""
+	}
+	return apName.(string)
 }

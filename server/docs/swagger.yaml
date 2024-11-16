@@ -375,6 +375,74 @@ definitions:
       vlanName:
         type: string
     type: object
+  intendtask.WlanUserItem:
+    properties:
+      stationApMac:
+        description: AP MAC
+        type: string
+      stationApName:
+        description: AP 名称
+        type: string
+      stationChanBandWidth:
+        description: 信道带宽
+        type: string
+      stationChannel:
+        description: 信道
+        type: integer
+      stationESSID:
+        description: ESSID
+        type: string
+      stationIp:
+        description: 终端IP
+        type: string
+      stationMac:
+        description: 终端MAC
+        type: string
+      stationMaxSpeed:
+        description: 终端协商速率
+        type: integer
+      stationOnlineTime:
+        description: 终端在线时间
+        type: integer
+      stationRSSI:
+        description: 终端RSSI
+        type: integer
+      stationRadioType:
+        description: radio类型
+        type: string
+      stationRxBits:
+        description: 终端下行流量
+        type: integer
+      stationSNR:
+        description: 终端NR
+        type: integer
+      stationTxBits:
+        description: 终端上行流量
+        type: integer
+      stationUsername:
+        description: 终端用户名
+        type: string
+      stationVlan:
+        description: VLAN
+        type: integer
+    type: object
+  intendtask.WlanUserTaskResult:
+    properties:
+      deviceId:
+        type: string
+      errors:
+        items:
+          type: string
+        type: array
+      organizationId:
+        type: string
+      siteId:
+        type: string
+      wlanUsers:
+        items:
+          $ref: '#/definitions/intendtask.WlanUserItem'
+        type: array
+    type: object
   schemas.AP:
     properties:
       coordinateX:
@@ -5909,6 +5977,34 @@ paths:
       security:
       - BearerAuth: []
       summary: ScanDevice BasicInfo Callback
+      tags:
+      - Task
+  /task/wlan-users:
+    post:
+      X-func:
+        name: WlanUserCallback
+      consumes:
+      - application/json
+      description: Wlan user callback
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/intendtask.WlanUserTaskResult'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.SuccessResponse'
+      security:
+      - BearerAuth: []
+      summary: Wlan User Callback
       tags:
       - Task
   /webssh/proxy/{sessionId}:

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
 )
 
 const vtpVlanName = ".1.3.6.1.4.1.9.9.46.1.3.1.1.4"
@@ -201,6 +202,9 @@ func (cd *CiscoBaseDriver) APs() (ap []*factory.ApItem, errors []string) {
 	// indexApPrimaryMwarName := factory.ExtractString(bsnAPPrimaryMwarName, apPrimaryMwarName)
 	indexApVersion := factory.ExtractString(bsnAPSoftwareVersion, apVersion)
 	for i, v := range indexApIP {
+		apMac := indexApMac[i]
+		apName := indexApName[i]
+		mem_cache.MemCache.SetDefault(apMac, apName)
 		ap = append(ap, &factory.ApItem{
 			Name:            indexApName[i],
 			ManagementIp:    v,
@@ -322,10 +326,12 @@ func (cd *CiscoBaseDriver) WlanUsers() *factory.WlanUserResponse {
 		vlan := indexUserVlan[i]
 		channel := indexChannel[i]
 		ap_mac := indexApMAc[i]
+		ap_name := cd.getAPName(ap_mac)
 		snr := indexSnr[i]
 		results = append(results, &factory.WlanUser{
 			StationMac:        factory.StringToHexMac(i),
 			StationApMac:      &ap_mac,
+			StationApName:     &ap_name,
 			StationIp:         indexUserIp[i],
 			StationUsername:   v,
 			StationESSID:      indexESSID[i],
@@ -344,4 +350,12 @@ func (cd *CiscoBaseDriver) WlanUsers() *factory.WlanUserResponse {
 		WlanUsers: results,
 		Errors:    errors,
 	}
+}
+
+func (cd *CiscoBaseDriver) getAPName(apMac string) string {
+	apName, ok := mem_cache.MemCache.Get(apMac)
+	if !ok {
+		return ""
+	}
+	return apName.(string)
 }

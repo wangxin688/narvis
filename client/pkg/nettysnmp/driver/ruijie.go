@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
+	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
 )
 
 type RuiJieDriver struct {
@@ -67,6 +68,9 @@ func (d *RuiJieDriver) APs() (ap []*factory.ApItem, errors []string) {
 	indexApVersion := factory.ExtractString(ruijieApApSwVer, apVersion)
 	indexApPID := factory.ExtractString(ruijieApApPID, apPID)
 	for i, v := range indexApIP {
+		ap_mac := indexApMac[i]
+		ap_name := indexApName[i]
+		mem_cache.MemCache.SetDefault(ap_mac, ap_name)
 		ap = append(ap, &factory.ApItem{
 			Name:         indexApName[i],
 			ManagementIp: v,
@@ -123,11 +127,13 @@ func (d *RuiJieDriver) WlanUsers() *factory.WlanUserResponse {
 		vlan := indexUserVlan[i]
 		channel := indexChannel[i]
 		ap_mac := indexApMac[i]
+		ap_name := d.getAPName(ap_mac)
 		user := factory.WlanUser{
 			StationMac:        factory.StringToHexMac(i),
 			StationIp:         indexIp[i],
 			StationUsername:   v,
 			StationApMac:      &ap_mac,
+			StationApName:     &ap_name,
 			StationESSID:      indexESSID[i],
 			StationRSSI:       indexRSSI[i],
 			StationVlan:       &vlan,
@@ -141,4 +147,12 @@ func (d *RuiJieDriver) WlanUsers() *factory.WlanUserResponse {
 		WlanUsers: results,
 		Errors:    errors,
 	}
+}
+
+func (d *RuiJieDriver) getAPName(apMac string) string {
+	apName, ok := mem_cache.MemCache.Get(apMac)
+	if !ok {
+		return ""
+	}
+	return apName.(string)
 }
