@@ -78,7 +78,7 @@ func scanApCallback(data []*intendtask.ApScanResponse, taskId string) {
 		logger.Logger.Info(fmt.Sprintf("[scanApCallback] [%s]: ", taskId), zap.Any("response", resp.String()))
 	}
 
-	logger.Logger.Info(fmt.Sprintf("[scanApCallback] [%s]: post result to server success", taskId))
+	logger.Logger.Info("[scanApCallback] [%s]: post result to server success", zap.String("taskId", taskId), zap.Int("number of ap", len(data)))
 }
 
 func scanMacAddressTableCallback(data []*intendtask.MacAddressTableScanResponse, taskId string) {
@@ -99,7 +99,7 @@ func scanMacAddressTableCallback(data []*intendtask.MacAddressTableScanResponse,
 		logger.Logger.Info(fmt.Sprintf("[ScanMacAddressTableCallback] [%s]: ", taskId), zap.Any("response", resp.String()))
 	}
 
-	logger.Logger.Info(fmt.Sprintf("[ScanMacAddressTableCallback] [%s]: post result to server success", taskId))
+	logger.Logger.Info("[ScanMacAddressTableCallback]: post result to server success", zap.String("taskId", taskId), zap.Int("number of mac address table", len(data)))
 }
 
 func configBackUpCallback(data *intendtask.ConfigurationBackupTaskResult, taskId string) {
@@ -135,7 +135,7 @@ func wlanUsersCallback(data *intendtask.WlanUserTaskResult, taskId string) {
 	if !resp.IsSuccessState() {
 		logger.Logger.Error(fmt.Sprintf("[wlanUsersCallback] [%s]: failed to post result to server", taskId), zap.String("response", resp.String()))
 	}
-	logger.Logger.Info(fmt.Sprintf("[wlanUsersCallback] [%s]: post result to server success", taskId))
+	logger.Logger.Info(fmt.Sprintf("[wlanUsersCallback] [%s]: post result to server success", zap.String("taskId", taskId)), zap.Int("number of wlan users", len(data.WlanUsers)))
 }
 
 func newServer() *req.Client {

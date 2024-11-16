@@ -5,10 +5,13 @@ import (
 	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/models/ckmodel"
+	"go.uber.org/zap"
 )
 
 func WlanUserCallback(wlanUsers *intendtask.WlanUserTaskResult) error {
-	users := make([]ckmodel.WlanStation, len(wlanUsers.WlanUsers))
+	numberOfUsers := len(wlanUsers.WlanUsers)
+	core.Logger.Info("[WlanUserCallback]: received wlan user callback", zap.Int("number of users", numberOfUsers))
+	users := make([]ckmodel.WlanStation, numberOfUsers)
 	for index, user := range wlanUsers.WlanUsers {
 		users[index] = ckmodel.WlanStation{
 			StationUsername:         user.StationUsername,

@@ -65,11 +65,11 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 	switch {
 	case errors.As(e, &generalError):
 		if generalError == nil {
-			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
+			core.Logger.Warn("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
 			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
-		core.Logger.Error("[errResponseHandler]: general error", zap.Error(e), zap.Int("code", int(generalError.Code)))
+		core.Logger.Warn("[errResponseHandler]: general error", zap.Error(e), zap.Int("code", int(generalError.Code)))
 		if generalError.Code <= 500 {
 			g.AbortWithStatusJSON(int(generalError.Code), generalError)
 			return
@@ -82,7 +82,7 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
-		core.Logger.Error("[errResponseHandler]: conflict error", zap.Error(e), zap.String("tableName", pgError.TableName))
+		core.Logger.Warn("[errResponseHandler]: conflict error", zap.Error(e), zap.String("tableName", pgError.TableName))
 		if pgError.Code == "23505" {
 			var fields, values string
 			matches := pgConflictRegexp.FindStringSubmatch(pgError.Detail)
@@ -123,7 +123,7 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
 			return
 		}
-		core.Logger.Error("[errResponseHandler]: validation error", zap.Error(e))
+		core.Logger.Warn("[errResponseHandler]: validation error", zap.Error(e))
 		g.AbortWithStatusJSON(http.StatusUnprocessableEntity, NewErrorWithData(CodeUnprocessableEntity, MsgUnprocessableEntity, e.Error()))
 		return
 	case errors.Is(e, gorm.ErrRecordNotFound):

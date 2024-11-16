@@ -371,6 +371,10 @@ func deviceUpdateHandler(data *intendtask.DeviceScanResponse, device *models.Dev
 }
 
 func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
+	if len(scanResults) == 0 {
+		core.Logger.Info("[apScanCallback]: no scan aps found")
+		return nil
+	}
 	ok, err := infra_biz.LicenseUsageDepends(1, scanResults[0].OrganizationId)
 	if err != nil {
 		return err
