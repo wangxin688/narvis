@@ -67,6 +67,7 @@ func GenerateSNMPTask(siteId, taskName, callback string) ([]string, error) {
 			Name:           taskName,
 			Status:         "InProgress",
 			OrganizationId: orgId,
+			TaskRaw:        string(taskBytes),
 		})
 	}
 	err = gen.TaskResult.CreateInBatches(newTasks, len(newTasks))
@@ -140,6 +141,7 @@ func CreateScanTask(sd *schemas.ScanDeviceCreate, orgId string) ([]string, error
 			Name:           intendtask.ScanDeviceBasicInfo,
 			Status:         "InProgress",
 			OrganizationId: orgId,
+			TaskRaw: 	   string(taskByte),
 		}
 	}
 	err := gen.TaskResult.CreateInBatches(newTasks, taskLen)
@@ -192,6 +194,7 @@ func ConfigBackUpTask(siteId, taskName, callback string) ([]string, error) {
 			Name:           taskName,
 			Status:         "InProgress",
 			OrganizationId: orgId,
+			TaskRaw:		string(taskBytes),
 		})
 		taskIds = append(taskIds, taskId)
 	}
