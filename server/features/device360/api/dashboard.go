@@ -11,6 +11,7 @@ import (
 
 // @Tags Assurance
 // @Summary Get Device Healthy
+// @X-func {"name": "GetDeviceHealthy"}
 // @Description Get Device Healthy
 // @Security BearerAuth
 // @Accept json

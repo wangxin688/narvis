@@ -16,6 +16,7 @@ const xTaskID = "X-Task-ID"
 
 // @Tags Task
 // @Summary ScanDevice BasicInfo Callback
+// @X-func {"name": "ScanDeviceBasicInfoCallback"}
 // @Description Scan device basic information callback
 // @Security BearerAuth
 // @Accept json
@@ -54,6 +55,7 @@ func scanDeviceBasicInfoCallback(c *gin.Context) {
 
 // @Tags Task
 // @Summary ScanAP Callback
+// @X-func {"name": "ScanApCallback"}
 // @Description Scan AP callback
 // @Security BearerAuth
 // @Accept json
@@ -92,6 +94,7 @@ func scanApCallback(c *gin.Context) {
 
 // @Tags Task
 // @Summary ScanDeviceDetail Callback
+// @X-func {"name": "ScanDeviceDetailCallback"}
 // @Description Scan device detail callback
 // @Security BearerAuth
 // @Accept json
@@ -130,6 +133,7 @@ func scanDeviceDetailCallback(c *gin.Context) {
 
 // @Tags Task
 // @Summary ConfigurationBackup Callback
+// @X-func {"name": "ConfigBackupCallback"}
 // @Description Configuration backup callback
 // @Security BearerAuth
 // @Accept json

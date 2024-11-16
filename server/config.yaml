@@ -39,7 +39,6 @@ cors:
     allow-credentials: true
 sys:
   server_port: 8000
-  router_prefix: /api/v1
   base_url: http://127.0.0.1:8000
 sentry:
   dsn: ""

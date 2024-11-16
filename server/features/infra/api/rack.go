@@ -13,6 +13,7 @@ import (
 
 // @Tags Infra.Rack
 // @Summary Create new rack
+// @X-func {"name": "CreateRack"}
 // @Description Create new rack
 // @Security BearerAuth
 // @Accept json
@@ -40,6 +41,7 @@ func createRack(c *gin.Context) {
 
 // @Tags Infra.Rack
 // @Summary Get rack
+// @X-func {"name": "GetRack"}
 // @Description Get rack
 // @Security BearerAuth
 // @Accept json
@@ -67,6 +69,7 @@ func getRack(c *gin.Context) {
 
 // @Tags Infra.Rack
 // @Summary List racks
+// @X-func {"name": "ListRacks"}
 // @Description List racks
 // @Security BearerAuth
 // @Accept json
@@ -97,6 +100,7 @@ func listRacks(c *gin.Context) {
 
 // @Tags Infra.Rack
 // @Summary Update rack
+// @X-func {"name": "UpdateRack"}
 // @Description Update rack
 // @Security BearerAuth
 // @Accept json
@@ -126,6 +130,7 @@ func updateRack(c *gin.Context) {
 
 // @Tags Infra.Rack
 // @Summary Delete rack
+// @X-func {"name": "DeleteRack"}
 // @Description Delete rack
 // @Security BearerAuth
 // @Accept json

@@ -15,6 +15,7 @@ import (
 
 // @Tags Infra.Server
 // @Summary Create new server
+// @X-func {"name": "CreateServer"}
 // @Description Create new server
 // @Security BearerAuth
 // @Accept json
@@ -45,6 +46,7 @@ func createServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Update server
+// @X-func {"name": "UpdateServer"}
 // @Description Update server
 // @Security BearerAuth
 // @Accept json
@@ -80,6 +82,7 @@ func updateServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Delete server
+// @X-func {"name": "DeleteServer"}
 // @Description Delete server
 // @Security BearerAuth
 // @Accept json
@@ -110,6 +113,7 @@ func deleteServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Get server
+// @X-func {"name": "GetServer"}
 // @Description Get server
 // @Security BearerAuth
 // @Accept json
@@ -137,6 +141,7 @@ func getServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Get servers
+// @X-func {"name": "ListServers"}
 // @Description Get servers
 // @Security BearerAuth
 // @Accept json
@@ -164,6 +169,7 @@ func listServers(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Create Server new cli credential
+// @X-func {"name": "CreateServerCliCredential"}
 // @Description Create Server new cli credential
 // @Security BearerAuth
 // @Accept json
@@ -196,6 +202,7 @@ func createCliCredentialForServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Update Server cli credential
+// @X-func {"name": "UpdateServerCliCredential"}
 // @Description Update Server cli credential
 // @Security BearerAuth
 // @Accept json
@@ -228,6 +235,7 @@ func updateCliCredentialForServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Delete Server cli credential
+// @X-func {"name": "DeleteServerCliCredential"}
 // @Description Delete Server cli credential
 // @Security BearerAuth
 // @Accept json
@@ -255,6 +263,7 @@ func deleteCliCredentialForServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Get Server cli credential
+// @X-func {"name": "GetServerCliCredential"}
 // @Description Get Server cli credential
 // @Security BearerAuth
 // @Accept json
@@ -282,6 +291,7 @@ func getCliCredentialForServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Create server new snmpV2 credential
+// @X-func {"name": "CreateServerSnmpV2Credential"}
 // @Description Create server new snmpV2 credential
 // @Security BearerAuth
 // @Accept json
@@ -316,6 +326,7 @@ func createSnmpV2CredentialForServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Update server snmpV2 credential
+// @X-func {"name": "UpdateServerSnmpV2Credential"}
 // @Description Update server snmpV2 credential
 // @Security BearerAuth
 // @Accept json
@@ -351,6 +362,7 @@ func updateSnmpV2CredentialForServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Delete server snmpV2 credential
+// @X-func {"name": "DeleteServerSnmpV2Credential"}
 // @Description Delete server snmpV2 credential
 // @Security BearerAuth
 // @Accept json
@@ -381,6 +393,7 @@ func deleteSnmpV2CredentialForServer(c *gin.Context) {
 
 // @Tags Infra.Server
 // @Summary Get server snmpV2 credential
+// @X-func {"name": "GetServerSnmpV2Credential"}
 // @Description Get server snmpV2 credential
 // @Security BearerAuth
 // @Accept json

@@ -13,6 +13,7 @@ import (
 
 // @Tags IPAM
 // @Summary Create ip address
+// @X-func {"name": "CreateIpAddress"}
 // @Description Create ip address
 // @Security BearerAuth
 // @Accept json
@@ -40,6 +41,7 @@ func createIpAddress(c *gin.Context) {
 
 // @Tags IPAM
 // @Summary Get ip address
+// @X-func {"name": "GetIpAddress"}
 // @Description Get ip address
 // @Security BearerAuth
 // @Accept json
@@ -67,6 +69,7 @@ func getIpAddress(c *gin.Context) {
 
 // @Tags IPAM
 // @Summary Get ip address list
+// @X-func {"name": "ListIpAddresses"}
 // @Description Get ip address list
 // @Security BearerAuth
 // @Accept json
@@ -94,6 +97,7 @@ func getIpAddressList(c *gin.Context) {
 
 // @Tags IPAM
 // @Summary Delete ip address
+// @X-func {"name": "DeleteIpAddress"}
 // @Description Delete ip address
 // @Security BearerAuth
 // @Accept json
@@ -121,6 +125,7 @@ func deleteIpAddress(c *gin.Context) {
 
 // @Tags IPAM
 // @Summary Update ip address
+// @X-func {"name": "UpdateIpAddress"}
 // @Description Update ip address
 // @Security BearerAuth
 // @Accept json

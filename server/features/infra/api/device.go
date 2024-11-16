@@ -15,6 +15,7 @@ import (
 
 // @Tags Infra.Device
 // @Summary Create device
+// @X-func {"name": "CreateDevice"}
 // @Description Create device
 // @Security BearerAuth
 // @Accept  json
@@ -46,6 +47,7 @@ func createDevice(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Update device
+// @X-func {"name": "UpdateDevice"}
 // @Description Update device
 // @Security BearerAuth
 // @Accept json
@@ -81,6 +83,7 @@ func updateDevice(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Get device
+// @X-func {"name": "GetDevice"}
 // @Description get device
 // @Security BearerAuth
 // @Accept  json
@@ -108,6 +111,7 @@ func getDevice(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Delete device
+// @X-func {"name": "DeleteDevice"}
 // @Description Delete device
 // @Security BearerAuth
 // @Accept  json
@@ -138,6 +142,7 @@ func deleteDevice(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary List devices
+// @X-func {"name": "ListDevices"}
 // @Description List devices
 // @Security BearerAuth
 // @Accept  json
@@ -165,6 +170,7 @@ func listDevices(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Get device interfaces
+// @X-func {"name": "GetDeviceInterfaces"}
 // @Description Get device interfaces
 // @Security BearerAuth
 // @Accept  json
@@ -192,6 +198,7 @@ func getDeviceInterfaces(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Create new device restconf credential
+// @X-func {"name": "CreateDeviceRestconfCredential"}
 // @Description Create new device restconf credential
 // @Security BearerAuth
 // @Accept json
@@ -224,6 +231,7 @@ func createRestconfCredential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Get device restconf credential
+// @X-func {"name": "GetDeviceRestconfCredential"}
 // @Description Get device restconf credential
 // @Security BearerAuth
 // @Accept json
@@ -251,6 +259,7 @@ func getRestconfCredential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Update device restconf credential
+// @X-func {"name": "UpdateDeviceRestconfCredential"}
 // @Description Update device restconf credential
 // @Security BearerAuth
 // @Accept json
@@ -283,6 +292,7 @@ func updateRestconfCredential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Delete device restconf credential
+// @X-func {"name": "DeleteDeviceRestconfCredential"}
 // @Description Delete device restconf credential
 // @Security BearerAuth
 // @Accept json
@@ -310,6 +320,7 @@ func deleteRestconfCredential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Create device new cli credential
+// @X-func {"name": "CreateDeviceCliCredential"}
 // @Description Create device new cli credential
 // @Security BearerAuth
 // @Accept json
@@ -342,6 +353,7 @@ func createCliCredential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Get device cli credential
+// @X-func {"name": "GetDeviceCliCredential"}
 // @Description Get device cli credential
 // @Security BearerAuth
 // @Accept json
@@ -369,6 +381,7 @@ func getCliCredential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Update device cli credential
+// @X-func {"name": "UpdateDeviceCliCredential"}
 // @Description Update device cli credential
 // @Security BearerAuth
 // @Accept json
@@ -401,6 +414,7 @@ func updateCliCredential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Delete device cli credential
+// @X-func {"name": "DeleteDeviceCliCredential"}
 // @Description Delete device cli credential
 // @Security BearerAuth
 // @Accept json
@@ -428,6 +442,7 @@ func deleteCliCredential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Create new device snmpV2 credential
+// @X-func {"name": "CreateDeviceSnmpV2Credential"}
 // @Description Create device new snmpV2 credential
 // @Security BearerAuth
 // @Accept json
@@ -461,6 +476,7 @@ func createSnmpV2Credential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Get device snmpV2 credential
+// @X-func {"name": "GetDeviceSnmpV2Credential"}
 // @Description Get device snmpV2 credential
 // @Security BearerAuth
 // @Accept json
@@ -488,6 +504,7 @@ func getSnmpV2Credential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Update device snmpV2 credential
+// @X-func {"name": "UpdateDeviceSnmpV2Credential"}
 // @Description Update device snmpV2 credential
 // @Security BearerAuth
 // @Accept json
@@ -523,6 +540,7 @@ func updateSnmpV2Credential(c *gin.Context) {
 
 // @Tags Infra.Device
 // @Summary Delete device snmpV2 credential
+// @X-func {"name": "DeleteDeviceSnmpV2Credential"}
 // @Description Delete device snmpV2 credential
 // @Security BearerAuth
 // @Accept json

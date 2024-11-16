@@ -110,6 +110,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListUserRoles"
                 }
             },
             "post": {
@@ -147,6 +150,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Role"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateUserRole"
                 }
             }
         },
@@ -184,6 +190,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.RoleDetail"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetUserRole"
                 }
             },
             "put": {
@@ -228,6 +237,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Role"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateUserRole"
                 }
             },
             "delete": {
@@ -263,6 +275,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Role"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteUserRole"
                 }
             }
         },
@@ -391,6 +406,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListUsers"
                 }
             },
             "post": {
@@ -428,6 +446,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateUser"
                 }
             }
         },
@@ -455,6 +476,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.User"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetUserMe"
                 }
             },
             "put": {
@@ -491,6 +515,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateUserMe"
                 }
             }
         },
@@ -527,6 +554,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.User"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetUser"
                 }
             },
             "put": {
@@ -570,6 +600,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateUser"
                 }
             },
             "delete": {
@@ -604,6 +637,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteUser"
                 }
             }
         },
@@ -643,6 +679,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateActionLog"
                 }
             }
         },
@@ -682,6 +721,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateAlertGroup"
                 }
             }
         },
@@ -866,6 +908,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListAlerts"
                 }
             },
             "post": {
@@ -898,6 +943,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateAlert"
                 }
             }
         },
@@ -935,6 +983,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Alert"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetAlert"
                 }
             }
         },
@@ -1045,6 +1096,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListMaintenances"
                 }
             },
             "post": {
@@ -1082,6 +1136,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateMaintenance"
                 }
             }
         },
@@ -1110,6 +1167,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Maintenance"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetMaintenance"
                 }
             },
             "put": {
@@ -1154,6 +1214,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateMaintenance"
                 }
             },
             "delete": {
@@ -1189,6 +1252,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteMaintenance"
                 }
             }
         },
@@ -1294,6 +1360,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListSubscriptions"
                 }
             },
             "post": {
@@ -1331,6 +1400,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateSubscription"
                 }
             }
         },
@@ -1368,6 +1440,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Subscription"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetSubscription"
                 }
             },
             "put": {
@@ -1409,6 +1484,9 @@ const docTemplate = `{
                     "200": {
                         "description": "OK"
                     }
+                },
+                "X-func": {
+                    "name": "UpdateSubscription"
                 }
             },
             "delete": {
@@ -1441,6 +1519,9 @@ const docTemplate = `{
                     "200": {
                         "description": "OK"
                     }
+                },
+                "X-func": {
+                    "name": "DeleteSubscription"
                 }
             }
         },
@@ -1476,6 +1557,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.HealthHeatMap"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetDeviceHealthy"
                 }
             }
         },
@@ -1613,6 +1697,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListAps"
                 }
             },
             "put": {
@@ -1653,6 +1740,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdsResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "BatchUpdateAp"
                 }
             },
             "delete": {
@@ -1693,6 +1783,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdsResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "BatchDeleteAp"
                 }
             }
         },
@@ -1730,6 +1823,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.AP"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetAp"
                 }
             },
             "put": {
@@ -1774,6 +1870,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateAp"
                 }
             },
             "delete": {
@@ -1809,6 +1908,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteAp"
                 }
             }
         },
@@ -1987,6 +2089,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListCircuit"
                 }
             },
             "post": {
@@ -2024,6 +2129,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateCircuit"
                 }
             }
         },
@@ -2061,6 +2169,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Circuit"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetCircuit"
                 }
             },
             "put": {
@@ -2105,6 +2216,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateCircuit"
                 }
             },
             "delete": {
@@ -2138,6 +2252,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteCircuit"
                 }
             }
         },
@@ -2177,6 +2294,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdsResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateConfigBackUpTask"
                 }
             }
         },
@@ -2337,6 +2457,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListDevices"
                 }
             },
             "post": {
@@ -2374,6 +2497,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateDevice"
                 }
             }
         },
@@ -2411,6 +2537,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Device"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetDevice"
                 }
             },
             "put": {
@@ -2455,6 +2584,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateDevice"
                 }
             },
             "delete": {
@@ -2490,6 +2622,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteDevice"
                 }
             }
         },
@@ -2527,6 +2662,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.CliCredential"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetDeviceCliCredential"
                 }
             },
             "put": {
@@ -2571,6 +2709,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateDeviceCliCredential"
                 }
             },
             "post": {
@@ -2615,6 +2756,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateDeviceCliCredential"
                 }
             },
             "delete": {
@@ -2650,6 +2794,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteDeviceCliCredential"
                 }
             }
         },
@@ -2690,6 +2837,9 @@ const docTemplate = `{
                             }
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetDeviceInterfaces"
                 }
             }
         },
@@ -2727,6 +2877,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.RestconfCredential"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetDeviceRestconfCredential"
                 }
             },
             "put": {
@@ -2771,6 +2924,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateDeviceRestconfCredential"
                 }
             },
             "post": {
@@ -2815,6 +2971,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateDeviceRestconfCredential"
                 }
             },
             "delete": {
@@ -2850,6 +3009,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteDeviceRestconfCredential"
                 }
             }
         },
@@ -2887,6 +3049,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.SnmpV2Credential"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetDeviceSnmpV2Credential"
                 }
             },
             "put": {
@@ -2931,6 +3096,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateDeviceSnmpV2Credential"
                 }
             },
             "post": {
@@ -2975,6 +3143,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateDeviceSnmpV2Credential"
                 }
             },
             "delete": {
@@ -3010,6 +3181,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteDeviceSnmpV2Credential"
                 }
             }
         },
@@ -3119,6 +3293,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListRacks"
                 }
             },
             "post": {
@@ -3156,6 +3333,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateRack"
                 }
             }
         },
@@ -3193,6 +3373,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.RackElevation"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetRack"
                 }
             },
             "put": {
@@ -3237,6 +3420,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateRack"
                 }
             },
             "delete": {
@@ -3272,6 +3458,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteRack"
                 }
             }
         },
@@ -3311,6 +3500,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdsResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateScanApTask"
                 }
             }
         },
@@ -3350,6 +3542,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdsResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ScanDeviceDetails"
                 }
             }
         },
@@ -3472,6 +3667,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListScanDevice"
                 }
             },
             "put": {
@@ -3509,6 +3707,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdsResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "BatchUpdateScanDevice"
                 }
             },
             "post": {
@@ -3546,6 +3747,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.ScanDeviceCreateResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateScanDevice"
                 }
             },
             "delete": {
@@ -3586,6 +3790,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdsResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "BatchDeleteScanDevice"
                 }
             }
         },
@@ -3623,6 +3830,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.ScanDevice"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetScanDevice"
                 }
             },
             "put": {
@@ -3667,6 +3877,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateScanDevice"
                 }
             },
             "delete": {
@@ -3702,6 +3915,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteScanDevice"
                 }
             }
         },
@@ -3843,6 +4059,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListServers"
                 }
             },
             "post": {
@@ -3880,6 +4099,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateServer"
                 }
             }
         },
@@ -3917,6 +4139,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Server"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetServer"
                 }
             },
             "put": {
@@ -3961,6 +4186,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateServer"
                 }
             },
             "delete": {
@@ -3996,6 +4224,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteServer"
                 }
             }
         },
@@ -4033,6 +4264,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.CliCredential"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetServerCliCredential"
                 }
             },
             "put": {
@@ -4077,6 +4311,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateServerCliCredential"
                 }
             },
             "post": {
@@ -4121,6 +4358,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateServerCliCredential"
                 }
             },
             "delete": {
@@ -4156,6 +4396,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteServerCliCredential"
                 }
             }
         },
@@ -4193,6 +4436,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.SnmpV2Credential"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetServerSnmpV2Credential"
                 }
             },
             "put": {
@@ -4237,6 +4483,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateServerSnmpV2Credential"
                 }
             },
             "post": {
@@ -4281,6 +4530,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateServerSnmpV2Credential"
                 }
             },
             "delete": {
@@ -4316,6 +4568,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteServerSnmpV2Credential"
                 }
             }
         },
@@ -4438,6 +4693,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListSites"
                 }
             },
             "post": {
@@ -4475,6 +4733,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateSite"
                 }
             }
         },
@@ -4512,6 +4773,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.SiteDetail"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetSite"
                 }
             },
             "put": {
@@ -4556,6 +4820,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateSite"
                 }
             },
             "delete": {
@@ -4591,6 +4858,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteSite"
                 }
             }
         },
@@ -4600,6 +4870,13 @@ const docTemplate = `{
                     {
                         "BearerAuth": []
                     }
+                ],
+                "description": "Get list of device roles",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "tags": [
                     "Intend"
@@ -4639,6 +4916,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeviceRoleList"
                 }
             }
         },
@@ -4648,6 +4928,13 @@ const docTemplate = `{
                     {
                         "BearerAuth": []
                     }
+                ],
+                "description": "Get list of Manufacturers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "tags": [
                     "Intend"
@@ -4687,6 +4974,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ManufacturerList"
                 }
             }
         },
@@ -4696,6 +4986,13 @@ const docTemplate = `{
                     {
                         "BearerAuth": []
                     }
+                ],
+                "description": "Get list of Platforms",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "tags": [
                     "Intend"
@@ -4735,6 +5032,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "PlatformList"
                 }
             }
         },
@@ -4860,6 +5160,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListIpAddresses"
                 }
             },
             "post": {
@@ -4897,6 +5200,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateIpAddress"
                 }
             }
         },
@@ -4934,6 +5240,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IpAddress"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetIpAddress"
                 }
             },
             "put": {
@@ -4978,6 +5287,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IpAddress"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdateIpAddress"
                 }
             },
             "delete": {
@@ -5013,6 +5325,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeleteIpAddress"
                 }
             }
         },
@@ -5142,6 +5457,9 @@ const docTemplate = `{
                             ]
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ListPrefixes"
                 }
             },
             "post": {
@@ -5179,6 +5497,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreatePrefix"
                 }
             }
         },
@@ -5216,6 +5537,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Prefix"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetPrefix"
                 }
             },
             "put": {
@@ -5260,6 +5584,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "UpdatePrefix"
                 }
             },
             "delete": {
@@ -5295,6 +5622,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.IdResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "DeletePrefix"
                 }
             }
         },
@@ -5322,6 +5652,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/security.AccessToken"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "PasswordLogin"
                 }
             }
         },
@@ -5349,6 +5682,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/security.AccessToken"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateRefreshToken"
                 }
             }
         },
@@ -5459,6 +5795,9 @@ const docTemplate = `{
                             }
                         }
                     }
+                },
+                "X-func": {
+                    "name": "GetTimeSeries"
                 }
             }
         },
@@ -5468,6 +5807,13 @@ const docTemplate = `{
                     {
                         "BearerAuth": []
                     }
+                ],
+                "description": "Create organization",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
                 ],
                 "tags": [
                     "Organization"
@@ -5491,6 +5837,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.Organization"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateOrganization"
                 }
             }
         },
@@ -5533,6 +5882,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.SuccessResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ConfigBackupCallback"
                 }
             }
         },
@@ -5575,6 +5927,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.SuccessResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ScanApCallback"
                 }
             }
         },
@@ -5614,6 +5969,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.SuccessResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ScanDeviceDetailCallback"
                 }
             }
         },
@@ -5656,6 +6014,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/schemas.SuccessResponse"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ScanDeviceBasicInfoCallback"
                 }
             }
         },
@@ -5693,6 +6054,9 @@ const docTemplate = `{
                             "type": "string"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "ProxyWebSSHCallback"
                 }
             }
         },
@@ -5740,6 +6104,9 @@ const docTemplate = `{
                             "type": "string"
                         }
                     }
+                },
+                "X-func": {
+                    "name": "CreateWebSSHSession"
                 }
             }
         }

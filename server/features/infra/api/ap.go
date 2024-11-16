@@ -13,6 +13,7 @@ import (
 
 // @Tags Infra.AP
 // @Summary Get ap
+// @X-func {"name": "GetAp"}
 // @Description get ap
 // @Security BearerAuth
 // @Accept  json
@@ -43,6 +44,7 @@ func getAp(c *gin.Context) {
 
 // @Tags Infra.AP
 // @Summary List aps
+// @X-func {"name": "ListAps"}
 // @Description List aps
 // @Security BearerAuth
 // @Accept  json
@@ -70,6 +72,7 @@ func listAp(c *gin.Context) {
 
 // @Tags Infra.AP
 // @Summary Update ap
+// @X-func {"name": "UpdateAp"}
 // @Description Update ap
 // @Security BearerAuth
 // @Accept json
@@ -102,6 +105,7 @@ func updateAp(c *gin.Context) {
 
 // @Tags Infra.AP
 // @Summary Batch Update ap
+// @X-func {"name": "BatchUpdateAp"}
 // @Description Batch Update ap
 // @Security BearerAuth
 // @Accept json
@@ -129,6 +133,7 @@ func batchUpdateAp(c *gin.Context) {
 
 // @Tags Infra.AP
 // @Summary Batch Delete ap
+// @X-func {"name": "BatchDeleteAp"}
 // @Description Batch Delete ap
 // @Security BearerAuth
 // @Accept json
@@ -156,6 +161,7 @@ func batchDeleteAp(c *gin.Context) {
 
 // @Tags Infra.AP
 // @Summary Delete ap
+// @X-func {"name": "DeleteAp"}
 // @Description Delete ap
 // @Security BearerAuth
 // @Accept json

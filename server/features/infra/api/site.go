@@ -17,6 +17,7 @@ import (
 
 // @Tags Infra.Site
 // @Summary Create new site
+// @X-func {"name": "CreateSite"}
 // @Description Create new site
 // @Security BearerAuth
 // @Accept json
@@ -50,6 +51,7 @@ func createSite(c *gin.Context) {
 
 // @Tags Infra.Site
 // @Summary Get site
+// @X-func {"name": "GetSite"}
 // @Description Get site
 // @Security BearerAuth
 // @Accept json
@@ -77,6 +79,7 @@ func getSite(c *gin.Context) {
 
 // @Tags Infra.Site
 // @Summary List sites
+// @X-func {"name": "ListSites"}
 // @Description List sites
 // @Security BearerAuth
 // @Accept json
@@ -107,6 +110,7 @@ func listSites(c *gin.Context) {
 
 // @Tags Infra.Site
 // @Summary Update site
+// @X-func {"name": "UpdateSite"}
 // @Description Update site
 // @Security BearerAuth
 // @Accept json
@@ -142,6 +146,7 @@ func updateSite(c *gin.Context) {
 
 // @Tags Infra.Site
 // @Summary Delete site
+// @X-func {"name": "DeleteSite"}
 // @Description Delete site
 // @Security BearerAuth
 // @Accept json

@@ -13,6 +13,7 @@ import (
 
 // @Tags IPAM
 // @Summary Create prefix
+// @X-func {"name": "CreatePrefix"}
 // @Description Create prefix
 // @Security BearerAuth
 // @Accept json
@@ -40,6 +41,7 @@ func createPrefix(c *gin.Context) {
 
 // @Tags IPAM
 // @Summary Get prefix
+// @X-func {"name": "GetPrefix"}
 // @Description Get prefix
 // @Security BearerAuth
 // @Accept json
@@ -67,6 +69,7 @@ func getPrefix(c *gin.Context) {
 
 // @Tags IPAM
 // @Summary Get prefix list
+// @X-func {"name": "ListPrefixes"}
 // @Description Get prefix list
 // @Security BearerAuth
 // @Accept json
@@ -94,6 +97,7 @@ func getPrefixList(c *gin.Context) {
 
 // @Tags IPAM
 // @Summary Update prefix
+// @X-func {"name": "UpdatePrefix"}
 // @Description Update prefix
 // @Security BearerAuth
 // @Accept json
@@ -126,6 +130,7 @@ func updatePrefix(c *gin.Context) {
 
 // @Tags IPAM
 // @Summary Delete prefix
+// @X-func {"name": "DeletePrefix"}
 // @Description Delete prefix
 // @Security BearerAuth
 // @Accept json

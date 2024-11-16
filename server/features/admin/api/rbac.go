@@ -11,6 +11,7 @@ import (
 
 // @Tags Auth
 // @Summary Username Password Login
+// @X-func {"name": "PasswordLogin"}
 // @param body body schemas.Oauth2PasswordRequest true "Username Password Login"
 // @Success 200 {object} security.AccessToken
 // @Router /login/password [post]
@@ -34,6 +35,7 @@ func passwordLogin(c *gin.Context) {
 
 // @Tags Auth
 // @Summary Generate refresh token
+// @X-func {"name": "CreateRefreshToken"}
 // @param body body schemas.Oauth2RefreshRequest true "Generate refresh token"
 // @Success 200 {object} security.AccessToken
 // @Router /login/refresh [post]
@@ -54,6 +56,5 @@ func refreshToken(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, token)
 }
-
 
 // google auth https://console.cloud.google.com/apis/credentials/consent/edit;newAppInternalUser=false?hl=zh-cn&project=smart-seer-431515-a0

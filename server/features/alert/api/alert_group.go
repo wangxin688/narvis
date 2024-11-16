@@ -12,6 +12,7 @@ import (
 
 // @Tags Alert
 // @Summary Create Alert Group
+// @X-func {"name": "CreateAlertGroup"}
 // @Description Create Alert Group
 // @Security BearerAuth
 // @Accept json

@@ -90,9 +90,8 @@ type SentryConfig struct {
 }
 
 type SystemConfig struct {
-	ServerPort   int    `mapstructure:"server_port" json:"server_port" yaml:"server_port"`
-	RouterPrefix string `mapstructure:"router_prefix" json:"router_prefix" yaml:"router_prefix"`
-	BaseUrl      string `mapstructure:"base_url" json:"base_url" yaml:"base_url"`
+	ServerPort int    `mapstructure:"server_port" json:"server_port" yaml:"server_port"`
+	BaseUrl    string `mapstructure:"base_url" json:"base_url" yaml:"base_url"`
 }
 
 type VtmConfig struct {

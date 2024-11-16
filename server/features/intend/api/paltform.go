@@ -13,6 +13,10 @@ import (
 // @Tags Intend
 // @Security BearerAuth
 // @Summary Get list of Platforms
+// @X-func {"name": "PlatformList"}
+// @Description Get list of Platforms
+// @Accept json
+// @Produce json
 // @Param object query schemas.PlatformQuery false "query platforms"
 // @Success 200 {object} schemas.ListResponse{results=[]string}
 // @Router /intend/platforms [get]

@@ -13,6 +13,10 @@ import (
 // @Tags Intend
 // @Security BearerAuth
 // @Summary Get list of device roles
+// @X-func {"name": "DeviceRoleList"}
+// @Description Get list of device roles
+// @Accept json
+// @Produce json
 // @Param object query schemas.DeviceRoleQuery false "query device roles"
 // @Success 200 {object} schemas.ListResponse{results=[]devicerole.DeviceRole}
 // @Router /intend/device-roles [get]

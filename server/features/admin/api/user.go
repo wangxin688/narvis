@@ -14,6 +14,7 @@ import (
 
 // @Tags Admin
 // @Summary Create new user
+// @X-func {"name": "CreateUser"}
 // @Description Create new user
 // @Security BearerAuth
 // @Accept json
@@ -41,6 +42,7 @@ func createUser(c *gin.Context) {
 
 // @Tags Admin
 // @Summary Get user me
+// @X-func {"name": "GetUserMe"}
 // @Security BearerAuth
 // @Accept json
 // @Produce json
@@ -62,6 +64,7 @@ func getUserMe(c *gin.Context) {
 
 // @Tags Admin
 // @Summary Get user
+// @X-func {"name": "GetUser"}
 // @Security BearerAuth
 // @Accept json
 // @Produce json
@@ -88,6 +91,7 @@ func getUser(c *gin.Context) {
 
 // @Tags Admin
 // @Summary List users
+// @X-func {"name": "ListUsers"}
 // @Security BearerAuth
 // @Accept json
 // @Produce json
@@ -117,6 +121,7 @@ func listUsers(c *gin.Context) {
 
 // @Tags Admin
 // @Summary Update user me
+// @X-func {"name": "UpdateUserMe"}
 // @Security BearerAuth
 // @Accept json
 // @Produce json
@@ -148,6 +153,7 @@ func updateUserMe(c *gin.Context) {
 
 // @Tags Admin
 // @Summary Update user
+// @X-func {"name": "UpdateUser"}
 // @Security BearerAuth
 // @Accept json
 // @Produce json
@@ -179,6 +185,7 @@ func updateUser(c *gin.Context) {
 
 // @Tags Admin
 // @Summary Delete user
+// @X-func {"name": "DeleteUser"}
 // @Security BearerAuth
 // @Accept json
 // @Produce json

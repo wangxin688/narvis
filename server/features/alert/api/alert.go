@@ -13,6 +13,7 @@ import (
 
 // @Tags Alert
 // @Summary Create Alert
+// @X-func {"name": "CreateAlert"}
 // @Description Create Alert
 // @Accept json
 // @Produce json
@@ -45,6 +46,7 @@ func createAlert(c *gin.Context) {
 
 // @Tags Alert
 // @Summary Get Alert
+// @X-func {"name": "GetAlert"}
 // @Description Get Alert
 // @Security BearerAuth
 // @Accept json
@@ -72,6 +74,7 @@ func getAlert(c *gin.Context) {
 
 // @Tags Alert
 // @Summary List Alerts
+// @X-func {"name": "ListAlerts"}
 // @Description List Alerts
 // @Security BearerAuth
 // @Accept json

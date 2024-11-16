@@ -2155,6 +2155,8 @@ info:
 paths:
   /admin/roles:
     get:
+      X-func:
+        name: ListUserRoles
       consumes:
       - application/json
       description: list roles
@@ -2212,6 +2214,8 @@ paths:
       tags:
       - Admin
     post:
+      X-func:
+        name: CreateUserRole
       consumes:
       - application/json
       description: create role
@@ -2236,6 +2240,8 @@ paths:
       - Admin
   /admin/roles/{id}:
     delete:
+      X-func:
+        name: DeleteUserRole
       consumes:
       - application/json
       description: delete role
@@ -2258,6 +2264,8 @@ paths:
       tags:
       - Admin
     get:
+      X-func:
+        name: GetUserRole
       consumes:
       - application/json
       description: get role
@@ -2280,6 +2288,8 @@ paths:
       tags:
       - Admin
     put:
+      X-func:
+        name: UpdateUserRole
       consumes:
       - application/json
       description: update role
@@ -2309,6 +2319,8 @@ paths:
       - Admin
   /admin/users:
     get:
+      X-func:
+        name: ListUsers
       consumes:
       - application/json
       parameters:
@@ -2388,6 +2400,8 @@ paths:
       tags:
       - Admin
     post:
+      X-func:
+        name: CreateUser
       consumes:
       - application/json
       description: Create new user
@@ -2412,6 +2426,8 @@ paths:
       - Admin
   /admin/users/{id}:
     delete:
+      X-func:
+        name: DeleteUser
       consumes:
       - application/json
       parameters:
@@ -2433,6 +2449,8 @@ paths:
       tags:
       - Admin
     get:
+      X-func:
+        name: GetUser
       consumes:
       - application/json
       parameters:
@@ -2454,6 +2472,8 @@ paths:
       tags:
       - Admin
     put:
+      X-func:
+        name: UpdateUser
       consumes:
       - application/json
       parameters:
@@ -2482,6 +2502,8 @@ paths:
       - Admin
   /admin/users/me:
     get:
+      X-func:
+        name: GetUserMe
       consumes:
       - application/json
       produces:
@@ -2497,6 +2519,8 @@ paths:
       tags:
       - Admin
     put:
+      X-func:
+        name: UpdateUserMe
       consumes:
       - application/json
       parameters:
@@ -2520,6 +2544,8 @@ paths:
       - Admin
   /alert/action-logs:
     post:
+      X-func:
+        name: CreateActionLog
       consumes:
       - application/json
       description: Create Action Log
@@ -2544,6 +2570,8 @@ paths:
       - Alert
   /alert/alert-groups:
     post:
+      X-func:
+        name: CreateAlertGroup
       consumes:
       - application/json
       description: Create Alert Group
@@ -2568,6 +2596,8 @@ paths:
       - Alert
   /alert/alerts:
     get:
+      X-func:
+        name: ListAlerts
       consumes:
       - application/json
       description: List Alerts
@@ -2682,6 +2712,8 @@ paths:
       tags:
       - Alert
     post:
+      X-func:
+        name: CreateAlert
       consumes:
       - application/json
       description: Create Alert
@@ -2704,6 +2736,8 @@ paths:
       - Alert
   /alert/alerts/{id}:
     get:
+      X-func:
+        name: GetAlert
       consumes:
       - application/json
       description: Get Alert
@@ -2727,6 +2761,8 @@ paths:
       - Alert
   /alert/maintenances:
     get:
+      X-func:
+        name: ListMaintenances
       consumes:
       - application/json
       description: List Maintenances
@@ -2794,6 +2830,8 @@ paths:
       tags:
       - Alert
     post:
+      X-func:
+        name: CreateMaintenance
       consumes:
       - application/json
       description: Create Maintenance
@@ -2818,6 +2856,8 @@ paths:
       - Alert
   /alert/maintenances/{id}:
     delete:
+      X-func:
+        name: DeleteMaintenance
       consumes:
       - application/json
       description: Delete Maintenance
@@ -2840,6 +2880,8 @@ paths:
       tags:
       - Alert
     get:
+      X-func:
+        name: GetMaintenance
       consumes:
       - application/json
       description: Get Maintenance
@@ -2856,6 +2898,8 @@ paths:
       tags:
       - Alert
     put:
+      X-func:
+        name: UpdateMaintenance
       consumes:
       - application/json
       description: Update Maintenance
@@ -2885,6 +2929,8 @@ paths:
       - Alert
   /alert/subscriptions:
     get:
+      X-func:
+        name: ListSubscriptions
       consumes:
       - application/json
       description: List Subscriptions
@@ -2948,6 +2994,8 @@ paths:
       tags:
       - Alert
     post:
+      X-func:
+        name: CreateSubscription
       consumes:
       - application/json
       description: Create Subscription
@@ -2972,6 +3020,8 @@ paths:
       - Alert
   /alert/subscriptions/{id}:
     delete:
+      X-func:
+        name: DeleteSubscription
       consumes:
       - application/json
       description: Delete Subscription
@@ -2992,6 +3042,8 @@ paths:
       tags:
       - Alert
     get:
+      X-func:
+        name: GetSubscription
       consumes:
       - application/json
       description: Get Subscription
@@ -3014,6 +3066,8 @@ paths:
       tags:
       - Alert
     put:
+      X-func:
+        name: UpdateSubscription
       consumes:
       - application/json
       description: Update Subscription
@@ -3041,6 +3095,8 @@ paths:
       - Alert
   /assurance/device-healthy:
     get:
+      X-func:
+        name: GetDeviceHealthy
       consumes:
       - application/json
       description: Get Device Healthy
@@ -3062,6 +3118,8 @@ paths:
       - Assurance
   /infra/aps:
     delete:
+      X-func:
+        name: BatchDeleteAp
       consumes:
       - application/json
       description: Batch Delete ap
@@ -3087,6 +3145,8 @@ paths:
       tags:
       - Infra.AP
     get:
+      X-func:
+        name: ListAps
       consumes:
       - application/json
       description: List aps
@@ -3171,6 +3231,8 @@ paths:
       tags:
       - Infra.AP
     put:
+      X-func:
+        name: BatchUpdateAp
       consumes:
       - application/json
       description: Batch Update ap
@@ -3197,6 +3259,8 @@ paths:
       - Infra.AP
   /infra/aps/{id}:
     delete:
+      X-func:
+        name: DeleteAp
       consumes:
       - application/json
       description: Delete ap
@@ -3219,6 +3283,8 @@ paths:
       tags:
       - Infra.AP
     get:
+      X-func:
+        name: GetAp
       consumes:
       - application/json
       description: get ap
@@ -3241,6 +3307,8 @@ paths:
       tags:
       - Infra.AP
     put:
+      X-func:
+        name: UpdateAp
       consumes:
       - application/json
       description: Update ap
@@ -3270,6 +3338,8 @@ paths:
       - Infra.AP
   /infra/circuits:
     get:
+      X-func:
+        name: ListCircuit
       description: List circuits
       parameters:
       - collectionFormat: csv
@@ -3384,6 +3454,8 @@ paths:
       tags:
       - Infra.Circuit
     post:
+      X-func:
+        name: CreateCircuit
       consumes:
       - application/json
       description: Create new circuit
@@ -3408,6 +3480,8 @@ paths:
       - Infra.Circuit
   /infra/circuits/{id}:
     delete:
+      X-func:
+        name: DeleteCircuit
       consumes:
       - application/json
       parameters:
@@ -3428,6 +3502,8 @@ paths:
       tags:
       - Infra.Circuit
     get:
+      X-func:
+        name: GetCircuit
       consumes:
       - application/json
       description: Get circuit
@@ -3450,6 +3526,8 @@ paths:
       tags:
       - Infra.Circuit
     put:
+      X-func:
+        name: UpdateCircuit
       consumes:
       - application/json
       description: Update circuit
@@ -3479,6 +3557,8 @@ paths:
       - Infra.Circuit
   /infra/device-config-backup:
     post:
+      X-func:
+        name: CreateConfigBackUpTask
       consumes:
       - application/json
       description: Device Configuration backup
@@ -3503,6 +3583,8 @@ paths:
       - Infra.ScanDevice
   /infra/devices:
     get:
+      X-func:
+        name: ListDevices
       consumes:
       - application/json
       description: List devices
@@ -3602,6 +3684,8 @@ paths:
       tags:
       - Infra.Device
     post:
+      X-func:
+        name: CreateDevice
       consumes:
       - application/json
       description: Create device
@@ -3626,6 +3710,8 @@ paths:
       - Infra.Device
   /infra/devices/{id}:
     delete:
+      X-func:
+        name: DeleteDevice
       consumes:
       - application/json
       description: Delete device
@@ -3648,6 +3734,8 @@ paths:
       tags:
       - Infra.Device
     get:
+      X-func:
+        name: GetDevice
       consumes:
       - application/json
       description: get device
@@ -3670,6 +3758,8 @@ paths:
       tags:
       - Infra.Device
     put:
+      X-func:
+        name: UpdateDevice
       consumes:
       - application/json
       description: Update device
@@ -3699,6 +3789,8 @@ paths:
       - Infra.Device
   /infra/devices/{id}/cli:
     delete:
+      X-func:
+        name: DeleteDeviceCliCredential
       consumes:
       - application/json
       description: Delete device cli credential
@@ -3721,6 +3813,8 @@ paths:
       tags:
       - Infra.Device
     get:
+      X-func:
+        name: GetDeviceCliCredential
       consumes:
       - application/json
       description: Get device cli credential
@@ -3743,6 +3837,8 @@ paths:
       tags:
       - Infra.Device
     post:
+      X-func:
+        name: CreateDeviceCliCredential
       consumes:
       - application/json
       description: Create device new cli credential
@@ -3771,6 +3867,8 @@ paths:
       tags:
       - Infra.Device
     put:
+      X-func:
+        name: UpdateDeviceCliCredential
       consumes:
       - application/json
       description: Update device cli credential
@@ -3800,6 +3898,8 @@ paths:
       - Infra.Device
   /infra/devices/{id}/interfaces:
     get:
+      X-func:
+        name: GetDeviceInterfaces
       consumes:
       - application/json
       description: Get device interfaces
@@ -3825,6 +3925,8 @@ paths:
       - Infra.Device
   /infra/devices/{id}/restconf:
     delete:
+      X-func:
+        name: DeleteDeviceRestconfCredential
       consumes:
       - application/json
       description: Delete device restconf credential
@@ -3847,6 +3949,8 @@ paths:
       tags:
       - Infra.Device
     get:
+      X-func:
+        name: GetDeviceRestconfCredential
       consumes:
       - application/json
       description: Get device restconf credential
@@ -3869,6 +3973,8 @@ paths:
       tags:
       - Infra.Device
     post:
+      X-func:
+        name: CreateDeviceRestconfCredential
       consumes:
       - application/json
       description: Create new device restconf credential
@@ -3897,6 +4003,8 @@ paths:
       tags:
       - Infra.Device
     put:
+      X-func:
+        name: UpdateDeviceRestconfCredential
       consumes:
       - application/json
       description: Update device restconf credential
@@ -3926,6 +4034,8 @@ paths:
       - Infra.Device
   /infra/devices/{id}/snmpv2:
     delete:
+      X-func:
+        name: DeleteDeviceSnmpV2Credential
       consumes:
       - application/json
       description: Delete device snmpV2 credential
@@ -3948,6 +4058,8 @@ paths:
       tags:
       - Infra.Device
     get:
+      X-func:
+        name: GetDeviceSnmpV2Credential
       consumes:
       - application/json
       description: Get device snmpV2 credential
@@ -3970,6 +4082,8 @@ paths:
       tags:
       - Infra.Device
     post:
+      X-func:
+        name: CreateDeviceSnmpV2Credential
       consumes:
       - application/json
       description: Create device new snmpV2 credential
@@ -3998,6 +4112,8 @@ paths:
       tags:
       - Infra.Device
     put:
+      X-func:
+        name: UpdateDeviceSnmpV2Credential
       consumes:
       - application/json
       description: Update device snmpV2 credential
@@ -4027,6 +4143,8 @@ paths:
       - Infra.Device
   /infra/racks:
     get:
+      X-func:
+        name: ListRacks
       consumes:
       - application/json
       description: List racks
@@ -4093,6 +4211,8 @@ paths:
       tags:
       - Infra.Rack
     post:
+      X-func:
+        name: CreateRack
       consumes:
       - application/json
       description: Create new rack
@@ -4117,6 +4237,8 @@ paths:
       - Infra.Rack
   /infra/racks/{id}:
     delete:
+      X-func:
+        name: DeleteRack
       consumes:
       - application/json
       description: Delete rack
@@ -4139,6 +4261,8 @@ paths:
       tags:
       - Infra.Rack
     get:
+      X-func:
+        name: GetRack
       consumes:
       - application/json
       description: Get rack
@@ -4161,6 +4285,8 @@ paths:
       tags:
       - Infra.Rack
     put:
+      X-func:
+        name: UpdateRack
       consumes:
       - application/json
       description: Update rack
@@ -4190,6 +4316,8 @@ paths:
       - Infra.Rack
   /infra/scan-aps:
     post:
+      X-func:
+        name: CreateScanApTask
       consumes:
       - application/json
       description: Scan AP
@@ -4214,6 +4342,8 @@ paths:
       - Infra.ScanDevice
   /infra/scan-device-details:
     post:
+      X-func:
+        name: ScanDeviceDetails
       consumes:
       - application/json
       description: Scan device details
@@ -4238,6 +4368,8 @@ paths:
       - Infra.ScanDevice
   /infra/scan-devices:
     delete:
+      X-func:
+        name: BatchDeleteScanDevice
       consumes:
       - application/json
       description: Scan Device Batch Delete
@@ -4263,6 +4395,8 @@ paths:
       tags:
       - Infra.ScanDevice
     get:
+      X-func:
+        name: ListScanDevice
       consumes:
       - application/json
       description: Scan Device List
@@ -4338,6 +4472,8 @@ paths:
       tags:
       - Infra.ScanDevice
     post:
+      X-func:
+        name: CreateScanDevice
       consumes:
       - application/json
       description: Scan Device Create
@@ -4361,6 +4497,8 @@ paths:
       tags:
       - Infra.ScanDevice
     put:
+      X-func:
+        name: BatchUpdateScanDevice
       consumes:
       - application/json
       description: Scan Device Batch Update
@@ -4385,6 +4523,8 @@ paths:
       - Infra.ScanDevice
   /infra/scan-devices/{id}:
     delete:
+      X-func:
+        name: DeleteScanDevice
       consumes:
       - application/json
       description: Scan Device Delete
@@ -4407,6 +4547,8 @@ paths:
       tags:
       - Infra.ScanDevice
     get:
+      X-func:
+        name: GetScanDevice
       consumes:
       - application/json
       description: Scan Device Get
@@ -4429,6 +4571,8 @@ paths:
       tags:
       - Infra.ScanDevice
     put:
+      X-func:
+        name: UpdateScanDevice
       consumes:
       - application/json
       description: Scan Device Update
@@ -4458,6 +4602,8 @@ paths:
       - Infra.ScanDevice
   /infra/servers:
     get:
+      X-func:
+        name: ListServers
       consumes:
       - application/json
       description: Get servers
@@ -4545,6 +4691,8 @@ paths:
       tags:
       - Infra.Server
     post:
+      X-func:
+        name: CreateServer
       consumes:
       - application/json
       description: Create new server
@@ -4569,6 +4717,8 @@ paths:
       - Infra.Server
   /infra/servers/{id}:
     delete:
+      X-func:
+        name: DeleteServer
       consumes:
       - application/json
       description: Delete server
@@ -4591,6 +4741,8 @@ paths:
       tags:
       - Infra.Server
     get:
+      X-func:
+        name: GetServer
       consumes:
       - application/json
       description: Get server
@@ -4613,6 +4765,8 @@ paths:
       tags:
       - Infra.Server
     put:
+      X-func:
+        name: UpdateServer
       consumes:
       - application/json
       description: Update server
@@ -4642,6 +4796,8 @@ paths:
       - Infra.Server
   /infra/servers/{id}/cli:
     delete:
+      X-func:
+        name: DeleteServerCliCredential
       consumes:
       - application/json
       description: Delete Server cli credential
@@ -4664,6 +4820,8 @@ paths:
       tags:
       - Infra.Server
     get:
+      X-func:
+        name: GetServerCliCredential
       consumes:
       - application/json
       description: Get Server cli credential
@@ -4686,6 +4844,8 @@ paths:
       tags:
       - Infra.Server
     post:
+      X-func:
+        name: CreateServerCliCredential
       consumes:
       - application/json
       description: Create Server new cli credential
@@ -4714,6 +4874,8 @@ paths:
       tags:
       - Infra.Server
     put:
+      X-func:
+        name: UpdateServerCliCredential
       consumes:
       - application/json
       description: Update Server cli credential
@@ -4743,6 +4905,8 @@ paths:
       - Infra.Server
   /infra/servers/{id}/snmpv2:
     delete:
+      X-func:
+        name: DeleteServerSnmpV2Credential
       consumes:
       - application/json
       description: Delete server snmpV2 credential
@@ -4765,6 +4929,8 @@ paths:
       tags:
       - Infra.Server
     get:
+      X-func:
+        name: GetServerSnmpV2Credential
       consumes:
       - application/json
       description: Get server snmpV2 credential
@@ -4787,6 +4953,8 @@ paths:
       tags:
       - Infra.Server
     post:
+      X-func:
+        name: CreateServerSnmpV2Credential
       consumes:
       - application/json
       description: Create server new snmpV2 credential
@@ -4815,6 +4983,8 @@ paths:
       tags:
       - Infra.Server
     put:
+      X-func:
+        name: UpdateServerSnmpV2Credential
       consumes:
       - application/json
       description: Update server snmpV2 credential
@@ -4844,6 +5014,8 @@ paths:
       - Infra.Server
   /infra/sites:
     get:
+      X-func:
+        name: ListSites
       consumes:
       - application/json
       description: List sites
@@ -4919,6 +5091,8 @@ paths:
       tags:
       - Infra.Site
     post:
+      X-func:
+        name: CreateSite
       consumes:
       - application/json
       description: Create new site
@@ -4943,6 +5117,8 @@ paths:
       - Infra.Site
   /infra/sites/{id}:
     delete:
+      X-func:
+        name: DeleteSite
       consumes:
       - application/json
       description: Delete site
@@ -4965,6 +5141,8 @@ paths:
       tags:
       - Infra.Site
     get:
+      X-func:
+        name: GetSite
       consumes:
       - application/json
       description: Get site
@@ -4987,6 +5165,8 @@ paths:
       tags:
       - Infra.Site
     put:
+      X-func:
+        name: UpdateSite
       consumes:
       - application/json
       description: Update site
@@ -5016,6 +5196,11 @@ paths:
       - Infra.Site
   /intend/device-roles:
     get:
+      X-func:
+        name: DeviceRoleList
+      consumes:
+      - application/json
+      description: Get list of device roles
       parameters:
       - in: query
         name: keyword
@@ -5023,6 +5208,8 @@ paths:
       - in: query
         name: name
         type: string
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
@@ -5042,6 +5229,11 @@ paths:
       - Intend
   /intend/manufacturers:
     get:
+      X-func:
+        name: ManufacturerList
+      consumes:
+      - application/json
+      description: Get list of Manufacturers
       parameters:
       - in: query
         name: keyword
@@ -5049,6 +5241,8 @@ paths:
       - in: query
         name: name
         type: string
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
@@ -5068,6 +5262,11 @@ paths:
       - Intend
   /intend/platforms:
     get:
+      X-func:
+        name: PlatformList
+      consumes:
+      - application/json
+      description: Get list of Platforms
       parameters:
       - in: query
         name: keyword
@@ -5075,6 +5274,8 @@ paths:
       - in: query
         name: platform
         type: string
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
@@ -5094,6 +5295,8 @@ paths:
       - Intend
   /ipam/ip-addresses:
     get:
+      X-func:
+        name: ListIpAddresses
       consumes:
       - application/json
       description: Get ip address list
@@ -5171,6 +5374,8 @@ paths:
       tags:
       - IPAM
     post:
+      X-func:
+        name: CreateIpAddress
       consumes:
       - application/json
       description: Create ip address
@@ -5195,6 +5400,8 @@ paths:
       - IPAM
   /ipam/ip-addresses/{id}:
     delete:
+      X-func:
+        name: DeleteIpAddress
       consumes:
       - application/json
       description: Delete ip address
@@ -5217,6 +5424,8 @@ paths:
       tags:
       - IPAM
     get:
+      X-func:
+        name: GetIpAddress
       consumes:
       - application/json
       description: Get ip address
@@ -5239,6 +5448,8 @@ paths:
       tags:
       - IPAM
     put:
+      X-func:
+        name: UpdateIpAddress
       consumes:
       - application/json
       description: Update ip address
@@ -5268,6 +5479,8 @@ paths:
       - IPAM
   /ipam/prefixes:
     get:
+      X-func:
+        name: ListPrefixes
       consumes:
       - application/json
       description: Get prefix list
@@ -5348,6 +5561,8 @@ paths:
       tags:
       - IPAM
     post:
+      X-func:
+        name: CreatePrefix
       consumes:
       - application/json
       description: Create prefix
@@ -5372,6 +5587,8 @@ paths:
       - IPAM
   /ipam/prefixes/{id}:
     delete:
+      X-func:
+        name: DeletePrefix
       consumes:
       - application/json
       description: Delete prefix
@@ -5394,6 +5611,8 @@ paths:
       tags:
       - IPAM
     get:
+      X-func:
+        name: GetPrefix
       consumes:
       - application/json
       description: Get prefix
@@ -5416,6 +5635,8 @@ paths:
       tags:
       - IPAM
     put:
+      X-func:
+        name: UpdatePrefix
       consumes:
       - application/json
       description: Update prefix
@@ -5445,6 +5666,8 @@ paths:
       - IPAM
   /login/password:
     post:
+      X-func:
+        name: PasswordLogin
       parameters:
       - description: Username Password Login
         in: body
@@ -5462,6 +5685,8 @@ paths:
       - Auth
   /login/refresh:
     post:
+      X-func:
+        name: CreateRefreshToken
       parameters:
       - description: Generate refresh token
         in: body
@@ -5479,6 +5704,8 @@ paths:
       - Auth
   /monitor/time-series:
     get:
+      X-func:
+        name: GetTimeSeries
       consumes:
       - application/json
       description: Get Time Series Data
@@ -5550,6 +5777,11 @@ paths:
       - Monitor
   /org/organizations:
     post:
+      X-func:
+        name: CreateOrganization
+      consumes:
+      - application/json
+      description: Create organization
       parameters:
       - description: Create organization
         in: body
@@ -5557,6 +5789,8 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/schemas.Organization'
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
@@ -5569,6 +5803,8 @@ paths:
       - Organization
   /task/config-backup:
     post:
+      X-func:
+        name: ConfigBackupCallback
       consumes:
       - application/json
       description: Configuration backup callback
@@ -5595,6 +5831,8 @@ paths:
       - Task
   /task/scan-ap:
     post:
+      X-func:
+        name: ScanApCallback
       consumes:
       - application/json
       description: Scan AP callback
@@ -5621,6 +5859,8 @@ paths:
       - Task
   /task/scan-device:
     post:
+      X-func:
+        name: ScanDeviceDetailCallback
       consumes:
       - application/json
       description: Scan device detail callback
@@ -5645,6 +5885,8 @@ paths:
       - Task
   /task/scan-device-basic:
     post:
+      X-func:
+        name: ScanDeviceBasicInfoCallback
       consumes:
       - application/json
       description: Scan device basic information callback
@@ -5671,6 +5913,8 @@ paths:
       - Task
   /webssh/proxy/{sessionId}:
     get:
+      X-func:
+        name: ProxyWebSSHCallback
       consumes:
       - application/json
       description: WebSSH Proxy
@@ -5694,6 +5938,8 @@ paths:
       - WebSSH
   /webssh/server/{deviceId}:
     get:
+      X-func:
+        name: CreateWebSSHSession
       consumes:
       - application/json
       description: WebSSH Server

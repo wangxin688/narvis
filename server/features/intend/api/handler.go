@@ -2,11 +2,10 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/core"
 )
 
 func RegisterIntendRoutes(e *gin.Engine) {
-	basePath := core.Settings.System.RouterPrefix
+	basePath := "/api/v1"
 	router := e.Group(basePath + "/intend")
 	{
 		router.GET("/device-roles", deviceRoleList)

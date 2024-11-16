@@ -2,13 +2,12 @@ package ipam_api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/middleware"
 )
 
 func RegisterIpamRoutes(e *gin.Engine) {
 
-	basePath := core.Settings.System.RouterPrefix
+	basePath := "/api/v1"
 	router := e.Group(basePath+"/ipam", middleware.AuthMiddleware())
 	{
 

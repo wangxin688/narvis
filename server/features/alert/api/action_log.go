@@ -12,6 +12,7 @@ import (
 
 // @Tags Alert
 // @Summary Create Action Log
+// @X-func {"name": "CreateActionLog"}
 // @Description Create Action Log
 // @Security BearerAuth
 // @Accept  json

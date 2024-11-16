@@ -16,6 +16,7 @@ import (
 
 // @Tags Infra.ScanDevice
 // @Summary Scan Device Create
+// @X-func {"name": "CreateScanDevice"}
 // @Description Scan Device Create
 // @Security BearerAuth
 // @Accept  json
@@ -45,6 +46,7 @@ func createScanDevice(c *gin.Context) {
 
 // @Tags Infra.ScanDevice
 // @Summary Scan Device Update
+// @X-func {"name": "UpdateScanDevice"}
 // @Description Scan Device Update
 // @Security BearerAuth
 // @Accept  json
@@ -77,6 +79,7 @@ func updateScanDevice(c *gin.Context) {
 
 // @Tags Infra.ScanDevice
 // @Summary Scan Device Batch Update
+// @X-func {"name": "BatchUpdateScanDevice"}
 // @Description Scan Device Batch Update
 // @Security BearerAuth
 // @Accept  json
@@ -104,6 +107,7 @@ func batchUpdateScanDevice(c *gin.Context) {
 
 // @Tags Infra.ScanDevice
 // @Summary Scan Device List
+// @X-func {"name": "ListScanDevice"}
 // @Description Scan Device List
 // @Security BearerAuth
 // @Accept  json
@@ -131,6 +135,7 @@ func listScanDevices(c *gin.Context) {
 
 // @Tags Infra.ScanDevice
 // @Summary Scan Device Get
+// @X-func {"name": "GetScanDevice"}
 // @Description Scan Device Get
 // @Security BearerAuth
 // @Accept  json
@@ -158,6 +163,7 @@ func getScanDevice(c *gin.Context) {
 
 // @Tags Infra.ScanDevice
 // @Summary Scan Device Delete
+// @X-func {"name": "DeleteScanDevice"}
 // @Description Scan Device Delete
 // @Security BearerAuth
 // @Accept  json
@@ -185,6 +191,7 @@ func deleteScanDevice(c *gin.Context) {
 
 // @Tags Infra.ScanDevice
 // @Summary Scan Device Batch Delete
+// @X-func {"name": "BatchDeleteScanDevice"}
 // @Description Scan Device Batch Delete
 // @Security BearerAuth
 // @Accept  json
@@ -212,6 +219,7 @@ func batchDeleteScanDevice(c *gin.Context) {
 
 // @Tags Infra.ScanDevice
 // @Summary Scan AP
+// @X-func {"name": "CreateScanApTask"}
 // @Description Scan AP
 // @Security BearerAuth
 // @Accept  json
@@ -240,6 +248,7 @@ func createScanAP(c *gin.Context) {
 
 // @Tags Infra.ScanDevice
 // @Summary Scan device details
+// @X-func {"name": "ScanDeviceDetails"}
 // @Description Scan device details
 // @Security BearerAuth
 // @Accept  json
@@ -267,6 +276,7 @@ func scanDeviceDetails(c *gin.Context) {
 
 // @Tags Infra.ScanDevice
 // @Summary Device Configuration backup
+// @X-func {"name": "CreateConfigBackUpTask"}
 // @Description Device Configuration backup
 // @Security BearerAuth
 // @Accept  json

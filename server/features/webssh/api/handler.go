@@ -15,6 +15,7 @@ type WebSSHServer struct {
 
 // @Tags WebSSH
 // @Summary WebSSH Server
+// @X-func {"name": "CreateWebSSHSession"}
 // @Description WebSSH Server
 // @Security BearerAuth
 // @Accept json
@@ -40,6 +41,7 @@ func webSSH(c *gin.Context) {
 
 // @Tags WebSSH
 // @Summary WebSSH Proxy
+// @X-func {"name": "ProxyWebSSHCallback"}
 // @Description WebSSH Proxy
 // @Security BearerAuth
 // @Accept json
@@ -64,7 +66,7 @@ func proxyWebSSH(c *gin.Context) {
 }
 
 func RegisterWebSSHRoutes(e *gin.Engine) {
-	basePath := core.Settings.System.RouterPrefix
+	basePath := "/api/v1"
 	router := e.Group(basePath+"/webssh", middleware.CookieAuthMiddleware())
 	{
 		router.GET("/server/:deviceId", webSSH)

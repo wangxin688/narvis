@@ -13,6 +13,10 @@ import (
 // @Tags Intend
 // @Security BearerAuth
 // @Summary Get list of Manufacturers
+// @X-func {"name": "ManufacturerList"}
+// @Description Get list of Manufacturers
+// @Accept json
+// @Produce json
 // @Param object query schemas.ManufacturerQuery false "query manufacturers"
 // @Success 200 {object} schemas.ListResponse{results=[]string}
 // @Router /intend/manufacturers [get]

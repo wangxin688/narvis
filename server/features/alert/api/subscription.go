@@ -13,6 +13,7 @@ import (
 
 // @Tags Alert
 // @Summary Create Subscription
+// @X-func {"name": "CreateSubscription"}
 // @Description Create Subscription
 // @Security BearerAuth
 // @Accept json
@@ -42,6 +43,7 @@ func createSubscription(c *gin.Context) {
 
 // @Tags Alert
 // @Summary Get Subscription
+// @X-func {"name": "GetSubscription"}
 // @Description Get Subscription
 // @Security BearerAuth
 // @Accept json
@@ -69,6 +71,7 @@ func getSubscription(c *gin.Context) {
 
 // @Tags Alert
 // @Summary Update Subscription
+// @X-func {"name": "UpdateSubscription"}
 // @Description Update Subscription
 // @Security BearerAuth
 // @Accept json
@@ -100,6 +103,7 @@ func updateSubscription(c *gin.Context) {
 
 // @Tags Alert
 // @Summary List Subscriptions
+// @X-func {"name": "ListSubscriptions"}
 // @Description List Subscriptions
 // @Security BearerAuth
 // @Accept json
@@ -128,6 +132,7 @@ func listSubscriptions(c *gin.Context) {
 
 // @Tags Alert
 // @Summary Delete Subscription
+// @X-func {"name": "DeleteSubscription"}
 // @Description Delete Subscription
 // @Security BearerAuth
 // @Accept json

@@ -13,6 +13,7 @@ import (
 
 // @Tags Admin
 // @Summary Create role
+// @X-func {"name": "CreateUserRole"}
 // @Description create role
 // @Security BearerAuth
 // @Accept json
@@ -41,6 +42,7 @@ func createRole(c *gin.Context) {
 
 // @Tags Admin
 // @Summary Get role
+// @X-func {"name": "GetUserRole"}
 // @Description get role
 // @Security BearerAuth
 // @Accept json
@@ -68,6 +70,7 @@ func getRole(c *gin.Context) {
 
 // @Tags Admin
 // @Summary List roles
+// @X-func {"name": "ListUserRoles"}
 // @Description list roles
 // @Security BearerAuth
 // @Accept json
@@ -98,6 +101,7 @@ func listRoles(c *gin.Context) {
 
 // @Tags Admin
 // @Summary Update role
+// @X-func {"name": "UpdateUserRole"}
 // @Description update role
 // @Security BearerAuth
 // @Accept json
@@ -130,6 +134,7 @@ func updateRole(c *gin.Context) {
 
 // @Tags Admin
 // @Summary Delete role
+// @X-func {"name": "DeleteUserRole"}
 // @Description delete role
 // @Security BearerAuth
 // @Accept json

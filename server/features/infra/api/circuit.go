@@ -15,6 +15,7 @@ import (
 
 // @Tags Infra.Circuit
 // @Summary Create new circuit
+// @X-func {"name": "CreateCircuit"}
 // @Description Create new circuit
 // @Security BearerAuth
 // @Accept json
@@ -45,6 +46,7 @@ func createCircuit(c *gin.Context) {
 
 // @Tags Infra.Circuit
 // @Summary Get circuit
+// @X-func {"name": "GetCircuit"}
 // @Description Get circuit
 // @Security BearerAuth
 // @Accept json
@@ -72,6 +74,7 @@ func getCircuit(c *gin.Context) {
 
 // @Tags Infra.Circuit
 // @Summary List circuits
+// @X-func {"name": "ListCircuit"}
 // @Description List circuits
 // @Security BearerAuth
 // Accept json
@@ -99,6 +102,7 @@ func listCircuit(c *gin.Context) {
 
 // @Tags Infra.Circuit
 // @Summary Update circuit
+// @X-func {"name": "UpdateCircuit"}
 // @Description Update circuit
 // @Security BearerAuth
 // @Accept json
@@ -134,6 +138,7 @@ func updateCircuit(c *gin.Context) {
 
 // @Tags Infra.Circuit
 // @Summary: Delete circuit
+// @X-func {"name": "DeleteCircuit"}
 // @Description: Delete circuit
 // @Security BearerAuth
 // @Accept json

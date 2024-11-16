@@ -11,7 +11,11 @@ import (
 
 // @Tags Organization
 // @Security BearerAuth
+// @Accept json
+// @Produce json
 // @Summary Create organization
+// @Description Create organization
+// @X-func {"name": "CreateOrganization"}
 // @Param body body schemas.Organization true "Create organization"
 // @Success 200 {object} schemas.Organization
 // @Router /org/organizations [post]

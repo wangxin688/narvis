@@ -13,6 +13,7 @@ import (
 
 // @Tags Alert
 // @Summary Create Maintenance
+// @X-func {"name": "CreateMaintenance"}
 // @Description Create Maintenance
 // @Security BearerAuth
 // @Accept json
@@ -42,6 +43,7 @@ func createMaintenance(c *gin.Context) {
 
 // @Tags Alert
 // @Summary Get Maintenance
+// @X-func {"name": "GetMaintenance"}
 // @Description Get Maintenance
 // @Security BearerAuth
 // @Accept json
@@ -69,6 +71,7 @@ func getMaintenance(c *gin.Context) {
 
 // @Tags Alert
 // @Summary List Maintenances
+// @X-func {"name": "ListMaintenances"}
 // @Description List Maintenances
 // @Security BearerAuth
 // @Accept json
@@ -97,6 +100,7 @@ func listMaintenances(c *gin.Context) {
 
 // @Tags Alert
 // @Summary Update Maintenance
+// @X-func {"name": "UpdateMaintenance"}
 // @Description Update Maintenance
 // @Security BearerAuth
 // @Accept json
@@ -129,6 +133,7 @@ func updateMaintenance(c *gin.Context) {
 
 // @Tags Alert
 // @Summary Delete Maintenance
+// @X-func {"name": "DeleteMaintenance"}
 // @Description Delete Maintenance
 // @Security BearerAuth
 // @Accept json
