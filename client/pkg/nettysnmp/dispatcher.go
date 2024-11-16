@@ -141,7 +141,7 @@ func (d *Dispatcher) getFactory(platformType platform.Platform, snmpConfig facto
 func (d *Dispatcher) SnmpReachable(session *gosnmp.GoSNMP) bool {
 	result, err := session.Get([]string{factory.SysName})
 	if err != nil || result == nil {
-		logger.Logger.Info("[dispatcher]: SnmpReachable failed", zap.Error(err), zap.Error(err))
+		logger.Logger.Info("[dispatcher]: SnmpReachable failed", zap.Error(err), zap.String("target", session.Target))
 		return false
 	}
 	return len(result.Variables) > 0

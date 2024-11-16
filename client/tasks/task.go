@@ -337,7 +337,7 @@ func wlanUserTask(data []byte) *intendtask.WlanUserTaskResult {
 	if response == nil {
 		result.Errors = []string{fmt.Sprintf("not support for target device %s", task.ManagementIp)}
 	}
-	if response[0].Errors != nil {
+	if len(response[0].Errors) > 0 {
 		result.Errors = response[0].Errors
 		return result
 	}

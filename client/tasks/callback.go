@@ -135,7 +135,7 @@ func wlanUsersCallback(data *intendtask.WlanUserTaskResult, taskId string) {
 	if !resp.IsSuccessState() {
 		logger.Logger.Error(fmt.Sprintf("[wlanUsersCallback] [%s]: failed to post result to server", taskId), zap.String("response", resp.String()))
 	}
-	logger.Logger.Info(fmt.Sprintf("[wlanUsersCallback] [%s]: post result to server success", zap.String("taskId", taskId)), zap.Int("number of wlan users", len(data.WlanUsers)))
+	logger.Logger.Info("[wlanUsersCallback]: post result to server success", zap.String("taskId", taskId), zap.Int("number of wlan users", len(data.WlanUsers)))
 }
 
 func newServer() *req.Client {
