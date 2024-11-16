@@ -5888,7 +5888,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/task/scan-ap": {
+        "/task/scan-aps": {
             "post": {
                 "security": [
                     {
@@ -5930,48 +5930,6 @@ const docTemplate = `{
                 },
                 "X-func": {
                     "name": "ScanApCallback"
-                }
-            }
-        },
-        "/task/scan-device": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Scan device detail callback",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Task"
-                ],
-                "summary": "ScanDeviceDetail Callback",
-                "parameters": [
-                    {
-                        "description": "data",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/intendtask.DeviceScanResponse"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/schemas.SuccessResponse"
-                        }
-                    }
-                },
-                "X-func": {
-                    "name": "ScanDeviceDetailCallback"
                 }
             }
         },
@@ -6017,6 +5975,48 @@ const docTemplate = `{
                 },
                 "X-func": {
                     "name": "ScanDeviceBasicInfoCallback"
+                }
+            }
+        },
+        "/task/scan-devices": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Scan device detail callback",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "ScanDeviceDetail Callback",
+                "parameters": [
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/intendtask.DeviceScanResponse"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.SuccessResponse"
+                        }
+                    }
+                },
+                "X-func": {
+                    "name": "ScanDeviceDetailCallback"
                 }
             }
         },

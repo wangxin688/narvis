@@ -5897,7 +5897,7 @@ paths:
       summary: ConfigurationBackup Callback
       tags:
       - Task
-  /task/scan-ap:
+  /task/scan-aps:
     post:
       X-func:
         name: ScanApCallback
@@ -5923,32 +5923,6 @@ paths:
       security:
       - BearerAuth: []
       summary: ScanAP Callback
-      tags:
-      - Task
-  /task/scan-device:
-    post:
-      X-func:
-        name: ScanDeviceDetailCallback
-      consumes:
-      - application/json
-      description: Scan device detail callback
-      parameters:
-      - description: data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/intendtask.DeviceScanResponse'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/schemas.SuccessResponse'
-      security:
-      - BearerAuth: []
-      summary: ScanDeviceDetail Callback
       tags:
       - Task
   /task/scan-device-basic:
@@ -5977,6 +5951,32 @@ paths:
       security:
       - BearerAuth: []
       summary: ScanDevice BasicInfo Callback
+      tags:
+      - Task
+  /task/scan-devices:
+    post:
+      X-func:
+        name: ScanDeviceDetailCallback
+      consumes:
+      - application/json
+      description: Scan device detail callback
+      parameters:
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/intendtask.DeviceScanResponse'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.SuccessResponse'
+      security:
+      - BearerAuth: []
+      summary: ScanDeviceDetail Callback
       tags:
       - Task
   /task/wlan-users:

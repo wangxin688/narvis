@@ -64,7 +64,7 @@ func scanDeviceBasicInfoCallback(c *gin.Context) {
 // @Produce json
 // @Param data body []intendtask.ApScanResponse true "data"
 // @Success 200 {object} ts.SuccessResponse
-// @Router /task/scan-ap [post]
+// @Router /task/scan-aps [post]
 func scanApCallback(c *gin.Context) {
 	var err error
 	defer func() {
@@ -103,7 +103,7 @@ func scanApCallback(c *gin.Context) {
 // @Produce json
 // @Param data body intendtask.DeviceScanResponse true "data"
 // @Success 200 {object} ts.SuccessResponse
-// @Router /task/scan-device [post]
+// @Router /task/scan-devices [post]
 func scanDeviceDetailCallback(c *gin.Context) {
 	var err error
 	defer func() {

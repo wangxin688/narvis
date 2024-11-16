@@ -78,7 +78,7 @@ func scanApCallback(data []*intendtask.ApScanResponse, taskId string) {
 		logger.Logger.Info(fmt.Sprintf("[scanApCallback] [%s]: ", taskId), zap.Any("response", resp.String()))
 	}
 
-	logger.Logger.Info("[scanApCallback] [%s]: post result to server success", zap.String("taskId", taskId), zap.Int("number of ap", len(data)))
+	logger.Logger.Info("[scanApCallback]: post result to server success", zap.String("taskId", taskId), zap.Int("number of ap", len(data)))
 }
 
 func scanMacAddressTableCallback(data []*intendtask.MacAddressTableScanResponse, taskId string) {
