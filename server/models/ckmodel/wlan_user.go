@@ -2,6 +2,8 @@ package ckmodel
 
 import "time"
 
+var WlanStationTableName = "wlan_station" // wlan_stationTable
+
 type WlanStation struct {
 	Ts                      time.Time `gorm:"ts"`
 	OrganizationId          string    `gorm:"organizationId"`
@@ -20,4 +22,8 @@ type WlanStation struct {
 	StationTxBits           uint64    `gorm:"stationTxBits"`
 	StationMaxSpeed         uint32    `gorm:"stationMaxSpeed"`
 	StationOnlineTime       uint32    `gorm:"stationOnlineTime"`
+}
+
+func (WlanStation) TableName() string {
+	return WlanStationTableName
 }
