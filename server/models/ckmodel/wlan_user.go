@@ -5,23 +5,23 @@ import "time"
 var WlanStationTableName = "wlan_station" // wlan_stationTable
 
 type WlanStation struct {
-	Ts                      time.Time `gorm:"ts"`
-	OrganizationId          string    `gorm:"organizationId"`
-	SiteId                  string    `gorm:"siteId"`
-	StationMac              string    `gorm:"stationMac"`
-	StationIp               string    `gorm:"stationIp"`
-	StationUsername         string    `gorm:"stationUsername"`
-	StationApMac            string    `gorm:"stationApMac"`
-	StationApName           string    `gorm:"stationApName"`
-	StationESSID            string    `gorm:"stationESSID"`
-	StationChannel          uint16    `gorm:"stationChannel"`
-	StationChannelBandWidth string    `gorm:"stationChannelBandwidth"`
-	StationSNR              uint16    `gorm:"stationSNR"`
-	StationRSSI             int16     `gorm:"stationRSSI"`
-	StationRxBits           uint64    `gorm:"stationRxBits"`
-	StationTxBits           uint64    `gorm:"stationTxBits"`
-	StationMaxSpeed         uint32    `gorm:"stationMaxSpeed"`
-	StationOnlineTime       uint32    `gorm:"stationOnlineTime"`
+	Ts                      time.Time `gorm:"column:ts"`
+	OrganizationId          string    `gorm:"column:organizationId"`
+	SiteId                  string    `gorm:"column:siteId"`
+	StationMac              string    `gorm:"column:stationMac"`
+	StationIp               string    `gorm:"column:stationIp"`
+	StationUsername         string    `gorm:"column:stationUsername"`
+	StationApMac            string    `gorm:"column:stationApMac"`
+	StationApName           string    `gorm:"column:stationApName"`
+	StationESSID            string    `gorm:"column:stationESSID"`
+	StationChannel          uint16    `gorm:"column:stationChannel"`
+	StationChannelBandWidth string    `gorm:"column:stationChannelBandwidth"`
+	StationSNR              uint16    `gorm:"column:stationSNR"`
+	StationRSSI             int16     `gorm:"column:stationRSSI"`
+	StationRxBits           uint64    `gorm:"column:stationRxBits"`
+	StationTxBits           uint64    `gorm:"column:stationTxBits"`
+	StationMaxSpeed         uint32    `gorm:"column:stationMaxSpeed"`
+	StationOnlineTime       uint32    `gorm:"column:stationOnlineTime"`
 }
 
 func (WlanStation) TableName() string {
