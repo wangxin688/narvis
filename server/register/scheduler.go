@@ -32,7 +32,7 @@ func RegisterScheduler() {
 	core.Logger.Info("[registerScheduler]: create device360 offline job success", zap.String("jobId", device360OfflineJob.ID().String()))
 
 	deviceInfoJob, err := scheduler.NewJob(
-		gocron.DurationJob(10*time.Minute),
+		gocron.DurationJob(8*time.Hour),
 		gocron.NewTask(
 			func() {
 				infra_scheduler.SyncDeviceScheduler()
@@ -45,7 +45,7 @@ func RegisterScheduler() {
 	core.Logger.Info("[registerScheduler]: create device info job success", zap.String("jobId", deviceInfoJob.ID().String()))
 
 	apInfoJob, err := scheduler.NewJob(
-		gocron.DurationJob(1*time.Hour),
+		gocron.DurationJob(8*time.Hour),
 		gocron.NewTask(
 			func() {
 				infra_scheduler.SyncApScheduler()

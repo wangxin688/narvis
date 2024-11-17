@@ -2,6 +2,7 @@ package monitor_tasks
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/wangxin688/narvis/intend/intendtask"
 	"github.com/wangxin688/narvis/server/core"
@@ -25,6 +26,7 @@ func WlanUserCallback(wlanUsers *intendtask.WlanUserTaskResult) error {
 	}
 
 	users := make([]ckmodel.WlanStation, numberOfUsers)
+	now := time.Now()
 	for index, user := range wlanUsers.WlanUsers {
 		if user == nil {
 			core.Logger.Warn("[WlanUserCallback]: encountered nil user, skipping")
@@ -51,6 +53,7 @@ func WlanUserCallback(wlanUsers *intendtask.WlanUserTaskResult) error {
 		}
 
 		users[index] = ckmodel.WlanStation{
+			Ts:                      now,
 			StationUsername:         user.StationUsername,
 			StationMac:              user.StationMac,
 			StationIp:               user.StationIp,
