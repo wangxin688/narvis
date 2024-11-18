@@ -293,8 +293,8 @@ type WlanUserItem struct {
 	StationRadioType     string  `json:"stationRadioType"`               // radio类型
 	StationSNR           *uint64 `json:"stationSNR,omitempty"`           // 终端NR
 	StationRSSI          uint64  `json:"stationRSSI"`                    // 终端RSSI
-	StationRxBits       uint64  `json:"stationRxBits`                 // 终端下行流量
-	StationTxBits       uint64  `json:"stationTxBits"`                 // 终端上行流量
+	StationRxBits        uint64  `json:"stationRxBits"`                  // 终端下行流量
+	StationTxBits        uint64  `json:"stationTxBits"`                  // 终端上行流量
 	StationMaxSpeed      *uint64 `json:"stationMaxSpeed,omitempty"`      // 终端协商速率
 	StationOnlineTime    uint64  `json:"stationOnlineTime"`              // 终端在线时间
 }

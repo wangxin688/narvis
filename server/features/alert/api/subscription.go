@@ -78,7 +78,7 @@ func getSubscription(c *gin.Context) {
 // @Produce json
 // @Param id path string true "uuid formatted subscriptionId"
 // @Param data body schemas.SubscriptionUpdate true "data"
-// @Success 200
+// @Success 200 {object} ts.IdResponse
 // @Router /alert/subscriptions/{id} [put]
 func updateSubscription(c *gin.Context) {
 	var err error
@@ -138,7 +138,7 @@ func listSubscriptions(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "uuid formatted subscriptionId"
-// @Success 200
+// @Success 200 {object} ts.IdResponse
 // @Router /alert/subscriptions/{id} [delete]
 func deleteSubscription(c *gin.Context) {
 	var err error

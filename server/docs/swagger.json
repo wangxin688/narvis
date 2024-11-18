@@ -1474,7 +1474,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
                     }
                 },
                 "X-func": {
@@ -1509,7 +1512,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
                     }
                 },
                 "X-func": {
@@ -9385,7 +9391,7 @@
                         "type": "string"
                     }
                 },
-                "value": {
+                "values": {
                     "type": "array",
                     "items": {
                         "type": "array",

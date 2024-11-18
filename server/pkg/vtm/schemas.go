@@ -33,7 +33,7 @@ type VectorResponse struct {
 
 type MatrixResponse struct {
 	Metric map[string]string `json:"metric"`
-	Values [][2]any          `json:"value"`
+	Values [][2]any          `json:"values"`
 	Legend *string           `json:"legend"`
 }
 

@@ -1482,7 +1482,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
                     }
                 },
                 "X-func": {
@@ -1517,7 +1520,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
                     }
                 },
                 "X-func": {
@@ -9393,7 +9399,7 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
-                "value": {
+                "values": {
                     "type": "array",
                     "items": {
                         "type": "array",

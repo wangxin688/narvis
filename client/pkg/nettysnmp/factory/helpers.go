@@ -326,7 +326,7 @@ func shouldIncludeMacAddress(iface *DeviceInterface, lldpInterfaces []string) bo
 // return mac, ip and macIndex
 func SnmpIndexToMacAndIp(snmpIndex string) (string, string, string) {
 	parts := strings.Split(snmpIndex, ".")
-	maxIndex := "." + strings.Join(parts[0:6], ".")
+	maxIndex := "." + strings.Join(parts[1:7], ".")
 	macParts := make([]string, 6)
 	for i := 0; i < 6; i++ {
 		macParts[i] = fmt.Sprintf("%02x", parseInt(parts[i]))

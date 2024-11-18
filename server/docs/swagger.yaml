@@ -2207,7 +2207,7 @@ definitions:
         additionalProperties:
           type: string
         type: object
-      value:
+      values:
         items:
           items: {}
           type: array
@@ -3104,6 +3104,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
       security:
       - BearerAuth: []
       summary: Delete Subscription
@@ -3156,6 +3158,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
       security:
       - BearerAuth: []
       summary: Update Subscription
