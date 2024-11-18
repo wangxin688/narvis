@@ -148,36 +148,6 @@ func initProxy(orgId string) {
 	}
 }
 
-// func initMacAddress() {
-// 	mac, err := gen.MacAddress.Count()
-// 	if err != nil {
-// 		core.Logger.Error("[bootstrap]: failed to get mac address", zap.Error(err))
-// 		panic(err)
-// 	}
-// 	if mac >= 1 {
-// 		core.Logger.Info("[bootstrap]: mac address already exists")
-// 		return
-// 	}
-// 	macAddressFilePath := core.ProjectPath + "/cmd/bootstrap/appdata/mac_address.json"
-// 	file, err := os.Open(macAddressFilePath)
-// 	if err != nil {
-// 		core.Logger.Error("[bootstrap]: failed to open mac address file", zap.Error(err))
-// 		panic(err)
-// 	}
-// 	defer file.Close()
-// 	var macAddresses []*models.MacAddress
-// 	if err := json.NewDecoder(file).Decode(&macAddresses); err != nil {
-// 		core.Logger.Error("[bootstrap]: failed to decode mac address file", zap.Error(err))
-// 		panic(err)
-// 	}
-// 	err = gen.MacAddress.CreateInBatches(macAddresses, 100)
-// 	if err != nil {
-// 		core.Logger.Error("[bootstrap]: failed to create mac address", zap.Error(err))
-// 		panic(err)
-// 	}
-// 	core.Logger.Info("[bootstrap]: mac address created")
-// }
-
 func initMacAddress() {
 	mac, err := gen.MacAddress.Count()
 	if err != nil {
@@ -207,10 +177,11 @@ func initMacAddress() {
 }
 
 func initRabbitMQ() {
+	url := fmt.Sprintf("http://%s:%d", core.Settings.RabbitMQ.Host, core.Settings.RabbitMQ.Port)
 	client, err := rabbithole.NewClient(
-		"http://localhost:15672",
-		"narvis-server",
-		"26cc7abbea97a17b9f7860ee0dabb051",
+		url,
+		core.Settings.RabbitMQ.Username,
+		core.Settings.RabbitMQ.Password,
 	)
 	if err != nil {
 		core.Logger.Error("[bootstrap]: failed to connect rabbitmq", zap.Error(err))
@@ -748,37 +719,6 @@ func initNarvisServerSnmpCredential(orgId string) error {
 	return nil
 }
 
-// func initZbxTemplates() error {
-// 	const templateDir = "/cmd/bootstrap/templates"
-// 	files, err := os.ReadDir(filepath.Join(core.ProjectPath, templateDir))
-// 	if err != nil {
-// 		core.Logger.Error("[bootstrap]: failed to read template dir", zap.Error(err))
-// 		return err
-// 	}
-// 	zbxClient := zbx.NewZbxClient()
-// 	for _, f := range files {
-// 		if f.IsDir() {
-// 			continue
-// 		}
-// 		templateName := f.Name()
-// 		if !strings.Contains(templateName, ".yaml") {
-// 			continue
-// 		}
-// 		template, err := os.ReadFile(filepath.Join(core.ProjectPath, templateDir, templateName))
-// 		if err != nil {
-// 			core.Logger.Info("[bootstrap]: failed to read template file", zap.Error(err))
-// 			return err
-// 		}
-// 		_, err = zbxClient.ConfigurationImport(string(template))
-// 		if err != nil {
-// 			core.Logger.Info("[bootstrap]: failed to import template", zap.Error(err))
-// 			return err
-// 		}
-// 		core.Logger.Info("[bootstrap]: init monitor template", zap.String("name", templateName))
-// 	}
-// 	return nil
-// }
-
 func initZbxTemplates() error {
 	templates := asset.AssetNames()
 	zbxTemplates := make([]string, 0)
@@ -822,69 +762,6 @@ func initZbxTemplates() error {
 	return nil
 
 }
-
-// func initNarvisTemplates() error {
-// 	templateMeta := core.ProjectPath + "/cmd/bootstrap/appdata/template_meta.json"
-// 	file, err := os.Open(templateMeta)
-// 	if err != nil {
-// 		core.Logger.Error("[bootstrap]: failed to open template meta file", zap.Error(err))
-// 		return err
-// 	}
-// 	defer file.Close()
-// 	var templates []map[string]string
-// 	if err := json.NewDecoder(file).Decode(&templates); err != nil {
-// 		core.Logger.Error("[bootstrap]: failed to decode template meta file", zap.Error(err))
-// 		return err
-// 	}
-// 	zbxClient := zbx.NewZbxClient()
-// 	for _, template := range templates {
-// 		templateName := template["platform"] + " " + template["deviceRole"]
-// 		if strings.Contains(templateName, "*") {
-// 			templateName = template["basicTemplate"]
-// 		}
-// 		dbTemplate, err := gen.Template.Where(
-// 			gen.Template.TemplateName.Eq(templateName),
-// 		).Find()
-// 		if err != nil {
-// 			core.Logger.Error("[bootstrap]: failed to get template", zap.Error(err))
-// 			return err
-// 		}
-// 		if len(dbTemplate) > 0 {
-// 			core.Logger.Info("[bootstrap]: template already exists", zap.String("id", dbTemplate[0].Id))
-// 			continue
-// 		}
-// 		output := "templateid"
-// 		templateId, err := zbxClient.TemplateGet(
-// 			&zschema.TemplateGet{
-// 				Output: &output,
-// 				Filter: &map[string]string{
-// 					"host": template["basicTemplate"],
-// 				},
-// 			},
-// 		)
-// 		if err != nil {
-// 			core.Logger.Error("[bootstrap]: failed to get template", zap.String("name", template["basicTemplate"]), zap.Error(err))
-// 			return err
-// 		}
-// 		if len(templateId) == 0 {
-// 			core.Logger.Error("[bootstrap]: failed to get template", zap.Error(err))
-// 			continue
-// 		}
-// 		newdbTemplate := &models.Template{
-// 			TemplateName: templateName,
-// 			DeviceRole:   template["deviceRole"],
-// 			Platform:     template["platform"],
-// 			TemplateId:   templateId[0].TemplateId,
-// 		}
-// 		err = gen.Template.Create(newdbTemplate)
-// 		if err != nil {
-// 			core.Logger.Error("[bootstrap]: failed to create db template", zap.Error(err))
-// 			return err
-// 		}
-// 		core.Logger.Info("[bootstrap]: template created", zap.String("id", newdbTemplate.Id))
-// 	}
-// 	return nil
-// }
 
 func initNarvisTemplates() error {
 	templateMetaBytes, err := asset.Asset("appdata/template_meta.json")

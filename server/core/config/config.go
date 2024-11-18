@@ -107,6 +107,10 @@ type ZbxConfig struct {
 }
 
 type RabbitMQConfig struct {
+	Host      string `mapstructure:"host" json:"host" yaml:"host"`
+	Port      int    `mapstructure:"port" json:"port" yaml:"port"`
+	Username  string `mapstructure:"username" json:"username" yaml:"username"`
+	Password  string `mapstructure:"password" json:"password" yaml:"password"`
 	ServerUrl string `mapstructure:"server_url" json:"server_url" yaml:"server_url"`
 	ProxyUrl  string `mapstructure:"proxy_url" json:"proxy_url" yaml:"proxy_url"`
 }

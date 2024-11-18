@@ -66,6 +66,10 @@ atm:
   username: narvis
   password: df22af3b501608cd63616d86b0ac1d77
 rmq:
+  host: localhost
+  port: 15672
+  username: narvis-server
+  password: 26cc7abbea97a17b9f7860ee0dabb051
   server_url: amqp://narvis-server:26cc7abbea97a17b9f7860ee0dabb051@localhost:5672/server
   proxy_url: amqp://narvis-proxy:851b090b967a89f802e72a0baf1d230e@localhost:5672/proxy
 bootstrap:

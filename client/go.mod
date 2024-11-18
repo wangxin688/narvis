@@ -10,6 +10,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/gosnmp/gosnmp v1.38.0
 	github.com/imroc/req/v3 v3.46.0
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/samber/lo v1.47.0
 	github.com/scrapli/scrapligo v1.3.3-0.20241017171040-f6dbfb57d4f9
 	github.com/spf13/viper v1.19.0
@@ -33,7 +34,6 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/onsi/ginkgo/v2 v2.20.2 // indirect
-	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.47.0 // indirect
