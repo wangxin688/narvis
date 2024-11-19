@@ -44,21 +44,32 @@ type WlanUserItem struct {
 	StationRadioType     string    `json:"stationRadioType"`               // radio类型
 	StationSNR           *uint64   `json:"stationSNR,omitempty"`           // 终端NR
 	StationRSSI          uint64    `json:"stationRSSI"`                    // 终端RSSI
-	StationRxBits        uint64    `json:"stationRxBits"`                  // 终端下行流量
-	StationTxBits        uint64    `json:"stationTxBits"`                  // 终端上行流量
 	StationMaxSpeed      *uint64   `json:"stationMaxSpeed,omitempty"`      // 终端协商速率
 	StationOnlineTime    uint64    `json:"stationOnlineTime"`              // 终端在线时间
 	LastSeenAt           time.Time `json:"lastSeenAt"`                     // 最后在线时间
 	Online               bool      `json:"online"`                         // 是否在线
 }
 
+type WlanUserListResult struct {
+	WlanUserItem
+	TotalBits uint64 `json:"totalBits"`
+	RxBits    uint64 `json:"rxBits"`
+	TxBits    uint64 `json:"txBits"`
+	AvgSpeed  uint64 `json:"avgSpeed"`
+}
+
 type WlanUserThroughput struct {
+	StationMac string `json:"stationMac"`
+	TotalBits  uint64 `json:"totalBits"`
+	RxBits     uint64 `json:"rxBits"`
+	TxBits     uint64 `json:"txBits"`
+	AvgSpeed   uint64 `json:"avgSpeed"`
 }
 
 type WlanUserListResponse struct {
-	Users   []*WlanUserItem `json:"users"`
-	Total   int64           `json:"total"`
-	Online  int64           `json:"online"`
-	Offline int64           `json:"offline"`
+	Users   []*WlanUserListResult `json:"users"`
+	Total   int64                 `json:"total"`
+	Online  int64                 `json:"online"`
+	Offline int64                 `json:"offline"`
 }
 

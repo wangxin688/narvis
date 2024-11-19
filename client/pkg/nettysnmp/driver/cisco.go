@@ -42,7 +42,7 @@ const bsnMobileStationSnr = ".1.3.6.1.4.1.14179.2.1.6.1.26"
 const bsnMobileStationBytesSent = ".1.3.6.1.4.1.14179.2.1.6.1.3"
 const cldcClientUpTime = ".1.3.6.1.4.1.9.9.599.1.3.1.1.15"
 
-// const cldcClientDeviceType = ".1.3.6.1.4.1.9.9.599.1.3.1.1.44"
+const cldcClientDeviceType = ".1.3.6.1.4.1.9.9.599.1.3.1.1.44"
 const bsnMobileStationVlanId = ".1.3.6.1.4.1.14179.2.1.4.1.29"
 const cldcClientChannel = ".1.3.6.1.4.1.9.9.599.1.3.1.1.35"
 

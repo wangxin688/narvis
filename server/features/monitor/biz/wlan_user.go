@@ -2,12 +2,16 @@ package metric_biz
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
+	"github.com/samber/lo"
+	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/features/monitor/schemas"
 	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/pkg/vtm"
+	"go.uber.org/zap"
 )
 
 type WlanUserService struct{}
@@ -95,8 +99,6 @@ func (s *WlanUserService) ListWlanUsers(query *schemas.WlanUserQuery) (*schemas.
 				stationRadioType,
 				stationSNR,
 				stationRSSI,
-				stationRxBits,
-				stationTxBits,
 				stationMaxSpeed,
 				stationOnlineTime
 			FROM
@@ -133,8 +135,6 @@ func (s *WlanUserService) ListWlanUsers(query *schemas.WlanUserQuery) (*schemas.
 				stationRadioType,
 				stationSNR,
 				stationRSSI,
-				stationRxBits,
-				stationTxBits,
 				stationMaxSpeed,
 				stationOnlineTime
 			FROM
@@ -169,16 +169,112 @@ func (s *WlanUserService) ListWlanUsers(query *schemas.WlanUserQuery) (*schemas.
 	response.Total = countUser.TotalCount
 	response.Online = countUser.OnlineCount
 	response.Offline = countUser.TotalCount - countUser.OnlineCount
-	response.Users = results
+
+	macAddrs := lo.Map(results, func(item *schemas.WlanUserItem, index int) string {
+		return item.StationMac
+	})
+	throughput := s.getWlanUserThroughput(macAddrs, query.StartedAt, query.EndedAt)
+	if throughput != nil {
+		for _, item := range results {
+			if throughput, ok := throughput[item.StationMac]; ok {
+				response.Users = append(response.Users, &schemas.WlanUserListResult{
+					WlanUserItem: *item,
+					RxBits:       throughput.RxBits,
+					TxBits:       throughput.TxBits,
+					TotalBits:    throughput.TotalBits,
+					AvgSpeed:     throughput.AvgSpeed,
+				})
+			}
+		}
+	}
 	return response, nil
-	// TODO：confirm throughput calculate
 }
 
-func (s *WlanUserService) WlanUserDetail(macAddr string) {
-	
+func (s *WlanUserService) getWlanUserThroughput(macAddr []string, startedAt, endedAt time.Time) map[string]*schemas.WlanUserThroughput {
+	macArrayString := strings.Join(macAddr, "','")
+	dbResults := make([]*schemas.WlanUserThroughput, 0)
+	rawSql := fmt.Sprintf(
+		`
+			WITH 
+				toUnixTimestamp('%s') - toUnixTimestamp('%s') AS time_interval
+			SELECT
+				stationMac,
+				maxRx - minRx AS rxBits,
+				maxTx - minTx AS txBits,
+			FROM (
+				SELECT 
+					stationMac,
+					-- 首尾值
+					anyIf(stationRxBits, ts = min_time) AS minRx,
+					anyIf(stationRxBits, ts = max_time) AS maxRx,
+					anyIf(stationTxBits, ts = min_time) AS minTx,
+					anyIf(stationTxBits, ts = max_time) AS maxTx
+				FROM (
+					SELECT 
+						stationMac,
+						ts,
+						stationRxBits,
+						stationTxBits,
+						-- 时间区间首尾
+						min(ts) OVER (PARTITION BY stationMac) AS min_time,
+						max(ts) OVER (PARTITION BY stationMac) AS max_time
+					FROM station_data
+					WHERE ts BETWEEN '%s' AND '%s' AND stationMac IN ('%s')
+				)
+				GROUP BY stationMac
+			)
+			ORDER BY stationMac;
+		`, startedAt, endedAt, startedAt, endedAt, macArrayString,
+	)
+
+	err := infra.ClickHouseDB.Raw(rawSql).Scan(&dbResults).Error
+	if err != nil {
+		core.Logger.Warn("[getWlanUserThroughput]: get wlan user throughput failed", zap.Error(err))
+		return nil
+	}
+
+	results := make(map[string]*schemas.WlanUserThroughput)
+	timeDelta := endedAt.Sub(startedAt).Seconds()
+	for _, result := range dbResults {
+		result.TotalBits = result.RxBits + result.TxBits
+		result.AvgSpeed = uint64(float64(result.TotalBits) / timeDelta)
+		results[result.StationMac] = result
+	}
+	return results
+
 }
 
-func (s *WlanUserService) getWlanUserThroughput(macAddr string, startedAt, endedAt time.Time) {
+// func (s *WlanUserService) WlanUserDetail(macAddr string, startedAt, endedAt time.Time) {
+// 	result := &ckmodel.WlanStation{}
+// 	err := infra.ClickHouseDB.Model(&ckmodel.WlanStation{}).
+// 		Where("stationMac = ?", macAddr).Order("ts DESC").Limit(1).First(result).Error
+
+// }
+
+func (s *WlanUserService) getWlanUserThroughputSerial(macAddr string, startedAt, endedAt time.Time) string {
+	rawsql := fmt.Sprintf(
+		`
+		WITH
+			-- 计算前一条记录的值和时间戳
+			lagInFrame(stationRxBits) OVER (PARTITION BY stationMac ORDER BY timestamp) AS prev_rx,
+			lagInFrame(stationTxBits) OVER (PARTITION BY stationMac ORDER BY timestamp) AS prev_tx,
+			lagInFrame(timestamp) OVER (PARTITION BY stationMac ORDER BY timestamp) AS prev_time
+		SELECT
+			stationMac,
+			timestamp AS current_time,
+			prev_time AS previous_time,
+			stationRxBits - prev_rx AS rx_diff,
+			stationTxBits - prev_tx AS tx_diff,
+			toUnixTimestamp(timestamp) - toUnixTimestamp(prev_time) AS time_diff_seconds,
+			(stationRxBits - prev_rx) / (toUnixTimestamp(timestamp) - toUnixTimestamp(prev_time)) AS rx_trend_per_second,
+			(stationTxBits - prev_tx) / (toUnixTimestamp(timestamp) - toUnixTimestamp(prev_time)) AS tx_trend_per_second
+		FROM station_data
+		WHERE timestamp BETWEEN '%s' AND '%s' AND stationMac = '%s'
+		AND prev_time IS NOT NULL -- 排除第一条记录无前值的情况
+		ORDER BY stationMac, current_time;
+		`, startedAt, endedAt, macAddr,
+	)
+	return rawsql
 
 }
 

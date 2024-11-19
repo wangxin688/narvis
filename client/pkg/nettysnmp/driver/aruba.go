@@ -36,6 +36,7 @@ const wlanStaUpTime = ".1.3.6.1.4.1.14823.2.2.1.5.2.2.1.1.15"
 const wlanStaChannel = ".1.3.6.1.4.1.14823.2.2.1.5.2.2.1.1.6"
 const wlanStaTxBytes = ".1.3.6.1.4.1.14823.2.2.1.5.3.2.1.1.3"
 const wlanStaRxBytes = ".1.3.6.1.4.1.14823.2.2.1.5.3.2.1.1.5"
+const nUserDeviceType = ".1.3.6.1.4.1.14823.2.2.1.4.1.2.1.39"
 
 type ArubaDriver struct {
 	factory.SnmpDiscovery

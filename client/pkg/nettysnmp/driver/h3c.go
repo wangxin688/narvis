@@ -31,6 +31,7 @@ const hh3cDot11StationTxSpeed = ".1.3.6.1.4.1.25506.2.75.3.1.1.1.24"
 const hh3cDot11StationRxSpeed = ".1.3.6.1.4.1.25506.2.75.3.1.1.1.25"
 const hh3cDot11StationMaxRate = ". 1.3.6.1.4.1.25506.2.75.3.1.1.1.33" // (Mbps)
 const hh3cDot11StationAssTime = ".1.3.6.1.4.1.25506.2.75.3.1.1.1.30"
+const hh3cDot11StationVendorName = ".1.3.6.1.4.1.25506.2.75.3.1.1.1.20"
 
 type H3CDriver struct {
 	factory.SnmpDiscovery
