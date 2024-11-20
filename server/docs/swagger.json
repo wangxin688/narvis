@@ -2841,6 +2841,49 @@
                 }
             }
         },
+        "/infra/devices/{id}/panels": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get device panel",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra.Device"
+                ],
+                "summary": "Get device panel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/schemas.DeviceInterface"
+                            }
+                        }
+                    }
+                },
+                "X-func": {
+                    "name": "GetDevicePanel"
+                }
+            }
+        },
         "/infra/devices/{id}/restconf": {
             "get": {
                 "security": [

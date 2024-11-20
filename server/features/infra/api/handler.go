@@ -28,6 +28,7 @@ func RegisterInfraRoutes(e *gin.Engine) {
 		router.PUT("/devices/:id", updateDevice)
 		router.DELETE("/devices/:id", deleteDevice)
 		router.GET("/devices/:id/interfaces", getDeviceInterfaces)
+		router.GET("/devices/:id/panels", getDevicePanel)
 
 		router.POST("/devices/:id/restconf", createRestconfCredential)
 		router.GET("/devices/:id/restconf", getRestconfCredential)

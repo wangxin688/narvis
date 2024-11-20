@@ -197,6 +197,34 @@ func getDeviceInterfaces(c *gin.Context) {
 }
 
 // @Tags Infra.Device
+// @Summary Get device panel
+// @X-func {"name": "GetDevicePanel"}
+// @Description Get device panel
+// @Security BearerAuth
+// @Accept  json
+// @Produce  json
+// @Param id path string true "uuid formatted deviceId"
+// @Success 200 {object} []schemas.DeviceInterface
+// @Router /infra/devices/{id}/panels [get]
+func getDevicePanel(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	deviceId := c.Param("id")
+	if err = helpers.ValidateUuidString(deviceId); err != nil {
+		return
+	}
+	interfaces, err := infra_biz.GetDevicePanel(deviceId)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, interfaces)
+}
+
+// @Tags Infra.Device
 // @Summary Create new device restconf credential
 // @X-func {"name": "CreateDeviceRestconfCredential"}
 // @Description Create new device restconf credential

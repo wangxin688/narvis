@@ -3995,6 +3995,33 @@ paths:
       summary: Get device interfaces
       tags:
       - Infra.Device
+  /infra/devices/{id}/panels:
+    get:
+      X-func:
+        name: GetDevicePanel
+      consumes:
+      - application/json
+      description: Get device panel
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schemas.DeviceInterface'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get device panel
+      tags:
+      - Infra.Device
   /infra/devices/{id}/restconf:
     delete:
       X-func:
