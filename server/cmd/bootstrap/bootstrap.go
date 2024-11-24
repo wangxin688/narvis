@@ -22,6 +22,7 @@ import (
 	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/pkg/zbx"
 	"github.com/wangxin688/narvis/server/pkg/zbx/zschema"
+	"github.com/wangxin688/narvis/server/tests/fixtures"
 	"gopkg.in/yaml.v2"
 
 	"go.uber.org/zap"
@@ -47,9 +48,21 @@ func main() {
 	if err != nil {
 		return
 	}
-	if config.Settings.Env == "on_prem" {
+	if config.Settings.Env == "on_prem" || config.Settings.Env == "dev" {
 		orgId := initOrganization()
-		mock.MockSite(db)
+		if config.Settings.Env == "dev" {
+			siteIds, err := fixtures.GetRandomSiteIds(orgId)
+			if err != nil {
+				logger.Logger.Error("[bootstrap]: failed to get site ids", zap.Error(err))
+				return
+			}
+			if len(siteIds) == 0 {
+				mock.MockSite(db, orgId)
+				mock.MockDevice(db, siteIds, orgId)
+				logger.Logger.Info("[bootstrap]: mock data created")
+			}
+			logger.Logger.Info("[bootstrap]: mock data already exists")
+		}
 		config.InitConfig()
 		initProxy(orgId)
 		initNarvisCliCredential(orgId)        //nolint: errcheck

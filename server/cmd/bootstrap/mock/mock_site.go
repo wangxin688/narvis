@@ -2,24 +2,21 @@ package mock
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/google/uuid"
-	"github.com/wangxin688/narvis/server/tests/fixtures"
+	"github.com/wangxin688/narvis/server/dal/gen"
+	"github.com/wangxin688/narvis/server/models"
 	"golang.org/x/exp/rand"
 	"gorm.io/gorm"
 )
 
-func MockSite(db *gorm.DB) {
-	orgId, err := fixtures.GetOrgId()
-	if err != nil {
-		panic(err)
-	}
+func MockSite(db *gorm.DB, orgId string) {
+
+	sites := make([]*models.Site, 0)
 	regions := []struct {
 		region    string
 		timeZone  string
-		latitude  float64
-		longitude float64
+		latitude  float32
+		longitude float32
 	}{
 		{"China/Shanghai", "Asia/Shanghai", 31.23, 121.47},
 		{"USA/New York", "America/New_York", 40.71, -74.01},
@@ -37,13 +34,21 @@ func MockSite(db *gorm.DB) {
 		region := regions[rand.Intn(len(regions))]
 		status := []string{"Active", "InActive"}[rand.Intn(2)]
 
-		// Random time generation
-		createdAt := time.Date(2023, 1, rand.Intn(10)+1, rand.Intn(24), rand.Intn(60), rand.Intn(60), 0, time.UTC)
-		updatedAt := createdAt.Add(time.Duration(rand.Intn(3600)) * time.Second) // Ensure updatedAt > createdAt
-
-		sql := fmt.Sprintf("INSERT INTO infra_site (id, \"createdAt\", \"updatedAt\", name, \"siteCode\", status, region, \"timeZone\", latitude, longitude, address, \"organizationId\") VALUES "+
-			"('%s', '%s', '%s', 'mock%d', 'mock%d', '%s', '%s', '%s', %.2f, %.2f, 'mock_address_%d', '%s');\n",
-			uuid.NewString(), createdAt.Format("2006-01-02 15:04:05"), updatedAt.Format("2006-01-02 15:04:05"), i, i, status, region.region, region.timeZone, region.latitude, region.longitude, i, orgId)
-		_ = db.Exec(sql).Error
+		sites = append(sites, &models.Site{
+			Name:           fmt.Sprintf("mock_Site_%d", i),
+			SiteCode:       fmt.Sprintf("mock_siteCode_%d", i),
+			Status:         status,
+			Region:         region.region,
+			TimeZone:       region.timeZone,
+			Latitude:       region.latitude,
+			Longitude:      region.longitude,
+			Address:        fmt.Sprintf("mock_address %d", i),
+			Description:    nil,
+			OrganizationId: orgId,
+		})
+	}
+	err := gen.Site.CreateInBatches(sites, 50)
+	if err != nil {
+		panic(err)
 	}
 }

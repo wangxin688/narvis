@@ -6,16 +6,6 @@ import (
 	"github.com/wangxin688/narvis/server/models"
 )
 
-func GetOrgId() (string, error) {
-	result, err := gen.Organization.Select(gen.Organization.Id).Where(
-		gen.Organization.EnterpriseCode.Eq("narvis"),
-	).First()
-	if err != nil {
-		return "", err
-	}
-	return result.Id, nil
-}
-
 func GetRandomSiteIds(orgId string) ([]string, error) {
 	result, err := gen.Site.Select(gen.Site.Id).Where(
 		gen.Site.OrganizationId.Eq(orgId),

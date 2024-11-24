@@ -6,8 +6,8 @@ import (
 	"golang.org/x/exp/rand"
 )
 
-func RandomIpv4PrivateAddress() string {
-	return fmt.Sprintf("10.%d.%d.%d", rand.Intn(256), rand.Intn(256), rand.Intn(256))
+func RandomIpv4PrivateAddress(siteIndex, deviceIndex int) string {
+	return fmt.Sprintf("10.%d.%d.%d", rand.Intn(256), siteIndex, deviceIndex)
 }
 
 func RandomMacAddress() string {
@@ -17,7 +17,6 @@ func RandomMacAddress() string {
 func RandomVlanId() int {
 	return rand.Intn(4095)
 }
-
 
 func RandomIpv6Address() string {
 	return fmt.Sprintf("%x:%x:%x:%x:%x:%x:%x:%x", rand.Intn(256), rand.Intn(256), rand.Intn(256), rand.Intn(256), rand.Intn(256), rand.Intn(256), rand.Intn(256), rand.Intn(256))
