@@ -4,8 +4,8 @@ import (
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/topology/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 )
 
 type TopologyService struct {
@@ -21,7 +21,7 @@ func (s *TopologyService) GetSiteTopology(siteId string) (*schemas.SiteTopology,
 		Lines: make([]*schemas.Line, 0),
 	}
 	_, err := gen.Site.Select(gen.Site.Id).
-		Where(gen.Site.Id.Eq(siteId), gen.Site.OrganizationId.Eq(global.OrganizationId.Get())).First()
+		Where(gen.Site.Id.Eq(siteId), gen.Site.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (s *TopologyService) GetSiteTopology(siteId string) (*schemas.SiteTopology,
 
 func (s *TopologyService) getTopologyDevices(deviceIds []string) (map[string]*models.Device, error) {
 	devices, err := gen.Device.Select(gen.Device.Id, gen.Device.Name, gen.Device.ManagementIp, gen.Device.DeviceRole, gen.Device.Floor).
-		Where(gen.Device.Id.In(deviceIds...), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).
+		Where(gen.Device.Id.In(deviceIds...), gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get())).
 		Find()
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (s *TopologyService) getTopologyDevices(deviceIds []string) (map[string]*mo
 
 func (s *TopologyService) getTopologyAps(apIds []string) (map[string]*models.AP, error) {
 	aps, err := gen.AP.Select(gen.AP.Id, gen.AP.Name, gen.AP.ManagementIp, gen.AP.DeviceRole, gen.AP.Floor).
-		Where(gen.AP.Id.In(apIds...), gen.AP.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+		Where(gen.AP.Id.In(apIds...), gen.AP.OrganizationId.Eq(contextvar.OrganizationId.Get())).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +85,7 @@ func (s *TopologyService) getTopologyAps(apIds []string) (map[string]*models.AP,
 func (s *TopologyService) getLldpNeighbors(siteId string) ([]*models.LLDPNeighbor, error) {
 
 	neighbors, err := gen.LLDPNeighbor.Where(gen.LLDPNeighbor.SiteId.Eq(siteId),
-		gen.LLDPNeighbor.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+		gen.LLDPNeighbor.OrganizationId.Eq(contextvar.OrganizationId.Get())).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (s *TopologyService) getLldpNeighbors(siteId string) ([]*models.LLDPNeighbo
 func (s *TopologyService) getApLldpNeighbors(siteId string) ([]*models.ApLLDPNeighbor, error) {
 
 	neighbors, err := gen.ApLLDPNeighbor.Where(gen.ApLLDPNeighbor.SiteId.Eq(siteId),
-		gen.ApLLDPNeighbor.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+		gen.ApLLDPNeighbor.OrganizationId.Eq(contextvar.OrganizationId.Get())).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +138,6 @@ func (s *TopologyService) getLldpAps(lldp []*models.ApLLDPNeighbor) (map[string]
 	}
 	return aps, nil
 }
-
 
 // TODO: add operational data to topology nodes
 // TODO: add circuit node in topology

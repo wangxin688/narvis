@@ -4931,18 +4931,6 @@ const docTemplate = `{
                     "Intend"
                 ],
                 "summary": "Get list of device roles",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "name",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4989,18 +4977,6 @@ const docTemplate = `{
                     "Intend"
                 ],
                 "summary": "Get list of Manufacturers",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "name",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -5047,18 +5023,6 @@ const docTemplate = `{
                     "Intend"
                 ],
                 "summary": "Get list of Platforms",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "platform",
-                        "in": "query"
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -6210,7 +6174,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "description": {
-                    "$ref": "#/definitions/common.I18n"
+                    "$ref": "#/definitions/i18n.I18n"
                 },
                 "name": {
                     "$ref": "#/definitions/alerts.AlertNameEnum"
@@ -6219,10 +6183,10 @@ const docTemplate = `{
                     "$ref": "#/definitions/alerts.SeverityEnum"
                 },
                 "suggestion": {
-                    "$ref": "#/definitions/common.I18n"
+                    "$ref": "#/definitions/i18n.I18n"
                 },
                 "title": {
-                    "$ref": "#/definitions/common.I18n"
+                    "$ref": "#/definitions/i18n.I18n"
                 }
             }
         },
@@ -6327,7 +6291,26 @@ const docTemplate = `{
                 }
             }
         },
-        "common.I18n": {
+        "devicerole.DeviceRole": {
+            "type": "string",
+            "enum": [
+                "Switch",
+                "WlanAP",
+                "WlanAC",
+                "FireWall",
+                "Router",
+                "Server"
+            ],
+            "x-enum-varnames": [
+                "Switch",
+                "WlanAP",
+                "WlanAC",
+                "FireWall",
+                "Router",
+                "Server"
+            ]
+        },
+        "i18n.I18n": {
             "type": "object",
             "properties": {
                 "en": {
@@ -6337,67 +6320,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "devicerole.DeviceRole": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "$ref": "#/definitions/common.I18n"
-                },
-                "device_role": {
-                    "$ref": "#/definitions/devicerole.DeviceRoleEnum"
-                },
-                "product_family": {
-                    "$ref": "#/definitions/devicerole.ProductFamilyEnum"
-                },
-                "weight": {
-                    "type": "integer"
-                }
-            }
-        },
-        "devicerole.DeviceRoleEnum": {
-            "type": "string",
-            "enum": [
-                "WanRouter",
-                "Firewall",
-                "InternetSwitch",
-                "CoreSwitch",
-                "DistributionSwitch",
-                "AccessSwitch",
-                "WlanAC",
-                "WlanAP",
-                "Server",
-                "Unknown"
-            ],
-            "x-enum-varnames": [
-                "WanRouter",
-                "Firewall",
-                "InternetSwitch",
-                "CoreSwitch",
-                "DistributionSwitch",
-                "AccessSwitch",
-                "WlanAC",
-                "WlanAP",
-                "Server",
-                "UnknownDeviceRole"
-            ]
-        },
-        "devicerole.ProductFamilyEnum": {
-            "type": "string",
-            "enum": [
-                "Gateway",
-                "Switching",
-                "Wireless",
-                "Computing",
-                "Unknown"
-            ],
-            "x-enum-varnames": [
-                "Gateway",
-                "Switching",
-                "Wireless",
-                "Computing",
-                "UnknownProductFamily"
-            ]
         },
         "intendtask.ApScanResponse": {
             "type": "object",
@@ -8915,7 +8837,7 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "gatewayCount": {
+                "firewallCount": {
                     "type": "integer"
                 },
                 "id": {

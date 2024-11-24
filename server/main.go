@@ -7,8 +7,8 @@ import (
 	sentry_gin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
 
-	"github.com/wangxin688/narvis/server/core"
-	"github.com/wangxin688/narvis/server/core/config"
+	"github.com/wangxin688/narvis/intend/logger"
+	"github.com/wangxin688/narvis/server/config"
 	"github.com/wangxin688/narvis/server/middleware"
 
 	// "github.com/wangxin688/narvis/server/pkg/rmq"
@@ -30,22 +30,22 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	setupConfig()
-	setupLogger()
+	config.InitConfig()
+	config.InitLogger()
 	initializeSentry()
 	err := infra.InitDB()
 	if err != nil {
-		core.Logger.Fatal("[mainStartHttpServer]: failed to initialize database", zap.Error(err))
+		logger.Logger.Fatal("[mainStartHttpServer]: failed to initialize database", zap.Error(err))
 		panic(err)
 	}
 	err = infra.InitClickHouseDB()
 	if err != nil {
-		core.Logger.Fatal("[mainStartHttpServer]: failed to initialize clickhouse database", zap.Error(err))
+		logger.Logger.Fatal("[mainStartHttpServer]: failed to initialize clickhouse database", zap.Error(err))
 		panic(err)
 	}
 	gen.SetDefault(infra.DB)
-	core.Logger.Info("[mainStartHttpServer]: server started to run on port", zap.Int("port", core.Settings.System.ServerPort))
-	if core.Settings.Env == config.Prod || core.Settings.Env == config.OnPrem {
+	logger.Logger.Info("[mainStartHttpServer]: server started to run on port", zap.Int("port", config.Settings.System.ServerPort))
+	if config.Settings.Env == config.Prod || config.Settings.Env == config.OnPrem {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	router := gin.New()
@@ -54,42 +54,34 @@ func main() {
 	middleware.RegisterOpenAPI(router)
 	go register.RegisterScheduler()
 	// rmq.GetMqConn()
-	if err := router.Run(fmt.Sprintf(":%d", core.Settings.System.ServerPort)); err != nil {
-		core.Logger.Fatal("[mainStartHttpServer]: failed to run server", zap.Error(err))
+	if err := router.Run(fmt.Sprintf(":%d", config.Settings.System.ServerPort)); err != nil {
+		logger.Logger.Fatal("[mainStartHttpServer]: failed to run server", zap.Error(err))
 	}
 }
 
-func setupConfig() {
-	core.SetUpConfig()
-}
-
-func setupLogger() {
-	core.SetUpLogger()
-}
-
 func initializeSentry() {
-	if core.Settings.Env == config.Prod {
+	if config.Settings.Env == config.Prod {
 		if err := sentry.Init(sentry.ClientOptions{
-			Dsn:              core.Settings.Sentry.Dsn,
-			EnableTracing:    core.Settings.Sentry.EnableTracing,
-			TracesSampleRate: core.Settings.Sentry.TraceSampleRate,
-			Release:          core.Settings.Sentry.Release,
+			Dsn:              config.Settings.Sentry.Dsn,
+			EnableTracing:    config.Settings.Sentry.EnableTracing,
+			TracesSampleRate: config.Settings.Sentry.TraceSampleRate,
+			Release:          config.Settings.Sentry.Release,
 		}); err != nil {
-			core.Logger.Fatal("[mainStartHttpServer]: failed to initialize sentry", zap.Error(err))
+			logger.Logger.Fatal("[mainStartHttpServer]: failed to initialize sentry", zap.Error(err))
 		}
 	} else {
-		core.Logger.Info("[mainStartHttpServer]: sentry disabled because of environment", zap.String("environment", string(core.Settings.Env)))
+		logger.Logger.Info("[mainStartHttpServer]: sentry disabled because of environment", zap.String("environment", string(config.Settings.Env)))
 	}
 }
 
 func configureRouter(router *gin.Engine) {
-	if core.Settings.Env == config.Prod {
+	if config.Settings.Env == config.Prod {
 		router.Use(sentry_gin.New(sentry_gin.Options{}))
 	}
 	router.Use(
-		middleware.ZapLoggerMiddleware(core.Logger),
-		middleware.GinRecovery(core.Logger, true),
+		middleware.ZapLoggerMiddleware(logger.Logger),
+		middleware.GinRecovery(logger.Logger, true),
 	)
-	router.Use(middleware.CORSByConfig())
+	router.Use(middleware.CorsMiddleware())
 	register.RegisterRouter(router)
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/wangxin688/narvis/intend/devicerole"
 	"github.com/wangxin688/narvis/server/features/topology/schemas"
 	"github.com/wangxin688/narvis/server/models"
 )
@@ -14,13 +13,12 @@ const lineTypeWireless string = "wireless"
 const lineTypeCircuit string = "circuit"
 
 func createDeviceNode(device *models.Device) *schemas.Node {
-	dr := devicerole.GetDeviceRole(device.DeviceRole)
 	return &schemas.Node{
 		Id:           device.Id,
 		Name:         device.Name,
 		ManagementIp: device.ManagementIp,
 		DeviceRole:   device.DeviceRole,
-		Weight:       dr.Weight,
+		Weight:       0, // devicerole.Weight,
 		Floor:        device.Floor,
 	}
 }

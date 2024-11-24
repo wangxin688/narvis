@@ -8,7 +8,7 @@ import (
 
 	"github.com/gosnmp/gosnmp"
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/client/utils/logger"
+	"github.com/wangxin688/narvis/intend/logger"
 	"go.uber.org/zap"
 )
 

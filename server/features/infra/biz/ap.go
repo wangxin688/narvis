@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	"go.uber.org/zap"
 )
@@ -21,7 +21,7 @@ func NewApService() *ApService {
 
 func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, error) {
 	res := make([]*schemas.AP, 0)
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	stmt := gen.AP.Where(gen.AP.OrganizationId.Eq(orgId))
 	if query.Name != nil {
 		stmt = stmt.Where(gen.AP.Name.In(*query.Name...))
@@ -59,7 +59,7 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 	apIds := lo.Map(aps, func(ap *models.AP, _ int) string { return ap.Id })
 	opStatus, err := GetApOpStatus(apIds, orgId)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
 	}
 
 	for _, ap := range aps {
@@ -96,14 +96,14 @@ func (s *ApService) GetApList(query *schemas.ApQuery) (int64, *[]*schemas.AP, er
 }
 
 func (s *ApService) GetById(id string) (*schemas.AP, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	ap, err := gen.AP.Where(gen.AP.OrganizationId.Eq(orgId), gen.AP.Id.Eq(id)).First()
 	if err != nil {
 		return nil, err
 	}
 	opStatus, err := GetApOpStatus([]string{ap.Id}, orgId)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
 	}
 	return &schemas.AP{
 		Id:        ap.Id,
@@ -136,7 +136,7 @@ func (s *ApService) GetById(id string) (*schemas.AP, error) {
 
 func (s *ApService) UpdateApById(id string, ap *schemas.ApUpdate) error {
 
-	dbAp, err := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.Id.Eq(id)).First()
+	dbAp, err := gen.AP.Where(gen.AP.OrganizationId.Eq(contextvar.OrganizationId.Get()), gen.AP.Id.Eq(id)).First()
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (s *ApService) UpdateApById(id string, ap *schemas.ApUpdate) error {
 }
 
 func (s *ApService) BatchUpdateAp(ap *schemas.ApBatchUpdate) ([]string, error) {
-	dbAps, err := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.Id.In(ap.Ids...)).Find()
+	dbAps, err := gen.AP.Where(gen.AP.OrganizationId.Eq(contextvar.OrganizationId.Get()), gen.AP.Id.In(ap.Ids...)).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -190,12 +190,12 @@ func (s *ApService) BatchUpdateAp(ap *schemas.ApBatchUpdate) ([]string, error) {
 }
 
 func (s *ApService) DeleteApByIds(ids []string) error {
-	_, err := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.Id.In(ids...)).Delete()
+	_, err := gen.AP.Where(gen.AP.OrganizationId.Eq(contextvar.OrganizationId.Get()), gen.AP.Id.In(ids...)).Delete()
 	return err
 }
 
 func (s *ApService) DeleteApById(id string) error {
-	_, err := gen.AP.Where(gen.AP.OrganizationId.Eq(global.OrganizationId.Get()), gen.AP.Id.Eq(id)).Delete()
+	_, err := gen.AP.Where(gen.AP.OrganizationId.Eq(contextvar.OrganizationId.Get()), gen.AP.Id.Eq(id)).Delete()
 	return err
 }
 

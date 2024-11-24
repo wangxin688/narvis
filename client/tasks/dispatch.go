@@ -3,8 +3,8 @@ package tasks
 import (
 	"encoding/json"
 
-	"github.com/wangxin688/narvis/client/utils/logger"
 	"github.com/wangxin688/narvis/intend/intendtask"
+	"github.com/wangxin688/narvis/intend/logger"
 	"go.uber.org/zap"
 )
 

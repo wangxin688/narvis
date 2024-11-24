@@ -7,9 +7,9 @@ import (
 
 	"github.com/imroc/req/v3"
 	"github.com/wangxin688/narvis/client/config"
-	"github.com/wangxin688/narvis/client/utils/logger"
-	"github.com/wangxin688/narvis/client/utils/security"
+	"github.com/wangxin688/narvis/intend/helpers/security"
 	"github.com/wangxin688/narvis/intend/intendtask"
+	"github.com/wangxin688/narvis/intend/logger"
 	"go.uber.org/zap"
 )
 
@@ -140,7 +140,7 @@ func wlanUsersCallback(data *intendtask.WlanUserTaskResult, taskId string) {
 
 func newServer() *req.Client {
 	once.Do(func() {
-		token, err := security.ProxyToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY)
+		token, err := security.GenerateAgentToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY, config.Settings.SECRET_KEY)
 		if err != nil {
 			logger.Logger.Error("[taskCallback]: failed to generate proxy token", zap.Error(err))
 		}

@@ -8,7 +8,7 @@ import (
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_tasks "github.com/wangxin688/narvis/server/features/infra/tasks"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -36,7 +36,7 @@ func createScanDevice(c *gin.Context) {
 		return
 	}
 	scanDeviceCreate.SetDefaultValue()
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	taskIds, err := infra_tasks.CreateScanTask(&scanDeviceCreate, orgId)
 	if err != nil {
 		return

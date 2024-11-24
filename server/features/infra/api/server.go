@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -38,7 +38,7 @@ func createServer(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.ServerCreateHooks(newServer)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newServer})
@@ -74,7 +74,7 @@ func updateServer(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.ServerUpdateHooks(serverId, diff[serverId])
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: serverId})
@@ -105,7 +105,7 @@ func deleteServer(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.ServerDeleteHooks(server)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: serverId})
@@ -354,7 +354,7 @@ func updateSnmpV2CredentialForServer(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.ServerSnmpCredUpdateHooks(credId, diff[credId])
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: serverId})
@@ -385,7 +385,7 @@ func deleteSnmpV2CredentialForServer(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.ServerSnmpCredDeleteHooks(cred)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: serverId})

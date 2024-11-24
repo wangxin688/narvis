@@ -5,14 +5,15 @@ import (
 	"time"
 
 	"github.com/samber/lo"
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
 	"github.com/wangxin688/narvis/intend/intendtask"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	ipam_utils "github.com/wangxin688/narvis/server/features/ipam/utils"
 	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/models"
-	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	"go.uber.org/zap"
@@ -26,17 +27,17 @@ func DeviceBasicInfoScanCallback(scanResults []*intendtask.DeviceBasicInfoScanRe
 		return v.ManagementIp
 	})
 	if len(managementIPs) == 0 {
-		core.Logger.Info("[deviceBasicInfoScanCallback]: no scan devices found")
+		logger.Logger.Info("[deviceBasicInfoScanCallback]: no scan devices found")
 		return nil
 	}
 	dbDevices, err := infra_biz.NewScanDeviceService().GetByScanResult(managementIPs, scanResults[0].OrganizationId)
 	if err != nil {
-		core.Logger.Error("[deviceBasicInfoScanCallback]: get db scan devices failed", zap.Error(err))
+		logger.Logger.Error("[deviceBasicInfoScanCallback]: get db scan devices failed", zap.Error(err))
 		return err
 	}
 	infraDevices, err := infra_biz.NewDeviceService().GetDeviceByManagementIp(managementIPs, scanResults[0].OrganizationId)
 	if err != nil {
-		core.Logger.Error("[deviceBasicInfoScanCallback]: get infra scan devices failed", zap.Error(err))
+		logger.Logger.Error("[deviceBasicInfoScanCallback]: get infra scan devices failed", zap.Error(err))
 		return err
 	}
 
@@ -64,7 +65,7 @@ func DeviceBasicInfoScanCallback(scanResults []*intendtask.DeviceBasicInfoScanRe
 	if len(newDevices) > 0 {
 		err = gen.ScanDevice.CreateInBatches(newDevices, len(newDevices))
 		if err != nil {
-			core.Logger.Error("[deviceBasicInfoScanCallback]: create scan devices failed", zap.Error(err))
+			logger.Logger.Error("[deviceBasicInfoScanCallback]: create scan devices failed", zap.Error(err))
 			return err
 		}
 	}
@@ -78,40 +79,40 @@ func DeviceScanCallback(data *intendtask.DeviceScanResponse) error {
 		gen.Device.OrganizationId.Eq(data.OrganizationId),
 	).First()
 	if err != nil {
-		core.Logger.Error("[deviceScanCallback]: get db device failed", zap.Error(err))
+		logger.Logger.Error("[deviceScanCallback]: get db device failed", zap.Error(err))
 		return err
 	}
 	err = deviceUpdateHandler(data, device)
 	if err != nil {
-		core.Logger.Error("[deviceScanCallback.deviceUpdate]: update db device failed", zap.Error(err))
+		logger.Logger.Error("[deviceScanCallback.deviceUpdate]: update db device failed", zap.Error(err))
 		return err
 	}
 	if len(data.Interfaces) > 0 {
 		err = interfacesCallbackHandler(data.DeviceId, data.SiteId, data.Interfaces)
 		if err != nil {
-			core.Logger.Error("[deviceScanCallback.interfaces]: update db device failed", zap.Error(err))
+			logger.Logger.Error("[deviceScanCallback.interfaces]: update db device failed", zap.Error(err))
 		}
 	}
 	if len(data.LldpNeighbors) > 0 {
 		err = lldpCallbackHandler(data.DeviceId, data.SiteId, data.OrganizationId, data.LldpNeighbors)
 		if err != nil {
-			core.Logger.Error("[deviceScanCallback.lldp]: update db device failed", zap.Error(err))
+			logger.Logger.Error("[deviceScanCallback.lldp]: update db device failed", zap.Error(err))
 		}
 	}
 	if len(data.Vlans) > 0 {
 		err = vlanCallbackHandler(data.DeviceId, data.SiteId, data.OrganizationId, data.Vlans)
 		if err != nil {
-			core.Logger.Error("[deviceScanCallback.vlans]: update db device failed", zap.Error(err))
+			logger.Logger.Error("[deviceScanCallback.vlans]: update db device failed", zap.Error(err))
 		}
 	}
 
 	err = lldpCallbackHandler(data.DeviceId, data.SiteId, data.OrganizationId, data.LldpNeighbors)
 	if err != nil {
-		core.Logger.Error("[deviceScanCallback.lldp]: update db device failed", zap.Error(err))
+		logger.Logger.Error("[deviceScanCallback.lldp]: update db device failed", zap.Error(err))
 	}
 	if len(data.ArpTable) > 0 {
 		// due to arp table may have huge size, we do it in background task
-		tools.BackgroundTask(func() {
+		bgtask.BackgroundTask(func() {
 			arpTableCallbackHandler(data.DeviceId, data.SiteId, data.OrganizationId, data.ArpTable) //nolint: errcheck
 		})
 	}
@@ -119,13 +120,13 @@ func DeviceScanCallback(data *intendtask.DeviceScanResponse) error {
 	return nil
 }
 
-func lldpCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.LldpNeighbor) error {
+func lldpCallbackHandler(deviceId, siteId, orgId string, data []*intend_device.LldpNeighbor) error {
 	if len(data) == 0 {
-		core.Logger.Info("[deviceScanCallback.lldp]: no lldp neighbors found", zap.String("deviceId", deviceId))
+		logger.Logger.Info("[deviceScanCallback.lldp]: no lldp neighbors found", zap.String("deviceId", deviceId))
 		return nil
 	}
 	remoteHostNames := make([]string, 0)
-	remoteChassisIds := lo.Map(data, func(v *intendtask.LldpNeighbor, _ int) string {
+	remoteChassisIds := lo.Map(data, func(v *intend_device.LldpNeighbor, _ int) string {
 		if v.RemoteChassisId == "" {
 			remoteHostNames = append(remoteHostNames, v.RemoteHostname)
 		}
@@ -136,23 +137,23 @@ func lldpCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Lldp
 	})
 	remoteDevices, err := infra_biz.NewDeviceService().GetDeviceByChassisIds(remoteChassisIds, orgId)
 	if err != nil {
-		core.Logger.Error("[deviceScanCallback.lldp]: get devices failed by chassis ids", zap.Error(err))
+		logger.Logger.Error("[deviceScanCallback.lldp]: get devices failed by chassis ids", zap.Error(err))
 		return err
 	}
 	remoteAps, err := infra_biz.NewApService().GetApByMacAddresses(remoteChassisIds, orgId)
 	if err != nil {
-		core.Logger.Error("[deviceScanCallback.lldp]: get aps failed by chassis ids", zap.Error(err))
+		logger.Logger.Error("[deviceScanCallback.lldp]: get aps failed by chassis ids", zap.Error(err))
 		return err
 	}
 	lldpService := infra_biz.NewLldpNeighborService()
 	lldpDeviceNeighbors, err := lldpService.GetDeviceLldpNeighbors(deviceId)
 	if err != nil {
-		core.Logger.Error("[deviceScanCallback.lldp]: get device lldp neighbors failed", zap.Error(err))
+		logger.Logger.Error("[deviceScanCallback.lldp]: get device lldp neighbors failed", zap.Error(err))
 		return err
 	}
 	lldpApNeighbors, err := lldpService.GetApLldpNeighbors(deviceId)
 	if err != nil {
-		core.Logger.Error("[deviceScanCallback.lldp]: get ap lldp neighbors failed", zap.Error(err))
+		logger.Logger.Error("[deviceScanCallback.lldp]: get ap lldp neighbors failed", zap.Error(err))
 		return err
 	}
 	createDeviceLldp := make([]*models.LLDPNeighbor, 0)
@@ -160,11 +161,11 @@ func lldpCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Lldp
 	for _, lldp := range data {
 		remoteChassisId := lldp.RemoteChassisId
 		if remoteChassisId == "" {
-			core.Logger.Info("[deviceScanCallback.lldp]: remote chassis id is empty", zap.Any("lldpInfo", lldp))
+			logger.Logger.Info("[deviceScanCallback.lldp]: remote chassis id is empty", zap.Any("lldpInfo", lldp))
 		}
 		if _, ok := remoteDevices[remoteChassisId]; !ok {
 			if _, ok := remoteAps[remoteChassisId]; !ok {
-				core.Logger.Warn("[deviceScanCallback.lldp]: remote device not found in device/ap table", zap.Any("lldp", lldp))
+				logger.Logger.Warn("[deviceScanCallback.lldp]: remote device not found in device/ap table", zap.Any("lldp", lldp))
 				continue
 			}
 		}
@@ -184,7 +185,7 @@ func lldpCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Lldp
 				})
 			}
 		} else if _, ok := remoteAps[remoteChassisId]; ok {
-			lldp.HashValue = lldp.CalApHashValue()
+			lldp.HashValue = lldp.CalHashValue()
 			if _, ok := lldpApNeighbors[lldp.HashValue]; !ok {
 				createApLldp = append(createApLldp, &models.ApLLDPNeighbor{
 					LocalDeviceId:  deviceId,
@@ -197,7 +198,7 @@ func lldpCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Lldp
 				})
 			}
 		} else {
-			core.Logger.Warn("[deviceScanCallback.lldp]: lldp neighbor not found in device/ap table", zap.Any("lldp", lldp))
+			logger.Logger.Warn("[deviceScanCallback.lldp]: lldp neighbor not found in device/ap table", zap.Any("lldp", lldp))
 			continue
 		}
 	}
@@ -207,7 +208,7 @@ func lldpCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Lldp
 			UpdateAll: true,
 		}).CreateInBatches(createDeviceLldp, dLen).Error
 		if err != nil {
-			core.Logger.Error("[deviceScanCallback.lldp]: failed to insert device lldp neighbors", zap.Error(err))
+			logger.Logger.Error("[deviceScanCallback.lldp]: failed to insert device lldp neighbors", zap.Error(err))
 			return err
 		}
 	}
@@ -217,31 +218,31 @@ func lldpCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Lldp
 			UpdateAll: true,
 		}).CreateInBatches(createApLldp, aLen).Error
 		if err != nil {
-			core.Logger.Error("[deviceScanCallback.lldp]: failed to insert ap lldp neighbors", zap.Error(err))
+			logger.Logger.Error("[deviceScanCallback.lldp]: failed to insert ap lldp neighbors", zap.Error(err))
 			return err
 		}
 	}
 	return nil
 }
 
-func vlanCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.VlanItem) error {
+func vlanCallbackHandler(deviceId, siteId, orgId string, data []*intend_device.VlanItem) error {
 	if len(data) <= 0 {
-		core.Logger.Info("[deviceScanCallback.vlans]: no vlans found in device", zap.String("deviceId", deviceId))
+		logger.Logger.Info("[deviceScanCallback.vlans]: no vlans found in device", zap.String("deviceId", deviceId))
 		return nil
 	}
 	createPrefixes := make([]*models.Prefix, 0)
 	setOfRange := make([]string, 0)
 	for _, vlan := range data {
-		if vlan.Range == "" || lo.Contains(setOfRange, vlan.Range) {
+		if vlan.Network == "" || lo.Contains(setOfRange, vlan.Network) {
 			continue
 		}
-		setOfRange = append(setOfRange, vlan.Range)
+		setOfRange = append(setOfRange, vlan.Network)
 		gateway := ipam_utils.TrimGatewayMask(vlan.Gateway)
 		createPrefixes = append(createPrefixes, &models.Prefix{
 			SiteId:         siteId,
 			OrganizationId: orgId,
-			Range:          vlan.Range,
-			Version:        ipam_utils.CidrVersion(vlan.Range),
+			Range:          vlan.Network,
+			Version:        ipam_utils.CidrVersion(vlan.Network),
 			Gateway:        &gateway,
 			VlanId:         &vlan.VlanId,
 			VlanName:       &vlan.VlanName,
@@ -253,16 +254,16 @@ func vlanCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.Vlan
 			UpdateAll: true,
 		}).CreateInBatches(createPrefixes, len(createPrefixes)).Error
 		if err != nil {
-			core.Logger.Error("[deviceScanCallback.vlans]: failed to insert prefixes", zap.Error(err))
+			logger.Logger.Error("[deviceScanCallback.vlans]: failed to insert prefixes", zap.Error(err))
 			return err
 		}
 	}
 	return nil
 }
 
-func arpTableCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.ArpItem) error {
+func arpTableCallbackHandler(deviceId, siteId, orgId string, data []*intend_device.ArpItem) error {
 	if len(data) <= 0 {
-		core.Logger.Info("[deviceScanCallback.arp]: no arp found in device", zap.String("deviceId", deviceId))
+		logger.Logger.Info("[deviceScanCallback.arp]: no arp found in device", zap.String("deviceId", deviceId))
 		return nil
 	}
 	createArps := make([]*models.IpAddress, 0)
@@ -289,16 +290,16 @@ func arpTableCallbackHandler(deviceId, siteId, orgId string, data []*intendtask.
 			UpdateAll: true,
 		}).CreateInBatches(createArps, 50).Error
 		if err != nil {
-			core.Logger.Error("[deviceScanCallback.arp]: failed to insert arp to ipAddress table", zap.Error(err))
+			logger.Logger.Error("[deviceScanCallback.arp]: failed to insert arp to ipAddress table", zap.Error(err))
 			return err
 		}
 	}
 	return nil
 }
-func interfacesCallbackHandler(deviceId string, siteId string, data []*intendtask.DeviceInterface) error {
+func interfacesCallbackHandler(deviceId string, siteId string, data []*intend_device.DeviceInterface) error {
 	interfaces, err := infra_biz.NewDeviceInterfaceService().GetDeviceInterfaces(deviceId)
 	if err != nil {
-		core.Logger.Error("[deviceScanCallback.interfaces]: get device interfaces failed", zap.String("deviceId", deviceId), zap.Error(err))
+		logger.Logger.Error("[deviceScanCallback.interfaces]: get device interfaces failed", zap.String("deviceId", deviceId), zap.Error(err))
 	}
 	createdInterfaces := make([]*models.DeviceInterface, 0)
 	for _, df := range data {
@@ -329,7 +330,7 @@ func interfacesCallbackHandler(deviceId string, siteId string, data []*intendtas
 			UpdateAll: true,
 		}).CreateInBatches(createdInterfaces, len(createdInterfaces)).Error
 		if err != nil {
-			core.Logger.Error("[deviceScanCallback.interfaces]: failed to insert device interfaces", zap.Error(err))
+			logger.Logger.Error("[deviceScanCallback.interfaces]: failed to insert device interfaces", zap.Error(err))
 			return err
 		}
 	}
@@ -356,7 +357,7 @@ func deviceUpdateHandler(data *intendtask.DeviceScanResponse, device *models.Dev
 	if len(data.Entities) > 0 {
 		device.OsVersion = &data.Entities[0].EntityPhysicalSoftwareRev
 		var serNum *string
-		serNums := lo.Map(data.Entities, func(v *intendtask.Entity, _ int) string {
+		serNums := lo.Map(data.Entities, func(v *intend_device.Entity, _ int) string {
 			return v.EntityPhysicalSerialNum
 		})
 		if len(serNums) == 1 {
@@ -372,7 +373,7 @@ func deviceUpdateHandler(data *intendtask.DeviceScanResponse, device *models.Dev
 
 func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
 	if len(scanResults) == 0 {
-		core.Logger.Info("[apScanCallback]: no scan aps found")
+		logger.Logger.Info("[apScanCallback]: no scan aps found")
 		return nil
 	}
 	ok, err := infra_biz.LicenseUsageDepends(1, scanResults[0].OrganizationId)
@@ -386,13 +387,13 @@ func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
 		return v.ManagementIp
 	})
 	if len(managementIPs) == 0 {
-		core.Logger.Info("[apScanCallback]: no scan aps found")
+		logger.Logger.Info("[apScanCallback]: no scan aps found")
 		return nil
 	}
 	apService := infra_biz.NewApService()
 	dbAps, err := apService.GetByIpsAndSiteId(managementIPs, scanResults[0].SiteId, scanResults[0].OrganizationId)
 	if err != nil {
-		core.Logger.Error("[apScanCallback]: get db aps failed", zap.Error(err))
+		logger.Logger.Error("[apScanCallback]: get db aps failed", zap.Error(err))
 		return err
 	}
 	var newAps []*models.AP
@@ -434,14 +435,14 @@ func ScanApCallback(scanResults []*intendtask.ApScanResponse) error {
 			},
 		).CreateInBatches(newAps, len(newAps)).Error
 		if err != nil {
-			core.Logger.Error("[apScanCallback]: failed to create new ap", zap.Error(err))
+			logger.Logger.Error("[apScanCallback]: failed to create new ap", zap.Error(err))
 			return err
 		}
 	}
 	if len(updateAps) > 0 {
 		for _, ap := range updateAps {
 			if err = tx.Save(ap).Error; err != nil {
-				core.Logger.Error("[apScanCallback]: failed to update existed ap", zap.Error(err))
+				logger.Logger.Error("[apScanCallback]: failed to update existed ap", zap.Error(err))
 				return err
 			}
 		}

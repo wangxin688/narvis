@@ -5,7 +5,7 @@ import (
 
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/alert/schemas"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 )
 
 func topAlerts(siteId *string) ([]*schemas.TopX, error) {
@@ -14,7 +14,7 @@ func topAlerts(siteId *string) ([]*schemas.TopX, error) {
 	topAlertStmt := gen.Alert.Select(
 		gen.Alert.Id.Count().As("Value"),
 		gen.Alert.AlertName.As("Name"),
-	).Where(gen.Alert.OrganizationId.Eq(global.OrganizationId.Get()))
+	).Where(gen.Alert.OrganizationId.Eq(contextvar.OrganizationId.Get()))
 	if siteId != nil && *siteId != "" {
 		topAlertStmt = topAlertStmt.Where(gen.Alert.SiteId.Eq(*siteId))
 	}
@@ -32,7 +32,7 @@ func alertTrend(siteId *string, startedAtGte time.Time, startedAtLte time.Time) 
 		gen.Alert.StartedAt.Date().As("time"),
 	).Where(
 		gen.Alert.StartedAt.Between(startedAtGte, startedAtLte),
-		gen.Alert.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.Alert.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).Group(gen.Alert.Severity, gen.Alert.StartedAt.Date()).Order(gen.Alert.StartedAt.Desc())
 
 	if siteId != nil && *siteId != "" {

@@ -2,7 +2,7 @@ package metrics
 
 import (
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/intend/common"
+	"github.com/wangxin688/narvis/intend/model/i18n"
 )
 
 type MetricNameEnum string
@@ -116,7 +116,7 @@ const (
 
 type Metric struct {
 	Name                      MetricNameEnum
-	Description               common.I18n
+	Description               i18n.I18n
 	Unit                      *string
 	ValueMapping              *map[int]string
 	Tags                      []*string
@@ -155,7 +155,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 	metricMeta := map[MetricNameEnum]Metric{
 		MetricNameEnum(ICMPPing): {
 			Name:                      MetricNameEnum(ICMPPing),
-			Description:               common.I18n{En: "ICMP ping", Zh: "ICMP连通性"},
+			Description:               i18n.I18n{En: "ICMP ping", Zh: "ICMP连通性"},
 			Unit:                      nil,
 			ValueMapping:              &opStatus,
 			Legend:                    "{deviceName} ICMP Ping",
@@ -163,7 +163,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ICMPResponseTime): {
 			Name:                      MetricNameEnum(ICMPResponseTime),
-			Description:               common.I18n{En: "ICMP response time", Zh: "ICMP响应时间"},
+			Description:               i18n.I18n{En: "ICMP response time", Zh: "ICMP响应时间"},
 			Unit:                      &ms,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} ICMP Response Time",
@@ -171,7 +171,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ICMPPacketLoss): {
 			Name:                      MetricNameEnum(ICMPPacketLoss),
-			Description:               common.I18n{En: "ICMP packet loss", Zh: "ICMP丢包率"},
+			Description:               i18n.I18n{En: "ICMP packet loss", Zh: "ICMP丢包率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} ICMP Packet Loss",
@@ -180,7 +180,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(RxBits): {
 			Name:                      MetricNameEnum(RxBits),
-			Description:               common.I18n{En: "Rx Bits", Zh: "下行流量"},
+			Description:               i18n.I18n{En: "Rx Bits", Zh: "下行流量"},
 			Unit:                      &bps,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} {interface}:{description} Rx Bits",
@@ -188,7 +188,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(TxBits): {
 			Name:                      MetricNameEnum(TxBits),
-			Description:               common.I18n{En: "Tx Bits", Zh: "上行流量"},
+			Description:               i18n.I18n{En: "Tx Bits", Zh: "上行流量"},
 			Unit:                      &bps,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} {interface}:{description} Tx Bits",
@@ -197,7 +197,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(RxDiscards): {
 			Name:                      MetricNameEnum(RxDiscards),
-			Description:               common.I18n{En: "Rx Packet Discards", Zh: "下行丢包数"},
+			Description:               i18n.I18n{En: "Rx Packet Discards", Zh: "下行丢包数"},
 			Unit:                      &cs,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} {interface}:{description} Rx Packet Discards",
@@ -206,7 +206,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(TxDiscards): {
 			Name:                      MetricNameEnum(TxDiscards),
-			Description:               common.I18n{En: "Tx Packet Discards", Zh: "上行丢包数"},
+			Description:               i18n.I18n{En: "Tx Packet Discards", Zh: "上行丢包数"},
 			Unit:                      &cs,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} {interface}:{description} Tx Packet Discards",
@@ -215,7 +215,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(RxErrors): {
 			Name:                      MetricNameEnum(RxErrors),
-			Description:               common.I18n{En: "Rx Packet Errors", Zh: "下行错包数"},
+			Description:               i18n.I18n{En: "Rx Packet Errors", Zh: "下行错包数"},
 			Unit:                      &cs,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} {interface}:{description} Rx Packet Errors",
@@ -224,7 +224,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(TxErrors): {
 			Name:                      MetricNameEnum(TxErrors),
-			Description:               common.I18n{En: "Tx Packet Errors", Zh: "上行错包数"},
+			Description:               i18n.I18n{En: "Tx Packet Errors", Zh: "上行错包数"},
 			Unit:                      &cs,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} {interface}:{description} Tx Packet Errors",
@@ -233,7 +233,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(RxRate): {
 			Name:                      MetricNameEnum(RxRate),
-			Description:               common.I18n{En: "Rx Rate", Zh: "下行带宽利用率"},
+			Description:               i18n.I18n{En: "Rx Rate", Zh: "下行带宽利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} {interface}:{description} Rx Rate",
@@ -241,7 +241,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(TxRate): {
 			Name:                      MetricNameEnum(TxRate),
-			Description:               common.I18n{En: "Tx Rate", Zh: "上行带宽利用率"},
+			Description:               i18n.I18n{En: "Tx Rate", Zh: "上行带宽利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} {interface}:{description} Tx Rate",
@@ -249,7 +249,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(OperationalStatus): {
 			Name:                      MetricNameEnum(OperationalStatus),
-			Description:               common.I18n{En: "Operational Status", Zh: "运行状态"},
+			Description:               i18n.I18n{En: "Operational Status", Zh: "运行状态"},
 			Unit:                      nil,
 			ValueMapping:              &opStatus,
 			Legend:                    "{deviceName} {interface}:{description} Operational Status",
@@ -258,7 +258,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(HighSpeed): {
 			Name:                      MetricNameEnum(HighSpeed),
-			Description:               common.I18n{En: "Port Speed", Zh: "接口速率"},
+			Description:               i18n.I18n{En: "Port Speed", Zh: "接口速率"},
 			Unit:                      &mbps,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} {interface}:{description} Port Speed",
@@ -266,7 +266,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(DuplexStatus): {
 			Name:                      MetricNameEnum(DuplexStatus),
-			Description:               common.I18n{En: "Duplex Status", Zh: "接口双工状态"},
+			Description:               i18n.I18n{En: "Duplex Status", Zh: "接口双工状态"},
 			Unit:                      nil,
 			ValueMapping:              &duplexStatus,
 			Legend:                    "{deviceName} {interface}:{description} Duplex Status",
@@ -275,7 +275,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(CpuUtilization): {
 			Name:                      MetricNameEnum(CpuUtilization),
-			Description:               common.I18n{En: "CPU Usage", Zh: "CPU利用率"},
+			Description:               i18n.I18n{En: "CPU Usage", Zh: "CPU利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} CPU#{cpu} CPU Usage",
@@ -283,7 +283,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(MemoryUtilization): {
 			Name:                      MetricNameEnum(MemoryUtilization),
-			Description:               common.I18n{En: "Memory Usage", Zh: "内存利用率"},
+			Description:               i18n.I18n{En: "Memory Usage", Zh: "内存利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} Memory Usage",
@@ -292,7 +292,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(DiskUsage): {
 			Name:                      MetricNameEnum(DiskUsage),
-			Description:               common.I18n{En: "Disk Usage", Zh: "磁盘利用率"},
+			Description:               i18n.I18n{En: "Disk Usage", Zh: "磁盘利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} Disk Usage",
@@ -301,7 +301,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(SystemLoad): {
 			Name:                      MetricNameEnum(SystemLoad),
-			Description:               common.I18n{En: "System Load", Zh: "系统负载"},
+			Description:               i18n.I18n{En: "System Load", Zh: "系统负载"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} System Load",
@@ -310,7 +310,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(FanStatus): {
 			Name:                      MetricNameEnum(FanStatus),
-			Description:               common.I18n{En: "Fan Status", Zh: "风扇状态"},
+			Description:               i18n.I18n{En: "Fan Status", Zh: "风扇状态"},
 			Unit:                      nil,
 			ValueMapping:              &entityStatus,
 			Legend:                    "{deviceName} Fan#{entity} Status",
@@ -319,7 +319,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(PowerSupplyStatus): {
 			Name:                      MetricNameEnum(PowerSupplyStatus),
-			Description:               common.I18n{En: "Power Supply Status", Zh: "电源状态"},
+			Description:               i18n.I18n{En: "Power Supply Status", Zh: "电源状态"},
 			Unit:                      nil,
 			ValueMapping:              &entityStatus,
 			Legend:                    "{deviceName} Power Supply#{entity} Status",
@@ -328,7 +328,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 
 		MetricNameEnum(Temperature): {
 			Name:                      MetricNameEnum(Temperature),
-			Description:               common.I18n{En: "Temperature", Zh: "温度"},
+			Description:               i18n.I18n{En: "Temperature", Zh: "温度"},
 			Unit:                      &celsius,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} Temperature",
@@ -336,7 +336,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(SnmpAgentStatus): {
 			Name:                      MetricNameEnum(SnmpAgentStatus),
-			Description:               common.I18n{En: "SNMP Agent Status", Zh: "SNMP Agent状态"},
+			Description:               i18n.I18n{En: "SNMP Agent Status", Zh: "SNMP Agent状态"},
 			Unit:                      nil,
 			ValueMapping:              &entityStatus,
 			Legend:                    "{deviceName} SNMP Agent Status",
@@ -344,7 +344,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(Uptime): {
 			Name:                      MetricNameEnum(Uptime),
-			Description:               common.I18n{En: "Uptime", Zh: "运行时间"},
+			Description:               i18n.I18n{En: "Uptime", Zh: "运行时间"},
 			Unit:                      &seconds,
 			ValueMapping:              nil,
 			Legend:                    "{deviceName} Uptime",
@@ -352,7 +352,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ApStatus): {
 			Name:                      MetricNameEnum(ApStatus),
-			Description:               common.I18n{En: "AP Status", Zh: "AP运行状态"},
+			Description:               i18n.I18n{En: "AP Status", Zh: "AP运行状态"},
 			Unit:                      nil,
 			ValueMapping:              &opStatus,
 			Legend:                    "{apName} Status",
@@ -360,7 +360,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ApUptime): {
 			Name:                      MetricNameEnum(ApUptime),
-			Description:               common.I18n{En: "AP Uptime", Zh: "AP运行时间"},
+			Description:               i18n.I18n{En: "AP Uptime", Zh: "AP运行时间"},
 			Unit:                      &seconds,
 			ValueMapping:              nil,
 			Legend:                    "{name} Uptime",
@@ -368,7 +368,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ChannelUtilization): {
 			Name:                      MetricNameEnum(ChannelUtilization),
-			Description:               common.I18n{En: "Channel Utilization", Zh: "信道利用率"},
+			Description:               i18n.I18n{En: "Channel Utilization", Zh: "信道利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{apName}(channel) Channel Utilization",
@@ -376,7 +376,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ChannelNoise): {
 			Name:                      MetricNameEnum(ChannelNoise),
-			Description:               common.I18n{En: "Channel Noise", Zh: "信道噪声"},
+			Description:               i18n.I18n{En: "Channel Noise", Zh: "信道噪声"},
 			Unit:                      &dBm,
 			ValueMapping:              nil,
 			Legend:                    "{apName}(channel) Channel Noise",
@@ -384,7 +384,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ChannelTransmitPower): {
 			Name:                      MetricNameEnum(ChannelTransmitPower),
-			Description:               common.I18n{En: "Channel Transmit Power", Zh: "信道发射功率"},
+			Description:               i18n.I18n{En: "Channel Transmit Power", Zh: "信道发射功率"},
 			Unit:                      &dBm,
 			ValueMapping:              nil,
 			Legend:                    "{apName}(channel) Channel Transmit Power",
@@ -392,7 +392,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ChannelInterferenceRate): {
 			Name:                      MetricNameEnum(ChannelInterferenceRate),
-			Description:               common.I18n{En: "Channel Interference", Zh: "信道干扰"},
+			Description:               i18n.I18n{En: "Channel Interference", Zh: "信道干扰"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{apName}(channel) Channel Interference",
@@ -400,7 +400,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ChannelAssociationClients): {
 			Name:                      MetricNameEnum(ChannelAssociationClients),
-			Description:               common.I18n{En: "Channel Association Clients", Zh: "信道关联客户端"},
+			Description:               i18n.I18n{En: "Channel Association Clients", Zh: "信道关联客户端"},
 			Unit:                      nil,
 			ValueMapping:              nil,
 			Legend:                    "{apName}(channel) Channel Association Clients",
@@ -408,7 +408,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ApCpuUtilization): {
 			Name:                      MetricNameEnum(ApCpuUtilization),
-			Description:               common.I18n{En: "AP CPU utilization", Zh: "AP CPU利用率"},
+			Description:               i18n.I18n{En: "AP CPU utilization", Zh: "AP CPU利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{apName} AP CPU utilization",
@@ -416,7 +416,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ApMemoryUtilization): {
 			Name:                      MetricNameEnum(ApMemoryUtilization),
-			Description:               common.I18n{En: "AP Memory utilization", Zh: "AP 内存利用率"},
+			Description:               i18n.I18n{En: "AP Memory utilization", Zh: "AP 内存利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{apName} AP Memory utilization",
@@ -424,7 +424,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(LoadAverage1m): {
 			Name:                      MetricNameEnum(LoadAverage1m),
-			Description:               common.I18n{En: "Load average 1m", Zh: "负载平均值 1m"},
+			Description:               i18n.I18n{En: "Load average 1m", Zh: "负载平均值 1m"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Load average 1m",
@@ -432,7 +432,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(LoadAverage5m): {
 			Name:                      MetricNameEnum(LoadAverage5m),
-			Description:               common.I18n{En: "Load average 5m", Zh: "负载平均值 5m"},
+			Description:               i18n.I18n{En: "Load average 5m", Zh: "负载平均值 5m"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Load average 5m",
@@ -440,7 +440,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(LoadAverage15m): {
 			Name:                      MetricNameEnum(LoadAverage15m),
-			Description:               common.I18n{En: "Load average 15m", Zh: "负载平均值 15m"},
+			Description:               i18n.I18n{En: "Load average 15m", Zh: "负载平均值 15m"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Load average 15m",
@@ -448,7 +448,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(ContextSwitchesPerSecond): {
 			Name:                      MetricNameEnum(ContextSwitchesPerSecond),
-			Description:               common.I18n{En: "Context Switches per second", Zh: "上下文切换频率"},
+			Description:               i18n.I18n{En: "Context Switches per second", Zh: "上下文切换频率"},
 			Unit:                      nil,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Context Switches per second",
@@ -456,7 +456,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(InterruptsPerSecond): {
 			Name:                      MetricNameEnum(InterruptsPerSecond),
-			Description:               common.I18n{En: "Interrupts per second", Zh: "中断频率"},
+			Description:               i18n.I18n{En: "Interrupts per second", Zh: "中断频率"},
 			Unit:                      nil,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Interrupts per second",
@@ -464,7 +464,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(SwapSpaceUtilization): {
 			Name:                      MetricNameEnum(SwapSpaceUtilization),
-			Description:               common.I18n{En: "Swap Space Utilization", Zh: "交换空间占用率"},
+			Description:               i18n.I18n{En: "Swap Space Utilization", Zh: "交换空间占用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Swap Space Utilization",
@@ -472,7 +472,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(DiskReadRate): {
 			Name:                      MetricNameEnum(DiskReadRate),
-			Description:               common.I18n{En: "Disk Read Rate", Zh: "磁盘读取速率"},
+			Description:               i18n.I18n{En: "Disk Read Rate", Zh: "磁盘读取速率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Disk Read Rate",
@@ -480,7 +480,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(DiskWriteRate): {
 			Name:                      MetricNameEnum(DiskWriteRate),
-			Description:               common.I18n{En: "Disk Write Rate", Zh: "磁盘写入速率"},
+			Description:               i18n.I18n{En: "Disk Write Rate", Zh: "磁盘写入速率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Disk Write Rate",
@@ -488,7 +488,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(DiskUtilization): {
 			Name:                      MetricNameEnum(DiskUtilization),
-			Description:               common.I18n{En: "Disk Utilization", Zh: "磁盘利用率"},
+			Description:               i18n.I18n{En: "Disk Utilization", Zh: "磁盘利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Disk Utilization",
@@ -496,7 +496,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(InodesFree): {
 			Name:                      MetricNameEnum(InodesFree),
-			Description:               common.I18n{En: "Inodes Free", Zh: "inode空闲数量"},
+			Description:               i18n.I18n{En: "Inodes Free", Zh: "inode空闲数量"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} Inodes Free",
@@ -504,7 +504,7 @@ func getMetricMeta() map[MetricNameEnum]Metric {
 		},
 		MetricNameEnum(FileSystemUtilization): {
 			Name:                      MetricNameEnum(FileSystemUtilization),
-			Description:               common.I18n{En: "File System Utilization", Zh: "文件系统利用率"},
+			Description:               i18n.I18n{En: "File System Utilization", Zh: "文件系统利用率"},
 			Unit:                      &percent,
 			ValueMapping:              nil,
 			Legend:                    "{serverName} {filesystem} File System Utilization",

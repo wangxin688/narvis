@@ -1,7 +1,8 @@
 package hooks
 
 import (
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
+	"github.com/wangxin688/narvis/server/config"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/pkg/zbx"
@@ -17,16 +18,16 @@ func CreateZbxProxy(proxy *models.Proxy) {
 		TlsConnect:     1,
 		TlsPskIDentity: proxy.Id,
 		TlsAccept:      2,
-		TlsPsk:         core.Settings.Jwt.PublicAuthKey,
+		TlsPsk:         config.Settings.Jwt.PublicAuthKey,
 	})
 	if err != nil {
-		core.Logger.Error("[proxyCreateHooks]: failed to create proxy", zap.Error(err))
+		logger.Logger.Error("[proxyCreateHooks]: failed to create proxy", zap.Error(err))
 		return
 	}
 	proxy.ProxyId = &res
 	err = gen.Proxy.Save(proxy)
 	if err != nil {
-		core.Logger.Error("[proxyCreateHooks]: failed to update proxyId to database", zap.Error(err))
+		logger.Logger.Error("[proxyCreateHooks]: failed to update proxyId to database", zap.Error(err))
 	}
-	core.Logger.Info("[proxyCreateHooks]: proxy created", zap.String("id", res))
+	logger.Logger.Info("[proxyCreateHooks]: proxy created", zap.String("id", res))
 }

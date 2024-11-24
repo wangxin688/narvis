@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/intend/metrics"
-	"github.com/wangxin688/narvis/server/core"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/pkg/vtm"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
@@ -90,7 +90,7 @@ func (m *MetricService) buildBasicQuery() ([]*vtm.MatrixRequest, error) {
 		query = query.WithWindow("5m")
 		queryString, err := query.Build()
 		if err != nil {
-			core.Logger.Error("[metricService]: failed to build query", zap.String("metric", name), zap.Error(err))
+			logger.Logger.Error("[metricService]: failed to build query", zap.String("metric", name), zap.Error(err))
 			return nil, errors.NewError(errors.CodeQueryBuildFailed, errors.MsgQueryBuildFailed, name)
 		}
 		if m.DataPoints == 0 {
@@ -116,7 +116,7 @@ func (m *MetricService) queryMatrix() ([]*vtm.MatrixResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	return vtm.NewVtmClient().GetBulkMatrix(queries, &orgId)
 }
 

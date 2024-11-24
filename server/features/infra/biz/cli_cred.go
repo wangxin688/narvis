@@ -6,10 +6,9 @@ import (
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	te "github.com/wangxin688/narvis/server/tools/errors"
-	ts "github.com/wangxin688/narvis/server/tools/schemas"
 	"gorm.io/gorm"
 )
 
@@ -21,7 +20,7 @@ func NewCliCredentialService() *CliCredentialService {
 
 func (s *CliCredentialService) CreateCredential(deviceId string, credential *schemas.CliCredentialCreate) (string, error) {
 	cred := &models.CliCredential{
-		OrganizationId: global.OrganizationId.Get(),
+		OrganizationId: contextvar.OrganizationId.Get(),
 		DeviceId:       &deviceId,
 		Username:       credential.Username,
 		Password:       credential.Password,
@@ -34,7 +33,7 @@ func (s *CliCredentialService) CreateCredential(deviceId string, credential *sch
 
 func (s *CliCredentialService) CreateServerCredential(serverId string, credential *schemas.CliCredentialCreate) (string, error) {
 	cred := &models.ServerCredential{
-		OrganizationId: global.OrganizationId.Get(),
+		OrganizationId: contextvar.OrganizationId.Get(),
 		ServerId:       &serverId,
 		Username:       credential.Username,
 		Password:       credential.Password,
@@ -47,7 +46,7 @@ func (s *CliCredentialService) CreateServerCredential(serverId string, credentia
 
 // func (s *CliCredentialService) validateCreateCredential(credential *schemas.CliCredentialCreate) error {
 // 	if credential.DeviceId == nil {
-// 		orgCred, err := s.GetCredentialByOrgId(global.OrganizationId.Get())
+// 		orgCred, err := s.GetCredentialByOrgId(contextvar.OrganizationId.Get())
 // 		if err != nil {
 // 			return err
 // 		}
@@ -58,27 +57,27 @@ func (s *CliCredentialService) CreateServerCredential(serverId string, credentia
 // 	return nil
 // }
 
-func (s *CliCredentialService) UpdateCredential(deviceId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
-	dbCred, err := gen.CliCredential.Where(gen.CliCredential.DeviceId.Eq(deviceId), gen.CliCredential.OrganizationId.Eq(global.OrganizationId.Get())).First()
+func (s *CliCredentialService) UpdateCredential(deviceId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
+	dbCred, err := gen.CliCredential.Where(gen.CliCredential.DeviceId.Eq(deviceId), gen.CliCredential.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, err
 	}
-	updateFields := make(map[string]*ts.OrmDiff)
+	updateFields := make(map[string]*contextvar.Diff)
 	if credential.Username != nil && *credential.Username != dbCred.Username {
-		updateFields["username"] = &ts.OrmDiff{Before: dbCred.Username, After: *credential.Username}
+		updateFields["username"] = &contextvar.Diff{Before: dbCred.Username, After: *credential.Username}
 		dbCred.Username = *credential.Username
 	}
 	if credential.Password != nil && *credential.Password != dbCred.Password {
-		updateFields["password"] = &ts.OrmDiff{Before: dbCred.Password, After: *credential.Password}
+		updateFields["password"] = &contextvar.Diff{Before: dbCred.Password, After: *credential.Password}
 		dbCred.Password = *credential.Password
 	}
 	if len(updateFields) == 0 {
 		return nil, nil
 	}
 
-	diff = make(map[string]map[string]*ts.OrmDiff)
+	diff = make(map[string]map[string]*contextvar.Diff)
 	diff[dbCred.Id] = updateFields
-	global.OrmDiff.Set(diff)
+	contextvar.OrmDiff.Set(diff)
 	err = gen.CliCredential.UnderlyingDB().Save(dbCred).Error
 	if err != nil {
 		return nil, err
@@ -86,28 +85,27 @@ func (s *CliCredentialService) UpdateCredential(deviceId string, credential *sch
 	return diff, nil
 }
 
-
-func (s *CliCredentialService) UpdateServerCredential(serverId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
-	dbCred, err := gen.ServerCredential.Where(gen.ServerCredential.ServerId.Eq(serverId), gen.ServerCredential.OrganizationId.Eq(global.OrganizationId.Get())).First()
+func (s *CliCredentialService) UpdateServerCredential(serverId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
+	dbCred, err := gen.ServerCredential.Where(gen.ServerCredential.ServerId.Eq(serverId), gen.ServerCredential.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, err
 	}
-	updateFields := make(map[string]*ts.OrmDiff)
+	updateFields := make(map[string]*contextvar.Diff)
 	if credential.Username != nil && *credential.Username != dbCred.Username {
-		updateFields["username"] = &ts.OrmDiff{Before: dbCred.Username, After: *credential.Username}
+		updateFields["username"] = &contextvar.Diff{Before: dbCred.Username, After: *credential.Username}
 		dbCred.Username = *credential.Username
 	}
 	if credential.Password != nil && *credential.Password != dbCred.Password {
-		updateFields["password"] = &ts.OrmDiff{Before: dbCred.Password, After: *credential.Password}
+		updateFields["password"] = &contextvar.Diff{Before: dbCred.Password, After: *credential.Password}
 		dbCred.Password = *credential.Password
 	}
 	if len(updateFields) == 0 {
 		return nil, nil
 	}
 
-	diff = make(map[string]map[string]*ts.OrmDiff)
+	diff = make(map[string]map[string]*contextvar.Diff)
 	diff[dbCred.Id] = updateFields
-	global.OrmDiff.Set(diff)
+	contextvar.OrmDiff.Set(diff)
 	err = gen.ServerCredential.UnderlyingDB().Save(dbCred).Error
 	if err != nil {
 		return nil, err
@@ -142,7 +140,7 @@ func (s *CliCredentialService) GetServerCredentialByOrgId(orgId string) (*models
 func (s *CliCredentialService) DeleteCredential(deviceId string) error {
 	dbCred, err := gen.CliCredential.Where(
 		gen.CliCredential.Id.Eq(deviceId),
-		gen.CliCredential.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.CliCredential.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).First()
 	if err != nil {
 		return err
@@ -157,7 +155,7 @@ func (s *CliCredentialService) DeleteCredential(deviceId string) error {
 func (s *CliCredentialService) DeleteServerCredential(serverId string) error {
 	dbCred, err := gen.ServerCredential.Where(
 		gen.ServerCredential.Id.Eq(serverId),
-		gen.ServerCredential.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.ServerCredential.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).First()
 	if err != nil {
 		return err
@@ -170,7 +168,7 @@ func (s *CliCredentialService) DeleteServerCredential(serverId string) error {
 }
 
 func (s *CliCredentialService) GetCredentialByDeviceId(deviceId string) (*schemas.CliCredential, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 
 	cred, err := gen.CliCredential.Where(
 		gen.CliCredential.DeviceId.Eq(deviceId),
@@ -204,7 +202,7 @@ func (s *CliCredentialService) GetCredentialByDeviceId(deviceId string) (*schema
 }
 
 func (s *CliCredentialService) GetServerCredentialByDeviceId(serverId string) (*schemas.CliCredential, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 
 	cred, err := gen.ServerCredential.Where(
 		gen.ServerCredential.ServerId.Eq(serverId),
@@ -234,15 +232,14 @@ func (s *CliCredentialService) GetServerCredentialByDeviceId(serverId string) (*
 		Password:       cred.Password,
 		Port:           cred.Port,
 		InheritFromOrg: false,
-	}, nil	
-	}
-
+	}, nil
+}
 
 // GetCredentialByDeviceIds returns a map of device id to cli credential.
 // If a device does not have a cli credential, it will use the global cli credential for the organization.
 func (s *CliCredentialService) GetCredentialByDeviceIds(deviceIds []string) (map[string]*schemas.CliCredential, error) {
 	deviceIds = lo.Uniq(deviceIds) // remove duplicates deviceIds
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	creds, err := gen.CliCredential.Where(
 		gen.CliCredential.DeviceId.In(deviceIds...),
 		gen.CliCredential.OrganizationId.Eq(orgId)).Find()
@@ -303,7 +300,7 @@ func (s *CliCredentialService) GetCredentialByDeviceIds(deviceIds []string) (map
 
 func (s *CliCredentialService) GetCredentialByServerIds(serverIds []string) (map[string]*schemas.CliCredential, error) {
 	serverIds = lo.Uniq(serverIds) // remove duplicates serverIds
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	creds, err := gen.ServerCredential.Where(
 		gen.ServerCredential.ServerId.In(serverIds...),
 		gen.ServerCredential.OrganizationId.Eq(orgId)).Find()

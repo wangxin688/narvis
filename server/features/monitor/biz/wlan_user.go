@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/features/monitor/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/infra"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/pkg/vtm"
 	"go.uber.org/zap"
 )
@@ -23,7 +23,7 @@ func NewWlanUserService() *WlanUserService {
 func (s *WlanUserService) GetWlanUserTrend(query *schemas.WlanUserTrendRequest) ([]*schemas.WlanUserTrend, error) {
 	interval := vtm.CalculateInterval(query.StartedAt.Unix(), query.EndedAt.Unix(), query.DataPoints)
 	results := make([]*schemas.WlanUserTrend, 0)
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	selectString := fmt.Sprintf(
 		`
 		stationESSID,
@@ -49,7 +49,7 @@ func (s *WlanUserService) GetWlanUserTrend(query *schemas.WlanUserTrendRequest) 
 func (s *WlanUserService) ListWlanUsers(query *schemas.WlanUserQuery) (*schemas.WlanUserListResponse, error) {
 	response := &schemas.WlanUserListResponse{}
 	results := make([]*schemas.WlanUserItem, 0)
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	var countUser struct {
 		OnlineCount int64 `json:"onlineCount"`
 		TotalCount  int64 `json:"totalCount"`
@@ -229,7 +229,7 @@ func (s *WlanUserService) getWlanUserThroughput(macAddr []string, startedAt, end
 
 	err := infra.ClickHouseDB.Raw(rawSql).Scan(&dbResults).Error
 	if err != nil {
-		core.Logger.Warn("[getWlanUserThroughput]: get wlan user throughput failed", zap.Error(err))
+		logger.Logger.Warn("[getWlanUserThroughput]: get wlan user throughput failed", zap.Error(err))
 		return nil
 	}
 

@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/wangxin688/narvis/server/core"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/intend/logger"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -65,11 +65,11 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 	switch {
 	case errors.As(e, &generalError):
 		if generalError == nil {
-			core.Logger.Warn("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
-			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
+			logger.Logger.Warn("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", contextvar.XRequestId.Get()))
+			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, contextvar.XRequestId.Get()))
 			return
 		}
-		core.Logger.Warn("[errResponseHandler]: general error", zap.Error(e), zap.Int("code", int(generalError.Code)))
+		logger.Logger.Warn("[errResponseHandler]: general error", zap.Error(e), zap.Int("code", int(generalError.Code)))
 		if generalError.Code <= 500 {
 			g.AbortWithStatusJSON(int(generalError.Code), generalError)
 			return
@@ -78,11 +78,11 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 		return
 	case errors.As(e, &pgError):
 		if pgError == nil {
-			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
-			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
+			logger.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", contextvar.XRequestId.Get()))
+			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, contextvar.XRequestId.Get()))
 			return
 		}
-		core.Logger.Warn("[errResponseHandler]: conflict error", zap.Error(e), zap.String("tableName", pgError.TableName))
+		logger.Logger.Warn("[errResponseHandler]: conflict error", zap.Error(e), zap.String("tableName", pgError.TableName))
 		if pgError.Code == "23505" {
 			var fields, values string
 			matches := pgConflictRegexp.FindStringSubmatch(pgError.Detail)
@@ -115,23 +115,23 @@ func ResponseErrorHandler(g *gin.Context, e error) {
 			g.AbortWithStatusJSON(http.StatusUnprocessableEntity, NewError(CodeUnprocessableEntity, MsgUnprocessableEntity, pgError.Detail))
 			return
 		}
-		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
+		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, contextvar.XRequestId.Get()))
 		return
 	case errors.As(e, &validationError):
 		if validationError == nil {
-			core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
-			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
+			logger.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", contextvar.XRequestId.Get()))
+			g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, contextvar.XRequestId.Get()))
 			return
 		}
-		core.Logger.Warn("[errResponseHandler]: validation error", zap.Error(e))
+		logger.Logger.Warn("[errResponseHandler]: validation error", zap.Error(e))
 		g.AbortWithStatusJSON(http.StatusUnprocessableEntity, NewErrorWithData(CodeUnprocessableEntity, MsgUnprocessableEntity, e.Error()))
 		return
 	case errors.Is(e, gorm.ErrRecordNotFound):
 		g.AbortWithStatusJSON(http.StatusNotFound, NewError(CodeNotFound, "record not found"))
 		return
 	default:
-		core.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", global.XRequestId.Get()))
-		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, global.XRequestId.Get()))
+		logger.Logger.Error("[errResponseHandler]: unknown error", zap.Error(e), zap.String("X-Request-ID", contextvar.XRequestId.Get()))
+		g.AbortWithStatusJSON(http.StatusInternalServerError, NewError(CodeInternalServerError, MsgInternalServerError, contextvar.XRequestId.Get()))
 		return
 	}
 

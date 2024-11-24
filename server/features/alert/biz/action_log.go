@@ -4,8 +4,8 @@ import (
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/alert/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/errors"
 )
 
@@ -16,7 +16,7 @@ func NewActionLogService() *ActionLogService {
 }
 
 func (a *ActionLogService) CreateActionLog(log *schemas.ActionLogCreate) (string, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	if log.AssignUserId != nil {
 		_, err := gen.User.Select(gen.User.Id).Where(
 			gen.User.Id.Eq(*log.AssignUserId),
@@ -47,7 +47,7 @@ func (a *ActionLogService) CreateActionLog(log *schemas.ActionLogCreate) (string
 			Resolved:     log.Resolved,
 			Suppressed:   log.Suppressed,
 			Acknowledged: log.Acknowledged,
-			CreatedById:  global.UserId.Get(),
+			CreatedById:  contextvar.UserId.Get(),
 		}
 	}
 

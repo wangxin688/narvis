@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
 	biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -38,7 +38,7 @@ func createCircuit(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.CircuitCreateHooks(id)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
@@ -130,7 +130,7 @@ func updateCircuit(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.CircuitUpdateHooks(id, diff[id])
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
@@ -161,7 +161,7 @@ func deleteCircuit(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.CircuitDeleteHooks(circuit)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})

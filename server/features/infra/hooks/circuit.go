@@ -3,45 +3,45 @@ package hooks
 import (
 	"fmt"
 
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/pkg/zbx"
 	"github.com/wangxin688/narvis/server/pkg/zbx/zschema"
-	ts "github.com/wangxin688/narvis/server/tools/schemas"
 	"go.uber.org/zap"
 )
 
 func CircuitCreateHooks(circuitId string) {
 	circuit, err := gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId)).First()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: get circuit failed with circuit %s", circuitId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: get circuit failed with circuit %s", circuitId), zap.Error(err))
 		return
 	}
 	proxy := proxySelect(circuit.OrganizationId)
 	template, err := circuitTemplateSelect()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: get template failed with circuit %s", circuitId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: get template failed with circuit %s", circuitId), zap.Error(err))
 		return
 	}
 	hostGroupId, err := getHostGroupId(circuit.SiteId)
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[deviceCreateHooks]: getHostGroupId for device failed with device %s", circuitId),
+		logger.Logger.Error(fmt.Sprintf("[deviceCreateHooks]: getHostGroupId for device failed with device %s", circuitId),
 			zap.Error(err))
 		return
 	}
 	if hostGroupId == nil || *hostGroupId == "" {
-		core.Logger.Info(fmt.Sprintf("[circuitCreateHooks]: hostGroupId is empty for circuit %s, create it now", circuitId))
+		logger.Logger.Info(fmt.Sprintf("[circuitCreateHooks]: hostGroupId is empty for circuit %s, create it now", circuitId))
 		hgId, err := SiteHookCreate(circuit.SiteId)
 		if err != nil {
-			core.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: create host group failed for siteId %s", circuit.SiteId),
+			logger.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: create host group failed for siteId %s", circuit.SiteId),
 				zap.Error(err))
 			return
 		}
 		hostGroupId = &hgId
 	}
 	if (circuit.Ipv4Address == nil && circuit.Ipv6Address == nil) || (*circuit.Ipv4Address == "" && *circuit.Ipv6Address == "") {
-		core.Logger.Info(fmt.Sprintf("[circuitCreateHooks]: skip create host for circuit %s has no address", circuitId))
+		logger.Logger.Info(fmt.Sprintf("[circuitCreateHooks]: skip create host for circuit %s has no address", circuitId))
 	}
 	hostId, err := zbx.NewZbxClient().HostCreate(&zschema.HostCreate{
 		Host:        "c_" + circuitId,
@@ -54,15 +54,15 @@ func CircuitCreateHooks(circuitId string) {
 		Status:      getHostMonitorStatus(circuit.Status),
 	})
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: create host failed for circuit %s", circuitId),
+		logger.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: create host failed for circuit %s", circuitId),
 			zap.Error(err))
 		return
 	}
-	core.Logger.Info(fmt.Sprintf("[circuitCreateHooks]: create host success for circuit %s", circuitId),
+	logger.Logger.Info(fmt.Sprintf("[circuitCreateHooks]: create host success for circuit %s", circuitId),
 		zap.String("hostId", hostId))
 	_, err = gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId)).Update(gen.Circuit.MonitorId, hostId)
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: update circuit monitorId failed for circuit %s", circuitId),
+		logger.Logger.Error(fmt.Sprintf("[circuitCreateHooks]: update circuit monitorId failed for circuit %s", circuitId),
 			zap.Error(err))
 		return
 	}
@@ -72,7 +72,7 @@ func CircuitCreateHooks(circuitId string) {
 func circuitDeviceCreateHooks(circuit *models.Circuit, proxy string) {
 	circuitDevice, err := gen.Device.Where(gen.Device.Id.Eq(circuit.DeviceId)).First()
 	if err != nil {
-		core.Logger.Error(
+		logger.Logger.Error(
 			fmt.Sprintf("[circuitHostCreateHooks]: get circuit connected device %s failed with circuit %s",
 				circuit.DeviceId, circuit.Id),
 			zap.Error(err))
@@ -80,7 +80,7 @@ func circuitDeviceCreateHooks(circuit *models.Circuit, proxy string) {
 	}
 	deviceInterface, err := gen.DeviceInterface.Where(gen.DeviceInterface.Id.Eq(circuit.InterfaceId)).First()
 	if err != nil {
-		core.Logger.Error(
+		logger.Logger.Error(
 			fmt.Sprintf("[circuitHostCreateHooks]: get circuit connected interface %s failed with circuit %s",
 				circuit.InterfaceId, circuit.Id),
 			zap.Error(err))
@@ -90,19 +90,19 @@ func circuitDeviceCreateHooks(circuit *models.Circuit, proxy string) {
 	community, port := snmpV2CommunitySelect(circuit.DeviceId, circuit.OrganizationId)
 	template, err := circuitHostTemplateSelect()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: get template failed with circuit %s", circuit.Id), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: get template failed with circuit %s", circuit.Id), zap.Error(err))
 		return
 	}
 	hostGroupId, err := getHostGroupId(circuit.SiteId)
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: getHostGroupId for device failed with device %s", circuit.DeviceId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: getHostGroupId for device failed with device %s", circuit.DeviceId), zap.Error(err))
 		return
 	}
 	if hostGroupId == nil || *hostGroupId == "" {
-		core.Logger.Info(fmt.Sprintf("[circuitHostCreateHooks]: hostGroupId is empty for circuit %s, create it now", circuit.Id))
+		logger.Logger.Info(fmt.Sprintf("[circuitHostCreateHooks]: hostGroupId is empty for circuit %s, create it now", circuit.Id))
 		hgId, err := SiteHookCreate(circuit.SiteId)
 		if err != nil {
-			core.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: create host group failed for siteId %s", circuit.SiteId), zap.Error(err))
+			logger.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: create host group failed for siteId %s", circuit.SiteId), zap.Error(err))
 			return
 		}
 		hostGroupId = &hgId
@@ -119,35 +119,35 @@ func circuitDeviceCreateHooks(circuit *models.Circuit, proxy string) {
 		Status:      getHostMonitorStatus(circuit.Status),
 	})
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: create host failed for circuit %s", circuit.Id), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: create host failed for circuit %s", circuit.Id), zap.Error(err))
 		return
 	}
-	core.Logger.Info(fmt.Sprintf("[circuitHostCreateHooks]: create host success for circuit %s", circuit.Id), zap.String("hostId", hostId))
+	logger.Logger.Info(fmt.Sprintf("[circuitHostCreateHooks]: create host success for circuit %s", circuit.Id), zap.String("hostId", hostId))
 	_, err = gen.Circuit.Where(gen.Circuit.Id.Eq(circuit.Id)).Update(gen.Circuit.MonitorHostId, hostId)
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: update circuit monitorHostId failed for circuit %s", circuit.Id), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[circuitHostCreateHooks]: update circuit monitorHostId failed for circuit %s", circuit.Id), zap.Error(err))
 		return
 	}
 }
 
-func CircuitUpdateHooks(circuitId string, diff map[string]*ts.OrmDiff) {
+func CircuitUpdateHooks(circuitId string, diff map[string]*contextvar.Diff) {
 	if len(diff) == 0 {
-		core.Logger.Info("[circuitUpdateHooks]: no diff found for circuit skip update ", zap.String("circuitId", circuitId))
+		logger.Logger.Info("[circuitUpdateHooks]: no diff found for circuit skip update ", zap.String("circuitId", circuitId))
 		return
 	}
 	circuit, err := gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId)).First()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: get circuit failed for circuit %s", circuitId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: get circuit failed for circuit %s", circuitId), zap.Error(err))
 		return
 	}
 	client := zbx.NewZbxClient()
 	if circuit.MonitorId == nil || *circuit.MonitorId == "" {
-		core.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: monitorId is empty for circuit %s, create it now", circuitId))
+		logger.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: monitorId is empty for circuit %s, create it now", circuitId))
 		CircuitCreateHooks(circuit.Id)
 		return
 	}
 	if circuit.MonitorHostId == nil || *circuit.MonitorHostId == "" {
-		core.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: monitorHostId is empty for circuit %s, create it now", circuitId))
+		logger.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: monitorHostId is empty for circuit %s, create it now", circuitId))
 		proxy := proxySelect(circuit.OrganizationId)
 		circuitDeviceCreateHooks(circuit, proxy)
 		return
@@ -157,7 +157,7 @@ func CircuitUpdateHooks(circuitId string, diff map[string]*ts.OrmDiff) {
 		*updateSchema.Status = getHostMonitorStatus(diff["status"].After.(string))
 		_, err := client.HostUpdate(&updateSchema)
 		if err != nil {
-			core.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: update host failed for circuit %s", circuitId), zap.Error(err))
+			logger.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: update host failed for circuit %s", circuitId), zap.Error(err))
 			return
 		}
 		return
@@ -172,7 +172,7 @@ func CircuitUpdateHooks(circuitId string, diff map[string]*ts.OrmDiff) {
 		if len(deleteHosts) > 0 {
 			_, err := client.HostDelete([]string{*circuit.MonitorId, *circuit.MonitorHostId})
 			if err != nil {
-				core.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: delete host failed for circuit %s", circuitId), zap.Error(err))
+				logger.Logger.Error(fmt.Sprintf("[circuitUpdateHooks]: delete host failed for circuit %s", circuitId), zap.Error(err))
 				return
 			}
 			CircuitCreateHooks(circuit.Id)
@@ -192,9 +192,9 @@ func CircuitDeleteHooks(circuit *models.Circuit) {
 	if len(deleteHosts) > 0 {
 		_, err := zbx.NewZbxClient().HostDelete([]string{*circuit.MonitorId, *circuit.MonitorHostId})
 		if err != nil {
-			core.Logger.Error(fmt.Sprintf("[circuitDeleteHooks]: delete host failed for circuit %s", circuit.Id), zap.Error(err))
+			logger.Logger.Error(fmt.Sprintf("[circuitDeleteHooks]: delete host failed for circuit %s", circuit.Id), zap.Error(err))
 			return
 		}
 	}
-	core.Logger.Info(fmt.Sprintf("[circuitDeleteHooks]: delete host success for circuit %s", circuit.Id))
+	logger.Logger.Info(fmt.Sprintf("[circuitDeleteHooks]: delete host success for circuit %s", circuit.Id))
 }

@@ -4,8 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/features/intend/biz"
-	its "github.com/wangxin688/narvis/server/features/intend/schemas"
+	"github.com/wangxin688/narvis/intend/model/platform"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/schemas"
 )
@@ -17,7 +16,6 @@ import (
 // @Description Get list of Platforms
 // @Accept json
 // @Produce json
-// @Param object query schemas.PlatformQuery false "query platforms"
 // @Success 200 {object} schemas.ListResponse{results=[]string}
 // @Router /intend/platforms [get]
 func platformList(c *gin.Context) {
@@ -27,14 +25,9 @@ func platformList(c *gin.Context) {
 			errors.ResponseErrorHandler(c, err)
 		}
 	}()
-	var req its.PlatformQuery
-	if err := c.ShouldBindQuery(&req); err != nil {
-		return
-	}
-	count, list := biz.GetPlatforms(&req)
-
+	list := platform.SupportPlatform()
 	c.JSON(http.StatusOK, schemas.ListResponse{
-		Total:   count,
+		Total:   int64(len(list)),
 		Results: list,
 	})
 }

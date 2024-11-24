@@ -1,12 +1,12 @@
 package infra_biz
 
 import (
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
-	"github.com/wangxin688/narvis/server/tools"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"gorm.io/gorm"
 )
@@ -20,7 +20,7 @@ func NewScanDeviceService() *ScanDeviceService {
 func (s *ScanDeviceService) ListScanDevice(query *schemas.ScanDeviceQuery) (int64, []*schemas.ScanDevice, error) {
 	results := make([]*schemas.ScanDevice, 0)
 	stmt := gen.ScanDevice.Where(
-		gen.ScanDevice.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.ScanDevice.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	)
 	if query.ManagementIp != nil {
 		stmt = stmt.Where(gen.ScanDevice.ManagementIp.In(*query.ManagementIp...))
@@ -78,7 +78,7 @@ func (s *ScanDeviceService) ListScanDevice(query *schemas.ScanDeviceQuery) (int6
 func (s *ScanDeviceService) GetById(id string) (*schemas.ScanDevice, error) {
 	device, err := gen.ScanDevice.Where(
 		gen.ScanDevice.Id.Eq(id),
-		gen.ScanDevice.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.ScanDevice.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).First()
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (s *ScanDeviceService) GetById(id string) (*schemas.ScanDevice, error) {
 }
 
 func (s *ScanDeviceService) UpdateById(id string, update *schemas.ScanDeviceUpdate) (string, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	ok, err := LicenseUsageDepends(1, orgId)
 	if err != nil {
 		return "", err
@@ -143,14 +143,14 @@ func (s *ScanDeviceService) UpdateById(id string, update *schemas.ScanDeviceUpda
 	if err != nil {
 		return "", err
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.DeviceCreateHooks(newDeviceId)
 	})
 	return newDeviceId, nil
 }
 
 func (s *ScanDeviceService) BatchUpdate(device *schemas.ScanDeviceBatchUpdate) ([]string, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	ok, err := LicenseUsageDepends(uint32(len(device.Ids)), orgId)
 	if err != nil {
 		return nil, err
@@ -190,7 +190,7 @@ func (s *ScanDeviceService) GetByScanResult(ips []string, orgId string) (map[str
 func (s *ScanDeviceService) DeleteById(id string) error {
 	_, err := gen.ScanDevice.Where(
 		gen.ScanDevice.Id.Eq(id),
-		gen.ScanDevice.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.ScanDevice.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).Delete()
 	return err
 }
@@ -198,7 +198,7 @@ func (s *ScanDeviceService) DeleteById(id string) error {
 func (s *ScanDeviceService) DeleteByIds(ids []string) error {
 	_, err := gen.ScanDevice.Where(
 		gen.ScanDevice.Id.In(ids...),
-		gen.ScanDevice.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.ScanDevice.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).Delete()
 	return err
 }

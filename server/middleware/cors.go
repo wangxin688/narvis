@@ -1,22 +1,27 @@
+// Copyright 2024 wangxin.jeffry@gmail.com
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+
+//     http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package middleware
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/core"
-	"github.com/wangxin688/narvis/server/core/config"
+	"github.com/samber/lo"
+	"github.com/wangxin688/narvis/server/config"
 )
 
-type CorsMode string
-
-const (
-	CorsAllowAllMode  CorsMode = "allow-all"
-	CorsWhiteListMode CorsMode = "whitelist"
-	CorsStrictMode    CorsMode = "strict-whitelist"
-)
-
-func CORSMiddleware() gin.HandlerFunc {
+func corsNoStrict() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
 		c.Header("Access-Control-Allow-Origin", "*")
@@ -32,45 +37,25 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-func CORSByConfig() gin.HandlerFunc {
-	if core.Settings.Cors.Mode == string(CorsAllowAllMode) {
-		return CORSMiddleware()
+func CorsMiddleware() gin.HandlerFunc {
+	if len(config.Settings.Cors.AllowedOrigins) == 1 && config.Settings.Cors.AllowedOrigins[0] == "*" {
+		return corsNoStrict()
 	}
 	return func(c *gin.Context) {
-		whitelist := checkCors(c.GetHeader("origin"))
-
-		// 通过检查, 添加请求头
-		if whitelist != nil {
-			c.Header("Access-Control-Allow-Origin", whitelist.AllowOrigin)
-			c.Header("Access-Control-Allow-Headers", whitelist.AllowHeaders)
-			c.Header("Access-Control-Allow-Methods", whitelist.AllowMethods)
-			c.Header("Access-Control-Expose-Headers", whitelist.ExposeHeaders)
-			if whitelist.AllowCredentials {
-				c.Header("Access-Control-Allow-Credentials", "true")
-			}
-		}
-
-		// 严格白名单模式且未通过检查，直接拒绝处理请求
-		if whitelist == nil && core.Settings.Cors.Mode == string(CorsStrictMode) && !(c.Request.Method == "GET" && c.Request.URL.Path == "/health") {
-			c.AbortWithStatus(http.StatusForbidden)
+		origin := c.GetHeader("Origin")
+		if checkCors(origin) {
+			c.Header("Access-Control-Allow-Origin", origin)
+			c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token,Authorization,Token,X-Token,X-User-ID")
+			c.Header("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE,PUT,PATCH")
+			c.Header("Access-Control-Expose-Headers", "Content-Length,Access-Control-Allow-Origin,Access-Control-Allow-Headers,Content-Type,New-Token,New-Expires-At")
+			c.Header("Access-Control-Allow-Credentials", "true")
 		} else {
-			// 非严格白名单模式，无论是否通过检查均放行所有 OPTIONS 方法
-			if c.Request.Method == http.MethodOptions {
-				c.AbortWithStatus(http.StatusNoContent)
-			}
+			c.AbortWithStatus(http.StatusForbidden)
 		}
-
-		// 处理请求
 		c.Next()
 	}
 }
 
-func checkCors(currentOrigin string) *config.CORSWhitelist {
-	for _, whitelist := range core.Settings.Cors.Whitelist {
-		// 遍历配置中的跨域头，寻找匹配项
-		if currentOrigin == whitelist.AllowOrigin {
-			return &whitelist
-		}
-	}
-	return nil
+func checkCors(currentOrigin string) bool {
+	return lo.Contains(config.Settings.Cors.AllowedOrigins, currentOrigin)
 }

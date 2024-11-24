@@ -2,7 +2,7 @@ package alerts
 
 import (
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/intend/common"
+	"github.com/wangxin688/narvis/intend/model/i18n"
 )
 
 type AlertNameEnum string
@@ -45,9 +45,9 @@ const (
 
 type AlertName struct {
 	Name        AlertNameEnum
-	Title       common.I18n
-	Description common.I18n
-	Suggestion  common.I18n
+	Title       i18n.I18n
+	Description i18n.I18n
+	Suggestion  i18n.I18n
 	Severity    SeverityEnum
 }
 
@@ -57,8 +57,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 
 		HighCpuUtilization: {
 			Name:  HighCpuUtilization,
-			Title: common.I18n{En: "High CPU utilization", Zh: "CPU利用率过高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High CPU utilization", Zh: "CPU利用率过高"},
+			Suggestion: i18n.I18n{
 				En: "1. Check device load\n2. Check device process cpu utilization\n3. check network traffic load",
 				Zh: "检查设备负载\n2. 检查设备进程CPU利用率(cpu/memory)\n3. 检查网络流量"},
 			Severity: SeverityWarning,
@@ -66,8 +66,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 
 		HighMemoryUtilization: {
 			Name:  HighMemoryUtilization,
-			Title: common.I18n{En: "High memory utilization", Zh: "内存利用率过高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High memory utilization", Zh: "内存利用率过高"},
+			Suggestion: i18n.I18n{
 				En: "1.Check device load\n2.Check device process memory utilization\n3.check memory leak",
 				Zh: "检查设备负载\n2. 检查设备进程内存利用率(cpu/memory)\n3. 检查内存泄漏"},
 			Severity: SeverityWarning,
@@ -75,14 +75,14 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 
 		HighDiskUtilization: {
 			Name:       HighDiskUtilization,
-			Title:      common.I18n{En: "High disk utilization", Zh: "磁盘利用率过高"},
-			Suggestion: common.I18n{En: "1. Check device process disk utilization", Zh: "1. 检查设备磁盘利用率"},
+			Title:      i18n.I18n{En: "High disk utilization", Zh: "磁盘利用率过高"},
+			Suggestion: i18n.I18n{En: "1. Check device process disk utilization", Zh: "1. 检查设备磁盘利用率"},
 			Severity:   SeverityWarning,
 		},
 		HighSystemLoad: {
 			Name:  HighSystemLoad,
-			Title: common.I18n{En: "High system load", Zh: "系统负载过高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High system load", Zh: "系统负载过高"},
+			Suggestion: i18n.I18n{
 				En: "1.Check device load\n2.Check device process cpu utilization\n3.check network traffic load",
 				Zh: "检查设备负载\n2. 检查设备进程CPU利用率(cpu/memory)\n3. 检查网络流量负载"},
 			Severity: SeverityWarning,
@@ -90,8 +90,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 
 		HighChannelUtilization: {
 			Name:  HighChannelUtilization,
-			Title: common.I18n{En: "High channel utilization", Zh: "信道利用率过高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High channel utilization", Zh: "信道利用率过高"},
+			Suggestion: i18n.I18n{
 				En: `1.Check co-channel status for the access points in same area\n
                  2.Check airtime utilization for current ap\n
                  3.Check history channel utilization for the area and review wlan performance\n`,
@@ -103,30 +103,30 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		HighChannelNoise: {
 			Name:       HighChannelNoise,
-			Title:      common.I18n{En: "High channel noise", Zh: "信道噪声过高"},
-			Suggestion: common.I18n{En: "1. Check office physical and electronical environment", Zh: "1. 检查办公室物理和电器设备环境"},
+			Title:      i18n.I18n{En: "High channel noise", Zh: "信道噪声过高"},
+			Suggestion: i18n.I18n{En: "1. Check office physical and electronical environment", Zh: "1. 检查办公室物理和电器设备环境"},
 			Severity:   SeverityInfo,
 		},
 		HighChannelInterference: {
 			Name:  HighChannelInterference,
-			Title: common.I18n{En: "High channel interference", Zh: "信道干扰过高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High channel interference", Zh: "信道干扰过高"},
+			Suggestion: i18n.I18n{
 				En: "1. Check office physical and electronical environment\n2. Check the channel monitor for current ap to see if hotpots or radar were founded.",
 				Zh: "1. 检查办公室物理环境和电器设备\n2. 检查信道监控，查看AP周边是否存在热点或雷达干扰"},
 			Severity: SeverityInfo,
 		},
 		HighClientNumber: {
 			Name:  HighClientNumber,
-			Title: common.I18n{En: "High client number", Zh: "客户端数量过多"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High client number", Zh: "客户端数量过多"},
+			Suggestion: i18n.I18n{
 				En: "1. Check Ap transmit power value, make sure it not too high and too low\n2.Check AP density for wlan design\n",
 				Zh: "1. 检查AP发射功率是否设置合理\n2. 检查AP密度设计和WLAN点位设计是否合理\n"},
 			Severity: SeverityInfo,
 		},
 		HighBandwidthUtilization: {
 			Name:  HighBandwidthUtilization,
-			Title: common.I18n{En: "High bandwidth utilization", Zh: "带宽利用率过高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High bandwidth utilization", Zh: "带宽利用率过高"},
+			Suggestion: i18n.I18n{
 				En: `1.check netflow data to find out bandwidth utilization\n
                      2.check history utilization data of the interface to check capacity plan)`,
 				Zh: `1. 查看netflow/sflow流量数据，查看带宽利用率使用情况\n
@@ -136,14 +136,14 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		HighErrorRate: {
 			Name:       HighErrorRate,
-			Title:      common.I18n{En: "High error rate", Zh: "错包率过高"},
-			Suggestion: common.I18n{En: "1.Check interface CRC error to issue physical layer\n2.Check traffic load\n", Zh: "1. 检查接口CRC错包,排查物理层连接问题\n2. 检查流量负载"},
+			Title:      i18n.I18n{En: "High error rate", Zh: "错包率过高"},
+			Suggestion: i18n.I18n{En: "1.Check interface CRC error to issue physical layer\n2.Check traffic load\n", Zh: "1. 检查接口CRC错包,排查物理层连接问题\n2. 检查流量负载"},
 			Severity:   SeverityInfo,
 		},
 		HighICMPLatency: {
 			Name:  HighICMPLatency,
-			Title: common.I18n{En: "High ICMP latency", Zh: "ICMP延迟过高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High ICMP latency", Zh: "ICMP延迟过高"},
+			Suggestion: i18n.I18n{
 				En: `1.Check internet/intranet network packet loss rate\n
                 	 2.Check traffic status for inter-connective devices\n
                 	 3.Check device load(cpu/memory/process)`,
@@ -153,8 +153,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		HighICMPPacketLoss: {
 			Name:  HighICMPPacketLoss,
-			Title: common.I18n{En: "High ICMP packet loss", Zh: "ICMP丢包率过高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High ICMP packet loss", Zh: "ICMP丢包率过高"},
+			Suggestion: i18n.I18n{
 				En: `1.Check internet/intranet network packet loss rate\n
 						 2.Check traffic status for inter-connective devices\n
 						 3.Check device load(cpu/memory/process)`,
@@ -164,8 +164,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		HighTemperature: {
 			Name:  HighTemperature,
-			Title: common.I18n{En: "High temperature", Zh: "硬件温度过高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High temperature", Zh: "硬件温度过高"},
+			Suggestion: i18n.I18n{
 				En: "1.Check Cooling device/sensor status in ServerRoom\n2.Check device hardware status\n",
 				Zh: "1. 检查机房冷却设备/传感器状态\n2. 检查设备硬件状态",
 			},
@@ -173,8 +173,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		AbnormalFanStatus: {
 			Name:  AbnormalFanStatus,
-			Title: common.I18n{En: "Abnormal fan status", Zh: "风扇状态异常"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "Abnormal fan status", Zh: "风扇状态异常"},
+			Suggestion: i18n.I18n{
 				En: "1.Check Cooling device/sensor status in ServerRoom\n2.Check device hardware status\n",
 				Zh: "1. 检查机房冷却设备/传感器状态\n2. 检查设备硬件状态",
 			},
@@ -182,8 +182,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		AbnormalPowerStatus: {
 			Name:  AbnormalPowerStatus,
-			Title: common.I18n{En: "Abnormal power status", Zh: "电源状态异常"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "Abnormal power status", Zh: "电源状态异常"},
+			Suggestion: i18n.I18n{
 				En: "1.Check UPS/Power status in ServerRoom\n2.Check device hardware status, powerlets connectivity\n",
 				Zh: "1. 检查机房电力以及UPS供电状态\n2. 检查设备硬件状态,电源连接状态",
 			},
@@ -191,8 +191,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		InterfaceDown: {
 			Name:  InterfaceDown,
-			Title: common.I18n{En: "Interface down", Zh: "接口状态异常"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "Interface down", Zh: "接口状态异常"},
+			Suggestion: i18n.I18n{
 				En: `1.check interface cable physical connection status\n
                      2.check device interface hardware(interface/optical-transceiver)`,
 				Zh: "1. 检查设备物理连线状态\n2. 检查节点接口硬件(端口、光模块)状态",
@@ -201,8 +201,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		InterfaceHalfDuplex: {
 			Name:  InterfaceHalfDuplex,
-			Title: common.I18n{En: "Interface mode in half duplex", Zh: "接口双工状态异常"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "Interface mode in half duplex", Zh: "接口双工状态异常"},
+			Suggestion: i18n.I18n{
 				En: `1.check interface cable physical connection status\n
                      2.check device interface hardware(interface/optical-transceiver)`,
 				Zh: "1. 检查设备物理连线状态\n2. 检查节点接口硬件(端口、光模块)状态",
@@ -211,8 +211,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		SnmpAgentTimeout: {
 			Name:  SnmpAgentTimeout,
-			Title: common.I18n{En: "SNMP agent timeout", Zh: "SNMP采集超时"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "SNMP agent timeout", Zh: "SNMP采集超时"},
+			Suggestion: i18n.I18n{
 				En: `1.Check node connectivity status\n
                  2.Check SNMP configuration\n
                  3.Check node system load(cpu/memory/process)`,
@@ -222,8 +222,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		NodePingTimeout: {
 			Name:  NodePingTimeout,
-			Title: common.I18n{En: "Node ping timeout", Zh: "节点Ping超时"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "Node ping timeout", Zh: "节点Ping超时"},
+			Suggestion: i18n.I18n{
 				En: `
                 1.Check internet/intranet network connectivity\n
                 2.Check ip routing reachability\n
@@ -234,8 +234,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		ApDown: {
 			Name:  ApDown,
-			Title: common.I18n{En: "AP down", Zh: "AP离线"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "AP down", Zh: "AP离线"},
+			Suggestion: i18n.I18n{
 				En: "1.Check AP connectivity\n2.Check AP hardware status\n",
 				Zh: "1. 检查AP连通性\n2. 检查AP硬件状态",
 			},
@@ -243,8 +243,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		Unknown: {
 			Name:  Unknown,
-			Title: common.I18n{En: "Unknown", Zh: "未知"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "Unknown", Zh: "未知"},
+			Suggestion: i18n.I18n{
 				En: "1.Unknown",
 				Zh: "1. 未知",
 			},
@@ -252,8 +252,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		HighSwapSpaceUtilization: {
 			Name:  HighSwapSpaceUtilization,
-			Title: common.I18n{En: "High swap space utilization", Zh: "swap空间占用率高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High swap space utilization", Zh: "swap空间占用率高"},
+			Suggestion: i18n.I18n{
 				En: "1.Check swap space utilization",
 				Zh: "1. 检查swap空间占用率",
 			},
@@ -261,8 +261,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		HighSystemLoadAverage: {
 			Name:  HighSystemLoadAverage,
-			Title: common.I18n{En: "High system load average", Zh: "系统负载平均值高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High system load average", Zh: "系统负载平均值高"},
+			Suggestion: i18n.I18n{
 				En: "1.Check system load average",
 				Zh: "1. 检查系统负载平均值",
 			},
@@ -270,8 +270,8 @@ func getAlertNameMeta() map[AlertNameEnum]AlertName {
 		},
 		HighINodeUtilization: {
 			Name:  HighINodeUtilization,
-			Title: common.I18n{En: "High inode utilization", Zh: "Inode利用率高"},
-			Suggestion: common.I18n{
+			Title: i18n.I18n{En: "High inode utilization", Zh: "Inode利用率高"},
+			Suggestion: i18n.I18n{
 				En: "1.Check inode utilization",
 				Zh: "1. 检查inode占用率",
 			},

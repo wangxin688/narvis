@@ -26,8 +26,7 @@ func newAuditLog(db *gorm.DB, opts ...gen.DOOption) auditLog {
 
 	tableName := _auditLog.auditLogDo.TableName()
 	_auditLog.ALL = field.NewAsterisk(tableName)
-	_auditLog.Id = field.NewString(tableName, "id")
-	_auditLog.CreatedAt = field.NewTime(tableName, "createdAt")
+	_auditLog.Time = field.NewTime(tableName, "time")
 	_auditLog.ObjectId = field.NewString(tableName, "objectId")
 	_auditLog.ObjectType = field.NewString(tableName, "objectType")
 	_auditLog.RequestId = field.NewString(tableName, "requestId")
@@ -46,8 +45,7 @@ type auditLog struct {
 	auditLogDo
 
 	ALL            field.Asterisk
-	Id             field.String
-	CreatedAt      field.Time
+	Time           field.Time
 	ObjectId       field.String
 	ObjectType     field.String
 	RequestId      field.String
@@ -72,8 +70,7 @@ func (a auditLog) As(alias string) *auditLog {
 
 func (a *auditLog) updateTableName(table string) *auditLog {
 	a.ALL = field.NewAsterisk(table)
-	a.Id = field.NewString(table, "id")
-	a.CreatedAt = field.NewTime(table, "createdAt")
+	a.Time = field.NewTime(table, "time")
 	a.ObjectId = field.NewString(table, "objectId")
 	a.ObjectType = field.NewString(table, "objectType")
 	a.RequestId = field.NewString(table, "requestId")
@@ -98,9 +95,8 @@ func (a *auditLog) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *auditLog) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 10)
-	a.fieldMap["id"] = a.Id
-	a.fieldMap["createdAt"] = a.CreatedAt
+	a.fieldMap = make(map[string]field.Expr, 9)
+	a.fieldMap["time"] = a.Time
 	a.fieldMap["objectId"] = a.ObjectId
 	a.fieldMap["objectType"] = a.ObjectType
 	a.fieldMap["requestId"] = a.RequestId

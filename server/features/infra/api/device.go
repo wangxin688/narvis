@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -38,7 +38,7 @@ func createDevice(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.DeviceCreateHooks(newDevice)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newDevice})
@@ -75,7 +75,7 @@ func updateDevice(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.DeviceUpdateHooks(deviceId, diff[deviceId])
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: deviceId})
@@ -134,7 +134,7 @@ func deleteDevice(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.DeviceDeleteHooks(device)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: deviceId})
@@ -560,7 +560,7 @@ func updateSnmpV2Credential(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.SnmpCredUpdateHooks(credId, diff[credId])
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: deviceId})
@@ -591,7 +591,7 @@ func deleteSnmpV2Credential(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.SnmpCredDeleteHooks(cred)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})

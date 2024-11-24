@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
+	mem_cache "github.com/wangxin688/narvis/intend/cache"
 )
 
 type RuiJieDriver struct {

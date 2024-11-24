@@ -5,13 +5,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/wangxin688/narvis/intend/intendtask"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/pkg/rmq"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
@@ -19,13 +19,13 @@ import (
 
 func GenerateSNMPTask(siteId, taskName, callback string) ([]string, error) {
 	taskIds := make([]string, 0)
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	devices, err := getDevicesByTaskName(siteId, taskName)
 	if err != nil {
 		return taskIds, err
 	}
 	if len(devices) == 0 {
-		core.Logger.Info("[taskGeneration]: no devices found", zap.String("taskName", taskName), zap.String("siteId", siteId))
+		logger.Logger.Info("[taskGeneration]: no devices found", zap.String("taskName", taskName), zap.String("siteId", siteId))
 		return taskIds, errors.NewError(errors.CodeNoDevicesFound, errors.MsgNoDevicesFound)
 	}
 	deviceIds := infra_utils.DevicesToIds(devices)
@@ -88,7 +88,7 @@ func getDevicesByTaskName(siteId, taskName string) ([]*models.Device, error) {
 	case intendtask.ScanMacAddressTable:
 		return infra_biz.NewDeviceService().GetActiveDevices(siteId)
 	case intendtask.ScanIPAM:
-		return infra_biz.NewDeviceService().GetCoreSwitch(siteId)
+		return infra_biz.NewDeviceService().GetSwitches(siteId)
 	case intendtask.ConfigurationBackup:
 		return infra_biz.NewDeviceService().GetActiveDevices(siteId)
 	default:
@@ -126,12 +126,12 @@ func CreateScanTask(sd *schemas.ScanDeviceCreate, orgId string) ([]string, error
 		taskIds[index] = task.TaskId
 		taskByte, err := json.Marshal(task)
 		if err != nil {
-			core.Logger.Error("[CreateScanTask]: marshal task failed", zap.Error(err))
+			logger.Logger.Error("[CreateScanTask]: marshal task failed", zap.Error(err))
 			continue
 		}
 		err = rmq.PublishProxyMessage(taskByte, orgId)
 		if err != nil {
-			core.Logger.Error("[CreateScanTask]: publish task failed", zap.Error(err))
+			logger.Logger.Error("[CreateScanTask]: publish task failed", zap.Error(err))
 			continue
 		}
 		newTasks[index] = &models.TaskResult{
@@ -141,19 +141,19 @@ func CreateScanTask(sd *schemas.ScanDeviceCreate, orgId string) ([]string, error
 			Name:           intendtask.ScanDeviceBasicInfo,
 			Status:         "InProgress",
 			OrganizationId: orgId,
-			TaskRaw: 	   string(taskByte),
+			TaskRaw:        string(taskByte),
 		}
 	}
 	err := gen.TaskResult.CreateInBatches(newTasks, taskLen)
 	if err != nil {
-		core.Logger.Error("[CreateScanTask]: create task result to db failed", zap.Error(err))
+		logger.Logger.Error("[CreateScanTask]: create task result to db failed", zap.Error(err))
 	}
 	return taskIds, nil
 }
 
 func ConfigBackUpTask(siteId, taskName, callback string) ([]string, error) {
 	taskIds := make([]string, 0)
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	devices, err := getDevicesByTaskName(siteId, taskName)
 	if err != nil {
 		return taskIds, err
@@ -194,7 +194,7 @@ func ConfigBackUpTask(siteId, taskName, callback string) ([]string, error) {
 			Name:           taskName,
 			Status:         "InProgress",
 			OrganizationId: orgId,
-			TaskRaw:		string(taskBytes),
+			TaskRaw:        string(taskBytes),
 		})
 		taskIds = append(taskIds, taskId)
 	}

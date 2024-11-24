@@ -4,7 +4,8 @@ import (
 	"sync"
 
 	"github.com/wagslane/go-rabbitmq"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
+	"github.com/wangxin688/narvis/server/config"
 	"go.uber.org/zap"
 )
 
@@ -16,9 +17,9 @@ var publisher *rabbitmq.Publisher
 func GetMqConn() *rabbitmq.Conn {
 	once.Do(func() {
 		var err error
-		conn, err = rabbitmq.NewConn(core.Settings.RabbitMQ.ProxyUrl)
+		conn, err = rabbitmq.NewConn(config.Settings.RabbitMQ.ProxyUrl)
 		if err != nil {
-			core.Logger.Fatal("[rabbit-mq]: failed to connect rabbitmq", zap.Error(err))
+			logger.Logger.Fatal("[rabbit-mq]: failed to connect rabbitmq", zap.Error(err))
 		}
 	})
 

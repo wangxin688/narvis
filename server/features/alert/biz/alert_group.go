@@ -9,15 +9,15 @@ import (
 	"time"
 
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/alert/dispatcher"
 	"github.com/wangxin688/narvis/server/features/alert/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/global/constants"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/pkg/am"
-	"github.com/wangxin688/narvis/server/tools"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	ts "github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	"go.uber.org/zap"
@@ -38,7 +38,7 @@ func (ag *AlertGroupService) CreateAlertGroup(group *schemas.AlertGroupCreate) (
 	if !ok {
 		return nil, ts.NewError(ts.CodeAlertGroupMissingOrganizationId, ts.MsgAlertGroupMissingOrganizationId)
 	}
-	global.OrganizationId.Set(orgId)
+	contextvar.OrganizationId.Set(orgId)
 	dbGroup, err := ag.GetAlertGroupByGroupKey(groupKey)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (ag *AlertGroupService) CreateAlertGroup(group *schemas.AlertGroupCreate) (
 		if len(groupEventIds) > 0 || (len(groupEventIds) == 0 && group.Status == "firing") {
 			siteId := group.GroupLabels["siteId"]
 			sendFlag = true
-			core.Logger.Info(fmt.Sprintf("[alertGroup]: receive new alert group with hash: %s with %d alerts", groupKey, len(groupEventIds)))
+			logger.Logger.Info(fmt.Sprintf("[alertGroup]: receive new alert group with hash: %s with %d alerts", groupKey, len(groupEventIds)))
 			dbGroup = &models.AlertGroup{
 				GroupKey:       groupKey,
 				Status:         schemas.GetStatus(group.Status),
@@ -66,14 +66,14 @@ func (ag *AlertGroupService) CreateAlertGroup(group *schemas.AlertGroupCreate) (
 			}
 			err = gen.AlertGroup.Create(dbGroup)
 			if err != nil {
-				core.Logger.Error(fmt.Sprintf("[alertGroup]: create alert group error: %s", err.Error()))
+				logger.Logger.Error(fmt.Sprintf("[alertGroup]: create alert group error: %s", err.Error()))
 				return nil, err
 			}
 			ag.UpdateRelatedAlertByEvents(events, dbGroup.Id)
 		} else {
-			core.Logger.Warn("[alertGroup]: ignore alert group", zap.Any("alertGroup", group))
-			core.Logger.Warn(fmt.Sprintf("[alertGroup]: ignore alert group with hash: %s with %d alerts", groupKey, len(groupEventIds)))
-			core.Logger.Warn("[alertGroup]: ignore alert group because of flapping resolved alerts")
+			logger.Logger.Warn("[alertGroup]: ignore alert group", zap.Any("alertGroup", group))
+			logger.Logger.Warn(fmt.Sprintf("[alertGroup]: ignore alert group with hash: %s with %d alerts", groupKey, len(groupEventIds)))
+			logger.Logger.Warn("[alertGroup]: ignore alert group because of flapping resolved alerts")
 		}
 	} else {
 		if dbGroup.HashKey != contentHash {
@@ -86,29 +86,29 @@ func (ag *AlertGroupService) CreateAlertGroup(group *schemas.AlertGroupCreate) (
 		if group.Status == "resolved" {
 			activeEventIds, err := ag.GetActiveEventIds(dbGroup.Id)
 			if err != nil {
-				core.Logger.Error(fmt.Sprintf("[alertGroup]: get active event ids error: %s", err.Error()))
+				logger.Logger.Error(fmt.Sprintf("[alertGroup]: get active event ids error: %s", err.Error()))
 				return nil, err
 			}
 			if len(activeEventIds) > 0 {
 				dbGroup.Status = constants.AlertFiringStatus
-				core.Logger.Warn("[alertGroup]: un-compatible alert group and alert status")
-				core.Logger.Warn("[alertGroup]: received resolved alert group but conflict with active alerts", zap.Any("alertGroup", group))
+				logger.Logger.Warn("[alertGroup]: un-compatible alert group and alert status")
+				logger.Logger.Warn("[alertGroup]: received resolved alert group but conflict with active alerts", zap.Any("alertGroup", group))
 			} else {
 				dbGroup.Status = constants.AlertResolvedStatus
 				recoveryTime := time.Now().UTC()
 				dbGroup.ResolvedAt = &recoveryTime
-				core.Logger.Info("[alertGroup]: receive resolved alert group and all related alerts are resolved", zap.Any("alertGroup", group))
+				logger.Logger.Info("[alertGroup]: receive resolved alert group and all related alerts are resolved", zap.Any("alertGroup", group))
 			}
 
 		}
 		err := gen.AlertGroup.UnderlyingDB().Save(dbGroup).Error
 		if err != nil {
-			core.Logger.Error(fmt.Sprintf("[alertGroup]: update alert group error: %s", err.Error()))
+			logger.Logger.Error(fmt.Sprintf("[alertGroup]: update alert group error: %s", err.Error()))
 			return nil, err
 		}
 	}
 	if !dbGroup.Suppressed && !dbGroup.Acknowledged {
-		tools.BackgroundTask(func() {
+		bgtask.BackgroundTask(func() {
 			disp := dispatcher.NewDispatcher(dbGroup.Id, sendFlag)
 			disp.Dispatch()
 		})
@@ -147,7 +147,7 @@ func (ag *AlertGroupService) GetGroupedAlerts(group *schemas.AlertGroupCreate) (
 				Inhibited: false,
 				Severity:  al.Labels["severity"],
 			}
-			if al.Status.InhibitedBy != nil{
+			if al.Status.InhibitedBy != nil {
 				event.Inhibited = true
 			}
 			if al.Status.State == "active" {

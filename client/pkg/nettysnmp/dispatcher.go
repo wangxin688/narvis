@@ -13,8 +13,8 @@ import (
 	s "github.com/wangxin688/narvis/client/pkg/nettysnmp/devicemodel/sysobjectid"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/driver"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	"github.com/wangxin688/narvis/client/utils/logger"
-	"github.com/wangxin688/narvis/intend/manufacturer"
+	"github.com/wangxin688/narvis/intend/logger"
+	"github.com/wangxin688/narvis/intend/model/manufacturer"
 	"github.com/wangxin688/narvis/intend/platform"
 	"go.uber.org/zap"
 )

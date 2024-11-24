@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/wangxin688/narvis/client/config"
-	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
+	mem_cache "github.com/wangxin688/narvis/intend/cache"
 	"github.com/wangxin688/narvis/intend/intendtask"
 )
 

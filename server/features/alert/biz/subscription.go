@@ -3,8 +3,8 @@ package alert_biz
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/alert/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"gorm.io/datatypes"
 )
 
@@ -24,8 +24,8 @@ func (s *SubscriptionService) CreateSubscription(sub *schemas.SubscriptionCreate
 		RepeatInterval: sub.RepeatInterval,
 		ChannelType:    sub.ChannelType,
 		ChannelConfig:  chanConfigToDbConfig(&sub.ChannelConfig),
-		OrganizationId: global.OrganizationId.Get(),
-		CreatedById:    global.UserId.Get(),
+		OrganizationId: contextvar.OrganizationId.Get(),
+		CreatedById:    contextvar.UserId.Get(),
 	}
 
 	err := gen.Subscription.Create(newSub)
@@ -37,7 +37,7 @@ func (s *SubscriptionService) CreateSubscription(sub *schemas.SubscriptionCreate
 
 func (s *SubscriptionService) UpdateSubscription(subID string, sub *schemas.SubscriptionUpdate) error {
 
-	dbSub, err := gen.Subscription.Where(gen.Subscription.Id.Eq(subID), gen.Subscription.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	dbSub, err := gen.Subscription.Where(gen.Subscription.Id.Eq(subID), gen.Subscription.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (s *SubscriptionService) UpdateSubscription(subID string, sub *schemas.Subs
 func (s *SubscriptionService) DeleteSubscription(subID string) error {
 	_, err := gen.Subscription.Where(
 		gen.Subscription.Id.Eq(subID),
-		gen.Subscription.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+		gen.Subscription.OrganizationId.Eq(contextvar.OrganizationId.Get())).Delete()
 	return err
 }
 
@@ -80,7 +80,7 @@ func (s *SubscriptionService) GetById(subID string) (*schemas.Subscription, erro
 	var result schemas.Subscription
 	err := gen.Subscription.Where(
 		gen.Subscription.Id.Eq(subID),
-		gen.Subscription.OrganizationId.Eq(global.OrganizationId.Get())).Preload(
+		gen.Subscription.OrganizationId.Eq(contextvar.OrganizationId.Get())).Preload(
 		gen.Subscription.CreatedBy,
 	).Preload(gen.Subscription.UpdatedBy).Scan(&result)
 	if err != nil {
@@ -91,7 +91,7 @@ func (s *SubscriptionService) GetById(subID string) (*schemas.Subscription, erro
 
 func (s *SubscriptionService) ListSubscriptions(query *schemas.SubscriptionQuery) (int64, []*schemas.Subscription, error) {
 	var result []*schemas.Subscription
-	stmt := gen.Subscription.Where(gen.Subscription.OrganizationId.Eq(global.OrganizationId.Get()))
+	stmt := gen.Subscription.Where(gen.Subscription.OrganizationId.Eq(contextvar.OrganizationId.Get()))
 	if query.Id != nil {
 		stmt = stmt.Where(gen.Subscription.Id.In(*query.Id...))
 	}

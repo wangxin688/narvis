@@ -6,11 +6,9 @@ replace github.com/wangxin688/narvis/intend => ../intend
 
 require (
 	github.com/go-ping/ping v1.1.0
-	github.com/google/uuid v1.4.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/gosnmp/gosnmp v1.38.0
 	github.com/imroc/req/v3 v3.46.0
-	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/samber/lo v1.47.0
 	github.com/scrapli/scrapligo v1.3.3-0.20241017171040-f6dbfb57d4f9
 	github.com/spf13/viper v1.19.0
@@ -27,6 +25,7 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/pprof v0.0.0-20240910150728-a0b0bb1d4134 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -34,6 +33,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/onsi/ginkgo/v2 v2.20.2 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.47.0 // indirect

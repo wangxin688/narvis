@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
-	"github.com/wangxin688/narvis/client/utils/logger"
+	mem_cache "github.com/wangxin688/narvis/intend/cache"
+	"github.com/wangxin688/narvis/intend/logger"
 	"go.uber.org/zap"
 )
 
@@ -255,8 +255,8 @@ func (ad *ArubaDriver) WlanUsers() (wlanUsers *factory.WlanUserResponse) {
 			StationVlan:       &vlan,
 			StationOnlineTime: indexUserUptime[macIndex],
 			StationChannel:    channel,
-			StationRxBytes:    indexRxBytes[macIndex],
-			StationTxBytes:    indexTxBytes[macIndex],
+			StationRxBits:     indexRxBytes[macIndex] * 8,
+			StationTxBits:     indexTxBytes[macIndex] * 8,
 			StationRadioType:  factory.ChannelToRadioType(channel),
 		}
 		results = append(results, &user)

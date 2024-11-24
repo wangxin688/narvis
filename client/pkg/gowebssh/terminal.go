@@ -4,7 +4,7 @@ import (
 	"bytes"
 
 	"github.com/gorilla/websocket"
-	"github.com/wangxin688/narvis/client/utils/logger"
+	"github.com/wangxin688/narvis/intend/logger"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -8,19 +9,19 @@ import (
 	"github.com/wagslane/go-rabbitmq"
 	"github.com/wangxin688/narvis/client/config"
 	"github.com/wangxin688/narvis/client/tasks"
-	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
-	"github.com/wangxin688/narvis/client/utils/helpers"
-	"github.com/wangxin688/narvis/client/utils/logger"
+	mem_cache "github.com/wangxin688/narvis/intend/cache"
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
+	"github.com/wangxin688/narvis/intend/logger"
 	"go.uber.org/zap"
 )
 
 func main() {
-	logger.SetUpLogger()
-	mem_cache.InitCache()
 	if err := config.SetupConfig(); err != nil {
-		logger.Logger.Error("[setupConfig]: failed to setup config ", zap.Error(err))
+		log.Fatal("[setupConfig]: failed to setup config ", zap.Error(err))
 		os.Exit(1)
 	}
+	config.SetUpLogger()
+	mem_cache.InitCache()
 	conn, err := rabbitmq.NewConn(config.Settings.AMQP_URL, rabbitmq.WithConnectionOptionsLogging)
 	if err != nil {
 		logger.Logger.Error("[proxyConsumer]: failed to create rabbitmq connection ", zap.Error(err))
@@ -46,7 +47,7 @@ func main() {
 	// block main thread - wait for shutdown signal
 	if err := consumer.Run(func(delivery rabbitmq.Delivery) rabbitmq.Action {
 		logger.Logger.Info("[proxyConsumer]: Received message:", zap.String("message", string(delivery.Body)))
-		helpers.BackgroundTask(func() {
+		bgtask.BackgroundTask(func() {
 			tasks.TaskDispatcher(delivery.Body)
 		})
 		return rabbitmq.Ack

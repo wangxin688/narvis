@@ -4,14 +4,13 @@ import (
 	"slices"
 
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/errors"
-	ts "github.com/wangxin688/narvis/server/tools/schemas"
 	"go.uber.org/zap"
 )
 
@@ -32,7 +31,7 @@ func (r *RackService) CreateRack(rack *schemas.RackCreate) (string, error) {
 		UHeight:        *rack.UHeight,
 		SiteId:         rack.SiteId,
 		DescUnit:       true, // default as true, for backward compatibility
-		OrganizationId: global.OrganizationId.Get(),
+		OrganizationId: contextvar.OrganizationId.Get(),
 	}
 	err := gen.Rack.Create(&newRack)
 	if err != nil {
@@ -42,32 +41,32 @@ func (r *RackService) CreateRack(rack *schemas.RackCreate) (string, error) {
 }
 
 func (r *RackService) UpdateRack(rackId string, rack *schemas.RackUpdate) (err error) {
-	dbRack, err := gen.Rack.Where(gen.Rack.Id.Eq(rackId), gen.Rack.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	dbRack, err := gen.Rack.Where(gen.Rack.Id.Eq(rackId), gen.Rack.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return err
 	}
-	updateFields := make(map[string]*ts.OrmDiff)
+	updateFields := make(map[string]*contextvar.Diff)
 	if rack.Name != nil && *rack.Name != dbRack.Name {
-		updateFields["name"] = &ts.OrmDiff{Before: dbRack.Name, After: *rack.Name}
+		updateFields["name"] = &contextvar.Diff{Before: dbRack.Name, After: *rack.Name}
 		dbRack.Name = *rack.Name
 	}
 	if rack.SerialNumber != nil && *rack.SerialNumber != *dbRack.SerialNumber {
-		updateFields["serialNumber"] = &ts.OrmDiff{Before: *dbRack.SerialNumber, After: *rack.SerialNumber}
+		updateFields["serialNumber"] = &contextvar.Diff{Before: *dbRack.SerialNumber, After: *rack.SerialNumber}
 		dbRack.SerialNumber = rack.SerialNumber
 	}
 	if rack.UHeight != nil && *rack.UHeight != dbRack.UHeight {
 		if err := r.validateUpdateRack(rackId, *rack.UHeight); err != nil {
 			return err
 		}
-		updateFields["uHeight"] = &ts.OrmDiff{Before: dbRack.UHeight, After: *rack.UHeight}
+		updateFields["uHeight"] = &contextvar.Diff{Before: dbRack.UHeight, After: *rack.UHeight}
 		dbRack.UHeight = *rack.UHeight
 	}
 	if len(updateFields) == 0 {
 		return nil
 	}
-	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue := make(map[string]map[string]*contextvar.Diff)
 	diffValue[rackId] = updateFields
-	global.OrmDiff.Set(diffValue)
+	contextvar.OrmDiff.Set(diffValue)
 	err = gen.Rack.UnderlyingDB().Save(dbRack).Error
 	if err != nil {
 		return err
@@ -78,7 +77,7 @@ func (r *RackService) UpdateRack(rackId string, rack *schemas.RackUpdate) (err e
 func (r *RackService) validateUpdateRack(rackId string, uHeight uint8) error {
 	rackDevices, err := gen.Device.Select(gen.Device.RackPosition).Where(
 		gen.Device.RackId.Eq(rackId),
-		gen.Device.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).Find()
 	if err != nil {
 		return err
@@ -97,14 +96,14 @@ func (r *RackService) validateUpdateRack(rackId string, uHeight uint8) error {
 }
 
 func (r *RackService) DeleteRack(rackId string) error {
-	_, err := gen.Rack.Where(gen.Rack.Id.Eq(rackId), gen.Rack.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+	_, err := gen.Rack.Where(gen.Rack.Id.Eq(rackId), gen.Rack.OrganizationId.Eq(contextvar.OrganizationId.Get())).Delete()
 	return err
 }
 
 func (r *RackService) GetRackById(rackId string) (*schemas.Rack, error) {
 	rack, err := gen.Rack.Select().Where(
 		gen.Rack.Id.Eq(rackId),
-		gen.Rack.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.Rack.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).First()
 	if err != nil {
 		return nil, err
@@ -120,7 +119,7 @@ func (r *RackService) GetRackById(rackId string) (*schemas.Rack, error) {
 
 func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *[]*schemas.Rack, error) {
 	res := make([]*schemas.Rack, 0)
-	stmt := gen.Rack.Where(gen.Rack.OrganizationId.Eq(global.OrganizationId.Get()))
+	stmt := gen.Rack.Where(gen.Rack.OrganizationId.Eq(contextvar.OrganizationId.Get()))
 	if params.SiteId != nil {
 		stmt = stmt.Where(gen.Rack.SiteId.Eq(*params.SiteId))
 	}
@@ -161,11 +160,11 @@ func (r *RackService) ListRacks(params *schemas.RackQuery) (int64, *[]*schemas.R
 }
 
 func (r *RackService) ValidateCreateRackReservation(rackId string, uHeight uint8, positions []uint8) bool {
-	devices, err := gen.Device.Select(gen.Device.RackPosition).Where(gen.Device.RackId.Eq(rackId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+	devices, err := gen.Device.Select(gen.Device.RackPosition).Where(gen.Device.RackId.Eq(rackId), gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get())).Find()
 	if err != nil {
 		return false
 	}
-	servers, err := gen.Server.Select(gen.Server.RackPosition).Where(gen.Server.RackId.Eq(rackId), gen.Server.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+	servers, err := gen.Server.Select(gen.Server.RackPosition).Where(gen.Server.RackId.Eq(rackId), gen.Server.OrganizationId.Eq(contextvar.OrganizationId.Get())).Find()
 	if err != nil {
 		return false
 	}
@@ -201,7 +200,7 @@ func (r *RackService) ValidateDeviceUpdateRackReservation(rackId string, uHeight
 // get rack used positions and result sorted asc slice
 func (r *RackService) GetRackUsedPositions(rackId string) ([]uint8, error) {
 	result := make([]uint8, 0)
-	devices, err := gen.Device.Select(gen.Device.Id, gen.Device.RackPosition).Where(gen.Device.RackId.Eq(rackId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+	devices, err := gen.Device.Select(gen.Device.Id, gen.Device.RackPosition).Where(gen.Device.RackId.Eq(rackId), gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get())).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -216,7 +215,7 @@ func (r *RackService) GetRackUsedPositions(rackId string) ([]uint8, error) {
 }
 
 func (r *RackService) GetRackDevices(rackIds []string) (map[string]*models.Device, error) {
-	devices, err := gen.Device.Select(gen.Device.Id, gen.Device.RackPosition).Where(gen.Device.RackId.In(rackIds...), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).Find()
+	devices, err := gen.Device.Select(gen.Device.Id, gen.Device.RackPosition).Where(gen.Device.RackId.In(rackIds...), gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get())).Find()
 	if err != nil {
 		return nil, err
 	}
@@ -258,7 +257,7 @@ func (r *RackService) GetRackElevation(rackId string) (*schemas.RackElevation, e
 }
 
 func (r *RackService) getRackElevation(rackId string) ([]*schemas.RackElevationItem, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	devices, err := gen.Device.Select(
 		gen.Device.Id,
 		gen.Device.Name,
@@ -278,7 +277,7 @@ func (r *RackService) getRackElevation(rackId string) ([]*schemas.RackElevationI
 
 	opStatus, err := GetDeviceOpStatus(deviceIds, orgId)
 	if err != nil {
-		core.Logger.Error("[infraDeviceService]: failed to get device op status", zap.Error(err))
+		logger.Logger.Error("[infraDeviceService]: failed to get device op status", zap.Error(err))
 		return nil, err
 	}
 	result := make([]*schemas.RackElevationItem, 0)

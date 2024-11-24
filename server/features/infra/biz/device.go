@@ -3,16 +3,15 @@ package infra_biz
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/intend/devicerole"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
+	"github.com/wangxin688/narvis/intend/model/devicerole"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
 	infra_utils "github.com/wangxin688/narvis/server/features/infra/utils"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
-	ts "github.com/wangxin688/narvis/server/tools/schemas"
 	"go.uber.org/zap"
 )
 
@@ -23,7 +22,7 @@ func NewDeviceService() *DeviceService {
 }
 
 func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	ok, err := LicenseUsageDepends(1, orgId)
 	if err != nil {
 		return "", err
@@ -71,50 +70,50 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 	return newDevice.Id, nil
 }
 
-func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *schemas.DeviceUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
-	dbDevice, err := gen.Device.Where(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).First()
+func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *schemas.DeviceUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
+	dbDevice, err := gen.Device.Where(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, err
 	}
-	updateFields := make(map[string]*ts.OrmDiff)
+	updateFields := make(map[string]*contextvar.Diff)
 	if device.Name != nil && *device.Name != dbDevice.Name {
-		updateFields["name"] = &ts.OrmDiff{Before: dbDevice.Name, After: *device.Name}
+		updateFields["name"] = &contextvar.Diff{Before: dbDevice.Name, After: *device.Name}
 		dbDevice.Name = *device.Name
 	}
 	if device.Status != nil && *device.Status != dbDevice.Status {
-		updateFields["status"] = &ts.OrmDiff{Before: dbDevice.Status, After: *device.Status}
+		updateFields["status"] = &contextvar.Diff{Before: dbDevice.Status, After: *device.Status}
 		dbDevice.Status = *device.Status
 	}
 	if device.ManagementIp != nil && *device.ManagementIp != dbDevice.ManagementIp {
-		updateFields["managementIp"] = &ts.OrmDiff{Before: dbDevice.ManagementIp, After: *device.ManagementIp}
+		updateFields["managementIp"] = &contextvar.Diff{Before: dbDevice.ManagementIp, After: *device.ManagementIp}
 		dbDevice.ManagementIp = *device.ManagementIp
 	}
 	if device.DeviceModel != nil && *device.DeviceModel != dbDevice.DeviceModel {
-		updateFields["deviceModel"] = &ts.OrmDiff{Before: dbDevice.DeviceModel, After: *device.DeviceModel}
+		updateFields["deviceModel"] = &contextvar.Diff{Before: dbDevice.DeviceModel, After: *device.DeviceModel}
 		dbDevice.DeviceModel = *device.DeviceModel
 	}
 	if device.Manufacturer != nil && *device.Manufacturer != dbDevice.Manufacturer {
-		updateFields["manufacturer"] = &ts.OrmDiff{Before: dbDevice.Manufacturer, After: *device.Manufacturer}
+		updateFields["manufacturer"] = &contextvar.Diff{Before: dbDevice.Manufacturer, After: *device.Manufacturer}
 		dbDevice.Manufacturer = *device.Manufacturer
 	}
 	if device.DeviceRole != nil && *device.DeviceRole != dbDevice.DeviceRole {
-		updateFields["deviceRole"] = &ts.OrmDiff{Before: dbDevice.DeviceRole, After: *device.DeviceRole}
+		updateFields["deviceRole"] = &contextvar.Diff{Before: dbDevice.DeviceRole, After: *device.DeviceRole}
 		dbDevice.DeviceRole = *device.DeviceRole
 	}
 	if device.Floor != nil && *device.Floor != *dbDevice.Floor {
-		updateFields["floor"] = &ts.OrmDiff{Before: dbDevice.Floor, After: *device.Floor}
+		updateFields["floor"] = &contextvar.Diff{Before: dbDevice.Floor, After: *device.Floor}
 		dbDevice.Floor = device.Floor
 	}
 	if device.Description != nil && *device.Description != *dbDevice.Description {
-		updateFields["description"] = &ts.OrmDiff{Before: dbDevice.Description, After: *device.Description}
+		updateFields["description"] = &contextvar.Diff{Before: dbDevice.Description, After: *device.Description}
 		dbDevice.Description = device.Description
 	}
 	if device.OsVersion != nil && *device.OsVersion != *dbDevice.OsVersion {
-		updateFields["osVersion"] = &ts.OrmDiff{Before: dbDevice.OsVersion, After: *device.OsVersion}
+		updateFields["osVersion"] = &contextvar.Diff{Before: dbDevice.OsVersion, After: *device.OsVersion}
 		dbDevice.OsVersion = device.OsVersion
 	}
 	if helpers.HasParams(g, "rackId") && device.RackId != dbDevice.RackId {
-		updateFields["rackId"] = &ts.OrmDiff{Before: dbDevice.RackId, After: *device.RackId}
+		updateFields["rackId"] = &contextvar.Diff{Before: dbDevice.RackId, After: *device.RackId}
 		dbDevice.RackId = device.RackId
 	}
 	if helpers.HasParams(g, "rackPosition") {
@@ -123,16 +122,16 @@ func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *sc
 			return nil, err
 		}
 		if position != *dbDevice.RackPosition {
-			updateFields["rackPosition"] = &ts.OrmDiff{Before: dbDevice.RackPosition, After: position}
+			updateFields["rackPosition"] = &contextvar.Diff{Before: dbDevice.RackPosition, After: position}
 			dbDevice.RackPosition = &position
 		}
 	}
 	if len(updateFields) == 0 {
 		return nil, nil
 	}
-	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue := make(map[string]map[string]*contextvar.Diff)
 	diffValue[deviceId] = updateFields
-	global.OrmDiff.Set(diffValue)
+	contextvar.OrmDiff.Set(diffValue)
 	err = gen.Device.UnderlyingDB().Save(dbDevice).Error
 	if err != nil {
 		return nil, err
@@ -141,7 +140,7 @@ func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *sc
 }
 
 func (d *DeviceService) DeleteDevice(deviceId string) (*models.Device, error) {
-	dbDevice, err := gen.Device.Where(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	dbDevice, err := gen.Device.Where(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, err
 	}
@@ -153,14 +152,14 @@ func (d *DeviceService) DeleteDevice(deviceId string) (*models.Device, error) {
 }
 
 func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	device, err := gen.Device.Select(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(orgId)).First()
 	if err != nil {
 		return nil, err
 	}
 	opStatus, err := GetDeviceOpStatus([]string{deviceId}, orgId)
 	if err != nil {
-		core.Logger.Error("[infraDeviceService]: failed to get device op status", zap.Error(err))
+		logger.Logger.Error("[infraDeviceService]: failed to get device op status", zap.Error(err))
 	}
 	return &schemas.Device{
 		Id:           device.Id,
@@ -197,7 +196,7 @@ func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
 
 func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*schemas.Device, error) {
 	res := make([]*schemas.Device, 0)
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	stmt := gen.Device.Where(gen.Device.OrganizationId.Eq(orgId))
 	if query.Name != nil {
 		stmt = stmt.Where(gen.Device.Name.In(*query.Name...))
@@ -252,7 +251,7 @@ func (d *DeviceService) GetDeviceList(query *schemas.DeviceQuery) (int64, *[]*sc
 	deviceIds := lo.Map(list, func(item *models.Device, _ int) string { return item.Id })
 	opStatus, err := GetDeviceOpStatus(deviceIds, orgId)
 	if err != nil {
-		core.Logger.Error("[infraDeviceService]: failed to get device op status", zap.Error(err))
+		logger.Logger.Error("[infraDeviceService]: failed to get device op status", zap.Error(err))
 	}
 
 	for _, item := range list {
@@ -369,7 +368,7 @@ func (d *DeviceService) GetActiveDevices(siteId string) ([]*models.Device, error
 	devices, err := gen.Device.Where(
 		gen.Device.SiteId.Eq(siteId),
 		gen.Device.Status.Eq("Active"),
-		gen.Device.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).Find()
 	if err != nil {
 		return nil, err
@@ -383,7 +382,7 @@ func (d *DeviceService) GetActiveWlanAC(siteId string) ([]*models.Device, error)
 		gen.Device.SiteId.Eq(siteId),
 		gen.Device.Status.Eq("Active"),
 		gen.Device.DeviceRole.Eq(string(devicerole.WlanAC)),
-		gen.Device.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).Find()
 	if err != nil {
 		return nil, err
@@ -391,26 +390,12 @@ func (d *DeviceService) GetActiveWlanAC(siteId string) ([]*models.Device, error)
 	return devices, nil
 }
 
-func (d *DeviceService) GetAllAccessSwitches(siteId string) ([]*models.Device, error) {
+func (d *DeviceService) GetSwitches(siteId string) ([]*models.Device, error) {
 	devices, err := gen.Device.Where(
 		gen.Device.SiteId.Eq(siteId),
 		gen.Device.Status.Eq("Active"),
-		gen.Device.DeviceRole.Eq(string(devicerole.AccessSwitch)),
-		gen.Device.OrganizationId.Eq(global.OrganizationId.Get()),
-	).Find()
-	if err != nil {
-		return nil, err
-	}
-
-	return devices, nil
-}
-
-func (d *DeviceService) GetCoreSwitch(siteId string) ([]*models.Device, error) {
-	devices, err := gen.Device.Where(
-		gen.Device.SiteId.Eq(siteId),
-		gen.Device.Status.Eq("Active"),
-		gen.Device.DeviceRole.Eq(string(devicerole.CoreSwitch)),
-		gen.Device.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.Device.DeviceRole.Eq(string(devicerole.Switch)),
+		gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).Find()
 	if err != nil {
 		return nil, err
@@ -452,7 +437,7 @@ func (d *DeviceService) GetDeviceByManagementIp(ips []string, orgId string) (map
 func (d *DeviceService) GetManagementIP(deviceId string) (string, error) {
 
 	device, err := gen.Device.Select(gen.Device.ManagementIp).Where(gen.Device.Id.Eq(deviceId),
-		gen.Device.OrganizationId.Eq(global.OrganizationId.Get())).First()
+		gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 
 	if err != nil {
 		return "", err

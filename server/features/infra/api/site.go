@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
+	"github.com/wangxin688/narvis/intend/logger"
 	biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -40,10 +40,10 @@ func createSite(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		_, err = hooks.SiteHookCreate(newSite)
 		if err != nil {
-			core.Logger.Error("[siteCreateHooks]:create host group failed", zap.Error(err))
+			logger.Logger.Error("[siteCreateHooks]:create host group failed", zap.Error(err))
 		}
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: newSite})
@@ -138,7 +138,7 @@ func updateSite(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.SiteHookUpdate(siteId, diff[siteId])
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: siteId})
@@ -169,7 +169,7 @@ func deleteSite(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	tools.BackgroundTask(func() {
+	bgtask.BackgroundTask(func() {
 		hooks.SiteHookDelete(site)
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: siteId})

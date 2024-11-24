@@ -62,13 +62,13 @@ type SiteResponse struct {
 
 type SiteDetail struct {
 	Site
-	SwitchCount  int64           `json:"switchCount"`
-	ApCount      int64           `json:"apCount"`
-	RackCount    int64           `json:"rackCount"`
-	CircuitCount int64           `json:"circuitCount"`
-	VlanCount    int64           `json:"vlanCount"`
-	GatewayCount int64           `json:"gatewayCount"`
-	Circuit      []*CircuitShort `json:"circuit"`
+	SwitchCount   int64           `json:"switchCount"`
+	ApCount       int64           `json:"apCount"`
+	RackCount     int64           `json:"rackCount"`
+	CircuitCount  int64           `json:"circuitCount"`
+	VlanCount     int64           `json:"vlanCount"`
+	FirewallCount int64           `json:"firewallCount"`
+	Circuit       []*CircuitShort `json:"circuit"`
 }
 
 type SiteShort struct {

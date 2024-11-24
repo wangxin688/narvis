@@ -1,9 +1,9 @@
 package biz
 
 import (
-	"github.com/wangxin688/narvis/server/core/security"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/admin/schemas"
+	"github.com/wangxin688/narvis/server/pkg/security"
 	"github.com/wangxin688/narvis/server/tools/errors"
 )
 

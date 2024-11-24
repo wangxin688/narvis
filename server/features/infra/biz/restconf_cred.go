@@ -6,10 +6,9 @@ import (
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	te "github.com/wangxin688/narvis/server/tools/errors"
-	ts "github.com/wangxin688/narvis/server/tools/schemas"
 	"gorm.io/gorm"
 )
 
@@ -21,7 +20,7 @@ func NewRestConfCredentialService() *RestConfCredentialService {
 
 func (r *RestConfCredentialService) CreateCredential(deviceId string, credential *schemas.RestconfCredentialCreate) (string, error) {
 	cred := &models.RestconfCredential{
-		OrganizationId: global.OrganizationId.Get(),
+		OrganizationId: contextvar.OrganizationId.Get(),
 		DeviceId:       &deviceId,
 		Username:       credential.Username,
 		Password:       credential.Password,
@@ -34,7 +33,7 @@ func (r *RestConfCredentialService) CreateCredential(deviceId string, credential
 
 // func (r *RestConfCredentialService) validateCreateCredential(deviceId string, credential *schemas.RestconfCredentialCreate) error {
 // 	dbCred, err := gen.RestconfCredential.Where(
-// 		gen.RestconfCredential.OrganizationId.Eq(global.OrganizationId.Get()),
+// 		gen.RestconfCredential.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 // 		gen.RestconfCredential.DeviceId.Eq(deviceId),
 // 	).First()
 // 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -46,33 +45,33 @@ func (r *RestConfCredentialService) CreateCredential(deviceId string, credential
 // 	return nil
 // }
 
-func (r *RestConfCredentialService) UpdateCredential(deviceId string, credential *schemas.RestconfCredentialUpdate) (diff map[string]map[string]*ts.OrmDiff, err error) {
+func (r *RestConfCredentialService) UpdateCredential(deviceId string, credential *schemas.RestconfCredentialUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
 	dbCred, err := gen.RestconfCredential.Where(
-		gen.RestconfCredential.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.RestconfCredential.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 		gen.RestconfCredential.DeviceId.Eq(deviceId),
 	).First()
 	if err != nil {
 		return nil, err
 	}
-	updateFields := make(map[string]*ts.OrmDiff)
+	updateFields := make(map[string]*contextvar.Diff)
 	if credential.Url != nil && *credential.Url != dbCred.Url {
-		updateFields["url"] = &ts.OrmDiff{Before: dbCred.Url, After: *credential.Url}
+		updateFields["url"] = &contextvar.Diff{Before: dbCred.Url, After: *credential.Url}
 		dbCred.Url = *credential.Url
 	}
 	if credential.Username != nil && *credential.Username != dbCred.Username {
-		updateFields["username"] = &ts.OrmDiff{Before: dbCred.Username, After: *credential.Username}
+		updateFields["username"] = &contextvar.Diff{Before: dbCred.Username, After: *credential.Username}
 		dbCred.Username = *credential.Username
 	}
 	if credential.Password != nil && *credential.Password != dbCred.Password {
-		updateFields["password"] = &ts.OrmDiff{Before: dbCred.Password, After: *credential.Password}
+		updateFields["password"] = &contextvar.Diff{Before: dbCred.Password, After: *credential.Password}
 		dbCred.Password = *credential.Password
 	}
 	if len(updateFields) == 0 {
 		return nil, nil
 	}
-	diff = make(map[string]map[string]*ts.OrmDiff)
+	diff = make(map[string]map[string]*contextvar.Diff)
 	diff[dbCred.Id] = updateFields
-	global.OrmDiff.Set(diff)
+	contextvar.OrmDiff.Set(diff)
 	err = gen.RestconfCredential.UnderlyingDB().Save(dbCred).Error
 	if err != nil {
 		return nil, err
@@ -94,7 +93,7 @@ func (r *RestConfCredentialService) GetCredentialByOrgId(id string) (*models.Res
 func (r *RestConfCredentialService) DeleteCredential(deviceId string) error {
 
 	dbCred, err := gen.RestconfCredential.Where(
-		gen.RestconfCredential.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.RestconfCredential.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 		gen.RestconfCredential.DeviceId.Eq(deviceId),
 	).First()
 	if err != nil {
@@ -108,7 +107,7 @@ func (r *RestConfCredentialService) DeleteCredential(deviceId string) error {
 }
 
 func (r *RestConfCredentialService) GetCredentialByDeviceId(deviceId string) (*schemas.RestconfCredential, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	cred, err := gen.RestconfCredential.Where(
 		gen.RestconfCredential.DeviceId.Eq(deviceId),
 		gen.RestconfCredential.OrganizationId.Eq(orgId),
@@ -121,9 +120,9 @@ func (r *RestConfCredentialService) GetCredentialByDeviceId(deviceId string) (*s
 			}
 			if globalCred != nil {
 				return &schemas.RestconfCredential{
-					Username: globalCred.Username,
-					Password: globalCred.Password,
-					Url:      globalCred.Url,
+					Username:       globalCred.Username,
+					Password:       globalCred.Password,
+					Url:            globalCred.Url,
 					InheritFromOrg: true,
 				}, nil
 			}
@@ -132,9 +131,9 @@ func (r *RestConfCredentialService) GetCredentialByDeviceId(deviceId string) (*s
 		return nil, err
 	}
 	return &schemas.RestconfCredential{
-		Username: cred.Username,
-		Password: cred.Password,
-		Url:      cred.Url,
+		Username:       cred.Username,
+		Password:       cred.Password,
+		Url:            cred.Url,
 		InheritFromOrg: false,
 	}, nil
 }
@@ -144,7 +143,7 @@ func (r *RestConfCredentialService) GetCredentialByDeviceId(deviceId string) (*s
 // make sure deviceIds is a set of unique device ids
 func (r *RestConfCredentialService) GetCredentialByDeviceIds(deviceIds []string) (*map[string]*schemas.RestconfCredential, error) {
 	deviceIds = lo.Uniq(deviceIds) // remove duplicates deviceIds
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	creds, err := gen.RestconfCredential.Where(
 		gen.RestconfCredential.DeviceId.In(deviceIds...),
 		gen.RestconfCredential.OrganizationId.Eq(orgId)).Find()
@@ -155,9 +154,9 @@ func (r *RestConfCredentialService) GetCredentialByDeviceIds(deviceIds []string)
 		results := make(map[string]*schemas.RestconfCredential)
 		for _, cred := range creds {
 			results[*cred.DeviceId] = &schemas.RestconfCredential{
-				Url:      cred.Url,
-				Username: cred.Username,
-				Password: cred.Password,
+				Url:            cred.Url,
+				Username:       cred.Username,
+				Password:       cred.Password,
 				InheritFromOrg: false,
 			}
 		}
@@ -172,9 +171,9 @@ func (r *RestConfCredentialService) GetCredentialByDeviceIds(deviceIds []string)
 	results := make(map[string]*schemas.RestconfCredential)
 	for _, cred := range creds {
 		results[*cred.DeviceId] = &schemas.RestconfCredential{
-			Url:      cred.Url,
-			Username: cred.Username,
-			Password: cred.Password,
+			Url:            cred.Url,
+			Username:       cred.Username,
+			Password:       cred.Password,
 			InheritFromOrg: false,
 		}
 	}
@@ -187,9 +186,9 @@ func (r *RestConfCredentialService) GetCredentialByDeviceIds(deviceIds []string)
 	if len(missing) > 0 {
 		for _, deviceId := range missing {
 			results[deviceId] = &schemas.RestconfCredential{
-				Url:      orgCred.Url,
-				Username: orgCred.Username,
-				Password: orgCred.Password,
+				Url:            orgCred.Url,
+				Username:       orgCred.Username,
+				Password:       orgCred.Password,
 				InheritFromOrg: true,
 			}
 		}
@@ -201,7 +200,7 @@ func (r *RestConfCredentialService) GetById(id string) (*schemas.RestconfCredent
 
 	cred, err := gen.RestconfCredential.Where(
 		gen.RestconfCredential.Id.Eq(id),
-		gen.RestconfCredential.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.RestconfCredential.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).First()
 
 	if err != nil {

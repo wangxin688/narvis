@@ -3,12 +3,12 @@ package hooks
 import (
 	"fmt"
 
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/pkg/zbx"
 	"github.com/wangxin688/narvis/server/pkg/zbx/zschema"
-	ts "github.com/wangxin688/narvis/server/tools/schemas"
 	"go.uber.org/zap"
 )
 
@@ -17,26 +17,26 @@ func SiteHookCreate(siteId string) (string, error) {
 		Name: siteId,
 	})
 	if err != nil {
-		core.Logger.Error("[siteCreateHooks]:create host group failed", zap.Error(err))
+		logger.Logger.Error("[siteCreateHooks]:create host group failed", zap.Error(err))
 		return "", err
 	}
 	// ignore potential db update error here because of MVP version, it will be fixed in future version
 	_, err = gen.Site.Where(gen.Site.Id.Eq(siteId)).UpdateColumn(gen.Site.MonitorId, groupId)
 	if err != nil {
-		core.Logger.Error("[siteCreateHooks]: update site monitorId failed", zap.Error(err))
+		logger.Logger.Error("[siteCreateHooks]: update site monitorId failed", zap.Error(err))
 		return "", err
 	}
-	core.Logger.Info("[siteCreateHooks]: create host group success", zap.String("groupId", groupId))
+	logger.Logger.Info("[siteCreateHooks]: create host group success", zap.String("groupId", groupId))
 	return groupId, nil
 }
 
-func SiteHookUpdate(siteId string, diff map[string]*ts.OrmDiff) {
+func SiteHookUpdate(siteId string, diff map[string]*contextvar.Diff) {
 	if diff == nil {
 		return
 	}
 	site, err := gen.Site.Where(gen.Site.Id.Eq(siteId)).First()
 	if err != nil {
-		core.Logger.Error("[siteUpdateHooks]: get site failed", zap.Error(err))
+		logger.Logger.Error("[siteUpdateHooks]: get site failed", zap.Error(err))
 		return
 	}
 	if site.MonitorId == nil && site.Status == "Active" {
@@ -76,9 +76,9 @@ func SiteHookDelete(site *models.Site) {
 	if site.MonitorId != nil && *site.MonitorId != "" {
 		groupIds, err := zbx.NewZbxClient().HostGroupDelete([]string{*site.MonitorId})
 		if err != nil {
-			core.Logger.Error("[siteDeleteHooks]: delete host group failed", zap.Error(err))
+			logger.Logger.Error("[siteDeleteHooks]: delete host group failed", zap.Error(err))
 		}
-		core.Logger.Info(fmt.Sprintf("[siteDeleteHooks]: delete host group %v success", groupIds), zap.String("groupId", *site.MonitorId))
+		logger.Logger.Info(fmt.Sprintf("[siteDeleteHooks]: delete host group %v success", groupIds), zap.String("groupId", *site.MonitorId))
 	}
 }
 
@@ -90,7 +90,7 @@ func getSiteHostIds(monitorId string, client *zbx.Zbx) ([]string, error) {
 	}
 	rsp, err := client.HostGet(req)
 	if err != nil {
-		core.Logger.Error("[siteDeleteHooks]: get host id failed", zap.Error(err))
+		logger.Logger.Error("[siteDeleteHooks]: get host id failed", zap.Error(err))
 		return result, err
 	}
 	for _, v := range rsp {

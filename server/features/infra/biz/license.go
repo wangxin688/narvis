@@ -3,7 +3,7 @@ package infra_biz
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/organization/biz"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 )
 
 func licenseUsage(orgId string) (uint32, error) {
@@ -14,12 +14,12 @@ func licenseUsage(orgId string) (uint32, error) {
 		return 0, err
 	}
 	apCount, err := gen.AP.Where(
-		gen.AP.OrganizationId.Eq(global.OrganizationId.Get())).Count()
+		gen.AP.OrganizationId.Eq(contextvar.OrganizationId.Get())).Count()
 	if err != nil {
 		return 0, err
 	}
 	serverCount, err := gen.Server.Where(
-		gen.Server.OrganizationId.Eq(global.OrganizationId.Get())).Count()
+		gen.Server.OrganizationId.Eq(contextvar.OrganizationId.Get())).Count()
 	if err != nil {
 		return 0, err
 	}

@@ -3,12 +3,12 @@ package biz
 import (
 	"context"
 
-	"github.com/wangxin688/narvis/server/core/security"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/admin/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/global/constants"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
+	"github.com/wangxin688/narvis/server/pkg/security"
 )
 
 type UserService struct {
@@ -60,7 +60,7 @@ func (u *UserService) CreateAdminUser(enterpriseCode string, orgId string, passw
 }
 
 func (u *UserService) GetUserById(id string) (*schemas.User, error) {
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	user, err := gen.User.Where(gen.User.Id.Eq(id), gen.User.OrganizationId.Eq(orgId)).Preload(gen.User.Role).First()
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (u *UserService) CreateUser(user *schemas.UserCreate) (*schemas.User, error
 		RoleId:         user.RoleId,
 		AuthType:       user.AuthType,
 		Avatar:         user.Avatar,
-		OrganizationId: global.OrganizationId.Get(),
+		OrganizationId: contextvar.OrganizationId.Get(),
 	}
 
 	err := gen.User.Create(newUser)
@@ -120,7 +120,7 @@ func (u *UserService) UpdateUser(userId string, user *schemas.UserUpdate) error 
 	if user.Status != nil {
 		updateFields["status"] = *user.Status
 	}
-	_, err := gen.User.Select(gen.User.Id.Eq(userId), gen.User.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
+	_, err := gen.User.Select(gen.User.Id.Eq(userId), gen.User.OrganizationId.Eq(contextvar.OrganizationId.Get())).Updates(updateFields)
 	if err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ func (u *UserService) UpdateUser(userId string, user *schemas.UserUpdate) error 
 }
 
 func (u *UserService) DeleteUser(ctx context.Context, userId string) error {
-	_, err := gen.User.WithContext(ctx).Select(gen.User.Id.Eq(userId), gen.User.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+	_, err := gen.User.WithContext(ctx).Select(gen.User.Id.Eq(userId), gen.User.OrganizationId.Eq(contextvar.OrganizationId.Get())).Delete()
 	if err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func (u *UserService) DeleteUser(ctx context.Context, userId string) error {
 
 func (u *UserService) ListUsers(params *schemas.UserQuery) (int64, *[]*schemas.User, error) {
 	res := make([]*schemas.User, 0)
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	stmt := gen.User.Where(gen.User.OrganizationId.Eq(orgId))
 	if params.Id != nil {
 		stmt = stmt.Where(gen.User.Id.In(*params.Id...))

@@ -8,18 +8,19 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/alerts"
-	"github.com/wangxin688/narvis/intend/devicerole"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
+	"github.com/wangxin688/narvis/intend/logger"
+	"github.com/wangxin688/narvis/intend/model/devicerole"
+	"github.com/wangxin688/narvis/server/config"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	admin_sc "github.com/wangxin688/narvis/server/features/admin/schemas"
 	"github.com/wangxin688/narvis/server/features/alert/schemas"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	infra_sc "github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/global/constants"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/pkg/am"
-	"github.com/wangxin688/narvis/server/tools"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	"go.uber.org/zap"
@@ -38,7 +39,7 @@ func (a *AlertService) CreateAlert(alert *schemas.AlertCreate) (*models.Alert, e
 		return nil, err
 	}
 	if dbAlert != nil {
-		global.OrganizationId.Set(dbAlert.OrganizationId)
+		contextvar.OrganizationId.Set(dbAlert.OrganizationId)
 		alertStatus := schemas.GetStatus(alert.Status)
 		dbAlert.Status = alertStatus
 		if alertStatus == constants.AlertResolvedStatus {
@@ -68,7 +69,7 @@ func (a *AlertService) CreateAlert(alert *schemas.AlertCreate) (*models.Alert, e
 		if dbAlert.Status == constants.AlertResolvedStatus {
 			resolvedAt := time.Now().UTC()
 			dbAlert.ResolvedAt = &resolvedAt
-			core.Logger.Info("[createAlert]: received resolved event", zap.Any("alert", alert))
+			logger.Logger.Info("[createAlert]: received resolved event", zap.Any("alert", alert))
 		}
 	}
 	dbAlert = a.silenceAlert(dbAlert)
@@ -76,11 +77,11 @@ func (a *AlertService) CreateAlert(alert *schemas.AlertCreate) (*models.Alert, e
 		return nil, err
 	}
 	if !dbAlert.Suppressed {
-		tools.BackgroundTask(func() {
+		bgtask.BackgroundTask(func() {
 			postAlert := a.AlertManagerMessage(dbAlert)
 			err = am.NewAlertManager().CreateAlerts(postAlert)
 			if err != nil {
-				core.Logger.Error("[createAlert]post alert to alertmanager error", zap.Error(err))
+				logger.Logger.Error("[createAlert]post alert to alertmanager error", zap.Error(err))
 			}
 		})
 	}
@@ -131,11 +132,11 @@ func (a *AlertService) alertPreProcess(alert *schemas.AlertCreate) (*schemas.Ale
 			}
 			acc.DeviceId = &host.Id
 			acc.InterfaceId = &interfaceId
-			acc.Severity = a.severity(alert.AlertName, devicerole.DeviceRoleEnum(host.DeviceRole))
+			acc.Severity = a.severity(alert.AlertName, devicerole.DeviceRole(host.DeviceRole))
 			acc.DeviceRole = &host.DeviceRole
 		} else {
 			acc.DeviceId = &host.Id
-			acc.Severity = a.severity(alert.AlertName, devicerole.DeviceRoleEnum(host.DeviceRole))
+			acc.Severity = a.severity(alert.AlertName, devicerole.DeviceRole(host.DeviceRole))
 			acc.DeviceRole = &host.DeviceRole
 		}
 	} else if strings.Contains(alert.HostId, "c_") || strings.Contains(alert.HostId, "cd_") {
@@ -198,9 +199,9 @@ func (a *AlertService) getInterfaceInfo(alert *schemas.AlertCreate, deviceId str
 	return "", errors.NewError(errors.CodeInterfaceTagMissing, errors.MsgInterfaceTagMissing)
 }
 
-func (a *AlertService) severity(alertName string, deviceRole devicerole.DeviceRoleEnum) string {
+func (a *AlertService) severity(alertName string, deviceRole devicerole.DeviceRole) string {
 	sev := alerts.GetAlertName(alertName).Severity
-	if deviceRole == devicerole.CoreSwitch || deviceRole == devicerole.Firewall || deviceRole == devicerole.WanRouter {
+	if deviceRole == devicerole.Switch || deviceRole == devicerole.FireWall || deviceRole == devicerole.Router {
 		if sev == alerts.SeverityInfo {
 			return string(alerts.SeverityWarning)
 		}
@@ -296,7 +297,7 @@ func (a *AlertService) AlertManagerMessage(alert *models.Alert) []*am.Alert {
 		},
 		Annotations:  annotations,
 		Status:       schemas.GetReverseStatus(alert.Status),
-		GeneratorURL: fmt.Sprintf("%s/api/v2/alerts/%s", core.Settings.System.BaseUrl, alert.Id),
+		GeneratorURL: fmt.Sprintf("%s/api/v2/alerts/%s", config.Settings.System.BaseUrl, alert.Id),
 		StartsAt:     alert.StartedAt,
 	}
 	if alert.DeviceId != nil {
@@ -316,7 +317,7 @@ func (a *AlertService) AlertManagerMessage(alert *models.Alert) []*am.Alert {
 
 func (a *AlertService) ListAlerts(query schemas.AlertQuery) (int64, []*schemas.Alert, error) {
 	res := make([]*schemas.Alert, 0)
-	orgId := global.OrganizationId.Get()
+	orgId := contextvar.OrganizationId.Get()
 	stmt := gen.Alert.Where(gen.Alert.OrganizationId.Eq(orgId))
 	if query.SiteId != nil {
 		stmt = stmt.Where(gen.Alert.SiteId.In(*query.SiteId...))
@@ -386,7 +387,7 @@ func (a *AlertService) ListAlerts(query schemas.AlertQuery) (int64, []*schemas.A
 	defaultOrderBy := "startedAt"
 	replacedOrderBy := "createdAt"
 	if query.PageInfo.OrderBy == nil || *query.PageInfo.OrderBy == replacedOrderBy {
-		query.PageInfo.OrderBy = &defaultOrderBy	
+		query.PageInfo.OrderBy = &defaultOrderBy
 	}
 	stmt.UnderlyingDB().Scopes(query.OrderByField())
 	stmt.UnderlyingDB().Scopes(query.Pagination())
@@ -427,27 +428,27 @@ func (a *AlertService) formatAlert(alert []*models.Alert) ([]*schemas.Alert, err
 	circuitMap := make(map[string]*infra_sc.CircuitShort)
 	apMap := make(map[string]*infra_sc.APShort)
 	if err != nil {
-		core.Logger.Error("[alertQuery]: get site short map error", zap.Error(err))
+		logger.Logger.Error("[alertQuery]: get site short map error", zap.Error(err))
 		return results, err
 	}
 	if len(deviceIds) > 0 {
 		deviceMap, err = infra_biz.NewDeviceService().GetDeviceShortMap(lo.Uniq(deviceIds))
 		if err != nil {
-			core.Logger.Error("[alertQuery]: get device short map error", zap.Error(err))
+			logger.Logger.Error("[alertQuery]: get device short map error", zap.Error(err))
 			return results, err
 		}
 	}
 	if len(circuitIds) > 0 {
 		circuitMap, err = infra_biz.NewCircuitService().GetCircuitShortMap(lo.Uniq(circuitIds))
 		if err != nil {
-			core.Logger.Error("[alertQuery]: get circuit short map error", zap.Error(err))
+			logger.Logger.Error("[alertQuery]: get circuit short map error", zap.Error(err))
 			return results, err
 		}
 	}
 	if len(apIds) > 0 {
 		apMap, err = infra_biz.NewApService().GetApShortMap(apIds)
 		if err != nil {
-			core.Logger.Error("[alertQuery]: get ap short map error", zap.Error(err))
+			logger.Logger.Error("[alertQuery]: get ap short map error", zap.Error(err))
 			return results, err
 		}
 	}
@@ -605,7 +606,7 @@ func (a *AlertService) GetEntityIdBySearch(keyword string, orgId string) (device
 func (a *AlertService) GetById(id string) (*schemas.AlertDetail, error) {
 	alert, err := gen.Alert.Where(
 		gen.Alert.Id.Eq(id),
-		gen.Alert.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.Alert.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).Preload(gen.Alert.Device).Preload(gen.Alert.Circuit).
 		Preload(gen.Alert.Ap).Preload(gen.Alert.Site).Preload(gen.Alert.RootCause).
 		Preload(gen.Alert.ActionLog.AssignUser).First()

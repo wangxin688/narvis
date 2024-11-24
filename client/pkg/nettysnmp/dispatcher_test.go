@@ -8,13 +8,12 @@ import (
 	"github.com/gosnmp/gosnmp"
 	"github.com/wangxin688/narvis/client/config"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
-	"github.com/wangxin688/narvis/client/utils/logger"
+	mem_cache "github.com/wangxin688/narvis/intend/cache"
 )
 
 func TestDispatcher(t *testing.T) {
-	logger.SetUpLogger()
 	config.SetupConfig()
+	config.SetUpLogger()
 	mem_cache.InitCache()
 	community := "public"
 	dispatcher := NewDispatcher([]string{"127.0.0.1"}, factory.BaseSnmpConfig{
@@ -41,8 +40,8 @@ func TestDispatcher(t *testing.T) {
 }
 
 func TestDispatchScanAp(t *testing.T) {
-	logger.SetUpLogger()
 	config.SetupConfig()
+	config.SetUpLogger()
 	mem_cache.InitCache()
 	community := "public"
 	dispatcher := NewDispatcher([]string{"127.0.0.1"}, factory.BaseSnmpConfig{

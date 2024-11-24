@@ -3,7 +3,7 @@ package biz
 import (
 	"fmt"
 
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/admin/biz"
 	"github.com/wangxin688/narvis/server/features/organization/schemas"
@@ -49,24 +49,24 @@ func (o *OrganizationService) CreateOrganization(organization *schemas.Organizat
 		organizationModel.AuthConfig = &authConfig
 	}
 	if o.validateExist(organization) {
-		core.Logger.Info(fmt.Sprintf("failed to create organization %v, enterprise_code or domain_name already exist", organization))
+		logger.Logger.Info(fmt.Sprintf("failed to create organization %v, enterprise_code or domain_name already exist", organization))
 		return nil, &e.GenericError{Code: e.CodeOrganizationAlreadyExist, Message: e.MsgOrganizationAlreadyExist}
 	}
 
 	err := gen.Organization.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
 		err := gen.Organization.Create(organizationModel)
 		if err != nil {
-			core.Logger.Error(fmt.Sprintf("failed to create organization %v", organization), zap.Error(err))
+			logger.Logger.Error(fmt.Sprintf("failed to create organization %v", organization), zap.Error(err))
 			return err
 		}
-		core.Logger.Info(fmt.Sprintf("create organization %s %s", organization.Name, organizationModel.Id))
+		logger.Logger.Info(fmt.Sprintf("create organization %s %s", organization.Name, organizationModel.Id))
 		userService := biz.NewUserService()
 		user, err := userService.CreateAdminUser(organization.EnterpriseCode, organizationModel.Id, organization.AdminPassword)
 		if err != nil {
-			core.Logger.Error(fmt.Sprintf("failed to create admin user %v", organization), zap.Error(err))
+			logger.Logger.Error(fmt.Sprintf("failed to create admin user %v", organization), zap.Error(err))
 			return err
 		}
-		core.Logger.Info(fmt.Sprintf("create admin user %s", user.Id))
+		logger.Logger.Info(fmt.Sprintf("create admin user %s", user.Id))
 		return nil
 	})
 

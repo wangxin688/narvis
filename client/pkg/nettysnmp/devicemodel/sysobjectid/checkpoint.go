@@ -2,7 +2,7 @@ package sysobjectid
 
 import (
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/devicemodel"
-	"github.com/wangxin688/narvis/intend/manufacturer"
+	"github.com/wangxin688/narvis/intend/model/manufacturer"
 	"github.com/wangxin688/narvis/intend/platform"
 )
 

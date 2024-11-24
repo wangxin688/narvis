@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/imroc/req/v3"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/server/config"
 )
 
 var once sync.Once
@@ -26,9 +26,9 @@ func (e *ErrorMessage) Error() string {
 }
 
 func NewVtmClient() *VtmClient {
-	url := core.Settings.Vtm.Url
-	username := core.Settings.Vtm.Username
-	password := core.Settings.Vtm.Password
+	url := config.Settings.Vtm.Url
+	username := config.Settings.Vtm.Username
+	password := config.Settings.Vtm.Password
 	once.Do(func() {
 		vtmInstance = &VtmClient{
 			Client: req.C().SetBaseURL(url).SetCommonBasicAuth(username, password).

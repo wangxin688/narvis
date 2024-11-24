@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/core/security"
 	"github.com/wangxin688/narvis/server/features/admin/biz"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
+	"github.com/wangxin688/narvis/server/pkg/security"
 	"github.com/wangxin688/narvis/server/tools/errors"
 )
 
@@ -71,7 +71,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			)
 			return
 		case errors.ErrorOk:
-			global.UserId.Set(tokenClaims.UserId)
+			contextvar.UserId.Set(tokenClaims.UserId)
 			if !checkUserPermission(tokenClaims.UserId, c.FullPath()) {
 				c.AbortWithStatusJSON(
 					http.StatusForbidden, errors.GenericError{
@@ -93,7 +93,7 @@ func checkUserPermission(userID string, path string) bool {
 	if user == nil {
 		return false
 	}
-	global.OrganizationId.Set(user.OrganizationId)
+	contextvar.OrganizationId.Set(user.OrganizationId)
 	return biz.CheckRolePathPermission(user, path)
 }
 
@@ -165,7 +165,7 @@ func CookieAuthMiddleware() gin.HandlerFunc {
 			)
 			return
 		case errors.ErrorOk:
-			global.UserId.Set(tokenClaims.UserId)
+			contextvar.UserId.Set(tokenClaims.UserId)
 			if !checkUserPermission(tokenClaims.UserId, c.FullPath()) {
 				c.AbortWithStatusJSON(
 					http.StatusForbidden, errors.GenericError{

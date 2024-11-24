@@ -2,15 +2,15 @@ definitions:
   alerts.AlertName:
     properties:
       description:
-        $ref: '#/definitions/common.I18n'
+        $ref: '#/definitions/i18n.I18n'
       name:
         $ref: '#/definitions/alerts.AlertNameEnum'
       severity:
         $ref: '#/definitions/alerts.SeverityEnum'
       suggestion:
-        $ref: '#/definitions/common.I18n'
+        $ref: '#/definitions/i18n.I18n'
       title:
-        $ref: '#/definitions/common.I18n'
+        $ref: '#/definitions/i18n.I18n'
     type: object
   alerts.AlertNameEnum:
     enum:
@@ -97,62 +97,29 @@ definitions:
       status:
         type: string
     type: object
-  common.I18n:
+  devicerole.DeviceRole:
+    enum:
+    - Switch
+    - WlanAP
+    - WlanAC
+    - FireWall
+    - Router
+    - Server
+    type: string
+    x-enum-varnames:
+    - Switch
+    - WlanAP
+    - WlanAC
+    - FireWall
+    - Router
+    - Server
+  i18n.I18n:
     properties:
       en:
         type: string
       zh:
         type: string
     type: object
-  devicerole.DeviceRole:
-    properties:
-      description:
-        $ref: '#/definitions/common.I18n'
-      device_role:
-        $ref: '#/definitions/devicerole.DeviceRoleEnum'
-      product_family:
-        $ref: '#/definitions/devicerole.ProductFamilyEnum'
-      weight:
-        type: integer
-    type: object
-  devicerole.DeviceRoleEnum:
-    enum:
-    - WanRouter
-    - Firewall
-    - InternetSwitch
-    - CoreSwitch
-    - DistributionSwitch
-    - AccessSwitch
-    - WlanAC
-    - WlanAP
-    - Server
-    - Unknown
-    type: string
-    x-enum-varnames:
-    - WanRouter
-    - Firewall
-    - InternetSwitch
-    - CoreSwitch
-    - DistributionSwitch
-    - AccessSwitch
-    - WlanAC
-    - WlanAP
-    - Server
-    - UnknownDeviceRole
-  devicerole.ProductFamilyEnum:
-    enum:
-    - Gateway
-    - Switching
-    - Wireless
-    - Computing
-    - Unknown
-    type: string
-    x-enum-varnames:
-    - Gateway
-    - Switching
-    - Wireless
-    - Computing
-    - UnknownProductFamily
   intendtask.ApScanResponse:
     properties:
       deviceModel:
@@ -1852,7 +1819,7 @@ definitions:
         type: string
       description:
         type: string
-      gatewayCount:
+      firewallCount:
         type: integer
       id:
         type: string
@@ -5300,13 +5267,6 @@ paths:
       consumes:
       - application/json
       description: Get list of device roles
-      parameters:
-      - in: query
-        name: keyword
-        type: string
-      - in: query
-        name: name
-        type: string
       produces:
       - application/json
       responses:
@@ -5333,13 +5293,6 @@ paths:
       consumes:
       - application/json
       description: Get list of Manufacturers
-      parameters:
-      - in: query
-        name: keyword
-        type: string
-      - in: query
-        name: name
-        type: string
       produces:
       - application/json
       responses:
@@ -5366,13 +5319,6 @@ paths:
       consumes:
       - application/json
       description: Get list of Platforms
-      parameters:
-      - in: query
-        name: keyword
-        type: string
-      - in: query
-        name: platform
-        type: string
       produces:
       - application/json
       responses:

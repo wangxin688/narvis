@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/intend/metrics"
-	"github.com/wangxin688/narvis/server/core"
 	"github.com/wangxin688/narvis/server/features/monitor/schemas"
 	"github.com/wangxin688/narvis/server/pkg/vtm"
 	"go.uber.org/zap"
@@ -55,12 +55,12 @@ func GetApOpStatus(apIds []string, orgId string) (map[string]string, error) {
 	).WithWindow("5m").Build()
 
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to build ap operation status query", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to build ap operation status query", zap.Error(err))
 		return res, err
 	}
 	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, &orgId)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
 		return res, err
 	}
 	if len(vectors) == 0 {
@@ -88,12 +88,12 @@ func GetDeviceOpStatus(deviceIds []string, orgId string) (map[string]string, err
 	).WithWindow("5m").Build()
 
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to build device operation status query", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to build device operation status query", zap.Error(err))
 		return res, err
 	}
 	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, &orgId)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get device operation status", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get device operation status", zap.Error(err))
 		return res, err
 	}
 	if len(vectors) == 0 {
@@ -120,12 +120,12 @@ func GetServerOpStatus(serverIds []string, orgId string) (map[string]string, err
 	).WithWindow("5m").Build()
 
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to build server operation status query", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to build server operation status query", zap.Error(err))
 		return res, err
 	}
 	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, &orgId)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get server operation status", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get server operation status", zap.Error(err))
 		return res, err
 	}
 	if len(vectors) == 0 {
@@ -145,12 +145,12 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 		WithWindow("5m").Build()
 
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to build ap operation status query", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to build ap operation status query", zap.Error(err))
 		return nil, err
 	}
 	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, nil)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get ap operation status", zap.Error(err))
 		return nil, err
 	}
 	if len(vectors) == 0 {
@@ -165,12 +165,12 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 		})
 		allApIds, err := NewApService().GetAllApIdsBySiteId(siteId)
 		if err != nil {
-			core.Logger.Error("[metricService]: failed to get ap ids by site id", zap.String("siteId", siteId), zap.Error(err))
+			logger.Logger.Error("[metricService]: failed to get ap ids by site id", zap.String("siteId", siteId), zap.Error(err))
 			return nil, err
 		}
 		apIds, err := NewApService().GetApIdsByNames(allApNameWithData, orgId)
 		if err != nil {
-			core.Logger.Error("[metricService]: failed to get ap ids by names", zap.Error(err))
+			logger.Logger.Error("[metricService]: failed to get ap ids by names", zap.Error(err))
 			return nil, err
 		}
 		subApIds := lo.Intersect(allApIds, apIds)
@@ -204,7 +204,7 @@ func GetApIdsByOpStatus(siteId string, opStatus string, orgId string) ([]string,
 
 	apIds, err := NewApService().GetApIdsByNames(apNames, orgId)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get ap ids by names", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get ap ids by names", zap.Error(err))
 		return nil, err
 	}
 	return apIds, nil
@@ -218,12 +218,12 @@ func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 		WithWindow("5m").Build()
 
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to build device operation status query", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to build device operation status query", zap.Error(err))
 		return nil, err
 	}
 	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, nil)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get device operation status", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get device operation status", zap.Error(err))
 		return nil, err
 	}
 	if len(vectors) == 0 {
@@ -238,7 +238,7 @@ func GetDeviceIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 		})
 		allDeviceIds, err := NewDeviceService().GetAllDeviceIdsBySiteId(siteId)
 		if err != nil {
-			core.Logger.Error("[metricService]: failed to get device ids by site id", zap.String("siteId", siteId), zap.Error(err))
+			logger.Logger.Error("[metricService]: failed to get device ids by site id", zap.String("siteId", siteId), zap.Error(err))
 			return nil, err
 		}
 		subDeviceIds := lo.Intersect(allDeviceIds, allDeviceIdsWithData)
@@ -276,12 +276,12 @@ func GetServerIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 		WithWindow("5m").Build()
 
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to build server operation status query", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to build server operation status query", zap.Error(err))
 		return nil, err
 	}
 	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, nil)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get server operation status", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get server operation status", zap.Error(err))
 		return nil, err
 	}
 	if len(vectors) == 0 {
@@ -296,7 +296,7 @@ func GetServerIdsByOpStatus(siteId string, opStatus string, orgId string) ([]str
 		})
 		allServerIds, err := NewServerService().GetAllServerIdsBySiteId(siteId)
 		if err != nil {
-			core.Logger.Error("[metricService]: failed to get server ids by site id", zap.String("siteId", siteId), zap.Error(err))
+			logger.Logger.Error("[metricService]: failed to get server ids by site id", zap.String("siteId", siteId), zap.Error(err))
 			return nil, err
 		}
 		subServerIds := lo.Intersect(allServerIds, allServerIdsWithData)
@@ -338,12 +338,12 @@ func GetApAssociatedClients(apNames []string, siteId string, orgId string) (map[
 		},
 	).WithLabels(vtm.Label{Name: "siteId", Value: siteId, Matcher: vtm.EqualMatcher}).Build()
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to build ap associated clients query", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to build ap associated clients query", zap.Error(err))
 		return nil, err
 	}
 	vectors, err := vtm.NewVtmClient().GetVector(&vtm.VectorRequest{Query: query, Step: 60}, &orgId)
 	if err != nil {
-		core.Logger.Error("[metricService]: failed to get ap associated clients", zap.Error(err))
+		logger.Logger.Error("[metricService]: failed to get ap associated clients", zap.Error(err))
 		return nil, err
 	}
 	result := make(map[string]*schemas.ApClientItem)

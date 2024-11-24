@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
+	mem_cache "github.com/wangxin688/narvis/intend/cache"
 )
 
 const vtpVlanName = ".1.3.6.1.4.1.9.9.46.1.3.1.1.4"
@@ -30,7 +30,8 @@ const vmVlanType = ".1.3.6.1.4.1.9.9.68.1.2.2.1.1"
 const vmVlan = ".1.3.6.1.4.1.9.9.68.1.2.2.1.2"
 const vlanTrunkPortIfIndex = ".1.3.6.1.4.1.9.9.46.1.6.1.1.1"
 const vlanTrunkPortDynamicStatus = ".1.3.6.1.4.1.9.9.46.1.6.1.1.14"
-// vlanPortIslOperStatus 
+
+// vlanPortIslOperStatus
 
 // some oid has bug if version lower than ios-xe 17.9.5
 const bsnMobileStationSsid = ".1.3.6.1.4.1.14179.2.1.4.1.7"
@@ -341,8 +342,8 @@ func (cd *CiscoBaseDriver) WlanUsers() *factory.WlanUserResponse {
 			StationVlan:       &vlan,
 			StationOnlineTime: indexUptime[i],
 			StationChannel:    channel,
-			StationRxBytes:    indexRxBytes[i],
-			StationTxBytes:    indexTxBytes[i],
+			StationRxBits:     indexRxBytes[i] * 8,
+			StationTxBits:     indexTxBytes[i] * 8,
 			StationRadioType:  factory.ChannelToRadioType(channel),
 		})
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/wangxin688/narvis/server/features/admin/biz"
 	"github.com/wangxin688/narvis/server/features/admin/schemas"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -55,7 +55,7 @@ func getUserMe(c *gin.Context) {
 			errors.ResponseErrorHandler(c, err)
 		}
 	}()
-	user, err := biz.NewUserService().GetUserMe(global.UserId.Get())
+	user, err := biz.NewUserService().GetUserMe(contextvar.UserId.Get())
 	if err != nil {
 		return
 	}
@@ -139,7 +139,7 @@ func updateUserMe(c *gin.Context) {
 	if err = c.ShouldBindJSON(&user); err != nil {
 		return
 	}
-	err = biz.NewUserService().UpdateUser(global.UserId.Get(), &schemas.UserUpdate{
+	err = biz.NewUserService().UpdateUser(contextvar.UserId.Get(), &schemas.UserUpdate{
 		Password: user.Password,
 		Email:    user.Email,
 		Avatar:   user.Avatar,
@@ -148,7 +148,7 @@ func updateUserMe(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	c.JSON(http.StatusOK, ts.IdResponse{Id: global.UserId.Get()})
+	c.JSON(http.StatusOK, ts.IdResponse{Id: contextvar.UserId.Get()})
 }
 
 // @Tags Admin

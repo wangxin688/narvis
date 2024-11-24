@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wangxin688/narvis/intend/helpers/bgtask"
 	"github.com/wangxin688/narvis/intend/intendtask"
 	infra_tasks "github.com/wangxin688/narvis/server/features/infra/tasks"
 	monitor_tasks "github.com/wangxin688/narvis/server/features/monitor/tasks"
 	task_biz "github.com/wangxin688/narvis/server/features/task/biz"
-	"github.com/wangxin688/narvis/server/tools"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	ts "github.com/wangxin688/narvis/server/tools/schemas"
@@ -203,7 +203,7 @@ func wlanUserCallback(c *gin.Context) {
 		return
 	}
 	if wlanUser != nil {
-		tools.BackgroundTask(func() {
+		bgtask.BackgroundTask(func() {
 			monitor_tasks.WlanUserCallback(wlanUser)
 		})
 	}

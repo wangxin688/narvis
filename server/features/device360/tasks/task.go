@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/intend/devicerole"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/intend/metrics"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/model/devicerole"
 	"github.com/wangxin688/narvis/server/pkg/vtm"
 	"go.uber.org/zap"
 )
@@ -36,7 +36,7 @@ func getQueries() map[string]string {
 
 func queryResults(queries map[string]string) (deviceVectors, apVectors map[string][]*vtm.VectorResponse, err error) {
 	if queries == nil {
-		core.Logger.Error("[device360Task]: getQueries result is nil")
+		logger.Logger.Error("[device360Task]: getQueries result is nil")
 		return nil, nil, fmt.Errorf("queries is nil")
 	}
 
@@ -95,7 +95,7 @@ func aggregateApMetrics(vectors map[string][]*vtm.VectorResponse) map[string]map
 			siteId := item.Metric["siteId"]
 			apName := item.Metric["apName"]
 			if siteId == "" || apName == "" {
-				core.Logger.Warn("[device360Task]: siteId or apName is empty", zap.Any("metric", item))
+				logger.Logger.Warn("[device360Task]: siteId or apName is empty", zap.Any("metric", item))
 				continue
 			}
 			delete(item.Metric, "__name__")
@@ -140,7 +140,7 @@ func aggregateDeviceMetrics(vectors map[string][]*vtm.VectorResponse) (
 			deviceId := item.Metric["deviceId"]
 
 			if deviceId == "" {
-				core.Logger.Warn("[device360Task]: deviceId is empty", zap.Any("metric", item))
+				logger.Logger.Warn("[device360Task]: deviceId is empty", zap.Any("metric", item))
 				continue
 			}
 
@@ -210,7 +210,7 @@ func calcHealthScore(deviceMetrics map[string]*DeviceSchema, timestamp int64) []
 	var results []*vtm.Metric
 	for _, device := range deviceMetrics {
 		if device == nil {
-			core.Logger.Warn("[device360Task]: device is nil")
+			logger.Logger.Warn("[device360Task]: device is nil")
 			continue
 		}
 		icmpScore := calcIcmpScore(device.ICMPPing)
@@ -372,7 +372,7 @@ func RunDevice360OfflineTask() {
 	queries := getQueries()
 	deviceVectors, apVectors, err := queryResults(queries)
 	if err != nil {
-		core.Logger.Info("[device360OfflineTask]: failed to get vector from victoriaMetrics", zap.Error(err))
+		logger.Logger.Info("[device360OfflineTask]: failed to get vector from victoriaMetrics", zap.Error(err))
 		return
 	}
 
@@ -385,10 +385,10 @@ func RunDevice360OfflineTask() {
 	vtmClient := vtm.NewVtmClient()
 	err = vtmClient.BulkImportMetrics(deviceHealthScores, nil)
 	if err != nil {
-		core.Logger.Error("[device360OfflineTask]failed to import metrics to vtm", zap.Error(err))
+		logger.Logger.Error("[device360OfflineTask]failed to import metrics to vtm", zap.Error(err))
 	}
 	err = vtmClient.BulkImportMetrics(apHealthScores, nil)
 	if err != nil {
-		core.Logger.Error("[device360OfflineTask]failed to import metrics to vtm", zap.Error(err))
+		logger.Logger.Error("[device360OfflineTask]failed to import metrics to vtm", zap.Error(err))
 	}
 }

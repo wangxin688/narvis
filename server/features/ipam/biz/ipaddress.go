@@ -3,8 +3,8 @@ package ipam_biz
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/ipam/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 )
 
 type IpAddressService struct {
@@ -16,7 +16,7 @@ func NewIpAddressService() *IpAddressService {
 
 func (i *IpAddressService) CreateIpAddress(ip *schemas.IpAddressCreate) (string, error) {
 	newIpAddress := &models.IpAddress{
-		OrganizationId: global.OrganizationId.Get(),
+		OrganizationId: contextvar.OrganizationId.Get(),
 		Address:        ip.Address,
 		Status:         ip.Status,
 		MacAddress:     ip.MacAddress,
@@ -34,7 +34,7 @@ func (i *IpAddressService) CreateIpAddress(ip *schemas.IpAddressCreate) (string,
 }
 
 func (i *IpAddressService) GetById(ipId string) (*schemas.IpAddress, error) {
-	ip, err := gen.IpAddress.Select().Where(gen.IpAddress.Id.Eq(ipId), gen.IpAddress.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	ip, err := gen.IpAddress.Select().Where(gen.IpAddress.Id.Eq(ipId), gen.IpAddress.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (i *IpAddressService) GetById(ipId string) (*schemas.IpAddress, error) {
 
 func (i *IpAddressService) ListIpAddresses(query *schemas.IpAddressQuery) (int64, *[]*schemas.IpAddress, error) {
 	res := make([]*schemas.IpAddress, 0)
-	stmt := gen.IpAddress.Where(gen.IpAddress.OrganizationId.Eq(global.OrganizationId.Get()))
+	stmt := gen.IpAddress.Where(gen.IpAddress.OrganizationId.Eq(contextvar.OrganizationId.Get()))
 	if query.SiteId != nil {
 		stmt = stmt.Where(gen.IpAddress.SiteId.Eq(*query.SiteId))
 	}
@@ -119,7 +119,7 @@ func (i *IpAddressService) UpdateIpAddress(ipId string, ip *schemas.IpAddressUpd
 		updateFields["siteId"] = *ip.SiteId
 	}
 
-	_, err := gen.IpAddress.Select(gen.IpAddress.Id.Eq(ipId), gen.IpAddress.OrganizationId.Eq(global.OrganizationId.Get())).Updates(updateFields)
+	_, err := gen.IpAddress.Select(gen.IpAddress.Id.Eq(ipId), gen.IpAddress.OrganizationId.Eq(contextvar.OrganizationId.Get())).Updates(updateFields)
 	if err != nil {
 		return err
 	}
@@ -127,7 +127,7 @@ func (i *IpAddressService) UpdateIpAddress(ipId string, ip *schemas.IpAddressUpd
 }
 
 func (i *IpAddressService) DeleteIpAddress(ipId string) error {
-	_, err := gen.IpAddress.Select(gen.IpAddress.Id.Eq(ipId), gen.IpAddress.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+	_, err := gen.IpAddress.Select(gen.IpAddress.Id.Eq(ipId), gen.IpAddress.OrganizationId.Eq(contextvar.OrganizationId.Get())).Delete()
 	if err != nil {
 		return err
 	}

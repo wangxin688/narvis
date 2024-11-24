@@ -50,9 +50,11 @@ var (
 	SnmpV2Credential     *snmpV2Credential
 	Subscription         *subscription
 	SubscriptionRecord   *subscriptionRecord
+	Syslog               *syslog
 	TaskResult           *taskResult
 	Template             *template
 	User                 *user
+	WlanStation          *wlanStation
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
@@ -90,9 +92,11 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	SnmpV2Credential = &Q.SnmpV2Credential
 	Subscription = &Q.Subscription
 	SubscriptionRecord = &Q.SubscriptionRecord
+	Syslog = &Q.Syslog
 	TaskResult = &Q.TaskResult
 	Template = &Q.Template
 	User = &Q.User
+	WlanStation = &Q.WlanStation
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
@@ -131,9 +135,11 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 		SnmpV2Credential:     newSnmpV2Credential(db, opts...),
 		Subscription:         newSubscription(db, opts...),
 		SubscriptionRecord:   newSubscriptionRecord(db, opts...),
+		Syslog:               newSyslog(db, opts...),
 		TaskResult:           newTaskResult(db, opts...),
 		Template:             newTemplate(db, opts...),
 		User:                 newUser(db, opts...),
+		WlanStation:          newWlanStation(db, opts...),
 	}
 }
 
@@ -173,9 +179,11 @@ type Query struct {
 	SnmpV2Credential     snmpV2Credential
 	Subscription         subscription
 	SubscriptionRecord   subscriptionRecord
+	Syslog               syslog
 	TaskResult           taskResult
 	Template             template
 	User                 user
+	WlanStation          wlanStation
 }
 
 func (q *Query) Available() bool { return q.db != nil }
@@ -216,9 +224,11 @@ func (q *Query) clone(db *gorm.DB) *Query {
 		SnmpV2Credential:     q.SnmpV2Credential.clone(db),
 		Subscription:         q.Subscription.clone(db),
 		SubscriptionRecord:   q.SubscriptionRecord.clone(db),
+		Syslog:               q.Syslog.clone(db),
 		TaskResult:           q.TaskResult.clone(db),
 		Template:             q.Template.clone(db),
 		User:                 q.User.clone(db),
+		WlanStation:          q.WlanStation.clone(db),
 	}
 }
 
@@ -266,9 +276,11 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 		SnmpV2Credential:     q.SnmpV2Credential.replaceDB(db),
 		Subscription:         q.Subscription.replaceDB(db),
 		SubscriptionRecord:   q.SubscriptionRecord.replaceDB(db),
+		Syslog:               q.Syslog.replaceDB(db),
 		TaskResult:           q.TaskResult.replaceDB(db),
 		Template:             q.Template.replaceDB(db),
 		User:                 q.User.replaceDB(db),
+		WlanStation:          q.WlanStation.replaceDB(db),
 	}
 }
 
@@ -306,9 +318,11 @@ type queryCtx struct {
 	SnmpV2Credential     ISnmpV2CredentialDo
 	Subscription         ISubscriptionDo
 	SubscriptionRecord   ISubscriptionRecordDo
+	Syslog               ISyslogDo
 	TaskResult           ITaskResultDo
 	Template             ITemplateDo
 	User                 IUserDo
+	WlanStation          IWlanStationDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
@@ -346,9 +360,11 @@ func (q *Query) WithContext(ctx context.Context) *queryCtx {
 		SnmpV2Credential:     q.SnmpV2Credential.WithContext(ctx),
 		Subscription:         q.Subscription.WithContext(ctx),
 		SubscriptionRecord:   q.SubscriptionRecord.WithContext(ctx),
+		Syslog:               q.Syslog.WithContext(ctx),
 		TaskResult:           q.TaskResult.WithContext(ctx),
 		Template:             q.Template.WithContext(ctx),
 		User:                 q.User.WithContext(ctx),
+		WlanStation:          q.WlanStation.WithContext(ctx),
 	}
 }
 

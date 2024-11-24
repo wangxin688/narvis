@@ -1,7 +1,8 @@
 package infra
 
 import (
-	"github.com/wangxin688/narvis/server/core"
+	nlog "github.com/wangxin688/narvis/intend/logger"
+	"github.com/wangxin688/narvis/server/config"
 	"github.com/wangxin688/narvis/server/migrations"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/pkg/audit"
@@ -16,8 +17,8 @@ var err error
 
 func InitDB() error {
 	var db = DB
-	logMode := core.Settings.Postgres.LogMode
-	dsn := core.Settings.Postgres.BuildPgDsn()
+	logMode := config.Settings.Postgres.LogMode
+	dsn := config.Settings.Postgres.BuildPgDsn()
 	if logMode == "debug" {
 		logLevel := logger.Info
 		db.Logger = db.Logger.LogMode(logLevel)
@@ -30,19 +31,15 @@ func InitDB() error {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	}
 	if err != nil {
-		core.Logger.Fatal("[infraConnectDb]: failed to connect database", zap.Error(err))
+		nlog.Logger.Fatal("[infraConnectDb]: failed to connect database", zap.Error(err))
 	}
 	sqlDB, err := db.DB()
 	if err != nil {
-		core.Logger.Fatal("[infraConnectDb]: failed to connect database", zap.Error(err))
+		nlog.Logger.Fatal("[infraConnectDb]: failed to connect database", zap.Error(err))
 		return err
 	}
-	sqlDB.SetMaxIdleConns(core.Settings.Postgres.MaxIdleConns)
-	sqlDB.SetMaxOpenConns(core.Settings.Postgres.MaxOpenConns)
-	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
-	if err != nil {
-		core.Logger.Fatal("[infraConnectDb]: failed to create extension: %v", zap.Error(err))
-	}
+	sqlDB.SetMaxIdleConns(config.Settings.Postgres.MaxIdleConns)
+	sqlDB.SetMaxOpenConns(config.Settings.Postgres.MaxOpenConns)
 
 	// set db to global variable
 
@@ -75,9 +72,9 @@ func registerAuditLogMixin(db *gorm.DB) {
 func AutoMigration(db *gorm.DB) error {
 	err = migrations.Migrate(db)
 	if err != nil {
-		core.Logger.Fatal("[infraConnectDb]: failed to migrate database", zap.Error(err))
+		nlog.Logger.Fatal("[infraConnectDb]: failed to migrate database", zap.Error(err))
 		return err
 	}
-	core.Logger.Info("[infraConnectDb]: database migrated")
+	nlog.Logger.Info("[infraConnectDb]: database migrated")
 	return nil
 }

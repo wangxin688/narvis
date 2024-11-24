@@ -8,9 +8,9 @@ import (
 
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/alert/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/global/constants"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/helpers"
 	"gorm.io/datatypes"
 )
@@ -31,7 +31,7 @@ func (m *MaintenanceService) GetActiveMaintenance() ([]*models.Maintenance, erro
 
 func (m *MaintenanceService) CreateMaintenance(mt *schemas.MaintenanceCreate) (string, error) {
 	newMt := &models.Maintenance{
-		OrganizationId:  global.OrganizationId.Get(),
+		OrganizationId:  contextvar.OrganizationId.Get(),
 		StartedAt:       mt.StartedAt,
 		EndedAt:         mt.EndedAt,
 		MaintenanceType: mt.MaintenanceType,
@@ -52,7 +52,7 @@ func (m *MaintenanceService) CreateMaintenance(mt *schemas.MaintenanceCreate) (s
 
 func (m *MaintenanceService) UpdateMaintenance(mtID string, mt *schemas.MaintenanceUpdate) error {
 
-	dbMt, err := gen.Maintenance.Where(gen.Maintenance.Id.Eq(mtID), gen.Maintenance.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	dbMt, err := gen.Maintenance.Where(gen.Maintenance.Id.Eq(mtID), gen.Maintenance.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func (m *MaintenanceService) UpdateMaintenance(mtID string, mt *schemas.Maintena
 
 func (m *MaintenanceService) DeleteMaintenance(mtID string) error {
 
-	_, err := gen.Maintenance.Where(gen.Maintenance.Id.Eq(mtID), gen.Maintenance.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+	_, err := gen.Maintenance.Where(gen.Maintenance.Id.Eq(mtID), gen.Maintenance.OrganizationId.Eq(contextvar.OrganizationId.Get())).Delete()
 
 	if err != nil {
 		return err
@@ -104,7 +104,7 @@ func (m *MaintenanceService) GetById(mtID string) (*schemas.Maintenance, error) 
 	var result schemas.Maintenance
 	err := gen.Maintenance.Where(
 		gen.Maintenance.Id.Eq(mtID),
-		gen.Maintenance.OrganizationId.Eq(global.OrganizationId.Get())).Preload(
+		gen.Maintenance.OrganizationId.Eq(contextvar.OrganizationId.Get())).Preload(
 		gen.Maintenance.CreatedBy,
 	).Preload(gen.Maintenance.UpdatedBy).Scan(&result)
 	if err != nil {
@@ -116,7 +116,7 @@ func (m *MaintenanceService) GetById(mtID string) (*schemas.Maintenance, error) 
 func (m *MaintenanceService) ListMaintenances(query *schemas.MaintenanceQuery) (int64, []*schemas.Maintenance, error) {
 	result := make([]*schemas.Maintenance, 0)
 	count := int64(0)
-	stmt := gen.Maintenance.UnderlyingDB().Where("organization_id = ?", global.OrganizationId.Get())
+	stmt := gen.Maintenance.UnderlyingDB().Where("organization_id = ?", contextvar.OrganizationId.Get())
 	if query.Id != nil {
 		stmt = stmt.Where("id IN ?", *query.Id)
 	}

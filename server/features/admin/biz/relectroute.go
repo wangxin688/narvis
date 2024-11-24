@@ -2,7 +2,7 @@ package biz
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 )
 
 // router := gin.Default()
@@ -15,7 +15,7 @@ func ReflectRouteToDb(router *gin.Engine) gin.HandlerFunc {
 	return func(_ *gin.Context) {
 		routes := router.Routes()
 		for _, route := range routes {
-			core.Logger.Info(route.Method + " " + route.Path)
+			logger.Logger.Info(route.Method + " " + route.Path)
 			// add route to database here
 		}
 	}

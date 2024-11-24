@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/core"
-	"github.com/wangxin688/narvis/server/core/security"
+	"github.com/wangxin688/narvis/intend/helpers/security"
+	"github.com/wangxin688/narvis/server/config"
 	"github.com/wangxin688/narvis/server/features/organization/biz"
 	"github.com/wangxin688/narvis/server/tools/errors"
 )
@@ -36,8 +36,8 @@ func ProxyAuthMiddleware() gin.HandlerFunc {
 			)
 			return
 		}
-		proxyId, secretKey, err := security.VerifyProxyToken(parts[1])
-		if err != nil || secretKey != core.Settings.Jwt.PublicAuthKey {
+		proxyId, secretKey, err := security.VerifyAgentToken(parts[1], config.Settings.Jwt.SecretKey)
+		if err != nil || secretKey != config.Settings.Jwt.PublicAuthKey {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, errors.GenericError{
 					Code:    errors.CodeAccessTokenInvalid,
@@ -85,7 +85,7 @@ func PublicAuthMiddleware() gin.HandlerFunc {
 			)
 			return
 		}
-		if parts[1] != core.Settings.Jwt.PublicAuthKey {
+		if parts[1] != config.Settings.Jwt.PublicAuthKey {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, errors.GenericError{
 					Code:    errors.CodeAccessTokenInvalid,

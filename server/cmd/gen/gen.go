@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
+	"github.com/wangxin688/narvis/server/config"
 	"github.com/wangxin688/narvis/server/models"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
@@ -11,8 +12,9 @@ import (
 )
 
 func connectDB() *gorm.DB {
-	core.SetUpConfig()
-	dsn := core.Settings.Postgres.BuildPgDsn()
+	config.InitConfig()
+	config.InitLogger()
+	dsn := config.Settings.Postgres.BuildPgDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			NoLowerCase:   true,
@@ -20,7 +22,7 @@ func connectDB() *gorm.DB {
 		},
 	})
 	if err != nil {
-		core.Logger.Fatal("[infraConnectDb]: failed to connect database", zap.Error(err))
+		logger.Logger.Fatal("[infraConnectDb]: failed to connect database", zap.Error(err))
 	}
 	return db
 }
@@ -87,6 +89,8 @@ func main() {
 		&models.SubscriptionRecord{},
 		&models.Template{},
 		&models.TaskResult{},
+		&models.WlanStation{},
+		&models.Syslog{},
 	)
 	g.ApplyInterface(func(Filter) {}, models.Alert{}, models.Maintenance{}, models.Subscription{})
 	defer g.Execute()

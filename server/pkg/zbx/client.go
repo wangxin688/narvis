@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/imroc/req/v3"
-	"github.com/wangxin688/narvis/server/core"
 
+	"github.com/wangxin688/narvis/server/config"
 	zs "github.com/wangxin688/narvis/server/pkg/zbx/zschema"
 )
 
@@ -33,8 +33,8 @@ func (e *ErrorMessage) Error() string {
 }
 
 func NewZbxClient() *Zbx {
-	url := core.Settings.Zbx.Url
-	token := core.Settings.Zbx.Token
+	url := config.Settings.Zbx.Url
+	token := config.Settings.Zbx.Token
 	url = strings.TrimSuffix(url, "/")
 	once.Do(func() {
 		zbxInstance = &Zbx{

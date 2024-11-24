@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/imroc/req/v3"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/server/config"
 )
 
 var once sync.Once
@@ -26,9 +26,9 @@ type AlertManager struct {
 }
 
 func NewAlertManager() *AlertManager {
-	url := strings.TrimSuffix(core.Settings.Atm.Url, "/")
-	username := core.Settings.Atm.Username
-	password := core.Settings.Atm.Password
+	url := strings.TrimSuffix(config.Settings.Atm.Url, "/")
+	username := config.Settings.Atm.Username
+	password := config.Settings.Atm.Password
 	once.Do(func() {
 		amInstance = &AlertManager{
 			Client: req.C().SetBaseURL(url).SetCommonContentType("application/json").

@@ -3,8 +3,8 @@ package biz
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/organization/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 )
 
 type ProxyService struct{}
@@ -23,8 +23,8 @@ func (p *ProxyService) VerifyProxy(proxyId string) bool {
 	if !proxy.Active {
 		return false
 	}
-	global.OrganizationId.Set(proxy.OrganizationId)
-	global.ProxyId.Set(proxyId)
+	contextvar.OrganizationId.Set(proxy.OrganizationId)
+	contextvar.ProxyId.Set(proxyId)
 	return true
 }
 

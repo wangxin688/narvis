@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	mem_cache "github.com/wangxin688/narvis/client/utils/cache"
+	mem_cache "github.com/wangxin688/narvis/intend/cache"
 )
 
 // WLAN AP-MIB: https://www.h3c.com/cn/d_202401/2021242_30005_0.htm#_Toc146378887
@@ -157,8 +157,8 @@ func (hd *H3CDriver) WlanUsers() *factory.WlanUserResponse {
 			StationVlan:       &vlan,
 			StationOnlineTime: indexUserUptime[i],
 			StationChannel:    channel,
-			StationRxBytes:    indexRxBytes[i],
-			StationTxBytes:    indexTxBytes[i],
+			StationRxBits:     indexRxBytes[i] * 8,
+			StationTxBits:     indexTxBytes[i] * 8,
 			StationRadioType:  factory.ChannelToRadioType(channel),
 			StationMaxSpeed:   &speed,
 		}

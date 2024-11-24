@@ -2,7 +2,7 @@ package webssh_api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/middleware"
 	"github.com/wangxin688/narvis/server/tools/errors"
 	"go.uber.org/zap"
@@ -33,7 +33,7 @@ func webSSH(c *gin.Context) {
 	}()
 	err = handleWebSSHRequest(c)
 	if err != nil {
-		core.Logger.Error("[webssh]: failed to handle webssh request", zap.Error(err))
+		logger.Logger.Error("[webssh]: failed to handle webssh request", zap.Error(err))
 		return
 	}
 
@@ -59,7 +59,7 @@ func proxyWebSSH(c *gin.Context) {
 
 	err = handleProxyWebSocket(c)
 	if err != nil {
-		core.Logger.Error("[webssh]: failed to handle proxy webssh request", zap.Error(err))
+		logger.Logger.Error("[webssh]: failed to handle proxy webssh request", zap.Error(err))
 		return
 	}
 	//c.String(http.StatusOK, "success")

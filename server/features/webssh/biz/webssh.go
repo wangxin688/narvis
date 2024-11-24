@@ -6,9 +6,9 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/wangxin688/narvis/intend/intendtask"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/features/infra/schemas"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/pkg/rmq"
 	"go.uber.org/zap"
 )
@@ -36,9 +36,9 @@ func SendSignalToProxy(sessionId, managementIP string, cred *schemas.CliCredenti
 	if err != nil {
 		return err
 	}
-	err = rmq.PublishProxyMessage(signalByte, global.OrganizationId.Get())
+	err = rmq.PublishProxyMessage(signalByte, contextvar.OrganizationId.Get())
 	if err != nil {
-		core.Logger.Error("[webssh.proxySignal]: failed to publish message to rabbitmq", zap.Error(err))
+		logger.Logger.Error("[webssh.proxySignal]: failed to publish message to rabbitmq", zap.Error(err))
 		return err
 	}
 	return nil
@@ -58,7 +58,7 @@ func RelaySSHData(browserWS *websocket.Conn, proxyWS *websocket.Conn) {
 		for {
 			_, message, err := browserWS.ReadMessage()
 			if err != nil {
-				core.Logger.Error("[webssh]: failed to read message from browser", zap.Error(err))
+				logger.Logger.Error("[webssh]: failed to read message from browser", zap.Error(err))
 				return
 			}
 			proxyWS.WriteMessage(websocket.TextMessage, message)
@@ -68,7 +68,7 @@ func RelaySSHData(browserWS *websocket.Conn, proxyWS *websocket.Conn) {
 	for {
 		_, message, err := proxyWS.ReadMessage()
 		if err != nil {
-			core.Logger.Error("[webssh]: failed to read message from proxy", zap.Error(err))
+			logger.Logger.Error("[webssh]: failed to read message from proxy", zap.Error(err))
 			return
 		}
 		browserWS.WriteMessage(websocket.TextMessage, message)

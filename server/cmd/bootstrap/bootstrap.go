@@ -8,17 +8,18 @@ import (
 
 	"github.com/imroc/req/v3"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/cmd/bootstrap/asset"
-	"github.com/wangxin688/narvis/server/core"
-	"github.com/wangxin688/narvis/server/core/config"
+	"github.com/wangxin688/narvis/server/cmd/bootstrap/mock"
+	"github.com/wangxin688/narvis/server/config"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	infra_hooks "github.com/wangxin688/narvis/server/features/infra/hooks"
 	"github.com/wangxin688/narvis/server/features/organization/biz"
 	"github.com/wangxin688/narvis/server/features/organization/hooks"
 	"github.com/wangxin688/narvis/server/features/organization/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/pkg/zbx"
 	"github.com/wangxin688/narvis/server/pkg/zbx/zschema"
 	"gopkg.in/yaml.v2"
@@ -35,20 +36,21 @@ func main() {
 			panic(err)
 		}
 	}()
-	core.SetUpConfig()
-	core.SetUpLogger()
+	config.InitConfig()
+	config.InitLogger()
 	db := connectDB()
+	err = infra.AutoMigration(db)
 	gen.SetDefault(db)
 	initMacAddress()
 	initZbx()
 	initRabbitMQ()
-	err = infra.AutoMigration(db)
 	if err != nil {
 		return
 	}
-	if core.Settings.Env == "on_prem" {
+	if config.Settings.Env == "on_prem" {
 		orgId := initOrganization()
-		core.SetUpConfig()
+		mock.MockSite(db)
+		config.InitConfig()
 		initProxy(orgId)
 		initNarvisCliCredential(orgId)        //nolint: errcheck
 		initNarvisSnmpCredential(orgId)       //nolint: errcheck
@@ -56,94 +58,98 @@ func main() {
 		initNarvisServerSnmpCredential(orgId) //nolint: errcheck
 
 	}
-	core.SetUpConfig()
+	config.InitConfig()
 	err = initZbxTemplates()
 	err = initNarvisTemplates()
-	core.Logger.Info("[bootstrap]: bootstrap completed")
+	logger.Logger.Info("[bootstrap]: bootstrap completed")
 }
 
 func connectDB() *gorm.DB {
-	dsn := core.Settings.Postgres.BuildPgDsn()
+	dsn := config.Settings.Postgres.BuildPgDsn()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		core.Logger.Fatal("[bootstrap]: failed to connect database", zap.Error(err))
+		logger.Logger.Fatal("[bootstrap]: failed to connect database", zap.Error(err))
+	}
+	err = db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error
+	if err != nil {
+		logger.Logger.Fatal("[infraConnectDb]: failed to create extension: %v", zap.Error(err))
 	}
 	return db
 }
 
 func initOrganization() string {
 	service := biz.NewOrganizationService()
-	if core.Settings.BootstrapConfig.EnterpriseCode == "" {
-		core.Logger.Error("[bootstrap]: enterprise code is empty")
+	if config.Settings.BootstrapConfig.EnterpriseCode == "" {
+		logger.Logger.Error("[bootstrap]: enterprise code is empty")
 		panic("enterprise code is empty")
 	}
 
-	org, err := gen.Organization.Where(gen.Organization.EnterpriseCode.Eq(core.Settings.BootstrapConfig.EnterpriseCode)).Find()
+	org, err := gen.Organization.Where(gen.Organization.EnterpriseCode.Eq(config.Settings.BootstrapConfig.EnterpriseCode)).Find()
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get organization", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get organization", zap.Error(err))
 		panic(err)
 	}
 
 	if len(org) > 0 {
-		global.OrganizationId.Set(org[0].Id)
-		core.Logger.Info("[bootstrap]: organization already exists", zap.String("id", org[0].Id))
+		contextvar.OrganizationId.Set(org[0].Id)
+		logger.Logger.Info("[bootstrap]: organization already exists", zap.String("id", org[0].Id))
 		return org[0].Id
 	}
 
 	newOrg, err := service.CreateOrganization(&schemas.OrganizationCreate{
-		Name:           core.Settings.BootstrapConfig.Organization,
-		EnterpriseCode: core.Settings.BootstrapConfig.EnterpriseCode,
-		DomainName:     core.Settings.BootstrapConfig.DomainName,
+		Name:           config.Settings.BootstrapConfig.Organization,
+		EnterpriseCode: config.Settings.BootstrapConfig.EnterpriseCode,
+		DomainName:     config.Settings.BootstrapConfig.DomainName,
 		Active:         true,
 		LicenseCount:   100000,
 		AuthType:       0,
-		AdminPassword:  core.Settings.BootstrapConfig.AdminPassword,
+		AdminPassword:  config.Settings.BootstrapConfig.AdminPassword,
 	})
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create organization", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to create organization", zap.Error(err))
 		panic(err)
 	}
-	global.OrganizationId.Set(newOrg.Id)
-	core.Logger.Info("[bootstrap]: organization created", zap.String("id", newOrg.Id))
+	contextvar.OrganizationId.Set(newOrg.Id)
+	logger.Logger.Info("[bootstrap]: organization created", zap.String("id", newOrg.Id))
 	return newOrg.Id
 }
 
 func initProxy(orgId string) {
-	dbProxy, err := gen.Proxy.Where(gen.Proxy.Name.Eq(core.Settings.BootstrapConfig.EnterpriseCode)).Find()
+	dbProxy, err := gen.Proxy.Where(gen.Proxy.Name.Eq(config.Settings.BootstrapConfig.EnterpriseCode)).Find()
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get proxy", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get proxy", zap.Error(err))
 		panic(err)
 	}
 	if len(dbProxy) > 0 {
-		core.Logger.Info("[bootstrap]: proxy already exists", zap.String("id", dbProxy[0].Id))
+		logger.Logger.Info("[bootstrap]: proxy already exists", zap.String("id", dbProxy[0].Id))
 		for _, proxy := range dbProxy {
 			if proxy.Active && proxy.ProxyId == nil {
 				proxy, err := biz.NewProxyService().CreateProxy(&schemas.ProxyCreate{
 					OrganizationId: orgId,
-					Name:           core.Settings.BootstrapConfig.EnterpriseCode,
+					Name:           config.Settings.BootstrapConfig.EnterpriseCode,
 					Active:         true,
 				})
 				if err != nil {
-					core.Logger.Error("[bootstrap]: failed to create proxy", zap.Error(err))
+					logger.Logger.Error("[bootstrap]: failed to create proxy", zap.Error(err))
 					panic(err)
 				}
-				core.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
+				logger.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
 				hooks.CreateZbxProxy(proxy)
 			} else {
-				core.Logger.Info("[bootstrap]: monitor proxy already exists", zap.String("proxyId", *proxy.ProxyId))
+				logger.Logger.Info("[bootstrap]: monitor proxy already exists", zap.String("proxyId", *proxy.ProxyId))
 			}
 		}
 	} else {
 		proxy, err := biz.NewProxyService().CreateProxy(&schemas.ProxyCreate{
 			OrganizationId: orgId,
-			Name:           core.Settings.BootstrapConfig.EnterpriseCode,
+			Name:           config.Settings.BootstrapConfig.EnterpriseCode,
 			Active:         true,
 		})
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to create proxy", zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to create proxy", zap.Error(err))
 			panic(err)
 		}
-		core.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
+		logger.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
 		hooks.CreateZbxProxy(proxy)
 	}
 }
@@ -151,69 +157,69 @@ func initProxy(orgId string) {
 func initMacAddress() {
 	mac, err := gen.MacAddress.Count()
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get mac address", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get mac address", zap.Error(err))
 		panic(err)
 	}
 	if mac >= 1 {
-		core.Logger.Info("[bootstrap]: mac address already exists")
+		logger.Logger.Info("[bootstrap]: mac address already exists")
 		return
 	}
 	var macAddresses []*models.MacAddress
 	macAddressesBytes, err := asset.Asset("appdata/mac_address.json")
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get mac address", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get mac address", zap.Error(err))
 		panic(err)
 	}
 	err = json.Unmarshal(macAddressesBytes, &macAddresses)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to decode mac address file", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to decode mac address file", zap.Error(err))
 		panic(err)
 	}
 	err = gen.MacAddress.CreateInBatches(macAddresses, 100)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create mac address", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to create mac address", zap.Error(err))
 		panic(err)
 	}
 }
 
 func initRabbitMQ() {
-	url := fmt.Sprintf("http://%s:%d", core.Settings.RabbitMQ.Host, core.Settings.RabbitMQ.Port)
+	url := fmt.Sprintf("http://%s:%d", config.Settings.RabbitMQ.Host, config.Settings.RabbitMQ.Port)
 	client, err := rabbithole.NewClient(
 		url,
-		core.Settings.RabbitMQ.Username,
-		core.Settings.RabbitMQ.Password,
+		config.Settings.RabbitMQ.Username,
+		config.Settings.RabbitMQ.Password,
 	)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to connect rabbitmq", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to connect rabbitmq", zap.Error(err))
 		return
 	}
 	vhosts, err := client.ListVhosts()
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get rabbitmq vhosts", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get rabbitmq vhosts", zap.Error(err))
 		return
 	}
 	if len(vhosts) >= 2 {
-		core.Logger.Info("[bootstrap]: rabbitmq vhost already exists")
+		logger.Logger.Info("[bootstrap]: rabbitmq vhost already exists")
 		return
 	}
 	_, err = client.PutVhost("server", rabbithole.VhostSettings{Description: "narvis server vhost"})
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create rabbitmq vhost", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to create rabbitmq vhost", zap.Error(err))
 	}
-	core.Logger.Info("[bootstrap]: rabbitmq vhost server created")
+	logger.Logger.Info("[bootstrap]: rabbitmq vhost server created")
 	_, err = client.PutVhost("proxy", rabbithole.VhostSettings{Description: "narvis monitor vhost"})
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create rabbitmq vhost", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to create rabbitmq vhost", zap.Error(err))
 	}
-	core.Logger.Info("[bootstrap]: rabbitmq vhost proxy created")
+	logger.Logger.Info("[bootstrap]: rabbitmq vhost proxy created")
 
 	users, err := client.ListUsers()
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to list rabbitmq users", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to list rabbitmq users", zap.Error(err))
 		return
 	}
 	if len(users) >= 2 {
-		core.Logger.Info("[bootstrap]: rabbitmq user already exists")
+		logger.Logger.Info("[bootstrap]: rabbitmq user already exists")
 		return
 	}
 	_, err = client.PutUser("narvis-proxy", rabbithole.UserSettings{
@@ -221,29 +227,29 @@ func initRabbitMQ() {
 		Password: "851b090b967a89f802e72a0baf1d230e",
 	})
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create rabbitmq user", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to create rabbitmq user", zap.Error(err))
 	}
-	core.Logger.Info("[bootstrap]: rabbitmq proxy user created")
+	logger.Logger.Info("[bootstrap]: rabbitmq proxy user created")
 	_, err = client.UpdatePermissionsIn("proxy", "narvis-server", rabbithole.Permissions{
 		Read:      ".*",
 		Write:     ".*",
 		Configure: ".*",
 	})
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to update rabbitmq user permissions", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to update rabbitmq user permissions", zap.Error(err))
 	}
-	core.Logger.Info("[bootstrap]: rabbitmq server user permissions updated")
+	logger.Logger.Info("[bootstrap]: rabbitmq server user permissions updated")
 	_, err = client.UpdatePermissionsIn("proxy", "narvis-proxy", rabbithole.Permissions{
 		Read:      ".*",
 		Write:     ".*",
 		Configure: ".*",
 	})
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to update rabbitmq proxy user permissions", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to update rabbitmq proxy user permissions", zap.Error(err))
 	}
-	core.Logger.Info("[bootstrap]: rabbitmq proxy user permissions updated")
+	logger.Logger.Info("[bootstrap]: rabbitmq proxy user permissions updated")
 
-	core.Logger.Info("[bootstrap]: rabbitmq initialized")
+	logger.Logger.Info("[bootstrap]: rabbitmq initialized")
 }
 
 func initZbx() {
@@ -253,26 +259,26 @@ func initZbx() {
 	}
 	mediaTypeId, err := initZbxMediaType(client)
 	if err != nil {
-		core.Logger.Info("[bootstrap]: failed to init media type", zap.Error(err))
+		logger.Logger.Info("[bootstrap]: failed to init media type", zap.Error(err))
 		return
 	}
 	initZbxGlobalMacro(client)
 	superUserId, err := initZbxSuperUser(client, mediaTypeId)
 	if err != nil {
-		core.Logger.Info("[bootstrap]: failed to init monitor super user", zap.Error(err))
+		logger.Logger.Info("[bootstrap]: failed to init monitor super user", zap.Error(err))
 		return
 	}
 	initZbxAction(client, mediaTypeId, superUserId)
 	token, err := initZbxSuperToken(client, superUserId)
 	if err != nil {
-		core.Logger.Info("[bootstrap]: failed to init monitor super token", zap.Error(err))
+		logger.Logger.Info("[bootstrap]: failed to init monitor super token", zap.Error(err))
 		return
 	}
 	initZbxDisableDefaultAdmin(client, token)
 }
 
 func getClient() *req.Client {
-	url := core.Settings.Zbx.Url
+	url := config.Settings.Zbx.Url
 	client := req.C().SetBaseURL(url).SetCommonHeader("Content-Type", "application/json-rpc")
 	login := map[string]any{
 		"jsonrpc": "2.0",
@@ -283,10 +289,10 @@ func getClient() *req.Client {
 	var loginResponse zschema.LoginResponse
 	resp, err := client.R().SetBody(login).SetSuccessResult(&loginResponse).Post("/api_jsonrpc.php")
 	if err != nil || !resp.IsSuccessState() || loginResponse.Error != nil {
-		core.Logger.Info("[bootstrap]: monitor has been already init.")
+		logger.Logger.Info("[bootstrap]: monitor has been already init.")
 		return nil
 	}
-	core.Logger.Info("[bootstrap]: login to monitor success")
+	logger.Logger.Info("[bootstrap]: login to monitor success")
 	token := loginResponse.Result
 	client.SetCommonBearerAuthToken(token)
 	return client
@@ -350,7 +356,7 @@ return JSON.stringify(result);
 			{"name": "eventId", "value": "{EVENT.ID}"},
 			{"name": "token", "value": "{$XAUTHTOKEN}"},
 			{"name": "tags", "value": "{EVENT.TAGSJSON}"},
-			{"name": "url", "value": fmt.Sprintf("%s/api/v1/alert/alerts", core.Settings.System.BaseUrl)},
+			{"name": "url", "value": fmt.Sprintf("%s/api/v1/alert/alerts", config.Settings.System.BaseUrl)},
 		},
 	}
 	mediaTypeBody := map[string]any{
@@ -367,11 +373,11 @@ return JSON.stringify(result);
 	newAlertMedia, err := client.R().SetBody(mediaTypeBody).SetSuccessResult(&mediaTypeResponse).Post("/api_jsonrpc.php")
 	fmt.Printf("%v", mediaTypeResponse)
 	if err != nil || !newAlertMedia.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init monitor failed to create alert media type", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: init monitor failed to create alert media type", zap.Error(err))
 		return "", err
 	}
 	newMediaTypeId := mediaTypeResponse.Result.Mediatypeids[0]
-	core.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new media type %s success", newMediaTypeId))
+	logger.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new media type %s success", newMediaTypeId))
 	return newMediaTypeId, nil
 }
 
@@ -381,20 +387,20 @@ func initZbxGlobalMacro(client *req.Client) error {
 		"method":  "usermacro.createglobal",
 		"params": map[string]any{
 			"macro": "{$XAUTHTOKEN}",
-			"value": core.Settings.Jwt.PublicAuthKey,
+			"value": config.Settings.Jwt.PublicAuthKey,
 			"type":  1,
 		},
 		"id": 1,
 	}
 	resp, err := client.R().SetBody(newMacroBody).Post("/api_jsonrpc.php")
 	if err != nil {
-		core.Logger.Info("[bootstrap]: failed to create new global macro", zap.Error(err))
+		logger.Logger.Info("[bootstrap]: failed to create new global macro", zap.Error(err))
 		return err
 	}
 	if resp.IsErrorState() {
-		core.Logger.Info("[bootstrap]: failed to create new global macro")
+		logger.Logger.Info("[bootstrap]: failed to create new global macro")
 	}
-	core.Logger.Info("[bootstrap]: create new global macro success")
+	logger.Logger.Info("[bootstrap]: create new global macro success")
 	return nil
 }
 
@@ -427,11 +433,11 @@ func initZbxSuperUser(client *req.Client, mediaTypeId string) (string, error) {
 	superUserResponse := new(Resp)
 	newSuperUser, err := client.R().SetBody(superUserBody).SetSuccessResult(&superUserResponse).Post("/api_jsonrpc.php")
 	if err != nil || !newSuperUser.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init monitor failed to create super user", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: init monitor failed to create super user", zap.Error(err))
 		return "", err
 	}
 	newSuperUserId := superUserResponse.Result.Userids[0]
-	core.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new super user %s success", newSuperUserId))
+	logger.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new super user %s success", newSuperUserId))
 	return newSuperUserId, nil
 }
 
@@ -500,11 +506,11 @@ func initZbxAction(client *req.Client, mediaTypeId string, superUserId string) (
 	newActionResponse := new(Resp)
 	resp, err := client.R().SetBody(newActionBody).SetSuccessResult(&newActionResponse).Post("/api_jsonrpc.php")
 	if err != nil || !resp.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init monitor failed to create new action", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: init monitor failed to create new action", zap.Error(err))
 		return "", err
 	}
 	newActionId := newActionResponse.Result.ActionIds[0]
-	core.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new action %s success", newActionId))
+	logger.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new action %s success", newActionId))
 	return newActionId, nil
 }
 
@@ -525,7 +531,7 @@ func initZbxSuperToken(client *req.Client, superUserId string) (string, error) {
 	newTokenResponse := new(Resp)
 	newToken, err := client.R().SetBody(newTokenBody).SetSuccessResult(&newTokenResponse).Post("/api_jsonrpc.php")
 	if err != nil || !newToken.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init monitor failed to create super token", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: init monitor failed to create super token", zap.Error(err))
 		return "", err
 	}
 	newTokenId := newTokenResponse.Result.TokenIds[0]
@@ -545,11 +551,11 @@ func initZbxSuperToken(client *req.Client, superUserId string) (string, error) {
 	nowTokenGenerateResponse := new(NowTokenGenerateResp)
 	nowTokenGenerate, err := client.R().SetBody(nowTokenGenerateBody).SetSuccessResult(&nowTokenGenerateResponse).Post("/api_jsonrpc.php")
 	if err != nil || !nowTokenGenerate.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init_monitor failed to create super token", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: init_monitor failed to create super token", zap.Error(err))
 		return "", err
 	}
 	nowToken := nowTokenGenerateResponse.Result[0].Token
-	core.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new super token %s success", nowToken))
+	logger.Logger.Info(fmt.Sprintf("[bootstrap]: init monitor create new super token %s success", nowToken))
 	writeTokenToYamlConfig(nowToken)
 	return nowToken, nil
 }
@@ -557,24 +563,24 @@ func initZbxSuperToken(client *req.Client, superUserId string) (string, error) {
 func writeTokenToYamlConfig(token string) {
 	yamlConfig, err := os.ReadFile("config.yaml")
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to read config file", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to read config file", zap.Error(err))
 		return
 	}
-	var config config.Settings
+	var config config.Config
 	err = yaml.Unmarshal(yamlConfig, &config)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to unmarshal config file", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to unmarshal config file", zap.Error(err))
 		return
 	}
 	config.Zbx.Token = token
 	yamlConfig, err = yaml.Marshal(&config)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to marshal config file", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to marshal config file", zap.Error(err))
 		return
 	}
 	err = os.WriteFile("config.yaml", yamlConfig, 0644)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to write config file", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to write config file", zap.Error(err))
 		return
 	}
 }
@@ -592,36 +598,36 @@ func initZbxDisableDefaultAdmin(client *req.Client, token string) error {
 	}
 	resp, err := client.R().SetBody(updateBody).Post("/api_jsonrpc.php")
 	if err != nil || !resp.IsSuccessState() {
-		core.Logger.Error("[bootstrap]: init monitor failed to disable default admin", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: init monitor failed to disable default admin", zap.Error(err))
 		return err
 	}
-	core.Logger.Info("[bootstrap]: init monitor disable default admin success")
+	logger.Logger.Info("[bootstrap]: init monitor disable default admin success")
 	return nil
 }
 
 func initNarvisSnmpCredential(orgId string) error {
 	cred, err := gen.SnmpV2Credential.Where(gen.SnmpV2Credential.OrganizationId.Eq(orgId)).Find()
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get snmp credential", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get snmp credential", zap.Error(err))
 		return err
 	}
 	if len(cred) > 0 {
-		core.Logger.Info("[bootstrap]: snmp credential already exists", zap.String("id", cred[0].Id))
+		logger.Logger.Info("[bootstrap]: snmp credential already exists", zap.String("id", cred[0].Id))
 		for _, cr := range cred {
 			if cr.DeviceId == nil && cr.GlobalMacroId == nil {
 				snmpCred := &models.SnmpV2Credential{
 					OrganizationId: orgId,
-					Community:      core.Settings.BootstrapConfig.SnmpCommunity,
+					Community:      config.Settings.BootstrapConfig.SnmpCommunity,
 					MaxRepetitions: 50,
-					Timeout:        core.Settings.BootstrapConfig.SnmpTimeout,
-					Port:           core.Settings.BootstrapConfig.SnmpPort,
+					Timeout:        config.Settings.BootstrapConfig.SnmpTimeout,
+					Port:           config.Settings.BootstrapConfig.SnmpPort,
 				}
 				err = gen.SnmpV2Credential.Create(snmpCred)
 				if err != nil {
-					core.Logger.Error("[bootstrap]: failed to create snmp credential", zap.Error(err))
+					logger.Logger.Error("[bootstrap]: failed to create snmp credential", zap.Error(err))
 					return err
 				}
-				core.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
+				logger.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
 				infra_hooks.SnmpCredCreateHooks(snmpCred.Id)
 				break
 			}
@@ -629,17 +635,17 @@ func initNarvisSnmpCredential(orgId string) error {
 	} else {
 		snmpCred := &models.SnmpV2Credential{
 			OrganizationId: orgId,
-			Community:      core.Settings.BootstrapConfig.SnmpCommunity,
+			Community:      config.Settings.BootstrapConfig.SnmpCommunity,
 			MaxRepetitions: 50,
-			Timeout:        core.Settings.BootstrapConfig.SnmpTimeout,
-			Port:           core.Settings.BootstrapConfig.SnmpPort,
+			Timeout:        config.Settings.BootstrapConfig.SnmpTimeout,
+			Port:           config.Settings.BootstrapConfig.SnmpPort,
 		}
 		err = gen.SnmpV2Credential.Create(snmpCred)
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to create snmp credential", zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to create snmp credential", zap.Error(err))
 			return err
 		}
-		core.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
+		logger.Logger.Info("[bootstrap]: snmp credential created", zap.String("id", snmpCred.Id))
 		infra_hooks.SnmpCredCreateHooks(snmpCred.Id)
 	}
 	return nil
@@ -648,74 +654,74 @@ func initNarvisSnmpCredential(orgId string) error {
 func initNarvisCliCredential(orgId string) error {
 	cred, err := gen.CliCredential.Where(gen.CliCredential.OrganizationId.Eq(orgId)).Find()
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get client credential", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get client credential", zap.Error(err))
 		return err
 	}
 	if len(cred) > 0 {
-		core.Logger.Info("[bootstrap]: client credential already exists", zap.String("id", cred[0].Id))
+		logger.Logger.Info("[bootstrap]: client credential already exists", zap.String("id", cred[0].Id))
 		return nil
 	}
 	clientCred := &models.CliCredential{
 		OrganizationId: orgId,
-		Username:       core.Settings.BootstrapConfig.CliUser,
-		Password:       core.Settings.BootstrapConfig.CliPassword,
+		Username:       config.Settings.BootstrapConfig.CliUser,
+		Password:       config.Settings.BootstrapConfig.CliPassword,
 	}
 	err = gen.CliCredential.Create(clientCred)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create client credential", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to create client credential", zap.Error(err))
 		return err
 	}
-	core.Logger.Info("[bootstrap]: client credential created", zap.String("id", clientCred.Id))
+	logger.Logger.Info("[bootstrap]: client credential created", zap.String("id", clientCred.Id))
 	return nil
 }
 
 func initNarvisServerCredential(orgId string) error {
 	cred, err := gen.ServerCredential.Where(gen.ServerCredential.OrganizationId.Eq(orgId)).Find()
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get server credential", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get server credential", zap.Error(err))
 		return err
 	}
 	if len(cred) > 0 {
-		core.Logger.Info("[bootstrap]: server credential already exists", zap.String("id", cred[0].Id))
+		logger.Logger.Info("[bootstrap]: server credential already exists", zap.String("id", cred[0].Id))
 		return nil
 	}
 	serverCred := &models.ServerCredential{
 		OrganizationId: orgId,
-		Username:       core.Settings.BootstrapConfig.CliUser,
-		Password:       core.Settings.BootstrapConfig.CliPassword,
+		Username:       config.Settings.BootstrapConfig.CliUser,
+		Password:       config.Settings.BootstrapConfig.CliPassword,
 	}
 	err = gen.ServerCredential.Create(serverCred)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create server credential", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to create server credential", zap.Error(err))
 		return err
 	}
-	core.Logger.Info("[bootstrap]: server credential created", zap.String("id", serverCred.Id))
+	logger.Logger.Info("[bootstrap]: server credential created", zap.String("id", serverCred.Id))
 	return nil
 }
 
 func initNarvisServerSnmpCredential(orgId string) error {
 	cred, err := gen.ServerSnmpCredential.Where(gen.ServerSnmpCredential.OrganizationId.Eq(orgId)).Find()
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get server snmp credential", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get server snmp credential", zap.Error(err))
 		return err
 	}
 	if len(cred) > 0 {
-		core.Logger.Info("[bootstrap]: server snmp credential already exists", zap.String("id", cred[0].Id))
+		logger.Logger.Info("[bootstrap]: server snmp credential already exists", zap.String("id", cred[0].Id))
 		return nil
 	}
 	serverSnmpCred := &models.ServerSnmpCredential{
 		OrganizationId: orgId,
-		Community:      core.Settings.BootstrapConfig.SnmpCommunity,
+		Community:      config.Settings.BootstrapConfig.SnmpCommunity,
 		MaxRepetitions: 50,
-		Timeout:        core.Settings.BootstrapConfig.SnmpTimeout,
-		Port:           core.Settings.BootstrapConfig.SnmpPort,
+		Timeout:        config.Settings.BootstrapConfig.SnmpTimeout,
+		Port:           config.Settings.BootstrapConfig.SnmpPort,
 	}
 	err = gen.ServerSnmpCredential.Create(serverSnmpCred)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to create server snmp credential", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to create server snmp credential", zap.Error(err))
 		return err
 	}
-	core.Logger.Info("[bootstrap]: server snmp credential created", zap.String("id", serverSnmpCred.Id))
+	logger.Logger.Info("[bootstrap]: server snmp credential created", zap.String("id", serverSnmpCred.Id))
 	return nil
 }
 
@@ -736,28 +742,28 @@ func initZbxTemplates() error {
 	for _, template := range firstImportTemplates {
 		templateBytes, err := asset.Asset(template)
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to read template file", zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to read template file", zap.Error(err))
 			return err
 		}
 		_, err = zbxClient.ConfigurationImport(string(templateBytes))
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to import template", zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to import template", zap.Error(err))
 			return err
 		}
-		core.Logger.Info("[bootstrap]: init monitor template", zap.String("name", template))
+		logger.Logger.Info("[bootstrap]: init monitor template", zap.String("name", template))
 	}
 	for _, template := range zbxTemplates {
 		templateBytes, err := asset.Asset(template)
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to read template file", zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to read template file", zap.Error(err))
 			return err
 		}
 		_, err = zbxClient.ConfigurationImport(string(templateBytes))
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to import template", zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to import template", zap.Error(err))
 			return err
 		}
-		core.Logger.Info("[bootstrap]: init monitor template", zap.String("name", template))
+		logger.Logger.Info("[bootstrap]: init monitor template", zap.String("name", template))
 	}
 	return nil
 
@@ -766,13 +772,13 @@ func initZbxTemplates() error {
 func initNarvisTemplates() error {
 	templateMetaBytes, err := asset.Asset("appdata/template_meta.json")
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to get template meta file", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to get template meta file", zap.Error(err))
 		return err
 	}
 	var templates []map[string]string
 	err = json.Unmarshal(templateMetaBytes, &templates)
 	if err != nil {
-		core.Logger.Error("[bootstrap]: failed to decode template meta file", zap.Error(err))
+		logger.Logger.Error("[bootstrap]: failed to decode template meta file", zap.Error(err))
 		return err
 	}
 	zbxClient := zbx.NewZbxClient()
@@ -785,11 +791,11 @@ func initNarvisTemplates() error {
 			gen.Template.TemplateName.Eq(templateName),
 		).Find()
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to get template", zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to get template", zap.Error(err))
 			return err
 		}
 		if len(dbTemplate) > 0 {
-			core.Logger.Info("[bootstrap]: template already exists", zap.String("id", dbTemplate[0].Id))
+			logger.Logger.Info("[bootstrap]: template already exists", zap.String("id", dbTemplate[0].Id))
 			continue
 		}
 		output := "templateid"
@@ -802,11 +808,11 @@ func initNarvisTemplates() error {
 			},
 		)
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to get template", zap.String("name", template["basicTemplate"]), zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to get template", zap.String("name", template["basicTemplate"]), zap.Error(err))
 			return err
 		}
 		if len(templateId) == 0 {
-			core.Logger.Error("[bootstrap]: failed to get template", zap.String("name", template["basicTemplate"]), zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to get template", zap.String("name", template["basicTemplate"]), zap.Error(err))
 			continue
 		}
 		newdbTemplate := &models.Template{
@@ -817,10 +823,10 @@ func initNarvisTemplates() error {
 		}
 		err = gen.Template.Create(newdbTemplate)
 		if err != nil {
-			core.Logger.Error("[bootstrap]: failed to create db template", zap.Error(err))
+			logger.Logger.Error("[bootstrap]: failed to create db template", zap.Error(err))
 			return err
 		}
-		core.Logger.Info("[bootstrap]: template created", zap.String("id", newdbTemplate.Id))
+		logger.Logger.Info("[bootstrap]: template created", zap.String("id", newdbTemplate.Id))
 	}
 	return nil
 }

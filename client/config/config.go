@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/spf13/viper"
+	"github.com/wangxin688/narvis/intend/logger"
 )
 
 var Settings *Config
@@ -55,4 +56,9 @@ func SetupConfig() (err error) {
 	Settings = settings
 
 	return nil
+}
+
+func SetUpLogger() {
+	logConfig := logger.LogConfig{Formatter: "text"}
+	logger.InitLogger(&logConfig)
 }

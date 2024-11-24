@@ -13,7 +13,7 @@ type DeviceHealthTrendQuery struct {
 }
 
 type HealthResponse struct {
-	Gateway HealthHeatMap `json:"Gateway"`
+	Firewall HealthHeatMap `json:"Firewall"`
 	WlanAP  HealthHeatMap `json:"WlanAP"`
 	Switch  HealthHeatMap `json:"Switch"`
 	Device  HealthHeatMap `json:"Device"`

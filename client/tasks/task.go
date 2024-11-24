@@ -15,10 +15,13 @@ import (
 	"github.com/wangxin688/narvis/client/pkg/gowebssh"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	"github.com/wangxin688/narvis/client/utils/helpers"
-	"github.com/wangxin688/narvis/client/utils/logger"
-	"github.com/wangxin688/narvis/client/utils/security"
+	nettyx_network "github.com/wangxin688/narvis/intend/helpers/network"
+	nettyx_processor "github.com/wangxin688/narvis/intend/helpers/processor"
+	"github.com/wangxin688/narvis/intend/helpers/security"
 	"github.com/wangxin688/narvis/intend/intendtask"
+	"github.com/wangxin688/narvis/intend/logger"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
 	"go.uber.org/zap"
 )
 
@@ -30,7 +33,7 @@ func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse
 		logger.Logger.Error("[ScanDeviceBasicInfo]: Unmarshal err: ", zap.Error(err))
 		return nil, err
 	}
-	targets, err := helpers.CIDRToIPStrings(task.Range)
+	targets, err := nettyx_network.CIDR2IpStrings(task.Range)
 	if err != nil {
 		logger.Logger.Error(fmt.Sprintf("[ScanDeviceBasicInfo]: received wrong ip range %s", task.Range), zap.Error(err))
 		return nil, err
@@ -117,8 +120,8 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 	resp.Description = r.Data.SysDescr
 	resp.ChassisId = &r.Data.ChassisId
 	resp.Name = r.Data.Hostname
-	resp.Interfaces = lo.Map(r.Data.Interfaces, func(item *factory.DeviceInterface, _ int) *intendtask.DeviceInterface {
-		return &intendtask.DeviceInterface{
+	resp.Interfaces = lo.Map(r.Data.Interfaces, func(item *factory.DeviceInterface, _ int) *intend_device.DeviceInterface {
+		return &intend_device.DeviceInterface{
 			IfIndex:       item.IfIndex,
 			IfName:        item.IfName,
 			IfDescr:       item.IfDescr,
@@ -133,17 +136,17 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 			IfIpAddress:   &item.IfIpAddress,
 		}
 	})
-	resp.Vlans = lo.Map(r.Data.Vlans, func(item *factory.VlanItem, _ int) *intendtask.VlanItem {
-		return &intendtask.VlanItem{
+	resp.Vlans = lo.Map(r.Data.Vlans, func(item *factory.VlanItem, _ int) *intend_device.VlanItem {
+		return &intend_device.VlanItem{
 			VlanId:   item.VlanId,
 			VlanName: item.VlanName,
 			IfIndex:  item.IfIndex,
-			Range:    item.Range,
+			Network:  item.Range,
 			Gateway:  item.Gateway,
 		}
 	})
-	resp.LldpNeighbors = lo.Map(r.Data.LldpNeighbors, func(item *factory.LldpNeighbor, _ int) *intendtask.LldpNeighbor {
-		return &intendtask.LldpNeighbor{
+	resp.LldpNeighbors = lo.Map(r.Data.LldpNeighbors, func(item *factory.LldpNeighbor, _ int) *intend_device.LldpNeighbor {
+		return &intend_device.LldpNeighbor{
 			LocalChassisId:  item.LocalChassisId,
 			LocalHostname:   item.LocalHostname,
 			LocalIfName:     item.LocalIfName,
@@ -154,8 +157,8 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 			RemoteIfDescr:   item.RemoteIfDescr,
 		}
 	})
-	resp.Entities = lo.Map(r.Data.Entities, func(item *factory.Entity, _ int) *intendtask.Entity {
-		return &intendtask.Entity{
+	resp.Entities = lo.Map(r.Data.Entities, func(item *factory.Entity, _ int) *intend_device.Entity {
+		return &intend_device.Entity{
 			EntityPhysicalClass:       item.EntityPhysicalClass,
 			EntityPhysicalDescr:       item.EntityPhysicalDescr,
 			EntityPhysicalName:        item.EntityPhysicalName,
@@ -163,16 +166,16 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 			EntityPhysicalSerialNum:   item.EntityPhysicalSerialNum,
 		}
 	})
-	resp.Stacks = lo.Map(r.Data.Stacks, func(item *factory.Stack, _ int) *intendtask.Stack {
-		return &intendtask.Stack{
+	resp.Stacks = lo.Map(r.Data.Stacks, func(item *factory.Stack, _ int) *intend_device.Stack {
+		return &intend_device.Stack{
 			Id:         item.Id,
 			Priority:   item.Priority,
 			Role:       item.Role,
 			MacAddress: item.MacAddress,
 		}
 	})
-	resp.ArpTable = lo.Map(r.Data.ArpTable, func(item *factory.ArpItem, _ int) *intendtask.ArpItem {
-		return &intendtask.ArpItem{
+	resp.ArpTable = lo.Map(r.Data.ArpTable, func(item *factory.ArpItem, _ int) *intend_device.ArpItem {
+		return &intend_device.ArpItem{
 			IpAddress:  item.IpAddress,
 			MacAddress: item.MacAddress,
 			Type:       item.Type,
@@ -243,7 +246,7 @@ func webSSHTask(data []byte) error {
 		return err
 	}
 	// Get the token from the proxy server
-	token, err := security.ProxyToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY)
+	token, err := security.GenerateAgentToken(config.Settings.PROXY_ID, config.Settings.SECRET_KEY, config.Settings.SECRET_KEY)
 	if err != nil {
 		logger.Logger.Error("[webSSHTask]: failed to get token", zap.Error(err))
 		return err
@@ -307,7 +310,7 @@ func configurationBackupTask(data []byte) *intendtask.ConfigurationBackupTaskRes
 	}
 	result.Configuration = configuration
 	result.BackupTime = time.Now().UTC().String()
-	result.HashValue = helpers.StringToMd5(configuration)
+	result.HashValue = nettyx_processor.String2Md5(configuration)
 	return result
 
 }
@@ -342,7 +345,7 @@ func wlanUserTask(data []byte) *intendtask.WlanUserTaskResult {
 		return result
 	}
 	for _, user := range response[0].WlanUsers {
-		result.WlanUsers = append(result.WlanUsers, &intendtask.WlanUserItem{
+		result.WlanUsers = append(result.WlanUsers, &nettyx_wlanstation.WlanUser{
 			StationMac:           user.StationMac,
 			StationIp:            user.StationIp,
 			StationUsername:      user.StationUsername,
@@ -354,8 +357,8 @@ func wlanUserTask(data []byte) *intendtask.WlanUserTaskResult {
 			StationVlan:          user.StationVlan,
 			StationOnlineTime:    user.StationOnlineTime,
 			StationChannel:       user.StationChannel,
-			StationRxBits:        user.StationRxBytes * 8,
-			StationTxBits:        user.StationTxBytes * 8,
+			StationRxBits:        user.StationRxBits,
+			StationTxBits:        user.StationRxBits,
 			StationRadioType:     user.StationRadioType,
 		})
 	}

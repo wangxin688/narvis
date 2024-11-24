@@ -6,10 +6,9 @@ import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/ipam/schemas"
 	ipam_utils "github.com/wangxin688/narvis/server/features/ipam/utils"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"github.com/wangxin688/narvis/server/tools/helpers"
-	ts "github.com/wangxin688/narvis/server/tools/schemas"
 )
 
 type PrefixService struct{}
@@ -26,7 +25,7 @@ func (p *PrefixService) CreatePrefix(prefix *schemas.PrefixCreate) (string, erro
 		VlanName:       prefix.VlanName,
 		Type:           prefix.Type,
 		SiteId:         prefix.SiteId,
-		OrganizationId: global.OrganizationId.Get(),
+		OrganizationId: contextvar.OrganizationId.Get(),
 		Version:        ipam_utils.CidrVersion(prefix.Range),
 	}
 
@@ -38,52 +37,52 @@ func (p *PrefixService) CreatePrefix(prefix *schemas.PrefixCreate) (string, erro
 }
 
 func (p *PrefixService) UpdatePrefix(g *gin.Context, id string, prefix *schemas.PrefixUpdate) error {
-	dbPrefix, err := gen.Prefix.Where(gen.Prefix.Id.Eq(id), gen.Prefix.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	dbPrefix, err := gen.Prefix.Where(gen.Prefix.Id.Eq(id), gen.Prefix.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return err
 	}
-	updateFields := make(map[string]*ts.OrmDiff)
+	updateFields := make(map[string]*contextvar.Diff)
 	if prefix.Range != nil && *prefix.Range != dbPrefix.Range {
-		updateFields["range"] = &ts.OrmDiff{Before: dbPrefix.Range, After: *prefix.Range}
+		updateFields["range"] = &contextvar.Diff{Before: dbPrefix.Range, After: *prefix.Range}
 		dbPrefix.Range = *prefix.Range
 	}
 	if prefix.VlanId != nil && *prefix.VlanId != *dbPrefix.VlanId {
-		updateFields["vlanId"] = &ts.OrmDiff{Before: dbPrefix.VlanId, After: *prefix.VlanId}
+		updateFields["vlanId"] = &contextvar.Diff{Before: dbPrefix.VlanId, After: *prefix.VlanId}
 		dbPrefix.VlanId = prefix.VlanId
 	}
 	if prefix.VlanName != nil && *prefix.VlanName != *dbPrefix.VlanName {
-		updateFields["vlanName"] = &ts.OrmDiff{Before: dbPrefix.VlanName, After: *prefix.VlanName}
+		updateFields["vlanName"] = &contextvar.Diff{Before: dbPrefix.VlanName, After: *prefix.VlanName}
 		dbPrefix.VlanName = prefix.VlanName
 	}
 	if prefix.Type != nil && *prefix.Type != dbPrefix.Type {
-		updateFields["type"] = &ts.OrmDiff{Before: dbPrefix.Type, After: *prefix.Type}
+		updateFields["type"] = &contextvar.Diff{Before: dbPrefix.Type, After: *prefix.Type}
 		dbPrefix.Type = *prefix.Type
 	}
 	if helpers.HasParams(g, "SiteId") && *prefix.SiteId != dbPrefix.SiteId {
-		updateFields["siteId"] = &ts.OrmDiff{Before: dbPrefix.SiteId, After: *prefix.SiteId}
+		updateFields["siteId"] = &contextvar.Diff{Before: dbPrefix.SiteId, After: *prefix.SiteId}
 		dbPrefix.SiteId = *prefix.SiteId
 	}
 	if prefix.Gateway != nil && prefix.Gateway != dbPrefix.Gateway {
-		updateFields["gateway"] = &ts.OrmDiff{Before: dbPrefix.Gateway, After: *prefix.Gateway}
+		updateFields["gateway"] = &contextvar.Diff{Before: dbPrefix.Gateway, After: *prefix.Gateway}
 		dbPrefix.Gateway = prefix.Gateway
 	}
 	if len(updateFields) == 0 {
 		return nil
 	}
-	diffValue := make(map[string]map[string]*ts.OrmDiff)
+	diffValue := make(map[string]map[string]*contextvar.Diff)
 	diffValue[id] = updateFields
-	global.OrmDiff.Set(diffValue)
+	contextvar.OrmDiff.Set(diffValue)
 	err = gen.Prefix.UnderlyingDB().Save(dbPrefix).Error
 	return err
 }
 
 func (p *PrefixService) DeletePrefix(id string) error {
-	_, err := gen.Prefix.Where(gen.Prefix.Id.Eq(id), gen.Prefix.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+	_, err := gen.Prefix.Where(gen.Prefix.Id.Eq(id), gen.Prefix.OrganizationId.Eq(contextvar.OrganizationId.Get())).Delete()
 	return err
 }
 
 func (p *PrefixService) GetById(id string) (*schemas.Prefix, error) {
-	prefix, err := gen.Prefix.Where(gen.Prefix.Id.Eq(id), gen.Prefix.OrganizationId.Eq(global.OrganizationId.Get())).First()
+	prefix, err := gen.Prefix.Where(gen.Prefix.Id.Eq(id), gen.Prefix.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +108,7 @@ func (p *PrefixService) GetById(id string) (*schemas.Prefix, error) {
 
 func (p *PrefixService) ListPrefix(query *schemas.PrefixQuery) (int64, *[]*schemas.Prefix, error) {
 	res := make([]*schemas.Prefix, 0)
-	stmt := gen.Prefix.Where(gen.Prefix.OrganizationId.Eq(global.OrganizationId.Get()))
+	stmt := gen.Prefix.Where(gen.Prefix.OrganizationId.Eq(contextvar.OrganizationId.Get()))
 	if query.SiteId != nil {
 		stmt = stmt.Where(gen.Prefix.SiteId.Eq(*query.SiteId))
 	}
@@ -177,7 +176,7 @@ func (p *PrefixService) CalPrefixUsage(prefix []string) (map[string]float64, err
 		gen.IpAddress.Address.Count().As("Count"),
 	).Where(
 		gen.IpAddress.Range.In(prefix...),
-		gen.IpAddress.OrganizationId.Eq(global.OrganizationId.Get()),
+		gen.IpAddress.OrganizationId.Eq(contextvar.OrganizationId.Get()),
 	).Group(gen.IpAddress.Range).Scan(&dbResult)
 	if err != nil {
 		return nil, err

@@ -3,10 +3,10 @@ package biz
 import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/features/admin/schemas"
-	"github.com/wangxin688/narvis/server/global"
 	"github.com/wangxin688/narvis/server/global/constants"
 	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"gorm.io/gorm"
 )
 
@@ -39,7 +39,7 @@ func CheckRolePathPermission(user *models.User, path string) bool {
 
 func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *[]*schemas.Role, error) {
 	res := make([]*schemas.Role, 0)
-	stmt := gen.Role.Where(gen.Role.OrganizationId.Eq(global.OrganizationId.Get()))
+	stmt := gen.Role.Where(gen.Role.OrganizationId.Eq(contextvar.OrganizationId.Get()))
 	if params.Id != nil {
 		stmt = stmt.Where(gen.Role.Id.In(*params.Id...))
 	}
@@ -77,7 +77,7 @@ func (r *RoleService) ListRoles(params *schemas.RoleQuery) (int64, *[]*schemas.R
 }
 
 func (r *RoleService) GetRoleById(id string) (*schemas.RoleDetail, error) {
-	role, err := gen.Role.Where(gen.Role.Id.Eq(id), gen.Role.OrganizationId.Eq(global.OrganizationId.Get())).Preload(gen.Role.Menus).First()
+	role, err := gen.Role.Where(gen.Role.Id.Eq(id), gen.Role.OrganizationId.Eq(contextvar.OrganizationId.Get())).Preload(gen.Role.Menus).First()
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func (r *RoleService) CreateRole(role *schemas.RoleCreate) (string, error) {
 	roleModel := &models.Role{
 		Name:           role.Name,
 		Description:    role.Description,
-		OrganizationId: global.OrganizationId.Get(),
+		OrganizationId: contextvar.OrganizationId.Get(),
 	}
 	err = gen.Role.UnderlyingDB().Transaction(func(_ *gorm.DB) error {
 		err = gen.Role.Create(roleModel)
@@ -135,7 +135,7 @@ func (r *RoleService) UpdateRole(RoleId string, role *schemas.RoleUpdate) error 
 		updateFields["description"] = *role.Description
 	}
 	err := gen.Role.UnderlyingDB().Transaction(func(tx *gorm.DB) error {
-		dbRole, err := gen.Role.Where(gen.Role.Id.Eq(RoleId), gen.Role.OrganizationId.Eq(global.OrganizationId.Get())).First()
+		dbRole, err := gen.Role.Where(gen.Role.Id.Eq(RoleId), gen.Role.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 		if err != nil {
 			return err
 		}
@@ -169,7 +169,7 @@ func (r *RoleService) UpdateRole(RoleId string, role *schemas.RoleUpdate) error 
 }
 
 func (r *RoleService) DeleteRole(id string) error {
-	_, err := gen.Role.Where(gen.Role.Id.Eq(id), gen.Role.OrganizationId.Eq(global.OrganizationId.Get())).Delete()
+	_, err := gen.Role.Where(gen.Role.Id.Eq(id), gen.Role.OrganizationId.Eq(contextvar.OrganizationId.Get())).Delete()
 	if err != nil {
 		return err
 	}

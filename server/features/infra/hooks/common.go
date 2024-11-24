@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/pkg/zbx/zschema"
@@ -15,7 +15,7 @@ import (
 func proxySelect(orgId string) string {
 	proxies, err := gen.Proxy.Select(gen.Proxy.ProxyId).Where(gen.Proxy.OrganizationId.Eq(orgId)).Find()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[proxyChoice]: proxyChoice for organization failed with orgId %s", orgId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[proxyChoice]: proxyChoice for organization failed with orgId %s", orgId), zap.Error(err))
 		return ""
 	}
 	if len(proxies) == 0 {
@@ -35,7 +35,7 @@ func deviceTemplateSelect(device *models.Device) (string, error) {
 		gen.Template.DeviceRole.Eq(device.DeviceRole),
 	).First()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[templateChoice]: templateChoice for device failed with device %s, manufacturer %s, deviceRole %s", device.Id, device.Manufacturer, device.DeviceRole), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[templateChoice]: templateChoice for device failed with device %s, manufacturer %s, deviceRole %s", device.Id, device.Manufacturer, device.DeviceRole), zap.Error(err))
 		return "", err
 	}
 
@@ -47,7 +47,7 @@ func circuitTemplateSelect() (string, error) {
 		gen.Template.TemplateName.Eq("template_icmp_ping_circuit"),
 	).First()
 	if err != nil {
-		core.Logger.Error("templateChoice failed", zap.Error(err))
+		logger.Logger.Error("templateChoice failed", zap.Error(err))
 		return "", err
 	}
 	return template.TemplateId, nil
@@ -65,7 +65,7 @@ func serverTemplateSelect(osVersion string) (string, error) {
 		gen.Template.TemplateName.Eq(templateName),
 	).First()
 	if err != nil {
-		core.Logger.Error("templateChoice failed", zap.Error(err))
+		logger.Logger.Error("templateChoice failed", zap.Error(err))
 		return "", err
 	}
 	return template.TemplateId, nil
@@ -76,7 +76,7 @@ func circuitHostTemplateSelect() (string, error) {
 		gen.Template.TemplateName.Eq("template_interface_circuit"),
 	).First()
 	if err != nil {
-		core.Logger.Error("templateChoice failed", zap.Error(err))
+		logger.Logger.Error("templateChoice failed", zap.Error(err))
 		return "", err
 	}
 	return template.TemplateId, nil
@@ -107,7 +107,7 @@ func snmpV2CommunitySelect(deviceId string, orgId string) (community string, por
 	cred, err := gen.SnmpV2Credential.Where(
 		gen.SnmpV2Credential.DeviceId.Eq(deviceId)).Find()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[snmpV2CommunitySelect]: snmpV2CommunitySelect for device failed with device %s", deviceId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[snmpV2CommunitySelect]: snmpV2CommunitySelect for device failed with device %s", deviceId), zap.Error(err))
 		return "", 161
 	}
 	if len(cred) == 0 {
@@ -124,7 +124,7 @@ func serverSnmpV2CommunitySelect(serverId string) (community string, port uint16
 	cred, err := gen.ServerSnmpCredential.Where(
 		gen.ServerSnmpCredential.ServerId.Eq(serverId)).Find()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("[serverSnmpV2CommunitySelect]: serverSnmpV2CommunitySelect for server failed with server %s", serverId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("[serverSnmpV2CommunitySelect]: serverSnmpV2CommunitySelect for server failed with server %s", serverId), zap.Error(err))
 		return "", 161
 	}
 	if len(cred) == 0 {
@@ -136,7 +136,7 @@ func serverSnmpV2CommunitySelect(serverId string) (community string, port uint16
 func getOrgEnterpriseCode(orgId string) (string, error) {
 	org, err := gen.Organization.Select(gen.Organization.EnterpriseCode).Where(gen.Organization.Id.Eq(orgId)).First()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("getOrgEnterpriseCode for organization failed with orgId %s", orgId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("getOrgEnterpriseCode for organization failed with orgId %s", orgId), zap.Error(err))
 		return "", err
 	}
 	return org.EnterpriseCode, nil
@@ -146,7 +146,7 @@ func getHostGroupId(siteId string) (*string, error) {
 
 	site, err := gen.Site.Select(gen.Site.MonitorId).Where(gen.Site.Id.Eq(siteId)).First()
 	if err != nil {
-		core.Logger.Error(fmt.Sprintf("getHostGroupId for site failed with siteId %s", siteId), zap.Error(err))
+		logger.Logger.Error(fmt.Sprintf("getHostGroupId for site failed with siteId %s", siteId), zap.Error(err))
 		return nil, err
 	}
 	return site.MonitorId, nil

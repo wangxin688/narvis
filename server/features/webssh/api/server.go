@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/wangxin688/narvis/server/core"
+	"github.com/wangxin688/narvis/intend/logger"
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	webssh_biz "github.com/wangxin688/narvis/server/features/webssh/biz"
 	"github.com/wangxin688/narvis/server/tools/errors"
@@ -27,7 +27,7 @@ func handleWebSSHRequest(c *gin.Context) error {
 	}
 	wsConn, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		core.Logger.Error("[webssh]: failed to upgrade", zap.Error(err))
+		logger.Logger.Error("[webssh]: failed to upgrade", zap.Error(err))
 		return errors.NewError(errors.CodeWebSocketInitFail, errors.MsgWebSocketInitFail, err)
 	}
 	defer wsConn.Close()
@@ -54,12 +54,12 @@ func handleWebSSHRequest(c *gin.Context) error {
 
 	err = webssh_biz.SendSignalToProxy(sessionId, managementIP, deviceConnectionInfo, query.Cols, query.Rows)
 	if err != nil {
-		core.Logger.Error("[webssh]: failed to send signal to proxy", zap.Error(err))
+		logger.Logger.Error("[webssh]: failed to send signal to proxy", zap.Error(err))
 		return err
 	}
 	proxyWSConn, err := webssh_biz.WaitForProxyWebSocket(sessionId)
 	if err != nil {
-		core.Logger.Error("[webssh]: failed to wait for proxy websocket", zap.Error(err))
+		logger.Logger.Error("[webssh]: failed to wait for proxy websocket", zap.Error(err))
 		return err
 	}
 	webssh_biz.RelaySSHData(wsConn, proxyWSConn)

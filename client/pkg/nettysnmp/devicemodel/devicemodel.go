@@ -1,7 +1,7 @@
 package devicemodel
 
 import (
-	"github.com/wangxin688/narvis/intend/manufacturer"
+	"github.com/wangxin688/narvis/intend/model/manufacturer"
 	"github.com/wangxin688/narvis/intend/platform"
 )
 

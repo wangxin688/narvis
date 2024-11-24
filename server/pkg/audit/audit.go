@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"reflect"
 
-	"github.com/wangxin688/narvis/server/core"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/models"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -42,7 +42,7 @@ func (a *AuditLogMixin) afterCreate(tx *gorm.DB) {
 	if !a.enableAuditing(tx) || tx.RowsAffected <= 0 {
 		return
 	}
-	userId := global.UserId.Get()
+	userId := contextvar.UserId.Get()
 	if userId == "" {
 		return
 	}
@@ -57,7 +57,7 @@ func (a *AuditLogMixin) afterUpdate(tx *gorm.DB) {
 	if !a.enableAuditing(tx) || tx.RowsAffected <= 0 {
 		return
 	}
-	userId := global.UserId.Get()
+	userId := contextvar.UserId.Get()
 	if userId == "" {
 		return
 	}
@@ -73,7 +73,7 @@ func (a *AuditLogMixin) afterDelete(tx *gorm.DB) {
 	if !a.enableAuditing(tx) || tx.RowsAffected <= 0 {
 		return
 	}
-	userId := global.UserId.Get()
+	userId := contextvar.UserId.Get()
 	if userId == "" {
 		return
 	}
@@ -85,11 +85,11 @@ func (a *AuditLogMixin) afterDelete(tx *gorm.DB) {
 }
 
 func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action string) {
-	requestId := global.XRequestId.Get()
+	requestId := contextvar.XRequestId.Get()
 	if requestId == "" {
 		return
 	}
-	userId := global.UserId.Get()
+	userId := contextvar.UserId.Get()
 	var auditLogs = make([]*models.AuditLog, 0)
 	for pkId, data := range target.data {
 		if pkId == "" {
@@ -97,7 +97,7 @@ func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action str
 		}
 		jsonData, err := json.Marshal(data)
 		if err != nil {
-			core.Logger.Error("[createAuditLog]: json marshal error", zap.Error(err))
+			logger.Logger.Error("[createAuditLog]: json marshal error", zap.Error(err))
 			continue
 		}
 		if action != AuditUpdateAction {
@@ -108,13 +108,13 @@ func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action str
 				UserId:         &userId,
 				Action:         action,
 				Data:           jsonData,
-				OrganizationId: global.OrganizationId.Get(),
+				OrganizationId: contextvar.OrganizationId.Get(),
 			})
 		} else {
-			diff := global.OrmDiff.Get()[pkId]
+			diff := contextvar.OrmDiff.Get()[pkId]
 			jsonDiff, err := json.Marshal(diff)
 			if err != nil {
-				core.Logger.Error("[createAuditLog]: json marshal error", zap.Error(err))
+				logger.Logger.Error("[createAuditLog]: json marshal error", zap.Error(err))
 				continue
 			}
 			auditLogs = append(auditLogs, &models.AuditLog{
@@ -125,7 +125,7 @@ func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action str
 				Action:         action,
 				Data:           jsonData,
 				Diff:           jsonDiff,
-				OrganizationId: global.OrganizationId.Get(),
+				OrganizationId: contextvar.OrganizationId.Get(),
 			})
 		}
 	}
@@ -134,7 +134,7 @@ func (a *AuditLogMixin) createAuditLog(tx *gorm.DB, target *snapshot, action str
 	}
 	auditLog := auditLogs
 	if err := tx.Session(&gorm.Session{SkipHooks: true, NewDB: true}).CreateInBatches(auditLog, len(auditLog)).Error; err != nil {
-		core.Logger.Error("[createAuditLog]: commit create audit log error", zap.Error(err))
+		logger.Logger.Error("[createAuditLog]: commit create audit log error", zap.Error(err))
 	}
 
 }
@@ -167,13 +167,13 @@ func getDBObjectBeforeOperation(tx *gorm.DB) (*snapshot, error) {
 		target := reflect.New(reflect.SliceOf(tx.Statement.Schema.ModelType)).Interface()
 		targetObj = target
 		if err := tx.Session(&gorm.Session{}).Table(tx.Statement.Schema.Table).Where("id IN ?", primaryKeyValue).Find(target).Error; err != nil {
-			core.Logger.Error("[createAuditLog]: get target error before operation", zap.Error(err))
+			logger.Logger.Error("[createAuditLog]: get target error before operation", zap.Error(err))
 			return nil, err
 		}
 	}
 	s, err := getSnapshot(targetObj, tx.Statement.Schema.Fields)
 	if err != nil {
-		core.Logger.Error("[createAuditLog]: get snapshot error before operation", zap.Error(err))
+		logger.Logger.Error("[createAuditLog]: get snapshot error before operation", zap.Error(err))
 		return nil, err
 	}
 	return s, nil

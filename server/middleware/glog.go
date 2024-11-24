@@ -1,105 +1,61 @@
+// Copyright 2024 wangxin.jeffry@gmail.com
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+
+//     http://www.apache.org/licenses/LICENSE-2.0
+
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package middleware
 
 import (
-	"fmt"
-	"net"
-	"net/http"
-	"net/http/httputil"
-	"os"
-	"runtime/debug"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/wangxin688/narvis/server/global"
+	"github.com/wangxin688/narvis/server/pkg/contextvar"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var XRequestIdHeaderName = "X-Request-ID"
 
 func ZapLoggerMiddleware(logger *zap.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 开始时间
 		startTime := time.Now()
-		// 获取或生成request id
-		requestId := global.XRequestId.Get()
-		if requestId == "" {
-			_requestId := uuid.New().String()
-			global.XRequestId.Set(_requestId)
-			c.Writer.Header().Set(XRequestIdHeaderName, _requestId)
-			requestId = _requestId
+		requestID := contextvar.XRequestId.Get()
+		if requestID == "" {
+			requestID = uuid.New().String()
+			contextvar.XRequestId.Set(requestID)
+			c.Writer.Header().Set(XRequestIdHeaderName, requestID)
 		}
-		// 处理请求
+
 		c.Next()
-		// 结束时间
+
 		endTime := time.Now()
-		// 执行时间
-		latencyTime := endTime.Sub(startTime)
-		// 请求方式
-		reqMethod := c.Request.Method
-		// 请求路由
-		reqPath := c.Request.URL.Path
-		// 状态码
+		latency := endTime.Sub(startTime)
 		statusCode := c.Writer.Status()
-		// 请求IP
 		clientIP := c.ClientIP()
-		// 日志格式
-		logger.Info(requestId,
+
+		fields := []zapcore.Field{
 			zap.Int("status", statusCode),
-			zap.String("method", reqMethod),
-			zap.String("path", reqPath),
+			zap.String("method", c.Request.Method),
+			zap.String("path", c.Request.URL.Path),
 			zap.String("client_ip", clientIP),
-			zap.Duration("latency", latencyTime),
-		)
+			zap.Duration("latency", latency),
+		}
+
+		logger.Info(requestID, fields...)
 
 		if len(c.Errors) > 0 {
-			for _, e := range c.Errors.Errors() {
-				zap.L().Error("Request error", zap.String("requestId", requestId), zap.String("error", e))
+			for _, err := range c.Errors.Errors() {
+				logger.Error(requestID, zap.String("error", err))
 			}
 		}
-	}
-}
-
-// GinRecovery recovers from panics in the gin framework.
-func GinRecovery(logger *zap.Logger, logStack bool) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		defer func() {
-			if err := recover(); err != nil {
-				var brokenConn bool
-				if ne, ok := err.(*net.OpError); ok {
-					if se, ok := ne.Err.(*os.SyscallError); ok {
-						brokenConn = strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer")
-					}
-				}
-
-				dump, _ := httputil.DumpRequest(c.Request, false)
-				if brokenConn {
-					logger.Error(c.Request.URL.Path,
-						zap.Any("error", err),
-						zap.String("request", string(dump)),
-					)
-					c.Error(err.(error)) //nolint: errcheck
-					c.Abort()
-					return
-				}
-				stack := ""
-				if logStack {
-					stack = string(debug.Stack())
-				}
-
-				logger.Error("[Recovery from panic]",
-					zap.Any("error", err),
-					zap.String("request", string(dump)),
-					zap.String("stack", stack),
-				)
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-					"code":    500,
-					"message": fmt.Sprintf("Internal Server Error, requestId: %s", global.XRequestId.Get()),
-					"data":    err,
-				})
-			}
-		}()
-		c.Next()
 	}
 }
