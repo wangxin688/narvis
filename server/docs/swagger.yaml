@@ -120,6 +120,113 @@ definitions:
       zh:
         type: string
     type: object
+  intend_device.ArpItem:
+    properties:
+      hashValue:
+        type: string
+      ifIndex:
+        type: integer
+      ipAddress:
+        type: string
+      macAddress:
+        type: string
+      range:
+        type: string
+      type:
+        description: one of other/invalid/dynamic/static
+        type: string
+      vlanId:
+        type: integer
+    type: object
+  intend_device.DeviceInterface:
+    properties:
+      hashValue:
+        type: string
+      ifAdminStatus:
+        type: string
+      ifDescr:
+        type: string
+      ifHighSpeed:
+        type: integer
+      ifIndex:
+        type: integer
+      ifIpAddress:
+        type: string
+      ifLastChange:
+        type: integer
+      ifMtu:
+        type: integer
+      ifName:
+        type: string
+      ifOperStatus:
+        type: string
+      ifPhysAddr:
+        type: string
+      ifSpeed:
+        type: integer
+      ifType:
+        type: string
+    type: object
+  intend_device.Entity:
+    properties:
+      entityPhysicalClass:
+        type: string
+      entityPhysicalDescr:
+        type: string
+      entityPhysicalName:
+        type: string
+      entityPhysicalSerialNum:
+        type: string
+      entityPhysicalSoftwareRev:
+        type: string
+    type: object
+  intend_device.LldpNeighbor:
+    properties:
+      hashValue:
+        type: string
+      localChassisId:
+        type: string
+      localHostname:
+        type: string
+      localIfDescr:
+        type: string
+      localIfName:
+        type: string
+      remoteChassisId:
+        type: string
+      remoteHostname:
+        type: string
+      remoteIfDescr:
+        type: string
+      remoteIfName:
+        type: string
+    type: object
+  intend_device.Stack:
+    properties:
+      id:
+        type: string
+      macAddress:
+        type: string
+      priority:
+        type: integer
+      role:
+        type: string
+    type: object
+  intend_device.VlanItem:
+    properties:
+      gateway:
+        type: string
+      ifIndex:
+        description: vlanIf index
+        type: integer
+      network:
+        description: vlanIf Ip address to CIDR
+        type: string
+      vlanId:
+        type: integer
+      vlanName:
+        type: string
+    type: object
   intendtask.ApScanResponse:
     properties:
       deviceModel:
@@ -144,23 +251,6 @@ definitions:
         type: string
       wlanACIpAddress:
         type: string
-    type: object
-  intendtask.ArpItem:
-    properties:
-      hashValue:
-        type: string
-      ifIndex:
-        type: integer
-      ipAddress:
-        type: string
-      macAddress:
-        type: string
-      range:
-        type: string
-      type:
-        type: string
-      vlanId:
-        type: integer
     type: object
   intendtask.ConfigurationBackupTaskResult:
     properties:
@@ -198,40 +288,11 @@ definitions:
       platform:
         type: string
     type: object
-  intendtask.DeviceInterface:
-    properties:
-      hashValue:
-        type: string
-      ifAdminStatus:
-        type: string
-      ifDescr:
-        type: string
-      ifHighSpeed:
-        type: integer
-      ifIndex:
-        type: integer
-      ifIpAddress:
-        type: string
-      ifLastChange:
-        type: integer
-      ifMtu:
-        type: integer
-      ifName:
-        type: string
-      ifOperStatus:
-        type: string
-      ifPhysAddr:
-        type: string
-      ifSpeed:
-        type: integer
-      ifType:
-        type: string
-    type: object
   intendtask.DeviceScanResponse:
     properties:
       arpTable:
         items:
-          $ref: '#/definitions/intendtask.ArpItem'
+          $ref: '#/definitions/intend_device.ArpItem'
         type: array
       chassisId:
         type: string
@@ -243,7 +304,7 @@ definitions:
         type: string
       entities:
         items:
-          $ref: '#/definitions/intendtask.Entity'
+          $ref: '#/definitions/intend_device.Entity'
         type: array
       errors:
         items:
@@ -253,11 +314,11 @@ definitions:
         type: boolean
       interfaces:
         items:
-          $ref: '#/definitions/intendtask.DeviceInterface'
+          $ref: '#/definitions/intend_device.DeviceInterface'
         type: array
       lldpNeighbors:
         items:
-          $ref: '#/definitions/intendtask.LldpNeighbor'
+          $ref: '#/definitions/intend_device.LldpNeighbor'
         type: array
       managementIp:
         type: string
@@ -277,72 +338,31 @@ definitions:
         type: boolean
       stacks:
         items:
-          $ref: '#/definitions/intendtask.Stack'
+          $ref: '#/definitions/intend_device.Stack'
         type: array
       vlans:
         items:
-          $ref: '#/definitions/intendtask.VlanItem'
+          $ref: '#/definitions/intend_device.VlanItem'
         type: array
     type: object
-  intendtask.Entity:
+  intendtask.WlanUserTaskResult:
     properties:
-      entityPhysicalClass:
+      deviceId:
         type: string
-      entityPhysicalDescr:
+      errors:
+        items:
+          type: string
+        type: array
+      organizationId:
         type: string
-      entityPhysicalName:
+      siteId:
         type: string
-      entityPhysicalSerialNum:
-        type: string
-      entityPhysicalSoftwareRev:
-        type: string
+      wlanUsers:
+        items:
+          $ref: '#/definitions/nettyx_wlanstation.WlanUser'
+        type: array
     type: object
-  intendtask.LldpNeighbor:
-    properties:
-      hashValue:
-        type: string
-      localChassisId:
-        type: string
-      localHostname:
-        type: string
-      localIfDescr:
-        type: string
-      localIfName:
-        type: string
-      remoteChassisId:
-        type: string
-      remoteHostname:
-        type: string
-      remoteIfDescr:
-        type: string
-      remoteIfName:
-        type: string
-    type: object
-  intendtask.Stack:
-    properties:
-      id:
-        type: string
-      macAddress:
-        type: string
-      priority:
-        type: integer
-      role:
-        type: string
-    type: object
-  intendtask.VlanItem:
-    properties:
-      gateway:
-        type: string
-      ifIndex:
-        type: integer
-      range:
-        type: string
-      vlanId:
-        type: integer
-      vlanName:
-        type: string
-    type: object
-  intendtask.WlanUserItem:
+  nettyx_wlanstation.WlanUser:
     properties:
       stationApMac:
         description: AP MAC
@@ -392,23 +412,6 @@ definitions:
       stationVlan:
         description: VLAN
         type: integer
-    type: object
-  intendtask.WlanUserTaskResult:
-    properties:
-      deviceId:
-        type: string
-      errors:
-        items:
-          type: string
-        type: array
-      organizationId:
-        type: string
-      siteId:
-        type: string
-      wlanUsers:
-        items:
-          $ref: '#/definitions/intendtask.WlanUserItem'
-        type: array
     type: object
   schemas.AP:
     properties:

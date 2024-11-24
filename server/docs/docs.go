@@ -6321,6 +6321,168 @@ const docTemplate = `{
                 }
             }
         },
+        "intend_device.ArpItem": {
+            "type": "object",
+            "properties": {
+                "hashValue": {
+                    "type": "string"
+                },
+                "ifIndex": {
+                    "type": "integer"
+                },
+                "ipAddress": {
+                    "type": "string"
+                },
+                "macAddress": {
+                    "type": "string"
+                },
+                "range": {
+                    "type": "string"
+                },
+                "type": {
+                    "description": "one of other/invalid/dynamic/static",
+                    "type": "string"
+                },
+                "vlanId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "intend_device.DeviceInterface": {
+            "type": "object",
+            "properties": {
+                "hashValue": {
+                    "type": "string"
+                },
+                "ifAdminStatus": {
+                    "type": "string"
+                },
+                "ifDescr": {
+                    "type": "string"
+                },
+                "ifHighSpeed": {
+                    "type": "integer"
+                },
+                "ifIndex": {
+                    "type": "integer"
+                },
+                "ifIpAddress": {
+                    "type": "string"
+                },
+                "ifLastChange": {
+                    "type": "integer"
+                },
+                "ifMtu": {
+                    "type": "integer"
+                },
+                "ifName": {
+                    "type": "string"
+                },
+                "ifOperStatus": {
+                    "type": "string"
+                },
+                "ifPhysAddr": {
+                    "type": "string"
+                },
+                "ifSpeed": {
+                    "type": "integer"
+                },
+                "ifType": {
+                    "type": "string"
+                }
+            }
+        },
+        "intend_device.Entity": {
+            "type": "object",
+            "properties": {
+                "entityPhysicalClass": {
+                    "type": "string"
+                },
+                "entityPhysicalDescr": {
+                    "type": "string"
+                },
+                "entityPhysicalName": {
+                    "type": "string"
+                },
+                "entityPhysicalSerialNum": {
+                    "type": "string"
+                },
+                "entityPhysicalSoftwareRev": {
+                    "type": "string"
+                }
+            }
+        },
+        "intend_device.LldpNeighbor": {
+            "type": "object",
+            "properties": {
+                "hashValue": {
+                    "type": "string"
+                },
+                "localChassisId": {
+                    "type": "string"
+                },
+                "localHostname": {
+                    "type": "string"
+                },
+                "localIfDescr": {
+                    "type": "string"
+                },
+                "localIfName": {
+                    "type": "string"
+                },
+                "remoteChassisId": {
+                    "type": "string"
+                },
+                "remoteHostname": {
+                    "type": "string"
+                },
+                "remoteIfDescr": {
+                    "type": "string"
+                },
+                "remoteIfName": {
+                    "type": "string"
+                }
+            }
+        },
+        "intend_device.Stack": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "macAddress": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "intend_device.VlanItem": {
+            "type": "object",
+            "properties": {
+                "gateway": {
+                    "type": "string"
+                },
+                "ifIndex": {
+                    "description": "vlanIf index",
+                    "type": "integer"
+                },
+                "network": {
+                    "description": "vlanIf Ip address to CIDR",
+                    "type": "string"
+                },
+                "vlanId": {
+                    "type": "integer"
+                },
+                "vlanName": {
+                    "type": "string"
+                }
+            }
+        },
         "intendtask.ApScanResponse": {
             "type": "object",
             "properties": {
@@ -6356,32 +6518,6 @@ const docTemplate = `{
                 },
                 "wlanACIpAddress": {
                     "type": "string"
-                }
-            }
-        },
-        "intendtask.ArpItem": {
-            "type": "object",
-            "properties": {
-                "hashValue": {
-                    "type": "string"
-                },
-                "ifIndex": {
-                    "type": "integer"
-                },
-                "ipAddress": {
-                    "type": "string"
-                },
-                "macAddress": {
-                    "type": "string"
-                },
-                "range": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "vlanId": {
-                    "type": "integer"
                 }
             }
         },
@@ -6440,57 +6576,13 @@ const docTemplate = `{
                 }
             }
         },
-        "intendtask.DeviceInterface": {
-            "type": "object",
-            "properties": {
-                "hashValue": {
-                    "type": "string"
-                },
-                "ifAdminStatus": {
-                    "type": "string"
-                },
-                "ifDescr": {
-                    "type": "string"
-                },
-                "ifHighSpeed": {
-                    "type": "integer"
-                },
-                "ifIndex": {
-                    "type": "integer"
-                },
-                "ifIpAddress": {
-                    "type": "string"
-                },
-                "ifLastChange": {
-                    "type": "integer"
-                },
-                "ifMtu": {
-                    "type": "integer"
-                },
-                "ifName": {
-                    "type": "string"
-                },
-                "ifOperStatus": {
-                    "type": "string"
-                },
-                "ifPhysAddr": {
-                    "type": "string"
-                },
-                "ifSpeed": {
-                    "type": "integer"
-                },
-                "ifType": {
-                    "type": "string"
-                }
-            }
-        },
         "intendtask.DeviceScanResponse": {
             "type": "object",
             "properties": {
                 "arpTable": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/intendtask.ArpItem"
+                        "$ref": "#/definitions/intend_device.ArpItem"
                     }
                 },
                 "chassisId": {
@@ -6508,7 +6600,7 @@ const docTemplate = `{
                 "entities": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/intendtask.Entity"
+                        "$ref": "#/definitions/intend_device.Entity"
                     }
                 },
                 "errors": {
@@ -6523,13 +6615,13 @@ const docTemplate = `{
                 "interfaces": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/intendtask.DeviceInterface"
+                        "$ref": "#/definitions/intend_device.DeviceInterface"
                     }
                 },
                 "lldpNeighbors": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/intendtask.LldpNeighbor"
+                        "$ref": "#/definitions/intend_device.LldpNeighbor"
                     }
                 },
                 "managementIp": {
@@ -6559,107 +6651,44 @@ const docTemplate = `{
                 "stacks": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/intendtask.Stack"
+                        "$ref": "#/definitions/intend_device.Stack"
                     }
                 },
                 "vlans": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/intendtask.VlanItem"
+                        "$ref": "#/definitions/intend_device.VlanItem"
                     }
                 }
             }
         },
-        "intendtask.Entity": {
+        "intendtask.WlanUserTaskResult": {
             "type": "object",
             "properties": {
-                "entityPhysicalClass": {
+                "deviceId": {
                     "type": "string"
                 },
-                "entityPhysicalDescr": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "organizationId": {
                     "type": "string"
                 },
-                "entityPhysicalName": {
+                "siteId": {
                     "type": "string"
                 },
-                "entityPhysicalSerialNum": {
-                    "type": "string"
-                },
-                "entityPhysicalSoftwareRev": {
-                    "type": "string"
+                "wlanUsers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/nettyx_wlanstation.WlanUser"
+                    }
                 }
             }
         },
-        "intendtask.LldpNeighbor": {
-            "type": "object",
-            "properties": {
-                "hashValue": {
-                    "type": "string"
-                },
-                "localChassisId": {
-                    "type": "string"
-                },
-                "localHostname": {
-                    "type": "string"
-                },
-                "localIfDescr": {
-                    "type": "string"
-                },
-                "localIfName": {
-                    "type": "string"
-                },
-                "remoteChassisId": {
-                    "type": "string"
-                },
-                "remoteHostname": {
-                    "type": "string"
-                },
-                "remoteIfDescr": {
-                    "type": "string"
-                },
-                "remoteIfName": {
-                    "type": "string"
-                }
-            }
-        },
-        "intendtask.Stack": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "macAddress": {
-                    "type": "string"
-                },
-                "priority": {
-                    "type": "integer"
-                },
-                "role": {
-                    "type": "string"
-                }
-            }
-        },
-        "intendtask.VlanItem": {
-            "type": "object",
-            "properties": {
-                "gateway": {
-                    "type": "string"
-                },
-                "ifIndex": {
-                    "type": "integer"
-                },
-                "range": {
-                    "type": "string"
-                },
-                "vlanId": {
-                    "type": "integer"
-                },
-                "vlanName": {
-                    "type": "string"
-                }
-            }
-        },
-        "intendtask.WlanUserItem": {
+        "nettyx_wlanstation.WlanUser": {
             "type": "object",
             "properties": {
                 "stationApMac": {
@@ -6725,32 +6754,6 @@ const docTemplate = `{
                 "stationVlan": {
                     "description": "VLAN",
                     "type": "integer"
-                }
-            }
-        },
-        "intendtask.WlanUserTaskResult": {
-            "type": "object",
-            "properties": {
-                "deviceId": {
-                    "type": "string"
-                },
-                "errors": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "organizationId": {
-                    "type": "string"
-                },
-                "siteId": {
-                    "type": "string"
-                },
-                "wlanUsers": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/intendtask.WlanUserItem"
-                    }
                 }
             }
         },
