@@ -4945,7 +4945,7 @@ const docTemplate = `{
                                         "results": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/devicerole.DeviceRole"
+                                                "type": "string"
                                             }
                                         }
                                     }
@@ -6290,25 +6290,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "devicerole.DeviceRole": {
-            "type": "string",
-            "enum": [
-                "Switch",
-                "WlanAP",
-                "WlanAC",
-                "FireWall",
-                "Router",
-                "Server"
-            ],
-            "x-enum-varnames": [
-                "Switch",
-                "WlanAP",
-                "WlanAC",
-                "FireWall",
-                "Router",
-                "Server"
-            ]
         },
         "i18n.I18n": {
             "type": "object",

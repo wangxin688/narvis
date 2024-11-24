@@ -16,7 +16,7 @@ import (
 // @Description Get list of device roles
 // @Accept json
 // @Produce json
-// @Success 200 {object} schemas.ListResponse{results=[]devicerole.DeviceRole}
+// @Success 200 {object} schemas.ListResponse{results=[]string}
 // @Router /intend/device-roles [get]
 func deviceRoleList(c *gin.Context) {
 	var err error

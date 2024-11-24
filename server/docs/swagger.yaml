@@ -97,22 +97,6 @@ definitions:
       status:
         type: string
     type: object
-  devicerole.DeviceRole:
-    enum:
-    - Switch
-    - WlanAP
-    - WlanAC
-    - FireWall
-    - Router
-    - Server
-    type: string
-    x-enum-varnames:
-    - Switch
-    - WlanAP
-    - WlanAC
-    - FireWall
-    - Router
-    - Server
   i18n.I18n:
     properties:
       en:
@@ -5281,7 +5265,7 @@ paths:
             - properties:
                 results:
                   items:
-                    $ref: '#/definitions/devicerole.DeviceRole'
+                    type: string
                   type: array
               type: object
       security:
