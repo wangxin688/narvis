@@ -15,7 +15,7 @@ package netdisco
 
 import (
 	device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 )
 
@@ -33,6 +33,6 @@ type SnmpDriver interface {
 	ArpTable() (arp []*device.ArpItem, errors []string)
 	Vlans() (vlans []*device.VlanItem, errors []string)
 	APs() (ap []*device.Ap, errors []string)
-	WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, errors []string)
+	WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []string)
 	BasicInfo() *factory.DiscoveryBasicResponse
 }

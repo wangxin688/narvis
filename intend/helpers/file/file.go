@@ -11,9 +11,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// package nettyx_file provide standardized ways for file processing
+// package file provide standardized ways for file processing
 
-package nettyx_file
+package file
 
 import (
 	"errors"

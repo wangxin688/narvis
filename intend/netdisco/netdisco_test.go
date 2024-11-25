@@ -19,7 +19,7 @@ import (
 	"github.com/gosnmp/gosnmp"
 	mem_cache "github.com/wangxin688/narvis/intend/cache"
 	"github.com/wangxin688/narvis/intend/logger"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/snmp"
 	"github.com/wangxin688/narvis/intend/netdisco"
 )
 
@@ -30,7 +30,7 @@ func TestDriver(t *testing.T) {
 	logger.InitLogger(&loggerConfig)
 	mem_cache.InitCache()
 	community := "public"
-	target := nettyx_snmp.SnmpConfig{
+	target := snmp.SnmpConfig{
 		IpAddress:      "127.0.0.1",
 		Version:        gosnmp.Version2c,
 		Port:           161,

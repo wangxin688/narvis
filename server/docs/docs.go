@@ -6664,12 +6664,12 @@ const docTemplate = `{
                 "wlanUsers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/nettyx_wlanstation.WlanUser"
+                        "$ref": "#/definitions/wlanstation.WlanUser"
                     }
                 }
             }
         },
-        "nettyx_wlanstation.WlanUser": {
+        "wlanstation.WlanUser": {
             "type": "object",
             "properties": {
                 "stationApMac": {

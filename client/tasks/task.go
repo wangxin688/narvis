@@ -15,13 +15,13 @@ import (
 	"github.com/wangxin688/narvis/client/pkg/gowebssh"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp"
 	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
-	nettyx_network "github.com/wangxin688/narvis/intend/helpers/network"
-	nettyx_processor "github.com/wangxin688/narvis/intend/helpers/processor"
+	"github.com/wangxin688/narvis/intend/helpers/network"
+	"github.com/wangxin688/narvis/intend/helpers/processor"
 	"github.com/wangxin688/narvis/intend/helpers/security"
 	"github.com/wangxin688/narvis/intend/intendtask"
 	"github.com/wangxin688/narvis/intend/logger"
 	intend_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"go.uber.org/zap"
 )
 
@@ -33,7 +33,7 @@ func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse
 		logger.Logger.Error("[ScanDeviceBasicInfo]: Unmarshal err: ", zap.Error(err))
 		return nil, err
 	}
-	targets, err := nettyx_network.CIDR2IpStrings(task.Range)
+	targets, err := network.CIDR2IpStrings(task.Range)
 	if err != nil {
 		logger.Logger.Error(fmt.Sprintf("[ScanDeviceBasicInfo]: received wrong ip range %s", task.Range), zap.Error(err))
 		return nil, err
@@ -310,7 +310,7 @@ func configurationBackupTask(data []byte) *intendtask.ConfigurationBackupTaskRes
 	}
 	result.Configuration = configuration
 	result.BackupTime = time.Now().UTC().String()
-	result.HashValue = nettyx_processor.String2Md5(configuration)
+	result.HashValue = processor.String2Md5(configuration)
 	return result
 
 }
@@ -345,7 +345,7 @@ func wlanUserTask(data []byte) *intendtask.WlanUserTaskResult {
 		return result
 	}
 	for _, user := range response[0].WlanUsers {
-		result.WlanUsers = append(result.WlanUsers, &nettyx_wlanstation.WlanUser{
+		result.WlanUsers = append(result.WlanUsers, &wlanstation.WlanUser{
 			StationMac:           user.StationMac,
 			StationIp:            user.StationIp,
 			StationUsername:      user.StationUsername,

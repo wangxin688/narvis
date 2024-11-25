@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	mem_cache "github.com/wangxin688/narvis/intend/cache"
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 )
 
@@ -40,7 +40,7 @@ type H3CDriver struct {
 	factory.SnmpDiscovery
 }
 
-func NewH3CDriver(sc *nettyx_snmp.SnmpConfig) (*H3CDriver, error) {
+func NewH3CDriver(sc *snmp.SnmpConfig) (*H3CDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func NewH3CDriver(sc *nettyx_snmp.SnmpConfig) (*H3CDriver, error) {
 	}, nil
 }
 
-func (hd *H3CDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
+func (hd *H3CDriver) APs() (ap []*intend_device.Ap, errors []string) {
 	apIp, errApIp := hd.Session.BulkWalkAll(hh3cDot11CurrAPIPAddress)
 	if len(apIp) == 0 || errApIp != nil {
 		return nil, []string{fmt.Sprintf("failed to get ap ipAddress from %s", hd.IpAddress)}
@@ -81,7 +81,7 @@ func (hd *H3CDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 		acIp := hd.IpAddress
 		apVer := indexApVersion[i]
 		mem_cache.MemCache.SetDefault(ap_mac, ap_name)
-		ap = append(ap, &nettyx_device.Ap{
+		ap = append(ap, &intend_device.Ap{
 			Name:            indexApName[i],
 			ManagementIp:    v,
 			MacAddress:      indexApMac[i],
@@ -94,9 +94,9 @@ func (hd *H3CDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 	return ap, errors
 }
 
-func (hd *H3CDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, errors []string) {
+func (hd *H3CDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []string) {
 
-	results := make([]*nettyx_wlanstation.WlanUser, 0)
+	results := make([]*wlanstation.WlanUser, 0)
 	userNames, err := hd.Session.BulkWalkAll(hh3cDot11StationUserName)
 	if err != nil {
 		return nil, []string{fmt.Sprintf("failed to get wlan user name from %s", hd.IpAddress)}
@@ -147,7 +147,7 @@ func (hd *H3CDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, erro
 		ap_mac := indexApMac[i]
 		ap_name := hd.getApName(ap_mac)
 		speed := indexSpeed[i]
-		user := nettyx_wlanstation.WlanUser{
+		user := wlanstation.WlanUser{
 			StationMac:        factory.StringToHexMac(i),
 			StationIp:         indexIp[i],
 			StationUsername:   v,

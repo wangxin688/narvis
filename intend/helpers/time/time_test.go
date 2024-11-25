@@ -11,13 +11,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package nettyx_time_test
+package timer_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	nettyx_time "github.com/wangxin688/narvis/intend/helpers/time"
+	timer "github.com/wangxin688/narvis/intend/helpers/time"
 )
 
 func TestHumanizeDuration(t *testing.T) {
@@ -38,7 +38,7 @@ func TestHumanizeDuration(t *testing.T) {
 
 	for _, tt := range tc {
 		t.Run(tt.name, func(t *testing.T) {
-			result := nettyx_time.HumanReadableDuration(tt.input)
+			result := timer.HumanReadableDuration(tt.input)
 			assert.Equal(t, tt.expected, result)
 		})
 	}

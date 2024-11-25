@@ -6,9 +6,9 @@ import (
 
 	mem_cache "github.com/wangxin688/narvis/intend/cache"
 	"github.com/wangxin688/narvis/intend/logger"
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 
 	"go.uber.org/zap"
@@ -50,7 +50,7 @@ type ArubaOSSwitchDriver struct {
 	factory.SnmpDiscovery
 }
 
-func NewArubaDriver(sc *nettyx_snmp.SnmpConfig) (*ArubaDriver, error) {
+func NewArubaDriver(sc *snmp.SnmpConfig) (*ArubaDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func NewArubaDriver(sc *nettyx_snmp.SnmpConfig) (*ArubaDriver, error) {
 	}, nil
 }
 
-func NewArubaOSSwitchDriver(sc *nettyx_snmp.SnmpConfig) (*ArubaOSSwitchDriver, error) {
+func NewArubaOSSwitchDriver(sc *snmp.SnmpConfig) (*ArubaOSSwitchDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func NewArubaOSSwitchDriver(sc *nettyx_snmp.SnmpConfig) (*ArubaOSSwitchDriver, e
 	}, nil
 }
 
-func (ad *ArubaDriver) Entities() (entities []*nettyx_device.Entity, errors []string) {
+func (ad *ArubaDriver) Entities() (entities []*intend_device.Entity, errors []string) {
 	hostname, errHostname := ad.Session.Get([]string{wlsxSysExtHostname})
 	if errHostname != nil {
 		errors = append(errors, errHostname.Error())
@@ -88,7 +88,7 @@ func (ad *ArubaDriver) Entities() (entities []*nettyx_device.Entity, errors []st
 		errors = append(errors, errSerialNumber.Error())
 		return nil, errors
 	}
-	return []*nettyx_device.Entity{
+	return []*intend_device.Entity{
 		{
 			EntityPhysicalClass:       "chassis",
 			EntityPhysicalName:        fmt.Sprintf("%s", hostname.Variables[0].Value),
@@ -100,7 +100,7 @@ func (ad *ArubaDriver) Entities() (entities []*nettyx_device.Entity, errors []st
 
 }
 
-func (ad *ArubaDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
+func (ad *ArubaDriver) APs() (ap []*intend_device.Ap, errors []string) {
 	apIp, errApIP := ad.Session.BulkWalkAll(wlanAPIpAddress)
 	if len(apIp) == 0 || errApIP != nil {
 		return nil, []string{fmt.Sprintf("failed to get ap ipAddress from %s", ad.IpAddress)}
@@ -135,7 +135,7 @@ func (ad *ArubaDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 		groupName := indexApGroupName[i]
 		switchIp := indexSwitchIp[i]
 		apVersion := indexApVersion[i]
-		ap = append(ap, &nettyx_device.Ap{
+		ap = append(ap, &intend_device.Ap{
 			Name:            apName,
 			ManagementIp:    v,
 			MacAddress:      apMac,
@@ -149,8 +149,8 @@ func (ad *ArubaDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 	return ap, errors
 }
 
-func (ad *ArubaDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, errors []string) {
-	results := make([]*nettyx_wlanstation.WlanUser, 0)
+func (ad *ArubaDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []string) {
+	results := make([]*wlanstation.WlanUser, 0)
 	userNames, err := ad.Session.BulkWalkAll(nUserName)
 	if err != nil {
 		return nil, []string{fmt.Sprintf("failed to get users from %s", ad.IpAddress), err.Error()}
@@ -189,7 +189,7 @@ func (ad *ArubaDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, er
 		vlan := indexUserVlan[i]
 		channel := indexChannel[macIndex]
 		ap_name := ad.getApNameByBssid(bssid)
-		user := nettyx_wlanstation.WlanUser{
+		user := wlanstation.WlanUser{
 			StationMac:        mac,
 			StationIp:         ip,
 			StationUsername:   v,

@@ -36,7 +36,7 @@ func ProxyAuthMiddleware() gin.HandlerFunc {
 			)
 			return
 		}
-		proxyId, secretKey, err := security.VerifyAgentToken(parts[1], config.Settings.Jwt.SecretKey)
+		proxyId, secretKey, err := security.VerifyAgentToken(parts[1], config.Settings.Jwt.PublicAuthKey)
 		if err != nil || secretKey != config.Settings.Jwt.PublicAuthKey {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized, errors.GenericError{

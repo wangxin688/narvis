@@ -18,7 +18,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	nettyx_processor "github.com/wangxin688/narvis/intend/helpers/processor"
+	"github.com/wangxin688/narvis/intend/helpers/processor"
 )
 
 type Ap struct {
@@ -43,10 +43,10 @@ func (a *Ap) CalApHash() string {
 		a.ManagementIp,
 		a.SiteId,
 		a.MacAddress,
-		nettyx_processor.PtrStringToString(a.GroupName),
-		nettyx_processor.PtrStringToString(a.WlanACIpAddress),
+		processor.PtrStringToString(a.GroupName),
+		processor.PtrStringToString(a.WlanACIpAddress),
 		a.SerialNumber,
-		nettyx_processor.PtrStringToString(a.OsVersion),
+		processor.PtrStringToString(a.OsVersion),
 	)
 	hash := md5.New()
 	_, _ = hash.Write([]byte(hashString))

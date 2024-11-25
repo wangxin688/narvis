@@ -1,4 +1,4 @@
-package nettyx_wlanstation
+package wlanstation
 
 type WlanUser struct {
 	StationMac           string  `json:"stationMac"`                     // 终端MAC

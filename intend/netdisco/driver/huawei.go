@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 )
 
@@ -54,7 +54,7 @@ type HuaweiDriver struct {
 	factory.SnmpDiscovery
 }
 
-func NewHuaweiDriver(sc *nettyx_snmp.SnmpConfig) (*HuaweiDriver, error) {
+func NewHuaweiDriver(sc *snmp.SnmpConfig) (*HuaweiDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func NewHuaweiDriver(sc *nettyx_snmp.SnmpConfig) (*HuaweiDriver, error) {
 	}, nil
 }
 
-func (hd *HuaweiDriver) Vlans() (vlan []*nettyx_device.VlanItem, errors []string) {
+func (hd *HuaweiDriver) Vlans() (vlan []*intend_device.VlanItem, errors []string) {
 	l2Vlan, err := hd.Session.BulkWalkAll(hwL2VlanDescr)
 	l2VlanIfIndex, errIfIndex := hd.Session.BulkWalkAll(hwL2VlanIfIndex)
 	if err != nil || errIfIndex != nil {
@@ -79,7 +79,7 @@ func (hd *HuaweiDriver) Vlans() (vlan []*nettyx_device.VlanItem, errors []string
 	for i, v := range indexL2Vlan {
 		vlanIdString := strings.TrimPrefix(i, ".")
 		vlanId, _ := strconv.Atoi(vlanIdString)
-		_vlan := &nettyx_device.VlanItem{
+		_vlan := &intend_device.VlanItem{
 			VlanId:   uint32(vlanId),
 			VlanName: v,
 			IfIndex:  indexVlanIndex[i],
@@ -90,7 +90,7 @@ func (hd *HuaweiDriver) Vlans() (vlan []*nettyx_device.VlanItem, errors []string
 	return vlan, errors
 }
 
-func (hd *HuaweiDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
+func (hd *HuaweiDriver) APs() (ap []*intend_device.Ap, errors []string) {
 	apIp, errApIp := hd.Session.BulkWalkAll(hwWlanApIpAddress)
 	if len(apIp) == 0 || errApIp != nil {
 		return nil, []string{fmt.Sprintf("failed to get ap ipAddress from %s", hd.IpAddress)}
@@ -120,7 +120,7 @@ func (hd *HuaweiDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 		group := indexApGroupName[i]
 		acIp := hd.IpAddress
 		apVer := indexApVersion[i]
-		ap = append(ap, &nettyx_device.Ap{
+		ap = append(ap, &intend_device.Ap{
 			Name:            indexApName[i],
 			ManagementIp:    v,
 			MacAddress:      indexApMac[i],
@@ -194,9 +194,9 @@ func (hd *HuaweiDriver) Discovery() *factory.DiscoveryResponse {
 	return response
 }
 
-func (hd *HuaweiDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, errors []string) {
+func (hd *HuaweiDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []string) {
 
-	results := make([]*nettyx_wlanstation.WlanUser, 0)
+	results := make([]*wlanstation.WlanUser, 0)
 	userNames, err := hd.Session.BulkWalkAll(hwWlanStaUsername)
 	if err != nil {
 		return nil, []string{fmt.Sprintf("failed to get wlan user name from %s", hd.IpAddress)}
@@ -246,7 +246,7 @@ func (hd *HuaweiDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, e
 		snr := indexSnr[i]
 		ap_name := indexApName[i]
 		band := fmt.Sprintf("%sMHz", strconv.Itoa(int(indexBand[i])))
-		user := nettyx_wlanstation.WlanUser{
+		user := wlanstation.WlanUser{
 			StationMac:           factory.StringToHexMac(i),
 			StationIp:            indexIp[i],
 			StationUsername:      v,

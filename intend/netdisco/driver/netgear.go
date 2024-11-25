@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"strings"
 
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 )
 
@@ -16,7 +16,7 @@ type NetgearDriver struct {
 	factory.SnmpDiscovery
 }
 
-func (nd *NetgearDriver) Vlans() (vlan []*nettyx_device.VlanItem, errors []string) {
+func (nd *NetgearDriver) Vlans() (vlan []*intend_device.VlanItem, errors []string) {
 	l2Vlan, err := nd.Session.BulkWalkAll(vlanNameName)
 	l2VlanIfIndex, errIfIndex := nd.Session.BulkWalkAll(vlanNameIfIndex)
 	if err != nil || errIfIndex != nil {
@@ -29,7 +29,7 @@ func (nd *NetgearDriver) Vlans() (vlan []*nettyx_device.VlanItem, errors []strin
 	for i, v := range indexL2Vlan {
 		vlanIdString := strings.TrimPrefix(v, ".")
 		vlanId, _ := strconv.Atoi(vlanIdString)
-		_vlan := &nettyx_device.VlanItem{
+		_vlan := &intend_device.VlanItem{
 			VlanId:   uint32(vlanId),
 			VlanName: v,
 			IfIndex:  indexVlanIndex[i],
@@ -40,7 +40,7 @@ func (nd *NetgearDriver) Vlans() (vlan []*nettyx_device.VlanItem, errors []strin
 	return vlan, errors
 }
 
-func NewNetgearDriver(sc *nettyx_snmp.SnmpConfig) (*NetgearDriver, error) {
+func NewNetgearDriver(sc *snmp.SnmpConfig) (*NetgearDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err

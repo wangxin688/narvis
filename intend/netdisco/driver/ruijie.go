@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	mem_cache "github.com/wangxin688/narvis/intend/cache"
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 )
 
@@ -33,7 +33,7 @@ const ruijieStaRssi = ".1.3.6.1.4.1.4881.1.1.10.2.56.5.1.1.1.21"
 const ruijieStaUsername = ".1.3.6.1.4.1.4881.1.1.10.2.56.5.1.1.1.22"
 const ruijieStaOnlineTime = ".1.3.6.1.4.1.4881.1.1.10.2.56.5.1.1.1.24"
 
-func NewRuiJieDriver(sc *nettyx_snmp.SnmpConfig) (*RuiJieDriver, error) {
+func NewRuiJieDriver(sc *snmp.SnmpConfig) (*RuiJieDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func NewRuiJieDriver(sc *nettyx_snmp.SnmpConfig) (*RuiJieDriver, error) {
 	}, nil
 }
 
-func (d *RuiJieDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
+func (d *RuiJieDriver) APs() (ap []*intend_device.Ap, errors []string) {
 	apIP, errApIP := d.Session.BulkWalkAll(ruijieApApIp)
 	apMac, errApMac := d.Session.BulkWalkAll(ruijieApMacAddr)
 	apName, errApName := d.Session.BulkWalkAll(ruijieApApName)
@@ -76,7 +76,7 @@ func (d *RuiJieDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 		mem_cache.MemCache.SetDefault(ap_mac, ap_name)
 		apVer := indexApVersion[i]
 		group := indexApGroup[i]
-		ap = append(ap, &nettyx_device.Ap{
+		ap = append(ap, &intend_device.Ap{
 			Name:         indexApName[i],
 			ManagementIp: v,
 			MacAddress:   indexApMac[i],
@@ -89,8 +89,8 @@ func (d *RuiJieDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 	return ap, errors
 }
 
-func (d *RuiJieDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, errors []string) {
-	results := make([]*nettyx_wlanstation.WlanUser, 0)
+func (d *RuiJieDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []string) {
+	results := make([]*wlanstation.WlanUser, 0)
 	userNames, err := d.Session.BulkWalkAll(ruijieStaUsername)
 	if err != nil {
 		return nil, []string{fmt.Sprintf("failed to get users from %s", d.IpAddress)}
@@ -129,7 +129,7 @@ func (d *RuiJieDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, er
 		channel := indexChannel[i]
 		ap_mac := indexApMac[i]
 		ap_name := d.getAPName(ap_mac)
-		user := nettyx_wlanstation.WlanUser{
+		user := wlanstation.WlanUser{
 			StationMac:        factory.StringToHexMac(i),
 			StationIp:         indexIp[i],
 			StationUsername:   v,

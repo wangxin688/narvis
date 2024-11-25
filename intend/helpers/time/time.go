@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// package nettyx_time defines standardized ways for time processing.
+// package timer defines standardized ways for time processing.
 
-package nettyx_time
+package timer
 
 import (
 	"errors"

@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	intend_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"github.com/wangxin688/narvis/intend/utils"
 )
 
@@ -183,9 +183,9 @@ func (a *ApScanResponse) CalApHash() string {
 }
 
 type WlanUserTaskResult struct {
-	Errors         []string                       `json:"errors"`
-	WlanUsers      []*nettyx_wlanstation.WlanUser `json:"wlanUsers"`
-	SiteId         string                         `json:"siteId"`
-	DeviceId       string                         `json:"deviceId"`
-	OrganizationId string                         `json:"organizationId"`
+	Errors         []string                `json:"errors"`
+	WlanUsers      []*wlanstation.WlanUser `json:"wlanUsers"`
+	SiteId         string                  `json:"siteId"`
+	DeviceId       string                  `json:"deviceId"`
+	OrganizationId string                  `json:"organizationId"`
 }

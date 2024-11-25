@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	mem_cache "github.com/wangxin688/narvis/intend/cache"
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 )
 
@@ -33,7 +33,7 @@ type RuckusDriver struct {
 	factory.SnmpDiscovery
 }
 
-func NewRuckusDriver(sc *nettyx_snmp.SnmpConfig) (*RuckusDriver, error) {
+func NewRuckusDriver(sc *snmp.SnmpConfig) (*RuckusDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func NewRuckusDriver(sc *nettyx_snmp.SnmpConfig) (*RuckusDriver, error) {
 	}, nil
 }
 
-func (r *RuckusDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
+func (r *RuckusDriver) APs() (ap []*intend_device.Ap, errors []string) {
 
 	apIP, errApIP := r.Session.BulkWalkAll(ruckusZDWLANAPIPAddr)
 	if len(apIP) == 0 || errApIP != nil {
@@ -74,7 +74,7 @@ func (r *RuckusDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 		ap_mac := indexApMac[i]
 		mem_cache.MemCache.SetDefault(ap_mac, ap_name)
 		apVer := indexApVersion[i]
-		ap = append(ap, &nettyx_device.Ap{
+		ap = append(ap, &intend_device.Ap{
 			Name:         indexApName[i],
 			ManagementIp: v,
 			MacAddress:   indexApMac[i],
@@ -86,9 +86,9 @@ func (r *RuckusDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 	return ap, errors
 }
 
-func (r *RuckusDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, errors []string) {
+func (r *RuckusDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []string) {
 
-	results := make([]*nettyx_wlanstation.WlanUser, 0)
+	results := make([]*wlanstation.WlanUser, 0)
 	userNames, err := r.Session.BulkWalkAll(ruckusZDWLANStaUser)
 	if err != nil {
 		return nil, []string{fmt.Sprintf("failed to get users from %s", r.IpAddress)}
@@ -135,7 +135,7 @@ func (r *RuckusDriver) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, er
 		snr := indexSnr[i]
 		ap_mac := indexApMac[i]
 		ap_name := r.getApName(ap_mac)
-		user := nettyx_wlanstation.WlanUser{
+		user := wlanstation.WlanUser{
 			StationMac:        factory.StringToHexMac(i),
 			StationIp:         indexIp[i],
 			StationUsername:   v,

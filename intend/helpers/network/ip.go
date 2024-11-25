@@ -1,1 +1,1 @@
-package nettyx_network
+package network

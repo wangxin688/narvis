@@ -3,8 +3,8 @@ package driver
 import (
 	"fmt"
 
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 )
 
@@ -16,7 +16,7 @@ type FortiNetDriver struct {
 	factory.SnmpDiscovery
 }
 
-func NewFortiNetDriver(sc *nettyx_snmp.SnmpConfig) (*FortiNetDriver, error) {
+func NewFortiNetDriver(sc *snmp.SnmpConfig) (*FortiNetDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (f *FortiNetDriver) ChassisId() (string, error) {
 	return localChassisId, nil
 }
 
-func (f *FortiNetDriver) Entities() (entities []*nettyx_device.Entity, errors []string) {
+func (f *FortiNetDriver) Entities() (entities []*intend_device.Entity, errors []string) {
 	version, err := f.Session.Get([]string{fgsSysVersion})
 	if err != nil {
 		return nil, []string{fmt.Sprintf("get OsVersion failed from %s", f.IpAddress)}
@@ -67,7 +67,7 @@ func (f *FortiNetDriver) Entities() (entities []*nettyx_device.Entity, errors []
 		return nil, []string{fmt.Sprintf("get hardwareModelName failed from %s", f.IpAddress)}
 	}
 
-	entities = append(entities, &nettyx_device.Entity{
+	entities = append(entities, &intend_device.Entity{
 		EntityPhysicalSoftwareRev: fmt.Sprintf("%s", version.Variables[0].Value),
 		EntityPhysicalSerialNum:   fmt.Sprintf("%s", serial.Variables[0].Value),
 		EntityPhysicalName:        fmt.Sprintf("%s", model.Variables[0].Value),
@@ -75,7 +75,7 @@ func (f *FortiNetDriver) Entities() (entities []*nettyx_device.Entity, errors []
 	return entities, []string{}
 }
 
-func (f *FortiNetDriver) LldpNeighbors() (lldp []*nettyx_device.LldpNeighbor, errors []string) {
+func (f *FortiNetDriver) LldpNeighbors() (lldp []*intend_device.LldpNeighbor, errors []string) {
 	localChassisId, err := f.ChassisId()
 	if err != nil {
 		errors = append(errors, err.Error())
@@ -105,7 +105,7 @@ func (f *FortiNetDriver) LldpNeighbors() (lldp []*nettyx_device.LldpNeighbor, er
 
 	for i, v := range indexRemChassisId {
 		if v == localChassisId {
-			lldp = append(lldp, &nettyx_device.LldpNeighbor{
+			lldp = append(lldp, &intend_device.LldpNeighbor{
 				LocalChassisId:  localChassisId,
 				LocalHostname:   localHostname,
 				LocalIfName:     indexIfName[i],

@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	mem_cache "github.com/wangxin688/narvis/intend/cache"
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 )
 
@@ -73,7 +73,7 @@ type CiscoIosXEDriver struct {
 	CiscoBaseDriver
 }
 
-func NewCiscoIosDriver(sc *nettyx_snmp.SnmpConfig) (*CiscoIosDriver, error) {
+func NewCiscoIosDriver(sc *snmp.SnmpConfig) (*CiscoIosDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func NewCiscoIosDriver(sc *nettyx_snmp.SnmpConfig) (*CiscoIosDriver, error) {
 	}, nil
 }
 
-func NewCiscoIosXRDriver(sc *nettyx_snmp.SnmpConfig) (*CiscoIosXRDriver, error) {
+func NewCiscoIosXRDriver(sc *snmp.SnmpConfig) (*CiscoIosXRDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func NewCiscoIosXRDriver(sc *nettyx_snmp.SnmpConfig) (*CiscoIosXRDriver, error) 
 	}, nil
 }
 
-func NewCiscoNexusOSDriver(sc *nettyx_snmp.SnmpConfig) (*CiscoNexusOSDriver, error) {
+func NewCiscoNexusOSDriver(sc *snmp.SnmpConfig) (*CiscoNexusOSDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -115,7 +115,7 @@ func NewCiscoNexusOSDriver(sc *nettyx_snmp.SnmpConfig) (*CiscoNexusOSDriver, err
 	}, nil
 }
 
-func NewCiscoIosXEDriver(sc *nettyx_snmp.SnmpConfig) (*CiscoIosXEDriver, error) {
+func NewCiscoIosXEDriver(sc *snmp.SnmpConfig) (*CiscoIosXEDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func NewCiscoIosXEDriver(sc *nettyx_snmp.SnmpConfig) (*CiscoIosXEDriver, error) 
 	}, nil
 }
 
-func (cd *CiscoBaseDriver) Vlans() (vlan []*nettyx_device.VlanItem, errors []string) {
+func (cd *CiscoBaseDriver) Vlans() (vlan []*intend_device.VlanItem, errors []string) {
 	l2Vlan, err := cd.Session.BulkWalkAll(vtpVlanName)
 	if err != nil {
 		return nil, []string{fmt.Sprintf("failed to get vlan from %s", cd.IpAddress)}
@@ -144,7 +144,7 @@ func (cd *CiscoBaseDriver) Vlans() (vlan []*nettyx_device.VlanItem, errors []str
 		vlanIdStrings := strings.Split(i, ".")
 		vlanIdString := vlanIdStrings[len(vlanIdStrings)-1]
 		vlanId, _ := strconv.Atoi(vlanIdString)
-		_vlan := &nettyx_device.VlanItem{
+		_vlan := &intend_device.VlanItem{
 			VlanId:   uint32(vlanId),
 			VlanName: v,
 			IfIndex:  indexVlanIndex[i],
@@ -181,7 +181,7 @@ func (cd *CiscoBaseDriver) VlanAssign() (vlan []*factory.VlanAssignItem, errors 
 
 }
 
-func (cd *CiscoBaseDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
+func (cd *CiscoBaseDriver) APs() (ap []*intend_device.Ap, errors []string) {
 	apIP, errApIP := cd.Session.BulkWalkAll(bsnApIpAddress)
 	if len(apIP) == 0 || errApIP != nil {
 		return nil, []string{fmt.Sprintf("failed to get ap ipAddress from %s", cd.IpAddress)}
@@ -212,7 +212,7 @@ func (cd *CiscoBaseDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 		mem_cache.MemCache.SetDefault(apMac, apName)
 		ipAddr := cd.IpAddress
 		apVer := indexApVersion[i]
-		ap = append(ap, &nettyx_device.Ap{
+		ap = append(ap, &intend_device.Ap{
 			Name:            indexApName[i],
 			ManagementIp:    v,
 			MacAddress:      indexApMac[i],
@@ -226,8 +226,8 @@ func (cd *CiscoBaseDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 
 }
 
-func (cd *CiscoBaseDriver) WlanUsers() ([]*nettyx_wlanstation.WlanUser, []string) {
-	results := make([]*nettyx_wlanstation.WlanUser, 0)
+func (cd *CiscoBaseDriver) WlanUsers() ([]*wlanstation.WlanUser, []string) {
+	results := make([]*wlanstation.WlanUser, 0)
 	errors := make([]string, 0)
 	userNames, err := cd.Session.BulkWalkAll(bsnMobileStationUserName)
 	if err != nil {
@@ -273,7 +273,7 @@ func (cd *CiscoBaseDriver) WlanUsers() ([]*nettyx_wlanstation.WlanUser, []string
 		ap_mac := indexApMAc[i]
 		ap_name := cd.getAPName(ap_mac)
 		snr := indexSnr[i]
-		results = append(results, &nettyx_wlanstation.WlanUser{
+		results = append(results, &wlanstation.WlanUser{
 			StationMac:        factory.StringToHexMac(i),
 			StationApMac:      &ap_mac,
 			StationApName:     &ap_name,

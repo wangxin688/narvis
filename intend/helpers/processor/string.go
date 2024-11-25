@@ -11,9 +11,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// nettyx_processor string defines standardized ways for string/bytes processing.
+// processor string defines standardized ways for string/bytes processing.
 
-package nettyx_processor
+package processor
 
 import (
 	"crypto/md5"

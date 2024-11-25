@@ -21,7 +21,7 @@ import (
 	"github.com/go-ping/ping"
 	"github.com/gosnmp/gosnmp"
 	"github.com/wangxin688/narvis/intend/logger"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/snmp"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 	"go.uber.org/zap"
 )
@@ -80,7 +80,7 @@ func (d *Dispatcher) SshReachable(address string) bool {
 }
 
 // Session returns a new GoSNMP session.
-func (d *Dispatcher) Session(config *nettyx_snmp.SnmpConfig) (*gosnmp.GoSNMP, error) {
+func (d *Dispatcher) Session(config *snmp.SnmpConfig) (*gosnmp.GoSNMP, error) {
 	session, err := factory.NewSnmpSession(config)
 	if err != nil {
 		return nil, err
@@ -105,7 +105,7 @@ func (d *Dispatcher) SysObjectID(session *gosnmp.GoSNMP) string {
 }
 
 // Driver returns a new SnmpDriver.
-func (d *Dispatcher) Driver(config *nettyx_snmp.SnmpConfig) (SnmpDriver, error) {
+func (d *Dispatcher) Driver(config *snmp.SnmpConfig) (SnmpDriver, error) {
 	snmpReachable := true
 	session, err := d.Session(config)
 	if err != nil || session == nil {

@@ -11,9 +11,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// package nettyx_network mac_addr provide various method for MacAddress processing
+// package network mac_addr provide various method for MacAddress processing
 
-package nettyx_network
+package network
 
 import (
 	"fmt"

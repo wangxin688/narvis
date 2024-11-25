@@ -17,7 +17,7 @@ import (
 	"strings"
 
 	manufacturer "github.com/wangxin688/narvis/intend/model/manufacturer"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/snmp"
 
 	platform "github.com/wangxin688/narvis/intend/model/platform"
 	dt "github.com/wangxin688/narvis/intend/netdisco/devicemodel"
@@ -82,7 +82,7 @@ func getDeviceModelFromManufacturer(mf manufacturer.Manufacturer, sysObjId strin
 	}
 }
 
-func getFactory(platformType platform.Platform, sc *nettyx_snmp.SnmpConfig) (SnmpDriver, error) {
+func getFactory(platformType platform.Platform, sc *snmp.SnmpConfig) (SnmpDriver, error) {
 	var snmpDriver SnmpDriver
 	var err error
 

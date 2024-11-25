@@ -3,8 +3,8 @@ package driver
 import (
 	"fmt"
 
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 )
 
@@ -27,7 +27,7 @@ type JuniperDriver struct {
 	factory.SnmpDiscovery
 }
 
-func NewJuniperDriver(sc *nettyx_snmp.SnmpConfig) (*JuniperDriver, error) {
+func NewJuniperDriver(sc *snmp.SnmpConfig) (*JuniperDriver, error) {
 	session, err := factory.NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func NewJuniperDriver(sc *nettyx_snmp.SnmpConfig) (*JuniperDriver, error) {
 	}, nil
 }
 
-func (d *JuniperDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
+func (d *JuniperDriver) APs() (ap []*intend_device.Ap, errors []string) {
 	apIP, errApIP := d.Session.BulkWalkAll(jnxWAPStatusEthernetIPv4)
 	if len(apIP) == 0 || errApIP != nil {
 		return nil, []string{fmt.Sprintf("failed to get ap ipAddress from %s", d.IpAddress)}
@@ -64,7 +64,7 @@ func (d *JuniperDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 	indexApVersion := factory.ExtractString(jnxWAPStatusFirmwareVersion, apVersion)
 	for i, v := range indexApIP {
 		apVer := indexApVersion[i]
-		ap = append(ap, &nettyx_device.Ap{
+		ap = append(ap, &intend_device.Ap{
 			Name:         indexApName[i],
 			ManagementIp: v,
 			MacAddress:   indexApMac[i],
@@ -76,6 +76,6 @@ func (d *JuniperDriver) APs() (ap []*nettyx_device.Ap, errors []string) {
 	return ap, errors
 }
 
-// func (d *JuniperDriver) Vlans() (vlan []*nettyx_device.VlanItem, errors []string) {
+// func (d *JuniperDriver) Vlans() (vlan []*intend_device.VlanItem, errors []string) {
 // 	l2Vlan, err := d.Session.BulkWalkAll(jnxExVlanID)
 // }

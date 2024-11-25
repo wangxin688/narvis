@@ -9,7 +9,7 @@ import (
 
 	"github.com/gosnmp/gosnmp"
 	"github.com/samber/lo"
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
 )
 
 var vlanPattern = regexp.MustCompile(`(vl|Vl)[A-Za-z]*(\d+)`)
@@ -189,7 +189,7 @@ func ipAddrToNet(addr *string) (string, error) {
 	return networkStr, nil
 }
 
-func getIfVlanIpRange(interfaces []*nettyx_device.DeviceInterface) map[uint64]*VlanIpRange {
+func getIfVlanIpRange(interfaces []*intend_device.DeviceInterface) map[uint64]*VlanIpRange {
 	var results = make(map[uint64]*VlanIpRange)
 	for _, iface := range interfaces {
 		if iface.IfType == "propVirtual" {
@@ -221,7 +221,7 @@ func getIfVlanIpRange(interfaces []*nettyx_device.DeviceInterface) map[uint64]*V
 	return results
 }
 
-func EnrichArpInfo(arp []*nettyx_device.ArpItem, interfaces []*nettyx_device.DeviceInterface) []*nettyx_device.ArpItem {
+func EnrichArpInfo(arp []*intend_device.ArpItem, interfaces []*intend_device.DeviceInterface) []*intend_device.ArpItem {
 	for len(arp) <= 0 || len(interfaces) <= 0 {
 		return arp
 	}
@@ -237,7 +237,7 @@ func EnrichArpInfo(arp []*nettyx_device.ArpItem, interfaces []*nettyx_device.Dev
 	return arp
 }
 
-func EnrichVlanInfo(vlan []*nettyx_device.VlanItem, interfaces []*nettyx_device.DeviceInterface) []*nettyx_device.VlanItem {
+func EnrichVlanInfo(vlan []*intend_device.VlanItem, interfaces []*intend_device.DeviceInterface) []*intend_device.VlanItem {
 	if len(vlan) <= 0 || len(interfaces) <= 0 {
 		return vlan
 	}
@@ -253,7 +253,7 @@ func EnrichVlanInfo(vlan []*nettyx_device.VlanItem, interfaces []*nettyx_device.
 	return vlan
 }
 
-func lldpNeighborInterfaces(lldp []*nettyx_device.LldpNeighbor) []string {
+func lldpNeighborInterfaces(lldp []*intend_device.LldpNeighbor) []string {
 	results := make([]string, len(lldp))
 	for _, item := range lldp {
 		results = append(results, item.LocalIfName)
@@ -263,8 +263,8 @@ func lldpNeighborInterfaces(lldp []*nettyx_device.LldpNeighbor) []string {
 
 func RemoveNonLocalMacAddress(
 	mac *map[uint64][]string,
-	interfaces []*nettyx_device.DeviceInterface,
-	lldp []*nettyx_device.LldpNeighbor,
+	interfaces []*intend_device.DeviceInterface,
+	lldp []*intend_device.LldpNeighbor,
 ) *map[uint64][]string {
 	interfaceNames := make(map[uint64]string)
 	interfaceTypes := make(map[uint64]string)
@@ -283,13 +283,13 @@ func RemoveNonLocalMacAddress(
 
 func EnrichMacAddress(
 	macAddresses *map[uint64][]string,
-	interfaces []*nettyx_device.DeviceInterface,
-	lldpNeighbors []*nettyx_device.LldpNeighbor,
-	arpItems []*nettyx_device.ArpItem,
-) []*nettyx_device.MacAddressItem {
-	var results []*nettyx_device.MacAddressItem
-	interfaceMapping := make(map[uint64]*nettyx_device.DeviceInterface, len(interfaces))
-	arpMapping := make(map[string]*nettyx_device.ArpItem, len(arpItems))
+	interfaces []*intend_device.DeviceInterface,
+	lldpNeighbors []*intend_device.LldpNeighbor,
+	arpItems []*intend_device.ArpItem,
+) []*intend_device.MacAddressItem {
+	var results []*intend_device.MacAddressItem
+	interfaceMapping := make(map[uint64]*intend_device.DeviceInterface, len(interfaces))
+	arpMapping := make(map[string]*intend_device.ArpItem, len(arpItems))
 	for _, iface := range interfaces {
 		interfaceMapping[iface.IfIndex] = iface
 	}
@@ -310,7 +310,7 @@ func EnrichMacAddress(
 			if !ok {
 				continue
 			}
-			results = append(results, &nettyx_device.MacAddressItem{
+			results = append(results, &intend_device.MacAddressItem{
 				MacAddress: macAddress,
 				IfIndex:    index,
 				IfName:     iface.IfName,
@@ -323,7 +323,7 @@ func EnrichMacAddress(
 	return results
 }
 
-func shouldIncludeMacAddress(iface *nettyx_device.DeviceInterface, lldpInterfaces []string) bool {
+func shouldIncludeMacAddress(iface *intend_device.DeviceInterface, lldpInterfaces []string) bool {
 	return iface.IfType == "ethernetCsmacd" && !lo.Contains(lldpInterfaces, iface.IfName)
 }
 

@@ -18,7 +18,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	nettyx_processor "github.com/wangxin688/narvis/intend/helpers/processor"
+	"github.com/wangxin688/narvis/intend/helpers/processor"
 )
 
 type DeviceInterface struct {
@@ -47,11 +47,11 @@ func (d *DeviceInterface) CalHashValue() string {
 		d.IfHighSpeed,
 		d.IfMtu,
 		d.IfSpeed,
-		nettyx_processor.PtrStringToString(d.IfPhysAddr),
+		processor.PtrStringToString(d.IfPhysAddr),
 		d.IfAdminStatus,
 		d.IfOperStatus,
 		d.IfLastChange,
-		nettyx_processor.PtrStringToString(d.IfIpAddress))
+		processor.PtrStringToString(d.IfIpAddress))
 	hash := md5.New()
 	_, _ = hash.Write([]byte(hashString))
 	return hex.EncodeToString(hash.Sum(nil))

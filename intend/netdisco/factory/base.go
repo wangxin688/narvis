@@ -9,9 +9,9 @@ import (
 	"github.com/gosnmp/gosnmp"
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/logger"
-	nettyx_device "github.com/wangxin688/narvis/intend/model/device"
-	nettyx_snmp "github.com/wangxin688/narvis/intend/model/snmp"
-	nettyx_wlanstation "github.com/wangxin688/narvis/intend/model/wlanstation"
+	intend_device "github.com/wangxin688/narvis/intend/model/device"
+	"github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/model/wlanstation"
 	"go.uber.org/zap"
 )
 
@@ -20,7 +20,7 @@ type SnmpDiscovery struct {
 	IpAddress string
 }
 
-func NewSnmpSession(config *nettyx_snmp.SnmpConfig) (*gosnmp.GoSNMP, error) {
+func NewSnmpSession(config *snmp.SnmpConfig) (*gosnmp.GoSNMP, error) {
 	var snmpSession *gosnmp.GoSNMP
 	if !config.Validate() {
 		return nil, fmt.Errorf("invalid snmp config parameters for %s", config.IpAddress)
@@ -59,7 +59,7 @@ func NewSnmpSession(config *nettyx_snmp.SnmpConfig) (*gosnmp.GoSNMP, error) {
 	return snmpSession, nil
 }
 
-func NewSnmpDiscovery(sc *nettyx_snmp.SnmpConfig) (*SnmpDiscovery, error) {
+func NewSnmpDiscovery(sc *snmp.SnmpConfig) (*SnmpDiscovery, error) {
 	session, err := NewSnmpSession(sc)
 	if err != nil {
 		return nil, err
@@ -166,7 +166,7 @@ func (sd *SnmpDiscovery) IfPortMode() map[uint64]string {
 }
 
 // collect interfaces via IF-MIB
-func (sd *SnmpDiscovery) Interfaces() (interfaces []*nettyx_device.DeviceInterface, errors []string) {
+func (sd *SnmpDiscovery) Interfaces() (interfaces []*intend_device.DeviceInterface, errors []string) {
 	ifIndex, errIfIndex := sd.Session.BulkWalkAll(IfIndex)
 	if len(ifIndex) == 0 || errIfIndex != nil {
 		return nil, []string{fmt.Sprintf("failed to get ifIndex from %s", sd.IpAddress)}
@@ -228,7 +228,7 @@ func (sd *SnmpDiscovery) Interfaces() (interfaces []*nettyx_device.DeviceInterfa
 			_ifAddrIndex = strings.TrimPrefix(indexIfAddrIndex[i], ".") + "/" + strconv.Itoa(netmaskToLength(itemIfAddrNetMask))
 		}
 		physAddr := indexIfPhysAddr[i]
-		iface := nettyx_device.DeviceInterface{
+		iface := intend_device.DeviceInterface{
 			IfIndex:       v,
 			IfName:        indexIfName[i],
 			IfDescr:       indexIfDesc[i],
@@ -248,7 +248,7 @@ func (sd *SnmpDiscovery) Interfaces() (interfaces []*nettyx_device.DeviceInterfa
 	return interfaces, errors
 }
 
-func (sd *SnmpDiscovery) LldpNeighbors() (lldp []*nettyx_device.LldpNeighbor, errors []string) {
+func (sd *SnmpDiscovery) LldpNeighbors() (lldp []*intend_device.LldpNeighbor, errors []string) {
 
 	localChassisId, err := sd.ChassisId()
 	if err != nil {
@@ -282,7 +282,7 @@ func (sd *SnmpDiscovery) LldpNeighbors() (lldp []*nettyx_device.LldpNeighbor, er
 		if remoteHostname == "" {
 			continue
 		}
-		neighbor := &nettyx_device.LldpNeighbor{
+		neighbor := &intend_device.LldpNeighbor{
 			LocalChassisId:  localChassisId,
 			LocalHostname:   hostname,
 			LocalIfName:     IndexIfName["."+i],
@@ -297,7 +297,7 @@ func (sd *SnmpDiscovery) LldpNeighbors() (lldp []*nettyx_device.LldpNeighbor, er
 	return lldp, errors
 }
 
-func (sd *SnmpDiscovery) Entities() (entities []*nettyx_device.Entity, errors []string) {
+func (sd *SnmpDiscovery) Entities() (entities []*intend_device.Entity, errors []string) {
 	entPhysicalClass, err := sd.Session.BulkWalkAll(EntPhysicalClass)
 	if len(entPhysicalClass) == 0 || err != nil {
 		if err != nil {
@@ -330,7 +330,7 @@ func (sd *SnmpDiscovery) Entities() (entities []*nettyx_device.Entity, errors []
 	IndexEntityPhysicalSoftwareRev := ExtractString(EntPhysicalSoftwareRev, entityPhysicalSoftwareRev.Variables)
 	IndexEntityPhysicalSerialNum := ExtractString(EntPhysicalSerialNum, entityPhysicalSerialNum.Variables)
 	for i, v := range FilteredIndexEntPhysicalClass {
-		entities = append(entities, &nettyx_device.Entity{
+		entities = append(entities, &intend_device.Entity{
 			EntityPhysicalClass:       GetEntPhysicalClassValue(v),
 			EntityPhysicalDescr:       IndexEntityPhysicalDescr[i],
 			EntityPhysicalName:        IndexEntityPhysicalName[i],
@@ -393,7 +393,7 @@ func (sd *SnmpDiscovery) MacAddressTable() (macTable *map[uint64][]string, error
 	return &_macTable, errors
 }
 
-func (sd *SnmpDiscovery) ArpTable() (arp []*nettyx_device.ArpItem, errors []string) {
+func (sd *SnmpDiscovery) ArpTable() (arp []*intend_device.ArpItem, errors []string) {
 	arpTable, errArpTable := sd.Session.BulkWalkAll(IpNetToMediaPhysAddress)
 	arpType, errArpType := sd.Session.BulkWalkAll(IpNetToMediaType)
 	if errArpTable != nil || errArpType != nil {
@@ -403,10 +403,10 @@ func (sd *SnmpDiscovery) ArpTable() (arp []*nettyx_device.ArpItem, errors []stri
 	}
 	arpMap := ExtractMacAddress(IpNetToMediaPhysAddress, arpTable)
 	arpTypeMap := ExtractInteger(IpNetToMediaType, arpType)
-	results := make([]*nettyx_device.ArpItem, 0)
+	results := make([]*intend_device.ArpItem, 0)
 	for key, value := range arpMap {
 		ifIndex, address := getIfIndexAndAddress(key)
-		results = append(results, &nettyx_device.ArpItem{
+		results = append(results, &intend_device.ArpItem{
 			IpAddress:  address,
 			MacAddress: value,
 			Type:       GetArpTypeValue(arpTypeMap[key]),
@@ -416,14 +416,14 @@ func (sd *SnmpDiscovery) ArpTable() (arp []*nettyx_device.ArpItem, errors []stri
 	return results, nil
 }
 
-func (sd *SnmpDiscovery) Vlans() (vlan []*nettyx_device.VlanItem, errors []string) {
-	results := make([]*nettyx_device.VlanItem, 0)
+func (sd *SnmpDiscovery) Vlans() (vlan []*intend_device.VlanItem, errors []string) {
+	results := make([]*intend_device.VlanItem, 0)
 	return results, nil
 }
 
-func (sd *SnmpDiscovery) APs() (ap []*nettyx_device.Ap, errors []string) {
+func (sd *SnmpDiscovery) APs() (ap []*intend_device.Ap, errors []string) {
 	// need implement in vendor driver
-	results := make([]*nettyx_device.Ap, 0)
+	results := make([]*intend_device.Ap, 0)
 	return results, nil
 }
 
@@ -450,6 +450,6 @@ func (sd *SnmpDiscovery) BasicInfo() *DiscoveryBasicResponse {
 	return response
 }
 
-func (sd *SnmpDiscovery) WlanUsers() (wlanUsers []*nettyx_wlanstation.WlanUser, errors []string) {
+func (sd *SnmpDiscovery) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []string) {
 	return nil, nil
 }
