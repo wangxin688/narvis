@@ -2,10 +2,12 @@ package factory
 
 import (
 	"fmt"
+	"net"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/go-ping/ping"
 	"github.com/gosnmp/gosnmp"
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/logger"
@@ -68,6 +70,44 @@ func NewSnmpDiscovery(sc *snmp.SnmpConfig) (*SnmpDiscovery, error) {
 		Session:   session,
 		IpAddress: session.Target,
 	}, nil
+}
+
+// IcmpReachable returns true if the target is reachable via ICMP.
+// linux need privilege for udp
+func (sd *SnmpDiscovery) IcmpReachable() bool {
+	pinger, err := ping.NewPinger(sd.IpAddress)
+	if err != nil {
+		logger.Logger.Info("IcmpReachable failed", zap.String("target", sd.IpAddress), zap.Error(err))
+		return false
+	}
+	pinger.Count = 2
+	pinger.Interval = time.Duration(100) * time.Millisecond
+	pinger.Timeout = time.Second
+	err = pinger.Run()
+	if err != nil {
+		return false
+	}
+	return pinger.Statistics().PacketsRecv > 0
+}
+
+// SshReachable returns true if the target is reachable via SSH. default port is 22
+func (sd *SnmpDiscovery) SshReachable() bool {
+	timeout := time.Second
+	conn, err := net.DialTimeout("tcp", sd.IpAddress+":22", timeout)
+	if err != nil {
+		logger.Logger.Info("SshReachable failed", zap.String("target", sd.IpAddress), zap.Error(err))
+		return false
+	}
+	if conn == nil {
+		logger.Logger.Info("SshReachable failed", zap.String("target", sd.IpAddress), zap.String("reason", "connection is nil"))
+		return false
+	}
+	defer func() {
+		if conn != nil {
+			_ = conn.Close()
+		}
+	}()
+	return true
 }
 
 // SysDescr returns the system description from RFC-1213MIB

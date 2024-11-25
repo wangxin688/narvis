@@ -15,72 +15,33 @@ package netdisco
 
 import (
 	"fmt"
-	"net"
-	"time"
 
-	"github.com/go-ping/ping"
 	"github.com/gosnmp/gosnmp"
 	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/netdisco/devicemodel"
 	"github.com/wangxin688/narvis/intend/netdisco/factory"
 	"go.uber.org/zap"
 )
 
 type Dispatcher struct {
+	Target *snmp.SnmpConfig
 }
 
 // SnmpReachable returns true if the target is reachable via SNMP.
-func (d *Dispatcher) SnmpReachable(session *gosnmp.GoSNMP) bool {
+func (d *Dispatcher) snmpReachable(session *gosnmp.GoSNMP) bool {
 	// Try to get the sysName from the target, if it fails, it's not reachable.
 	result, err := session.Get([]string{factory.SysName})
 	if err != nil || result == nil {
-		logger.Logger.Info("[dispatcher]: SnmpReachable failed", zap.Error(err), zap.String("target", session.Target))
+		logger.Logger.Info("[netdisco]: SnmpReachable failed", zap.Error(err), zap.String("target", session.Target))
 		return false
 	}
 	// If the result is not empty, the target is reachable.
 	return len(result.Variables) > 0
 }
 
-// IcmpReachable returns true if the target is reachable via ICMP.
-// linux need privilege for udp
-func (d *Dispatcher) IcmpReachable(address string) bool {
-	pinger, err := ping.NewPinger(address)
-	if err != nil {
-		logger.Logger.Info("[dispatcher]: IcmpReachable failed", zap.String("target", address), zap.Error(err))
-		return false
-	}
-	pinger.Count = 2
-	pinger.Interval = time.Duration(100) * time.Millisecond
-	pinger.Timeout = time.Second
-	err = pinger.Run()
-	if err != nil {
-		return false
-	}
-	return pinger.Statistics().PacketsRecv > 0
-}
-
-// SshReachable returns true if the target is reachable via SSH. default port is 22
-func (d *Dispatcher) SshReachable(address string) bool {
-	timeout := time.Second
-	conn, err := net.DialTimeout("tcp", address+":22", timeout)
-	if err != nil {
-		logger.Logger.Info("[dispatcher]: SshReachable failed", zap.String("target", address), zap.Error(err))
-		return false
-	}
-	if conn == nil {
-		logger.Logger.Info("[dispatcher]: SshReachable failed", zap.String("target", address), zap.String("reason", "connection is nil"))
-		return false
-	}
-	defer func() {
-		if conn != nil {
-			_ = conn.Close()
-		}
-	}()
-	return true
-}
-
 // Session returns a new GoSNMP session.
-func (d *Dispatcher) Session(config *snmp.SnmpConfig) (*gosnmp.GoSNMP, error) {
+func (d *Dispatcher) session(config *snmp.SnmpConfig) (*gosnmp.GoSNMP, error) {
 	session, err := factory.NewSnmpSession(config)
 	if err != nil {
 		return nil, err
@@ -89,7 +50,7 @@ func (d *Dispatcher) Session(config *snmp.SnmpConfig) (*gosnmp.GoSNMP, error) {
 }
 
 // SysObjectID returns the sysObjectID from RFC-1213MIB
-func (d *Dispatcher) SysObjectID(session *gosnmp.GoSNMP) string {
+func (d *Dispatcher) sysObjectID(session *gosnmp.GoSNMP) string {
 	oid := []string{factory.SysObjectID}
 	result, err := session.Get(oid)
 	if err != nil {
@@ -105,32 +66,36 @@ func (d *Dispatcher) SysObjectID(session *gosnmp.GoSNMP) string {
 }
 
 // Driver returns a new SnmpDriver.
-func (d *Dispatcher) Driver(config *snmp.SnmpConfig) (SnmpDriver, error) {
+func (d *Dispatcher) Driver() (SnmpDriver, *devicemodel.DeviceModel, error) {
 	snmpReachable := true
-	session, err := d.Session(config)
+	session, err := d.session(d.Target)
 	if err != nil || session == nil {
 		snmpReachable = false
 	} else {
-		snmpReachable = d.SnmpReachable(session)
+		snmpReachable = d.snmpReachable(session)
 	}
 	result := map[string]string{
 		"snmpReachable": fmt.Sprintf("%t", snmpReachable),
 	}
 
 	if !snmpReachable {
-		return nil, fmt.Errorf("target %s snmp unreachable: %v", config.IpAddress, result)
+		return nil, nil, fmt.Errorf("[netdisco]: target %s snmp unreachable: %v", d.Target.IpAddress, result)
 	}
-	if config.Platform != nil && *config.Platform != "" {
-		return getFactory(*config.Platform, config)
+	if d.Target.Platform != nil && *d.Target.Platform != "" {
+		driver, err := getFactory(*d.Target.Platform, d.Target)
+		sysObjectId := d.sysObjectID(session)
+		deviceModel := getDeviceModel(sysObjectId)
+		return driver, deviceModel, err
 	}
-	sysObjectId := d.SysObjectID(session)
+	sysObjectId := d.sysObjectID(session)
 	if sysObjectId == "" {
-		return nil, fmt.Errorf("Unable to get sysObjectId, target manufacturer is not supported: %s", config.IpAddress)
+		return nil, nil, fmt.Errorf("[netdisco]: Unable to get sysObjectId, target manufacturer is not supported: %s", d.Target.IpAddress)
 	}
-	deviceType := getDeviceModel(sysObjectId)
-	return getFactory(deviceType.Platform, config)
+	deviceModel := getDeviceModel(sysObjectId)
+	driver, err := getFactory(*d.Target.Platform, d.Target)
+	return driver, deviceModel, err
 }
 
-func NewNetDisco() *Dispatcher {
-	return &Dispatcher{}
+func NewNetDisco(config *snmp.SnmpConfig) *Dispatcher {
+	return &Dispatcher{Target: config}
 }

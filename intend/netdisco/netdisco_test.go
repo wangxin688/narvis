@@ -38,7 +38,7 @@ func TestDriver(t *testing.T) {
 		Timeout:        3,
 		MaxRepetitions: 10,
 	}
-	disco, err := netdisco.NewNetDisco().Driver(&target)
+	disco, _, err := netdisco.NewNetDisco(&target).Driver()
 	if err != nil {
 		t.Fatalf("failed to create netdisco: %s", err)
 	}

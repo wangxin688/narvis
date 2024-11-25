@@ -20,6 +20,8 @@ import (
 )
 
 type SnmpDriver interface {
+	IcmpReachable() bool
+	SshReachable() bool
 	SysDescr() (string, error)
 	SysObjectID() (string, error)
 	SysUpTime() (uint64, error)
