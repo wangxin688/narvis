@@ -13,7 +13,7 @@ import (
 
 func MockCircuit(db *gorm.DB, siteId, orgId string, interfaceId []string) {
 	createCircuits := make([]*models.Circuit, 0)
-	for _, iface := range interfaceId {
+	for i, iface := range interfaceId {
 		circuitService := infra_biz.NewCircuitService()
 		name := fmt.Sprintf("MockCircuit-%s", fixtures.RandomString(8))
 		cid := fixtures.RandomString(10)
@@ -42,6 +42,9 @@ func MockCircuit(db *gorm.DB, siteId, orgId string, interfaceId []string) {
 			OrganizationId: orgId,
 			Provider:       provider,
 		})
+		if i == 3 {
+			break
+		}
 	}
 
 	err := gen.Circuit.CreateInBatches(createCircuits, 50)
