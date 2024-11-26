@@ -20,7 +20,7 @@ type AP struct {
 	Status          string    `json:"status"`
 	OperStatus      string    `json:"operStatus"`
 	HealthStatus    string    `json:"healthStatus"`
-	MacAddress      *string   `json:"macAddress"`
+	MacAddress      string    `json:"macAddress"`
 	SerialNumber    *string   `json:"serialNumber"`
 	ManagementIp    string    `json:"managementIp"`
 	DeviceModel     string    `json:"deviceType"`

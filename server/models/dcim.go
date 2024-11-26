@@ -244,7 +244,7 @@ type AP struct {
 	BaseDbModel
 	Name            string       `gorm:"column:name;not null;uniqueIndex:idx_name_site_id"`
 	Status          string       `gorm:"column:status;default:Active"`
-	MacAddress      *string      `gorm:"column:macAddress;type:macaddr;default:null"`
+	MacAddress      string       `gorm:"column:macAddress;type:macaddr"`
 	SerialNumber    *string      `gorm:"column:serialNumber;default:null"`
 	ManagementIp    string       `gorm:"column:managementIp;not null;uniqueIndex:idx_management_ip_site_id"`
 	DeviceModel     string       `gorm:"column:deviceModel;default:Unknown"`

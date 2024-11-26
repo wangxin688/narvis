@@ -258,7 +258,7 @@ func (s *ApService) GetApByMacAddresses(macAddresses []string, orgId string) (ma
 	}
 	res := make(map[string]*models.AP)
 	for _, ap := range aps {
-		res[*ap.MacAddress] = ap
+		res[ap.MacAddress] = ap
 	}
 	return res, nil
 }
@@ -266,7 +266,7 @@ func (s *ApService) GetApByMacAddresses(macAddresses []string, orgId string) (ma
 func (s *ApService) CalApHash(ap *models.AP) string {
 	hashString := fmt.Sprintf(
 		"%s-%s-%s-%s-%s-%s", ap.Name, ap.ManagementIp,
-		helpers.PtrStringToString(ap.MacAddress),
+		ap.MacAddress,
 		helpers.PtrStringToString(ap.GroupName),
 		helpers.PtrStringToString(ap.WlanACIpAddress),
 		helpers.PtrStringToString(ap.SerialNumber),

@@ -103,7 +103,7 @@ func (s *SiteService) Update(Id string, site *schemas.SiteUpdate) (diff map[stri
 				return err
 			}
 		}
-		_, err = gen.Site.Where(gen.Site.Id.Eq(Id), gen.Site.OrganizationId.Eq(contextvar.OrganizationId.Get())).Updates(updateFields)
+		err = gen.Site.UnderlyingDB().Save(dbSite).Error
 		if err != nil {
 			return err
 		}
