@@ -155,7 +155,7 @@ type MacAddressTableScanResponse struct{}
 
 type ApScanResponse struct {
 	Name            string  `json:"name"`
-	MacAddress      *string `json:"macAddress"`
+	MacAddress      string  `json:"macAddress"`
 	SerialNumber    *string `json:"serialNumber"`
 	ManagementIp    string  `json:"managementIp"`
 	GroupName       *string `json:"groupName"`
@@ -172,7 +172,7 @@ func (a *ApScanResponse) CalApHash() string {
 		"%s-%s-%s-%s-%s-%s",
 		a.Name,
 		a.ManagementIp,
-		utils.PtrStringToString(a.MacAddress),
+		a.MacAddress,
 		utils.PtrStringToString(a.GroupName),
 		utils.PtrStringToString(a.WlanACIpAddress),
 		utils.PtrStringToString(a.SerialNumber),

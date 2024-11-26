@@ -13,15 +13,14 @@ import (
 	"github.com/wangxin688/narvis/client/config"
 	"github.com/wangxin688/narvis/client/pkg/gossh"
 	"github.com/wangxin688/narvis/client/pkg/gowebssh"
-	"github.com/wangxin688/narvis/client/pkg/nettysnmp"
-	"github.com/wangxin688/narvis/client/pkg/nettysnmp/factory"
 	"github.com/wangxin688/narvis/intend/helpers/network"
 	"github.com/wangxin688/narvis/intend/helpers/processor"
 	"github.com/wangxin688/narvis/intend/helpers/security"
 	"github.com/wangxin688/narvis/intend/intendtask"
 	"github.com/wangxin688/narvis/intend/logger"
 	intend_device "github.com/wangxin688/narvis/intend/model/device"
-	"github.com/wangxin688/narvis/intend/model/wlanstation"
+	"github.com/wangxin688/narvis/intend/model/snmp"
+	"github.com/wangxin688/narvis/intend/netdisco"
 	"go.uber.org/zap"
 )
 
@@ -38,15 +37,18 @@ func scanDeviceBasicInfo(data []byte) ([]*intendtask.DeviceBasicInfoScanResponse
 		logger.Logger.Error(fmt.Sprintf("[ScanDeviceBasicInfo]: received wrong ip range %s", task.Range), zap.Error(err))
 		return nil, err
 	}
-	snmpConfig := factory.BaseSnmpConfig{
-		Port:           task.SnmpConfig.Port,
-		Version:        gosnmp.Version2c,
-		Timeout:        task.SnmpConfig.Timeout,
-		MaxRepetitions: int(task.SnmpConfig.MaxRepetitions),
-		Community:      &task.SnmpConfig.Community,
+	snmpConfigs := make([]*snmp.SnmpConfig, 0)
+	for _, target := range targets {
+		snmpConfigs = append(snmpConfigs, &snmp.SnmpConfig{
+			IpAddress:      target,
+			Port:           task.SnmpConfig.Port,
+			Timeout:        task.SnmpConfig.Timeout,
+			Community:      &task.SnmpConfig.Community,
+			Version:        gosnmp.Version2c,
+			MaxRepetitions: int(task.SnmpConfig.MaxRepetitions),
+		})
 	}
-	dispatcher := nettysnmp.NewDispatcher(targets, snmpConfig)
-	result := dispatcher.DispatchBasic()
+	result := netdisco.NetworkDeviceDiscovery(snmpConfigs)
 	if len(result) != 0 {
 		for _, r := range result {
 			if !r.SnmpReachable || r.Data == nil || len(r.Data.Errors) != 0 {
@@ -76,15 +78,15 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 		logger.Logger.Error("[ScanDevice]: Unmarshal err: ", zap.Error(err))
 		return nil, err
 	}
-	snmpConfig := factory.BaseSnmpConfig{
+	snmpConfig := snmp.SnmpConfig{
+		IpAddress:      task.ManagementIp,
 		Port:           task.SnmpConfig.Port,
 		Version:        gosnmp.Version2c,
 		Timeout:        task.SnmpConfig.Timeout,
 		MaxRepetitions: int(task.SnmpConfig.MaxRepetitions),
 		Community:      &task.SnmpConfig.Community,
 	}
-	dispatcher := nettysnmp.NewDispatcher([]string{task.ManagementIp}, snmpConfig)
-	result := dispatcher.Dispatch()
+	result := netdisco.EnrichDevice([]*snmp.SnmpConfig{&snmpConfig})
 	if len(result) != 1 {
 		return nil, errors.New("no device found")
 	}
@@ -120,7 +122,7 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 	resp.Description = r.Data.SysDescr
 	resp.ChassisId = &r.Data.ChassisId
 	resp.Name = r.Data.Hostname
-	resp.Interfaces = lo.Map(r.Data.Interfaces, func(item *factory.DeviceInterface, _ int) *intend_device.DeviceInterface {
+	resp.Interfaces = lo.Map(r.Data.Interfaces, func(item *intend_device.DeviceInterface, _ int) *intend_device.DeviceInterface {
 		return &intend_device.DeviceInterface{
 			IfIndex:       item.IfIndex,
 			IfName:        item.IfName,
@@ -131,21 +133,21 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 			IfAdminStatus: item.IfAdminStatus,
 			IfOperStatus:  item.IfOperStatus,
 			IfLastChange:  item.IfLastChange,
-			IfPhysAddr:    &item.IfPhysAddr,
+			IfPhysAddr:    item.IfPhysAddr,
 			IfHighSpeed:   item.IfHighSpeed,
-			IfIpAddress:   &item.IfIpAddress,
+			IfIpAddress:   item.IfIpAddress,
 		}
 	})
-	resp.Vlans = lo.Map(r.Data.Vlans, func(item *factory.VlanItem, _ int) *intend_device.VlanItem {
+	resp.Vlans = lo.Map(r.Data.Vlans, func(item *intend_device.VlanItem, _ int) *intend_device.VlanItem {
 		return &intend_device.VlanItem{
 			VlanId:   item.VlanId,
 			VlanName: item.VlanName,
 			IfIndex:  item.IfIndex,
-			Network:  item.Range,
+			Network:  item.Network,
 			Gateway:  item.Gateway,
 		}
 	})
-	resp.LldpNeighbors = lo.Map(r.Data.LldpNeighbors, func(item *factory.LldpNeighbor, _ int) *intend_device.LldpNeighbor {
+	resp.LldpNeighbors = lo.Map(r.Data.LldpNeighbors, func(item *intend_device.LldpNeighbor, _ int) *intend_device.LldpNeighbor {
 		return &intend_device.LldpNeighbor{
 			LocalChassisId:  item.LocalChassisId,
 			LocalHostname:   item.LocalHostname,
@@ -157,7 +159,7 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 			RemoteIfDescr:   item.RemoteIfDescr,
 		}
 	})
-	resp.Entities = lo.Map(r.Data.Entities, func(item *factory.Entity, _ int) *intend_device.Entity {
+	resp.Entities = lo.Map(r.Data.Entities, func(item *intend_device.Entity, _ int) *intend_device.Entity {
 		return &intend_device.Entity{
 			EntityPhysicalClass:       item.EntityPhysicalClass,
 			EntityPhysicalDescr:       item.EntityPhysicalDescr,
@@ -166,7 +168,7 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 			EntityPhysicalSerialNum:   item.EntityPhysicalSerialNum,
 		}
 	})
-	resp.Stacks = lo.Map(r.Data.Stacks, func(item *factory.Stack, _ int) *intend_device.Stack {
+	resp.Stacks = lo.Map(r.Data.Stacks, func(item *intend_device.Stack, _ int) *intend_device.Stack {
 		return &intend_device.Stack{
 			Id:         item.Id,
 			Priority:   item.Priority,
@@ -174,7 +176,7 @@ func scanDevice(data []byte) (*intendtask.DeviceScanResponse, error) {
 			MacAddress: item.MacAddress,
 		}
 	})
-	resp.ArpTable = lo.Map(r.Data.ArpTable, func(item *factory.ArpItem, _ int) *intend_device.ArpItem {
+	resp.ArpTable = lo.Map(r.Data.ArpTable, func(item *intend_device.ArpItem, _ int) *intend_device.ArpItem {
 		return &intend_device.ArpItem{
 			IpAddress:  item.IpAddress,
 			MacAddress: item.MacAddress,
@@ -195,15 +197,15 @@ func scanAp(data []byte) ([]*intendtask.ApScanResponse, error) {
 		logger.Logger.Error("[ScanAp]: Unmarshal err: ", zap.Error(err))
 		return nil, err
 	}
-	snmpConfig := factory.BaseSnmpConfig{
+	snmpConfig := snmp.SnmpConfig{
+		IpAddress:      task.ManagementIp,
 		Port:           task.SnmpConfig.Port,
 		Version:        gosnmp.Version2c,
 		Timeout:        task.SnmpConfig.Timeout,
 		MaxRepetitions: int(task.SnmpConfig.MaxRepetitions),
 		Community:      &task.SnmpConfig.Community,
 	}
-	dispatcher := nettysnmp.NewDispatcher([]string{task.ManagementIp}, snmpConfig)
-	result := dispatcher.DispatchApScan()
+	result := netdisco.WlanApDiscovery([]*snmp.SnmpConfig{&snmpConfig})
 	if len(result) != 0 {
 		for _, r := range result {
 			if !r.SnmpReachable || len(r.Errors) > 0 || r.Data == nil {
@@ -213,15 +215,15 @@ func scanAp(data []byte) ([]*intendtask.ApScanResponse, error) {
 				results = append(results, &intendtask.ApScanResponse{
 					Name:            ap.Name,
 					ManagementIp:    ap.ManagementIp,
-					SerialNumber:    StringToPtrString(ap.SerialNumber),
-					GroupName:       StringToPtrString(ap.GroupName),
+					SerialNumber:    processor.StringToPtrString(ap.SerialNumber),
+					GroupName:       ap.GroupName,
 					SiteId:          task.SiteId,
 					OrganizationId:  config.Settings.ORGANIZATION_ID,
 					DeviceModel:     ap.DeviceModel,
-					WlanACIpAddress: StringToPtrString(ap.WlanACIpAddress),
-					MacAddress:      StringToPtrString(ap.MacAddress),
+					WlanACIpAddress: ap.WlanACIpAddress,
+					MacAddress:      ap.MacAddress,
 					Manufacturer:    string(r.DeviceModel.Manufacturer),
-					OsVersion:       StringToPtrString(ap.OsVersion),
+					OsVersion:       ap.OsVersion,
 				})
 			}
 		}
@@ -328,39 +330,22 @@ func wlanUserTask(data []byte) *intendtask.WlanUserTaskResult {
 		result.Errors = []string{fmt.Sprintf("failed to unmarshal task, error: %s", err.Error())}
 		return result
 	}
-	snmpConfig := factory.BaseSnmpConfig{
+	snmpConfig := snmp.SnmpConfig{
 		Port:           task.SnmpConfig.Port,
 		Version:        gosnmp.Version2c,
 		Timeout:        task.SnmpConfig.Timeout,
 		MaxRepetitions: int(task.SnmpConfig.MaxRepetitions),
 		Community:      &task.SnmpConfig.Community,
 	}
-	dispatcher := nettysnmp.NewDispatcher([]string{task.ManagementIp}, snmpConfig)
-	response := dispatcher.DispatchWlanUser()
-	if response == nil {
+	driver, _, err := netdisco.NewNetDisco(&snmpConfig).Driver()
+	if err != nil || driver == nil {
 		result.Errors = []string{fmt.Sprintf("not support for target device %s", task.ManagementIp)}
 	}
-	if len(response[0].Errors) > 0 {
-		result.Errors = response[0].Errors
+	response, errors := driver.WlanUsers()
+	if len(errors) > 0 {
+		result.Errors = errors
 		return result
 	}
-	for _, user := range response[0].WlanUsers {
-		result.WlanUsers = append(result.WlanUsers, &wlanstation.WlanUser{
-			StationMac:           user.StationMac,
-			StationIp:            user.StationIp,
-			StationUsername:      user.StationUsername,
-			StationApName:        user.StationApName,
-			StationESSID:         user.StationESSID,
-			StationChanBandWidth: user.StationChanBandWidth,
-			StationSNR:           user.StationSNR,
-			StationRSSI:          user.StationRSSI,
-			StationVlan:          user.StationVlan,
-			StationOnlineTime:    user.StationOnlineTime,
-			StationChannel:       user.StationChannel,
-			StationRxBits:        user.StationRxBits,
-			StationTxBits:        user.StationRxBits,
-			StationRadioType:     user.StationRadioType,
-		})
-	}
+	result.WlanUsers = response
 	return result
 }
