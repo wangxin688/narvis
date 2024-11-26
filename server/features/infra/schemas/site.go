@@ -63,6 +63,8 @@ type SiteResponse struct {
 type SiteDetail struct {
 	Site
 	SwitchCount   int64           `json:"switchCount"`
+	ServerCount   int64           `json:"serverCount"`
+	RouterCount   int64           `json:"routerCount"`
 	ApCount       int64           `json:"apCount"`
 	RackCount     int64           `json:"rackCount"`
 	CircuitCount  int64           `json:"circuitCount"`
