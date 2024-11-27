@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func MockSite(db *gorm.DB, orgId string) {
+func mockSite(db *gorm.DB, orgId string) {
 
 	sites := make([]*models.Site, 0)
 	regions := []struct {

@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func MockDeviceInterface(db *gorm.DB, siteId, deviceId string) {
+func mockDeviceInterface(db *gorm.DB, siteId, deviceId string) {
 
 	createInterfaces := make([]*models.DeviceInterface, 0)
 

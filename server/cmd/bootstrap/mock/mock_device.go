@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func MockDevice(db *gorm.DB, siteIds []string, orgId string) {
+func mockDevice(db *gorm.DB, siteIds []string, orgId string) {
 	createDevices := make([]*models.Device, 0)
 	devices := []struct {
 		platform     string

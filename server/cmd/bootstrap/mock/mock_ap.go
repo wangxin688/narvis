@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func MockWlanAp(db *gorm.DB, orgId, siteId string) {
+func mockWlanAp(db *gorm.DB, orgId, siteId string) {
 	createAps := make([]*models.AP, 0)
 
 	for i := 1; i < 50; i++ {

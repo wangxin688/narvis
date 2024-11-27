@@ -5,8 +5,8 @@ zabbix_export:
       name: Templates/narvis
   templates:
     - uuid: 63308c7f8f9d426599ceb89ab5d47460
-      template: template_ruckus_basic
-      name: template_ruckus_basic
+      template: template_ruckus_wlan_basic
+      name: template_ruckus_wlan_basic
       templates:
         - name: template_interface_basic
       groups:
@@ -22,7 +22,7 @@ zabbix_export:
             name: 'Service state'
           triggers:
             - uuid: ff9aa76f7a8b4a8e8a72aadb9339c599
-              expression: 'max(/template_ruckus_basic/icmpping,#3)=0'
+              expression: 'max(/template_ruckus_wlan_basic/icmpping,#3)=0'
               name: unavailable_by_icmp_ping
               priority: HIGH
               description: 'Last three attempts returned timeout.  Please check device connectivity.'
@@ -40,14 +40,14 @@ zabbix_export:
           units: '%'
           triggers:
             - uuid: aa5cb19a8f704ba9a8496eeb3f513eca
-              expression: 'min(/template_ruckus_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_ruckus_basic/icmppingloss,5m)<100'
+              expression: 'min(/template_ruckus_wlan_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_ruckus_wlan_basic/icmppingloss,5m)<100'
               name: high_icmp_ping_loss
               opdata: 'Loss: {ITEM.LASTVALUE1}'
               priority: WARNING
               manual_close: 'YES'
               dependencies:
                 - name: unavailable_by_icmp_ping
-                  expression: 'max(/template_ruckus_basic/icmpping,#3)=0'
+                  expression: 'max(/template_ruckus_wlan_basic/icmpping,#3)=0'
         - uuid: 90e99e1daf214b86a5ba92a62c916108
           name: icmp_response_time
           type: SIMPLE
@@ -58,16 +58,16 @@ zabbix_export:
           units: s
           triggers:
             - uuid: 2b8668529ae3471a8a4b2c94760e3520
-              expression: 'avg(/template_ruckus_basic/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
+              expression: 'avg(/template_ruckus_wlan_basic/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
               name: high_icmp_ping_response_time
               opdata: 'Value: {ITEM.LASTVALUE1}'
               priority: WARNING
               manual_close: 'YES'
               dependencies:
                 - name: high_icmp_ping_loss
-                  expression: 'min(/template_ruckus_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_ruckus_basic/icmppingloss,5m)<100'
+                  expression: 'min(/template_ruckus_wlan_basic/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/template_ruckus_wlan_basic/icmppingloss,5m)<100'
                 - name: unavailable_by_icmp_ping
-                  expression: 'max(/template_ruckus_basic/icmpping,#3)=0'
+                  expression: 'max(/template_ruckus_wlan_basic/icmpping,#3)=0'
               tags:
                 - tag: scope
                   value: availability
@@ -115,7 +115,7 @@ zabbix_export:
                   }
           triggers:
             - uuid: 4bc9ea6a33744f2a89c742835dcb78d2
-              expression: 'max(/template_ruckus_basic/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
+              expression: 'max(/template_ruckus_wlan_basic/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
               name: no_snmp_data_collection
               opdata: 'Current state: {ITEM.LASTVALUE1}'
               priority: WARNING
@@ -123,7 +123,7 @@ zabbix_export:
               manual_close: 'YES'
               dependencies:
                 - name: unavailable_by_icmp_ping
-                  expression: 'max(/template_ruckus_basic/icmpping,#3)=0'
+                  expression: 'max(/template_ruckus_wlan_basic/icmpping,#3)=0'
               tags:
                 - tag: scope
                   value: availability

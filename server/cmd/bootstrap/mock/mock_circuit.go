@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func MockCircuit(db *gorm.DB, siteId, orgId string, interfaceId []string) {
+func mockCircuit(db *gorm.DB, siteId, orgId string, interfaceId []string) {
 	createCircuits := make([]*models.Circuit, 0)
 	for i, iface := range interfaceId {
 		circuitService := infra_biz.NewCircuitService()
