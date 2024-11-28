@@ -183,9 +183,19 @@ func (s *SiteService) GetSiteDetail(siteId string) (*schemas.SiteDetail, error) 
 	if err != nil {
 		return &schemas.SiteDetail{}, err
 	}
+	serverCount, err := s.GetServerCountBySiteId(siteId)
+	if err != nil {
+		return &schemas.SiteDetail{}, err
+	}
+	routerCount, err := s.GetRouterCount(siteId)
+	if err != nil {
+		return &schemas.SiteDetail{}, err
+	}
 	return &schemas.SiteDetail{
 		Site:          site,
 		SwitchCount:   switchCount,
+		ServerCount:   serverCount,
+		RouterCount:   routerCount,
 		ApCount:       apCount,
 		RackCount:     rackCount,
 		CircuitCount:  circuitCount,
@@ -198,6 +208,13 @@ func (s *SiteService) GetSiteDetail(siteId string) (*schemas.SiteDetail, error) 
 func (s *SiteService) GetSwitchCount(siteId string) (int64, error) {
 	return gen.Device.Where(
 		gen.Device.DeviceRole.Eq(string(devicerole.Switch)),
+		gen.Device.SiteId.Eq(siteId),
+	).Count()
+}
+
+func (s *SiteService) GetRouterCount(siteId string) (int64, error) {
+	return gen.Device.Where(
+		gen.Device.DeviceRole.Eq(string(devicerole.Router)),
 		gen.Device.SiteId.Eq(siteId),
 	).Count()
 }
@@ -331,7 +348,7 @@ func (s *SiteService) GetCircuitBySites(sites []string) (*map[string][]*schemas.
 	return &results, nil
 }
 
-func (s *SiteService) GetDeviceCountBySites(sites []string) (*map[string]int64, error) {
+func (s *SiteService) GetDeviceCountBySites(sites []string) (map[string]int64, error) {
 	var results []struct {
 		SiteId string
 		Count  int64
@@ -346,10 +363,10 @@ func (s *SiteService) GetDeviceCountBySites(sites []string) (*map[string]int64, 
 	for _, result := range results {
 		res[result.SiteId] = result.Count
 	}
-	return &res, nil
+	return res, nil
 }
 
-func (s *SiteService) GetApCountBySites(sites []string) (*map[string]int64, error) {
+func (s *SiteService) GetApCountBySites(sites []string) (map[string]int64, error) {
 	var results []struct {
 		SiteId string
 		Count  int64
@@ -364,7 +381,7 @@ func (s *SiteService) GetApCountBySites(sites []string) (*map[string]int64, erro
 	for _, result := range results {
 		res[result.SiteId] = result.Count
 	}
-	return &res, nil
+	return res, nil
 }
 
 func (s *SiteService) GetDeviceApTotalBySites(sites []string) (*map[string]int64, error) {
@@ -377,10 +394,10 @@ func (s *SiteService) GetDeviceApTotalBySites(sites []string) (*map[string]int64
 		return nil, err
 	}
 	res := make(map[string]int64)
-	for siteId, count := range *deviceCount {
+	for siteId, count := range deviceCount {
 		res[siteId] = count
 	}
-	for siteId, count := range *apCount {
+	for siteId, count := range apCount {
 		res[siteId] += count
 	}
 	return &res, nil
@@ -424,4 +441,28 @@ func (s *SiteService) GetAllActiveSites() ([]*models.Site, error) {
 	}
 	return sites, nil
 
+}
+
+func (s *SiteService) GetServerCountBySiteIds(siteId []string) (map[string]int64, error) {
+	var results []struct {
+		SiteId string
+		Count  int64
+	}
+
+	err := gen.Server.Select(gen.Server.SiteId.As("SiteId"), gen.Server.Id.Count().As("Count")).
+		Where(gen.Server.OrganizationId.Eq(contextvar.OrganizationId.Get()), gen.Server.SiteId.In(siteId...)).
+		Group(gen.Server.SiteId).Scan(&results)
+	if err != nil {
+		return nil, err
+	}
+	res := make(map[string]int64)
+	for _, result := range results {
+		res[result.SiteId] = result.Count
+	}
+	return res, nil
+}
+
+func (s *SiteService) GetServerCountBySiteId(sites string) (int64, error) {
+	return gen.Server.Where(gen.Server.SiteId.Eq(sites),
+		gen.Server.OrganizationId.Eq(contextvar.OrganizationId.Get())).Count()
 }

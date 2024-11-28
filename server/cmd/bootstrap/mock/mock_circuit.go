@@ -8,10 +8,9 @@ import (
 	infra_biz "github.com/wangxin688/narvis/server/features/infra/biz"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tests/fixtures"
-	"gorm.io/gorm"
 )
 
-func mockCircuit(db *gorm.DB, siteId, orgId string, interfaceId []string) {
+func mockCircuit(siteId, orgId string, interfaceId []string) {
 	createCircuits := make([]*models.Circuit, 0)
 	for i, iface := range interfaceId {
 		circuitService := infra_biz.NewCircuitService()

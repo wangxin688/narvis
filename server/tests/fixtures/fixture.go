@@ -59,3 +59,16 @@ func GetRandomApId(siteId string) ([]string, error) {
 	return apIds, nil
 
 }
+
+func GetSiteApNames(siteId string) ([]string, error) {
+	result, err := gen.AP.Select(gen.AP.Name).Where(
+		gen.AP.SiteId.Eq(siteId),
+	).Find()
+	if err != nil {
+		return nil, err
+	}
+	apNames := lo.Map(result, func(item *models.AP, _ int) string {
+		return item.Name
+	})
+	return apNames, nil
+}

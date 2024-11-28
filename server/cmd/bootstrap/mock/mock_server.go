@@ -7,10 +7,9 @@ import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tests/fixtures"
-	"gorm.io/gorm"
 )
 
-func mockServer(db *gorm.DB, orgId string, siteId string) {
+func mockServer(orgId string, siteId string) {
 	createServers := make([]*models.Server, 0)
 
 	for i := 1; i < 50; i++ {

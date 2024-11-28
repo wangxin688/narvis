@@ -17,5 +17,4 @@ type Netflow struct {
 	BaseTimeScaleModel
 	OrganizationId string `gorm:"column:organizationId;type:uuid;not null"`
 	FlowBytes      uint32 `gorm:"column:flowBytes;not null;default:0"`
-	
 }

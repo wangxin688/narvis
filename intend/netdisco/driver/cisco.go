@@ -268,11 +268,11 @@ func (cd *CiscoBaseDriver) WlanUsers() ([]*wlanstation.WlanUser, []string) {
 	indexSnr := factory.ExtractInteger(bsnMobileStationSnr, userSNR)
 	indexUptime := factory.ExtractInteger(cldcClientUpTime, userUptime)
 	for i, v := range indexUserName {
-		vlan := indexUserVlan[i]
-		channel := indexChannel[i]
+		vlan := uint16(indexUserVlan[i])
+		channel := uint16(indexChannel[i])
 		ap_mac := indexApMAc[i]
 		ap_name := cd.getAPName(ap_mac)
-		snr := indexSnr[i]
+		snr := uint8(indexSnr[i])
 		results = append(results, &wlanstation.WlanUser{
 			StationMac:        factory.StringToHexMac(i),
 			StationApMac:      &ap_mac,
@@ -280,7 +280,7 @@ func (cd *CiscoBaseDriver) WlanUsers() ([]*wlanstation.WlanUser, []string) {
 			StationIp:         indexUserIp[i],
 			StationUsername:   v,
 			StationESSID:      indexESSID[i],
-			StationRSSI:       indexRssi[i],
+			StationRSSI:       int8(indexRssi[i]) * -1,
 			StationSNR:        &snr,
 			StationVlan:       &vlan,
 			StationOnlineTime: indexUptime[i],

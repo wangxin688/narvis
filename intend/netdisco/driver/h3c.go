@@ -141,9 +141,9 @@ func (hd *H3CDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []st
 	indexSpeed := factory.ExtractInteger(hh3cDot11StationMaxRate, userSpeed)
 	for i, v := range indexUserName {
 
-		vlan := indexUserVlan[i]
-		channel := indexChannel[i]
-		snr := indexSnr[i]
+		vlan := uint16(indexUserVlan[i])
+		channel := uint16(indexChannel[i])
+		snr := uint8(indexSnr[i])
 		ap_mac := indexApMac[i]
 		ap_name := hd.getApName(ap_mac)
 		speed := indexSpeed[i]
@@ -155,7 +155,7 @@ func (hd *H3CDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []st
 			StationApName:     &ap_name,
 			StationESSID:      indexESSID[i],
 			StationSNR:        &snr,
-			StationRSSI:       indexRSSI[i],
+			StationRSSI:       int8(indexRSSI[i]) * -1,
 			StationVlan:       &vlan,
 			StationOnlineTime: indexUserUptime[i],
 			StationChannel:    channel,

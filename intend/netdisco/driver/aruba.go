@@ -186,8 +186,8 @@ func (ad *ArubaDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []
 	for i, v := range indexUserName {
 		mac, ip, macIndex := factory.SnmpIndexToMacAndIp(i)
 		bssid := indexBSSID[i]
-		vlan := indexUserVlan[i]
-		channel := indexChannel[macIndex]
+		vlan := uint16(indexUserVlan[i])
+		channel := uint16(indexChannel[i])
 		ap_name := ad.getApNameByBssid(bssid)
 		user := wlanstation.WlanUser{
 			StationMac:        mac,
@@ -195,7 +195,7 @@ func (ad *ArubaDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []
 			StationUsername:   v,
 			StationESSID:      indexESSID[macIndex],
 			StationApName:     &ap_name,
-			StationRSSI:       indexRSSI[macIndex],
+			StationRSSI:       int8(indexRSSI[macIndex]) * -1,
 			StationVlan:       &vlan,
 			StationOnlineTime: indexUserUptime[macIndex],
 			StationChannel:    channel,

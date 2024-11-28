@@ -12,12 +12,12 @@ type WlanStation struct {
 	StationApMac         *string `gorm:"column:stationApMac;default:null"`
 	StationApName        *string `gorm:"column:stationApName;default:null"`
 	StationESSID         string  `gorm:"column:stationESSID;not null"`
-	StationVlan          *uint64 `gorm:"column:stationVlan;default:null"`
-	StationChannel       uint64  `gorm:"column:stationChannel;not null"`
+	StationVlan          *uint16 `gorm:"column:stationVlan;default:null"`
+	StationChannel       uint16  `gorm:"column:stationChannel;not null"`
 	StationChanBandWidth *string `gorm:"column:stationChanBandWidth;default:null"`
 	StationRadioType     string  `gorm:"column:stationRadioType;not null"`
-	StationSNR           *uint64 `gorm:"column:stationSNR;default:null"`
-	StationRSSI          uint64  `gorm:"column:stationRSSI;not null"`
+	StationSNR           *uint8  `gorm:"column:stationSNR;default:null"`
+	StationRSSI          int8    `gorm:"column:stationRSSI;not null"`
 	StationRxBits        uint64  `gorm:"column:stationRxBits;not null"`
 	StationTxBits        uint64  `gorm:"column:stationTxBits;not null"`
 	StationMaxSpeed      *uint64 `gorm:"column:stationMaxSpeed;default:null"`

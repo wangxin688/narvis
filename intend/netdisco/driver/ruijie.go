@@ -125,8 +125,8 @@ func (d *RuiJieDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []
 	// indexRxBytes := factory.ExtractInteger(wlanStaRxBytes, userRxBytes)
 	indexIp := factory.ExtractString(hwWlanStaIP, userIp)
 	for i, v := range indexUserName {
-		vlan := indexUserVlan[i]
-		channel := indexChannel[i]
+		vlan := uint16(indexUserVlan[i])
+		channel := uint16(indexChannel[i])
 		ap_mac := indexApMac[i]
 		ap_name := d.getAPName(ap_mac)
 		user := wlanstation.WlanUser{
@@ -136,7 +136,7 @@ func (d *RuiJieDriver) WlanUsers() (wlanUsers []*wlanstation.WlanUser, errors []
 			StationApMac:      &ap_mac,
 			StationApName:     &ap_name,
 			StationESSID:      indexESSID[i],
-			StationRSSI:       indexRSSI[i],
+			StationRSSI:       int8(indexRSSI[i]) * -1,
 			StationVlan:       &vlan,
 			StationOnlineTime: indexUserUptime[i],
 			StationChannel:    channel,

@@ -5,10 +5,9 @@ import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tests/fixtures"
-	"gorm.io/gorm"
 )
 
-func mockDeviceInterface(db *gorm.DB, siteId, deviceId string) {
+func mockDeviceInterface(siteId, deviceId string) {
 
 	createInterfaces := make([]*models.DeviceInterface, 0)
 

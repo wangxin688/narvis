@@ -8,10 +8,9 @@ import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tests/fixtures"
-	"gorm.io/gorm"
 )
 
-func mockWlanAp(db *gorm.DB, orgId, siteId string) {
+func mockWlanAp(orgId, siteId string) {
 	createAps := make([]*models.AP, 0)
 
 	for i := 1; i < 50; i++ {

@@ -1,8 +1,8 @@
 package models
 
 var ServerTableName = "infra_server"
-var ServerCredentialTableName = "serverCredential"
-var ServerSnmpCredentialTableName = "serverSnmpCredential"
+var ServerCredentialTableName = "server_credential"
+var ServerSnmpCredentialTableName = "server_snmp_credential"
 
 type Server struct {
 	BaseDbModel
@@ -56,4 +56,8 @@ type ServerSnmpCredential struct {
 	Server         Server       `gorm:"constraint:Ondelete:CASCADE"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;uniqueIndex:idx_device_id_organization_id;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`
+}
+
+func (ServerSnmpCredential) TableName() string {
+	return ServerSnmpCredentialTableName
 }

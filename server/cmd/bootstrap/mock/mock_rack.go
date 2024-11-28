@@ -7,10 +7,9 @@ import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tests/fixtures"
-	"gorm.io/gorm"
 )
 
-func mockRack(db *gorm.DB, orgId string, siteId string) {
+func mockRack(orgId string, siteId string) {
 	createRacks := make([]*models.Rack, 0)
 
 	for i := 1; i < 10; i++ {

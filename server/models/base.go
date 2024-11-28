@@ -15,7 +15,6 @@ type BaseDbSingleModel struct {
 	CreatedAt time.Time `gorm:"column:createdAt;autoCreateTime"`
 }
 
-
 type BaseTimeScaleModel struct {
-	Time time.Time `gorm:"column:time" json:"time"`
+	Time time.Time `gorm:"column:time;autoCreateTime" json:"time"`
 }

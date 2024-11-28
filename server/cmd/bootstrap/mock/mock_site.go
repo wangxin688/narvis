@@ -6,10 +6,9 @@ import (
 	"github.com/wangxin688/narvis/server/dal/gen"
 	"github.com/wangxin688/narvis/server/models"
 	"golang.org/x/exp/rand"
-	"gorm.io/gorm"
 )
 
-func mockSite(db *gorm.DB, orgId string) {
+func mockSite(orgId string) {
 
 	sites := make([]*models.Site, 0)
 	regions := []struct {
@@ -32,7 +31,7 @@ func mockSite(db *gorm.DB, orgId string) {
 
 	for i := 1; i <= 50; i++ {
 		region := regions[rand.Intn(len(regions))]
-		status := []string{"Active", "InActive"}[rand.Intn(2)]
+		status := []string{"Active", "Inactive"}[rand.Intn(2)]
 
 		sites = append(sites, &models.Site{
 			Name:           fmt.Sprintf("mock_Site_%d", i),

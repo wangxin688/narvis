@@ -346,9 +346,9 @@ func parseInt(s string) byte {
 	return byte(n)
 }
 
-func ChannelToRadioType(channel uint64) string {
-	channel24G := []uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
-	channel5G := []uint64{36, 40, 44, 48, 52, 56, 60, 64, 100, 104,
+func ChannelToRadioType(channel uint16) string {
+	channel24G := []uint16{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
+	channel5G := []uint16{36, 40, 44, 48, 52, 56, 60, 64, 100, 104,
 		108, 112, 116, 132, 136, 140, 149, 153, 157, 161, 165}
 	if lo.Contains(channel24G, channel) {
 		return "2.4GHz"

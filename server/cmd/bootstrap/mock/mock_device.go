@@ -7,10 +7,9 @@ import (
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tests/fixtures"
 	"golang.org/x/exp/rand"
-	"gorm.io/gorm"
 )
 
-func mockDevice(db *gorm.DB, siteIds []string, orgId string) {
+func mockDevice(siteIds []string, orgId string) {
 	createDevices := make([]*models.Device, 0)
 	devices := []struct {
 		platform     string
@@ -31,12 +30,14 @@ func mockDevice(db *gorm.DB, siteIds []string, orgId string) {
 		{"ruijie", "Switch", "Ruijie", "RJ-S5310-24T"},
 		{"ruijie", "WlanAC", "Ruijie", "RJ-WX2560-X"},
 		{"h3c", "Switch", "H3C", "H3C-24T"},
+		{"paloAlto", "Firewall", "Palo Alto", "PA-5050"},
+		{"juniper", "Router", "Juniper", "MX-24T"},
 	}
 	for siteIndex, siteId := range siteIds {
 		for deviceIndex, device := range devices {
 			name := fmt.Sprintf("%s-%s-%s-%s-%d-%d", device.platform, device.deviceRole, device.manufacturer, device.deviceModel, siteIndex, deviceIndex)
 			ip := fixtures.RandomIpv4PrivateAddress(siteIndex, deviceIndex)
-			status := []string{"Active", "InActive"}[rand.Intn(2)]
+			status := []string{"Active", "Inactive"}[rand.Intn(2)]
 			chassisId := fixtures.RandomMacAddress()
 			floor := fmt.Sprintf("%dF", siteIndex)
 			createDevices = append(createDevices, &models.Device{
