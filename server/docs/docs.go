@@ -2340,6 +2340,7 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "collectionFormat": "csv",
+                        "description": "one of Switch, Router, Firewall, WlanAC",
                         "name": "deviceRole",
                         "in": "query"
                     },
@@ -6669,75 +6670,6 @@ const docTemplate = `{
                 }
             }
         },
-        "wlanstation.WlanUser": {
-            "type": "object",
-            "properties": {
-                "stationApMac": {
-                    "description": "AP MAC",
-                    "type": "string"
-                },
-                "stationApName": {
-                    "description": "AP 名称",
-                    "type": "string"
-                },
-                "stationChanBandWidth": {
-                    "description": "信道带宽",
-                    "type": "string"
-                },
-                "stationChannel": {
-                    "description": "信道",
-                    "type": "integer"
-                },
-                "stationESSID": {
-                    "description": "ESSID",
-                    "type": "string"
-                },
-                "stationIp": {
-                    "description": "终端IP",
-                    "type": "string"
-                },
-                "stationMac": {
-                    "description": "终端MAC",
-                    "type": "string"
-                },
-                "stationMaxSpeed": {
-                    "description": "终端协商速率",
-                    "type": "integer"
-                },
-                "stationOnlineTime": {
-                    "description": "终端在线时间",
-                    "type": "integer"
-                },
-                "stationRSSI": {
-                    "description": "终端RSSI",
-                    "type": "integer"
-                },
-                "stationRadioType": {
-                    "description": "radio类型",
-                    "type": "string"
-                },
-                "stationRxBits": {
-                    "description": "终端下行流量",
-                    "type": "integer"
-                },
-                "stationSNR": {
-                    "description": "终端NR",
-                    "type": "integer"
-                },
-                "stationTxBits": {
-                    "description": "终端上行流量",
-                    "type": "integer"
-                },
-                "stationUsername": {
-                    "description": "终端用户名",
-                    "type": "string"
-                },
-                "stationVlan": {
-                    "description": "VLAN",
-                    "type": "integer"
-                }
-            }
-        },
         "schemas.AP": {
             "type": "object",
             "properties": {
@@ -7432,7 +7364,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deviceRole": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Switch",
+                        "Router",
+                        "Firewall",
+                        "WlanAC"
+                    ]
                 },
                 "location": {
                     "type": "string"
@@ -7533,7 +7471,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deviceRole": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Switch",
+                        "Router",
+                        "Firewall",
+                        "WlanAC"
+                    ]
                 },
                 "location": {
                     "type": "string"
@@ -8842,6 +8786,12 @@ const docTemplate = `{
                 "region": {
                     "type": "string"
                 },
+                "routerCount": {
+                    "type": "integer"
+                },
+                "serverCount": {
+                    "type": "integer"
+                },
                 "siteCode": {
                     "type": "string"
                 },
@@ -9018,7 +8968,8 @@ const docTemplate = `{
                 },
                 "maxRepetitions": {
                     "type": "integer",
-                    "maximum": 200
+                    "maximum": 200,
+                    "minimum": 10
                 },
                 "port": {
                     "type": "integer",
@@ -9354,6 +9305,75 @@ const docTemplate = `{
                         "type": "array",
                         "items": {}
                     }
+                }
+            }
+        },
+        "wlanstation.WlanUser": {
+            "type": "object",
+            "properties": {
+                "stationApMac": {
+                    "description": "AP MAC",
+                    "type": "string"
+                },
+                "stationApName": {
+                    "description": "AP 名称",
+                    "type": "string"
+                },
+                "stationChanBandWidth": {
+                    "description": "信道带宽",
+                    "type": "string"
+                },
+                "stationChannel": {
+                    "description": "信道",
+                    "type": "integer"
+                },
+                "stationESSID": {
+                    "description": "ESSID",
+                    "type": "string"
+                },
+                "stationIp": {
+                    "description": "终端IP",
+                    "type": "string"
+                },
+                "stationMac": {
+                    "description": "终端MAC",
+                    "type": "string"
+                },
+                "stationMaxSpeed": {
+                    "description": "终端协商速率",
+                    "type": "integer"
+                },
+                "stationOnlineTime": {
+                    "description": "终端在线时间",
+                    "type": "integer"
+                },
+                "stationRSSI": {
+                    "description": "终端RSSI",
+                    "type": "integer"
+                },
+                "stationRadioType": {
+                    "description": "radio类型",
+                    "type": "string"
+                },
+                "stationRxBits": {
+                    "description": "终端下行流量",
+                    "type": "integer"
+                },
+                "stationSNR": {
+                    "description": "终端NR",
+                    "type": "integer"
+                },
+                "stationTxBits": {
+                    "description": "终端上行流量",
+                    "type": "integer"
+                },
+                "stationUsername": {
+                    "description": "终端用户名",
+                    "type": "string"
+                },
+                "stationVlan": {
+                    "description": "VLAN",
+                    "type": "integer"
                 }
             }
         }

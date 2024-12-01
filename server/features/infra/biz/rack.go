@@ -50,7 +50,7 @@ func (r *RackService) UpdateRack(rackId string, rack *schemas.RackUpdate) (err e
 		updateFields["name"] = &contextvar.Diff{Before: dbRack.Name, After: *rack.Name}
 		dbRack.Name = *rack.Name
 	}
-	if rack.SerialNumber != nil && *rack.SerialNumber != *dbRack.SerialNumber {
+	if rack.SerialNumber != nil && rack.SerialNumber != dbRack.SerialNumber {
 		updateFields["serialNumber"] = &contextvar.Diff{Before: *dbRack.SerialNumber, After: *rack.SerialNumber}
 		dbRack.SerialNumber = rack.SerialNumber
 	}

@@ -104,13 +104,17 @@ func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *sc
 		updateFields["floor"] = &contextvar.Diff{Before: dbDevice.Floor, After: *device.Floor}
 		dbDevice.Floor = device.Floor
 	}
-	if device.Description != nil && *device.Description != *dbDevice.Description {
+	if device.Description != nil && device.Description != dbDevice.Description {
 		updateFields["description"] = &contextvar.Diff{Before: dbDevice.Description, After: *device.Description}
 		dbDevice.Description = device.Description
 	}
-	if device.OsVersion != nil && *device.OsVersion != *dbDevice.OsVersion {
+	if device.OsVersion != nil && device.OsVersion != dbDevice.OsVersion {
 		updateFields["osVersion"] = &contextvar.Diff{Before: dbDevice.OsVersion, After: *device.OsVersion}
 		dbDevice.OsVersion = device.OsVersion
+	}
+	if device.SerialNumber != nil && device.SerialNumber != dbDevice.SerialNumber {
+		updateFields["serialNumber"] = &contextvar.Diff{Before: dbDevice.SerialNumber, After: *device.SerialNumber}
+		dbDevice.SerialNumber = device.SerialNumber
 	}
 	if helpers.HasParams(g, "rackId") && device.RackId != dbDevice.RackId {
 		updateFields["rackId"] = &contextvar.Diff{Before: dbDevice.RackId, After: *device.RackId}
@@ -153,7 +157,7 @@ func (d *DeviceService) DeleteDevice(deviceId string) (*models.Device, error) {
 
 func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
 	orgId := contextvar.OrganizationId.Get()
-	device, err := gen.Device.Select(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(orgId)).First()
+	device, err := gen.Device.Where(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(orgId)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -183,6 +187,7 @@ func (d *DeviceService) GetById(deviceId string) (*schemas.Device, error) {
 		OsVersion:    device.OsVersion,
 		Description:  device.Description,
 		RackId:       device.RackId,
+		SerialNumber: device.SerialNumber,
 		RackPosition: func() *[]uint8 {
 			if device.RackPosition == nil {
 				return nil

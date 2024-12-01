@@ -23,27 +23,36 @@ func NewWlanUserService() *WlanUserService {
 func (s *WlanUserService) GetWlanUserTrend(query *schemas.WlanUserTrendRequest) ([]*schemas.WlanUserTrend, error) {
 	interval := vtm.CalculateInterval(query.StartedAt.Unix(), query.EndedAt.Unix(), query.DataPoints)
 	results := make([]*schemas.WlanUserTrend, 0)
-	orgId := contextvar.OrganizationId.Get()
-	selectString := fmt.Sprintf(
-		`
-		stationESSID,
-		toStartOfInterval(ts, INTERVAL %d second) as timestamp,
-		uniq(stationMac) as value
-		`, interval,
-	)
-	stmt := infra.ClickHouseDB.Table("wlan_station").Select(selectString).Where(
-		"ts >= ? AND ts <= ? AND organizationId = ?", query.StartedAt, query.EndedAt, orgId,
-	)
+	whereCond := "1=1"
 	if query.SiteId != nil && *query.SiteId != "" {
-		stmt = stmt.Where("siteId = ?", *query.SiteId)
+		whereCond = fmt.Sprintf("siteId = '%s'", *query.SiteId)
 	}
-	stmt = stmt.Group("stationESSID, timestamp").Order("stationESSID ASC, timestamp ASC")
-	err := stmt.Scan(&results).Error
+	rawSql := fmt.Sprintf(
+		`
+	SELECT
+		TO_TIMESTAMP(FLOOR(EXTRACT(EPOCH FROM "time") / %d) * %d) AS timestamp,  -- 每15分钟间隔
+		"stationESSID" as "ESSID",
+		COUNT(DISTINCT "stationMac") AS value
+	FROM
+		wlan_station
+	WHERE
+		"time" >= '%s'
+		AND "time" <= '%s'
+		AND %s
+	GROUP BY
+		timestamp, "ESSID"
+	ORDER BY
+		timestamp, "ESSID";
+		`,
+		interval, interval, query.StartedAt.Format(time.RFC3339), query.EndedAt.Format(time.RFC3339), whereCond,
+	)
+	err := infra.DB.Raw(rawSql).Scan(&results).Error
 	if err != nil {
+		logger.Logger.Error("[GetWlanUserTrend]", zap.Error(err))
 		return nil, err
 	}
-	// TODO：transform data schema to fit frontend
 	return results, nil
+
 }
 
 func (s *WlanUserService) ListWlanUsers(query *schemas.WlanUserQuery) (*schemas.WlanUserListResponse, error) {
@@ -85,28 +94,31 @@ func (s *WlanUserService) ListWlanUsers(query *schemas.WlanUserQuery) (*schemas.
 			*
 		FROM (
 			SELECT
-				toUnixTimestamp(ts) AS lastSeenAt,
-				if ((toUnit32(endedAt)-toUint32(lastSeenAt))<500, TRUE, FALSE)) AS isActive,
-				stationMac,
-				stationIp,
-				stationUsername,
-				stationApMac,
-				stationApName,
-				stationESSID,
-				stationVlan,
-				stationChannel,
-				stationChanBandWidth,
-				stationRadioType,
-				stationSNR,
-				stationRSSI,
-				stationMaxSpeed,
-				stationOnlineTime
+				EXTRACT(EPOCH FROM "time") AS "lastSeenAt",
+				CASE
+        			WHEN (EXTRACT(EPOCH FROM "endedAt") - EXTRACT(EPOCH FROM "time")) < 600 THEN TRUE
+        			ELSE FALSE
+    			END AS "isActive",
+				"stationMac",
+				"stationIp",
+				"stationUsername",
+				"stationApMac",
+				"stationApName",
+				"stationESSID",
+				"stationVlan",
+				"stationChannel",
+				"stationChanBandWidth",
+				"stationRadioType",
+				"stationSNR",
+				"stationRSSI",
+				"stationMaxSpeed",
+				"stationOnlineTime"
 			FROM
 				wlan_station
 			WHERE
 				organizationId = '%s'
-				AND ts >= '%s'
-				AND ts <= '%s'
+				AND time >= '%s'
+				AND time <= '%s'
 				AND siteId = '%s'
 			ORDER BY stationMac, ts DESC
 			LIMIT 1 BY stationMac

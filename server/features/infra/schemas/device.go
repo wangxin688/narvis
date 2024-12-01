@@ -10,7 +10,7 @@ type DeviceCreate struct {
 	Name         string   `json:"name" binding:"required"`
 	ManagementIp string   `json:"managementIp" binding:"required,ip_addr"`
 	Status       string   `json:"status" binding:"required,oneof=Active Inactive"`
-	DeviceRole   string   `json:"deviceRole" binding:"required"`
+	DeviceRole   string   `json:"deviceRole" binding:"required,oneof=Switch Router Firewall WlanAC"`
 	DeviceModel  *string  `json:"deviceModel" binding:"omitempty"`
 	Platform     *string  `json:"Platform" binding:"omitempty"`
 	ChassisId    *string  `json:"chassisId" binding:"omitempty,uuid"`
@@ -28,7 +28,7 @@ type DeviceUpdate struct {
 	Name         *string  `json:"name" binding:"omitempty"`
 	ManagementIp *string  `json:"managementIp" binding:"omitempty,ip_addr"`
 	Status       *string  `json:"status" binding:"omitempty,oneof=Active Inactive"`
-	DeviceRole   *string  `json:"deviceRole" binding:"omitempty"`
+	DeviceRole   *string  `json:"deviceRole" binding:"omitempty,oneof=Switch Router Firewall WlanAC"`
 	DeviceModel  *string  `json:"deviceModel" binding:"omitempty"`
 	Manufacturer *string  `json:"manufacturer" binding:"omitempty"`
 	SerialNumber *string  `json:"serialNumber" binding:"omitempty"`
@@ -44,7 +44,7 @@ type DeviceQuery struct {
 	Id           *[]string `form:"id" binding:"omitempty,list_uuid"`
 	Name         *[]string `form:"name" binding:"omitempty"`
 	ManagementIp *[]string `form:"managementIp" binding:"omitempty,list_ip"`
-	DeviceRole   *[]string `form:"deviceRole" binding:"omitempty"`
+	DeviceRole   *[]string `form:"deviceRole" binding:"omitempty"` // one of Switch, Router, Firewall, WlanAC
 	DeviceModel  *[]string `form:"deviceModel" binding:"omitempty"`
 	Manufacturer *[]string `form:"manufacturer" binding:"omitempty"`
 	Status       *string   `form:"status" binding:"omitempty,oneof=Active Inactive"`

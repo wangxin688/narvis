@@ -83,15 +83,15 @@ func (c *CircuitService) UpdateCircuit(circuitId string, circuit *schemas.Circui
 		updateFields["txBandWidth"] = &contextvar.Diff{Before: dbCircuit.TxBandWidth, After: *circuit.TxBandWidth}
 		dbCircuit.TxBandWidth = *circuit.TxBandWidth
 	}
-	if circuit.Ipv4Address != nil && *circuit.Ipv4Address != *dbCircuit.Ipv4Address {
+	if circuit.Ipv4Address != nil && circuit.Ipv4Address != dbCircuit.Ipv4Address {
 		updateFields["ipv4Address"] = &contextvar.Diff{Before: *dbCircuit.Ipv4Address, After: *circuit.Ipv4Address}
 		dbCircuit.Ipv4Address = circuit.Ipv4Address
 	}
-	if circuit.Ipv6Address != nil && *circuit.Ipv6Address != *dbCircuit.Ipv6Address {
+	if circuit.Ipv6Address != nil && circuit.Ipv6Address != dbCircuit.Ipv6Address {
 		updateFields["ipv6Address"] = &contextvar.Diff{Before: *dbCircuit.Ipv6Address, After: *circuit.Ipv6Address}
 		dbCircuit.Ipv6Address = circuit.Ipv6Address
 	}
-	if circuit.Description != nil && *circuit.Description != *dbCircuit.Description {
+	if circuit.Description != nil && circuit.Description != dbCircuit.Description {
 		updateFields["description"] = &contextvar.Diff{Before: dbCircuit.Description, After: *circuit.Description}
 		dbCircuit.Description = circuit.Description
 	}

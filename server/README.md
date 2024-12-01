@@ -20,7 +20,7 @@ Docker镜像制作
 Server, 替换version
 ```
 docker buildx build --platform linux/amd64 \
--t jeffry688/narvis-server:latest -t jeffry688/narvis-server:all-0.0.8 \
+-t jeffry688/narvis-server:latest -t jeffry688/narvis-server:all-0.0.11 \
 -f server/Dockerfile . \
 --build-arg GOFLAGS=-ldflags="-w -s" \
 --push
@@ -39,7 +39,7 @@ docker buildx build --platform linux/amd64 \
 Bootstrap
 ```
 docker buildx build --platform linux/amd64 \
--t jeffry688/narvis-bootstrap:latest -t jeffry688/narvis-bootstrap:all-0.0.3 \
+-t jeffry688/narvis-bootstrap:latest -t jeffry688/narvis-bootstrap:all-0.0.6 \
 -f server/cmd/bootstrap/Dockerfile . \
 --build-arg GOFLAGS=-ldflags="-w -s" \
 --push

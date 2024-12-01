@@ -49,7 +49,7 @@ func (d *SnmpV2CredentialCreate) SetDefaultValue() {
 
 type SnmpV2CredentialUpdate struct {
 	Community      *string `json:"community" binding:"omitempty"`
-	MaxRepetitions *uint8  `json:"maxRepetitions" binding:"omitempty, gte=10,lte=200"`
+	MaxRepetitions *uint8  `json:"maxRepetitions" binding:"omitempty,gte=10,lte=200"`
 	Timeout        *uint8  `json:"timeout" binding:"omitempty,gte=1,lte=30"`
 	Port           *uint16 `json:"port" binding:"omitempty,gte=1,lte=65535"`
 }

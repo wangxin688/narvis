@@ -60,7 +60,10 @@ func (s *CliCredentialService) CreateServerCredential(serverId string, credentia
 func (s *CliCredentialService) UpdateCredential(deviceId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
 	dbCred, err := gen.CliCredential.Where(gen.CliCredential.DeviceId.Eq(deviceId), gen.CliCredential.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
-		return nil, err
+		return nil, &te.GenericError{
+			Code:    te.CodeCredentialUpdateNotFound,
+			Message: te.MsgCredentialUpdateNotFound,
+		}
 	}
 	updateFields := make(map[string]*contextvar.Diff)
 	if credential.Username != nil && *credential.Username != dbCred.Username {
@@ -88,7 +91,10 @@ func (s *CliCredentialService) UpdateCredential(deviceId string, credential *sch
 func (s *CliCredentialService) UpdateServerCredential(serverId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
 	dbCred, err := gen.ServerCredential.Where(gen.ServerCredential.ServerId.Eq(serverId), gen.ServerCredential.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
-		return nil, err
+		return nil, &te.GenericError{
+			Code:    te.CodeCredentialUpdateNotFound,
+			Message: te.MsgCredentialUpdateNotFound,
+		}
 	}
 	updateFields := make(map[string]*contextvar.Diff)
 	if credential.Username != nil && *credential.Username != dbCred.Username {
@@ -215,7 +221,7 @@ func (s *CliCredentialService) GetServerCredentialByDeviceId(serverId string) (*
 				return nil, err
 			}
 			if globalCred == nil {
-				return nil, te.NewError(te.CodeNotFound, te.MsgNotFound, gen.ServerCredential.TableName(), "deviceId", serverId)
+				return &schemas.CliCredential{}, err
 			}
 			return &schemas.CliCredential{
 				Username:       globalCred.Username,

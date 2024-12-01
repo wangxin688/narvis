@@ -20,9 +20,9 @@ var pgConflictRegexp = regexp.MustCompile(`\((.*?)\)=\((.*?)\)`)
 var pgViolateRegexp = regexp.MustCompile(`\(([^)]+)\)=\(([^)]+)\).*?\"([^"]+)\"`)
 
 type GenericError struct {
-	Code    ErrorCode
-	Data    any
-	Message ErrorMsg
+	Code    ErrorCode `json:"code"`
+	Data    any       `json:"data"`
+	Message ErrorMsg  `json:"message"`
 }
 
 func (e *GenericError) Error() string {

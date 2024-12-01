@@ -72,7 +72,10 @@ func (s *SnmpCredentialService) UpdateSnmpCredential(deviceId string, snmp *sche
 		gen.SnmpV2Credential.DeviceId.Eq(deviceId),
 	).First()
 	if err != nil {
-		return "", nil, err
+		return "", nil, &te.GenericError{
+			Code:    te.CodeCredentialUpdateNotFound,
+			Message: te.MsgCredentialUpdateNotFound,
+		}
 	}
 	updateFields := make(map[string]*contextvar.Diff)
 
@@ -111,7 +114,10 @@ func (s *SnmpCredentialService) UpdateServerSnmpCredential(serverId string, snmp
 		gen.ServerSnmpCredential.ServerId.Eq(serverId),
 	).First()
 	if err != nil {
-		return "", nil, err
+		return "", nil, &te.GenericError{
+			Code:    te.CodeCredentialUpdateNotFound,
+			Message: te.MsgCredentialUpdateNotFound,
+		}
 	}
 	updateFields := make(map[string]*contextvar.Diff)
 
@@ -243,7 +249,7 @@ func (s *SnmpCredentialService) GetServerCredentialByDeviceId(deviceId string) (
 				return nil, err
 			}
 			if globalCred == nil {
-				return nil, te.NewError(te.CodeNotFound, te.MsgNotFound, gen.ServerSnmpCredential.TableName(), "deviceId", deviceId)
+				return &schemas.SnmpV2Credential{}, nil
 			}
 			return &schemas.SnmpV2Credential{
 				Community:      globalCred.Community,

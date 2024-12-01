@@ -2,7 +2,9 @@ package fixtures
 
 import (
 	"github.com/samber/lo"
+	"github.com/wangxin688/narvis/server/config"
 	"github.com/wangxin688/narvis/server/dal/gen"
+	"github.com/wangxin688/narvis/server/infra"
 	"github.com/wangxin688/narvis/server/models"
 )
 
@@ -71,4 +73,13 @@ func GetSiteApNames(siteId string) ([]string, error) {
 		return item.Name
 	})
 	return apNames, nil
+}
+
+func FixturePrepare() {
+	config.InitTestFixtureConfig()
+	config.InitLogger()
+	err := infra.InitDB()
+	if err != nil {
+		panic(err)
+	}
 }

@@ -51,7 +51,10 @@ func (r *RestConfCredentialService) UpdateCredential(deviceId string, credential
 		gen.RestconfCredential.DeviceId.Eq(deviceId),
 	).First()
 	if err != nil {
-		return nil, err
+		return nil, &te.GenericError{
+			Code:    te.CodeCredentialUpdateNotFound,
+			Message: te.MsgCredentialUpdateNotFound,
+		}
 	}
 	updateFields := make(map[string]*contextvar.Diff)
 	if credential.Url != nil && *credential.Url != dbCred.Url {
@@ -126,7 +129,7 @@ func (r *RestConfCredentialService) GetCredentialByDeviceId(deviceId string) (*s
 					InheritFromOrg: true,
 				}, nil
 			}
-			return nil, te.NewError(te.CodeNotFound, te.MsgNotFound, gen.RestconfCredential.TableName(), "deviceId", deviceId)
+			return &schemas.RestconfCredential{}, nil
 		}
 		return nil, err
 	}
@@ -204,6 +207,9 @@ func (r *RestConfCredentialService) GetById(id string) (*schemas.RestconfCredent
 	).First()
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &schemas.RestconfCredential{

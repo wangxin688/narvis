@@ -92,7 +92,9 @@ const (
 	CodeRackPositionOccupied        ErrorCode = 500007
 	MsgRackPositionOccupied         ErrorMsg  = "rack position occupied"
 	CodeNoDevicesFound              ErrorCode = 500008
-	MsgNoDevicesFound              ErrorMsg  = "generate task failed, no devices found for site"
+	MsgNoDevicesFound               ErrorMsg  = "generate task failed, no devices found for site"
+	CodeCredentialUpdateNotFound    ErrorCode = 500009
+	MsgCredentialUpdateNotFound     ErrorMsg  = "credential not found in current level, if it's inherited from organization-level credential, please create a new credential in current level instead"
 )
 
 // ipam error codes (600000 - 700000)

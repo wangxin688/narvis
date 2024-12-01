@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/imroc/req/v3"
@@ -127,16 +128,6 @@ func initProxy(orgId string) {
 		logger.Logger.Info("[bootstrap]: proxy already exists", zap.String("id", dbProxy[0].Id))
 		for _, proxy := range dbProxy {
 			if proxy.Active && proxy.ProxyId == nil {
-				proxy, err := biz.NewProxyService().CreateProxy(&schemas.ProxyCreate{
-					OrganizationId: orgId,
-					Name:           config.Settings.BootstrapConfig.EnterpriseCode,
-					Active:         true,
-				})
-				if err != nil {
-					logger.Logger.Error("[bootstrap]: failed to create proxy", zap.Error(err))
-					panic(err)
-				}
-				logger.Logger.Info("[bootstrap]: proxy created", zap.String("id", proxy.Id))
 				hooks.CreateZbxProxy(proxy)
 			} else {
 				logger.Logger.Info("[bootstrap]: monitor proxy already exists", zap.String("proxyId", *proxy.ProxyId))
@@ -564,7 +555,13 @@ func initZbxSuperToken(client *req.Client, superUserId string) (string, error) {
 }
 
 func writeTokenToYamlConfig(token string) {
-	yamlConfig, err := os.ReadFile("config.yaml")
+	path, err := os.Getwd()
+	if err != nil {
+		logger.Logger.Error("[bootstrap]: failed to get current path", zap.Error(err))
+		return
+	}
+	configPath := filepath.Join(path, "config.yaml")
+	yamlConfig, err := os.ReadFile(configPath)
 	if err != nil {
 		logger.Logger.Error("[bootstrap]: failed to read config file", zap.Error(err))
 		return

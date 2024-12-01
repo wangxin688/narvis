@@ -343,59 +343,8 @@ definitions:
         type: string
       wlanUsers:
         items:
-          $ref: '#/definitions/nettyx_wlanstation.WlanUser'
+          $ref: '#/definitions/wlanstation.WlanUser'
         type: array
-    type: object
-  nettyx_wlanstation.WlanUser:
-    properties:
-      stationApMac:
-        description: AP MAC
-        type: string
-      stationApName:
-        description: AP 名称
-        type: string
-      stationChanBandWidth:
-        description: 信道带宽
-        type: string
-      stationChannel:
-        description: 信道
-        type: integer
-      stationESSID:
-        description: ESSID
-        type: string
-      stationIp:
-        description: 终端IP
-        type: string
-      stationMac:
-        description: 终端MAC
-        type: string
-      stationMaxSpeed:
-        description: 终端协商速率
-        type: integer
-      stationOnlineTime:
-        description: 终端在线时间
-        type: integer
-      stationRSSI:
-        description: 终端RSSI
-        type: integer
-      stationRadioType:
-        description: radio类型
-        type: string
-      stationRxBits:
-        description: 终端下行流量
-        type: integer
-      stationSNR:
-        description: 终端NR
-        type: integer
-      stationTxBits:
-        description: 终端上行流量
-        type: integer
-      stationUsername:
-        description: 终端用户名
-        type: string
-      stationVlan:
-        description: VLAN
-        type: integer
     type: object
   schemas.AP:
     properties:
@@ -862,6 +811,11 @@ definitions:
       deviceModel:
         type: string
       deviceRole:
+        enum:
+        - Switch
+        - Router
+        - Firewall
+        - WlanAC
         type: string
       location:
         type: string
@@ -935,6 +889,11 @@ definitions:
       deviceModel:
         type: string
       deviceRole:
+        enum:
+        - Switch
+        - Router
+        - Firewall
+        - WlanAC
         type: string
       location:
         type: string
@@ -1820,6 +1779,10 @@ definitions:
         type: integer
       region:
         type: string
+      routerCount:
+        type: integer
+      serverCount:
+        type: integer
       siteCode:
         type: string
       status:
@@ -1939,6 +1902,7 @@ definitions:
         type: string
       maxRepetitions:
         maximum: 200
+        minimum: 10
         type: integer
       port:
         maximum: 65535
@@ -2166,6 +2130,57 @@ definitions:
           items: {}
           type: array
         type: array
+    type: object
+  wlanstation.WlanUser:
+    properties:
+      stationApMac:
+        description: AP MAC
+        type: string
+      stationApName:
+        description: AP 名称
+        type: string
+      stationChanBandWidth:
+        description: 信道带宽
+        type: string
+      stationChannel:
+        description: 信道
+        type: integer
+      stationESSID:
+        description: ESSID
+        type: string
+      stationIp:
+        description: 终端IP
+        type: string
+      stationMac:
+        description: 终端MAC
+        type: string
+      stationMaxSpeed:
+        description: 终端协商速率
+        type: integer
+      stationOnlineTime:
+        description: 终端在线时间
+        type: integer
+      stationRSSI:
+        description: 终端RSSI
+        type: integer
+      stationRadioType:
+        description: radio类型
+        type: string
+      stationRxBits:
+        description: 终端下行流量
+        type: integer
+      stationSNR:
+        description: 终端NR
+        type: integer
+      stationTxBits:
+        description: 终端上行流量
+        type: integer
+      stationUsername:
+        description: 终端用户名
+        type: string
+      stationVlan:
+        description: VLAN
+        type: integer
     type: object
 info:
   contact:
@@ -3622,6 +3637,7 @@ paths:
         name: deviceModel
         type: array
       - collectionFormat: csv
+        description: one of Switch, Router, Firewall, WlanAC
         in: query
         items:
           type: string

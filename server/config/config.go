@@ -3,6 +3,10 @@ package config
 import (
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 
 	"github.com/spf13/viper"
 	"github.com/wangxin688/narvis/intend/logger"
@@ -149,10 +153,12 @@ var Settings *Config
 
 func InitConfig() {
 	var settings Config
-
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
+	path, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
+	viper.SetConfigFile(filepath.Join(path, "config.yaml"))
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("fatal error config file: %s \n", err)
 		panic(err)
@@ -163,6 +169,24 @@ func InitConfig() {
 	}
 	settings.Cors.validate()
 	Settings = &settings
+}
+
+func InitTestFixtureConfig() {
+	var settings Config
+	_, filepath, _, _ := runtime.Caller(0)
+	configPath := strings.Split(filepath, "config/config.go")[0]
+	viper.SetConfigFile(configPath + "config.yaml")
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("fatal error config file: %s \n", err)
+		panic(err)
+	}
+
+	if err := viper.Unmarshal(&settings); err != nil {
+		log.Fatalf("unable to decode into struct, %v", err)
+	}
+	settings.Cors.validate()
+	Settings = &settings
+
 }
 
 func InitLogger() {
