@@ -18,4 +18,9 @@ type DeviceInterface struct {
 	IfLastChange  string    `json:"ifLastChange"`
 	IfHighSpeed   uint64    `json:"ifHighSpeed"`
 	IfIpAddress   *string   `json:"ifIpAddress"`
+	Uplink        bool      `json:"uplink"`
+}
+
+type DeviceInterfaceUpdate struct {
+	UpLink bool `json:"uplink"`
 }

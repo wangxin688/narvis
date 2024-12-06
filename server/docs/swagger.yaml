@@ -881,6 +881,13 @@ definitions:
         type: string
       updatedAt:
         type: string
+      uplink:
+        type: boolean
+    type: object
+  schemas.DeviceInterfaceUpdate:
+    properties:
+      uplink:
+        type: boolean
     type: object
   schemas.DeviceUpdate:
     properties:
@@ -4210,6 +4217,37 @@ paths:
       summary: Update device snmpV2 credential
       tags:
       - Infra.Device
+  /infra/interfaces/{id}:
+    put:
+      X-func:
+        name: UpdateDeviceInterface
+      consumes:
+      - application/json
+      description: Update device interface
+      parameters:
+      - description: uuid formatted interfaceId
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.DeviceInterfaceUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.IdResponse'
+      security:
+      - BearerAuth: []
+      summary: Update device interface
+      tags:
+      - Infra.Interface
   /infra/racks:
     get:
       X-func:

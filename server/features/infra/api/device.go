@@ -196,6 +196,39 @@ func getDeviceInterfaces(c *gin.Context) {
 	c.JSON(http.StatusOK, interfaces)
 }
 
+// @Tags Infra.Interface
+// @Summary Update device interface
+// @X-func {"name": "UpdateDeviceInterface"}
+// @Description Update device interface
+// @Security BearerAuth
+// @Accept  json
+// @Produce  json
+// @Param id path string true "uuid formatted interfaceId"
+// @Param data body schemas.DeviceInterfaceUpdate true "data"
+// @Success 200 {object} ts.IdResponse
+// @Router /infra/interfaces/{id} [put]
+func updateDeviceInterface(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	var deviceInterfaceUpdate schemas.DeviceInterfaceUpdate
+	if err = c.ShouldBindJSON(&deviceInterfaceUpdate); err != nil {
+		return
+	}
+	interfaceId := c.Param("id")
+	if err = helpers.ValidateUuidString(interfaceId); err != nil {
+		return
+	}
+	err = infra_biz.NewDeviceService().UpdateDeviceInterface(interfaceId, &deviceInterfaceUpdate)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, ts.IdResponse{Id: interfaceId})
+}
+
 // @Tags Infra.Device
 // @Summary Get device panel
 // @X-func {"name": "GetDevicePanel"}

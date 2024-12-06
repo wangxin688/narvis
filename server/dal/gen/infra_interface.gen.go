@@ -41,6 +41,7 @@ func newDeviceInterface(db *gorm.DB, opts ...gen.DOOption) deviceInterface {
 	_deviceInterface.IfHighSpeed = field.NewUint64(tableName, "ifHighSpeed")
 	_deviceInterface.IfPhysAddr = field.NewString(tableName, "ifPhysAddr")
 	_deviceInterface.IfIpAddress = field.NewString(tableName, "ifIpAddress")
+	_deviceInterface.UpLink = field.NewBool(tableName, "upLink")
 	_deviceInterface.DeviceId = field.NewString(tableName, "deviceId")
 	_deviceInterface.SiteId = field.NewString(tableName, "siteId")
 	_deviceInterface.Device = deviceInterfaceBelongsToDevice{
@@ -126,6 +127,7 @@ type deviceInterface struct {
 	IfHighSpeed   field.Uint64
 	IfPhysAddr    field.String
 	IfIpAddress   field.String
+	UpLink        field.Bool
 	DeviceId      field.String
 	SiteId        field.String
 	Device        deviceInterfaceBelongsToDevice
@@ -162,6 +164,7 @@ func (d *deviceInterface) updateTableName(table string) *deviceInterface {
 	d.IfHighSpeed = field.NewUint64(table, "ifHighSpeed")
 	d.IfPhysAddr = field.NewString(table, "ifPhysAddr")
 	d.IfIpAddress = field.NewString(table, "ifIpAddress")
+	d.UpLink = field.NewBool(table, "upLink")
 	d.DeviceId = field.NewString(table, "deviceId")
 	d.SiteId = field.NewString(table, "siteId")
 
@@ -180,7 +183,7 @@ func (d *deviceInterface) GetFieldByName(fieldName string) (field.OrderExpr, boo
 }
 
 func (d *deviceInterface) fillFieldMap() {
-	d.fieldMap = make(map[string]field.Expr, 19)
+	d.fieldMap = make(map[string]field.Expr, 20)
 	d.fieldMap["id"] = d.Id
 	d.fieldMap["createdAt"] = d.CreatedAt
 	d.fieldMap["updatedAt"] = d.UpdatedAt
@@ -196,6 +199,7 @@ func (d *deviceInterface) fillFieldMap() {
 	d.fieldMap["ifHighSpeed"] = d.IfHighSpeed
 	d.fieldMap["ifPhysAddr"] = d.IfPhysAddr
 	d.fieldMap["ifIpAddress"] = d.IfIpAddress
+	d.fieldMap["upLink"] = d.UpLink
 	d.fieldMap["deviceId"] = d.DeviceId
 	d.fieldMap["siteId"] = d.SiteId
 

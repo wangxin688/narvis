@@ -35,12 +35,12 @@ func newWlanStation(db *gorm.DB, opts ...gen.DOOption) wlanStation {
 	_wlanStation.StationApMac = field.NewString(tableName, "stationApMac")
 	_wlanStation.StationApName = field.NewString(tableName, "stationApName")
 	_wlanStation.StationESSID = field.NewString(tableName, "stationESSID")
-	_wlanStation.StationVlan = field.NewUint64(tableName, "stationVlan")
-	_wlanStation.StationChannel = field.NewUint64(tableName, "stationChannel")
+	_wlanStation.StationVlan = field.NewUint16(tableName, "stationVlan")
+	_wlanStation.StationChannel = field.NewUint16(tableName, "stationChannel")
 	_wlanStation.StationChanBandWidth = field.NewString(tableName, "stationChanBandWidth")
 	_wlanStation.StationRadioType = field.NewString(tableName, "stationRadioType")
-	_wlanStation.StationSNR = field.NewUint64(tableName, "stationSNR")
-	_wlanStation.StationRSSI = field.NewUint64(tableName, "stationRSSI")
+	_wlanStation.StationSNR = field.NewUint8(tableName, "stationSNR")
+	_wlanStation.StationRSSI = field.NewInt8(tableName, "stationRSSI")
 	_wlanStation.StationRxBits = field.NewUint64(tableName, "stationRxBits")
 	_wlanStation.StationTxBits = field.NewUint64(tableName, "stationTxBits")
 	_wlanStation.StationMaxSpeed = field.NewUint64(tableName, "stationMaxSpeed")
@@ -64,12 +64,12 @@ type wlanStation struct {
 	StationApMac         field.String
 	StationApName        field.String
 	StationESSID         field.String
-	StationVlan          field.Uint64
-	StationChannel       field.Uint64
+	StationVlan          field.Uint16
+	StationChannel       field.Uint16
 	StationChanBandWidth field.String
 	StationRadioType     field.String
-	StationSNR           field.Uint64
-	StationRSSI          field.Uint64
+	StationSNR           field.Uint8
+	StationRSSI          field.Int8
 	StationRxBits        field.Uint64
 	StationTxBits        field.Uint64
 	StationMaxSpeed      field.Uint64
@@ -99,12 +99,12 @@ func (w *wlanStation) updateTableName(table string) *wlanStation {
 	w.StationApMac = field.NewString(table, "stationApMac")
 	w.StationApName = field.NewString(table, "stationApName")
 	w.StationESSID = field.NewString(table, "stationESSID")
-	w.StationVlan = field.NewUint64(table, "stationVlan")
-	w.StationChannel = field.NewUint64(table, "stationChannel")
+	w.StationVlan = field.NewUint16(table, "stationVlan")
+	w.StationChannel = field.NewUint16(table, "stationChannel")
 	w.StationChanBandWidth = field.NewString(table, "stationChanBandWidth")
 	w.StationRadioType = field.NewString(table, "stationRadioType")
-	w.StationSNR = field.NewUint64(table, "stationSNR")
-	w.StationRSSI = field.NewUint64(table, "stationRSSI")
+	w.StationSNR = field.NewUint8(table, "stationSNR")
+	w.StationRSSI = field.NewInt8(table, "stationRSSI")
 	w.StationRxBits = field.NewUint64(table, "stationRxBits")
 	w.StationTxBits = field.NewUint64(table, "stationTxBits")
 	w.StationMaxSpeed = field.NewUint64(table, "stationMaxSpeed")

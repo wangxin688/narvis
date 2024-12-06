@@ -106,6 +106,7 @@ type DeviceInterface struct {
 	IfHighSpeed   uint64  `gorm:"column:ifHighSpeed;default:1000"`
 	IfPhysAddr    *string `gorm:"column:ifPhysAddr;default:null"`
 	IfIpAddress   *string `gorm:"column:ifIpAddress;default:null"`
+	UpLink        bool    `gorm:"column:upLink;default:false"`
 	DeviceId      string  `gorm:"column:deviceId;type:uuid;index;uniqueIndex:idx_if_index_device_id"`
 	Device        Device  `gorm:"constraint:Ondelete:CASCADE"`
 	SiteId        string  `gorm:"column:siteId;type:uuid;index"`

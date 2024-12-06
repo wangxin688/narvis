@@ -455,3 +455,11 @@ func (d *DeviceService) GetAllDeviceIdsBySiteId(siteId string) ([]string, error)
 	err := gen.Device.Where(gen.Device.SiteId.Eq(siteId)).Select(gen.Device.Id).Scan(&deviceIds)
 	return deviceIds, err
 }
+
+func (d *DeviceService) UpdateDeviceInterface(interfaceId string, deviceInterfaceUpdate *schemas.DeviceInterfaceUpdate) error {
+
+	_, err := gen.DeviceInterface.Where(gen.DeviceInterface.Id.Eq(interfaceId)).Update(
+		gen.DeviceInterface.UpLink, deviceInterfaceUpdate.UpLink,
+	)
+	return err
+}

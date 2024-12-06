@@ -30,7 +30,7 @@ func (s *WlanUserService) GetWlanUserTrend(query *schemas.WlanUserTrendRequest) 
 	rawSql := fmt.Sprintf(
 		`
 	SELECT
-		TO_TIMESTAMP(FLOOR(EXTRACT(EPOCH FROM "time") / %d) * %d) AS timestamp,  -- 每15分钟间隔
+		TO_TIMESTAMP(FLOOR(EXTRACT(EPOCH FROM "time") / %d) * %d) AS timestamp,
 		"stationESSID" as "ESSID",
 		COUNT(DISTINCT "stationMac") AS value
 	FROM

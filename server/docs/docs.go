@@ -3237,6 +3237,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/infra/interfaces/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update device interface",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra.Interface"
+                ],
+                "summary": "Update device interface",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted interfaceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "data",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/schemas.DeviceInterfaceUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/schemas.IdResponse"
+                        }
+                    }
+                },
+                "X-func": {
+                    "name": "UpdateDeviceInterface"
+                }
+            }
+        },
         "/infra/racks": {
             "get": {
                 "security": [
@@ -7458,6 +7507,17 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "uplink": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "schemas.DeviceInterfaceUpdate": {
+            "type": "object",
+            "properties": {
+                "uplink": {
+                    "type": "boolean"
                 }
             }
         },
