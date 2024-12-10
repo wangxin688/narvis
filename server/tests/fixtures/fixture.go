@@ -48,7 +48,7 @@ func GetRandomInterfaceIds(deviceId string) ([]string, error) {
 
 }
 
-func GetRandomApId(siteId string) ([]string, error) {
+func GetRandomApIds(siteId string) ([]string, error) {
 	result, err := gen.AP.Select(gen.AP.Id).Where(
 		gen.AP.SiteId.Eq(siteId),
 	).Find()
@@ -56,6 +56,34 @@ func GetRandomApId(siteId string) ([]string, error) {
 		return nil, err
 	}
 	apIds := lo.Map(result, func(item *models.AP, _ int) string {
+		return item.Id
+	})
+	return apIds, nil
+
+}
+
+func GetRandomCircuitIds(siteId string) ([]string, error) {
+	result, err := gen.Circuit.Select(gen.Circuit.Id).Where(
+		gen.Circuit.SiteId.Eq(siteId),
+	).Find()
+	if err != nil {
+		return nil, err
+	}
+	apIds := lo.Map(result, func(item *models.Circuit, _ int) string {
+		return item.Id
+	})
+	return apIds, nil
+
+}
+
+func GetRandomServerIds(siteId string) ([]string, error) {
+	result, err := gen.Server.Select(gen.Server.Id).Where(
+		gen.Server.SiteId.Eq(siteId),
+	).Find()
+	if err != nil {
+		return nil, err
+	}
+	apIds := lo.Map(result, func(item *models.Server, _ int) string {
 		return item.Id
 	})
 	return apIds, nil

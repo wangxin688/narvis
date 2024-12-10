@@ -266,3 +266,26 @@ func (s *ServerService) GetServerList(query *schemas.ServerQuery) (int64, *[]*sc
 	}
 	return count, &res, nil
 }
+
+func (s *ServerService) GetServerShortMap(serverIds []string) (map[string]*schemas.ServerShort, error) {
+	aps, err := gen.Server.Select(
+		gen.Server.Id,
+		gen.Server.Name,
+		gen.Server.ManagementIp,
+		gen.Server.Status,
+	).Where(gen.Server.Id.In(serverIds...)).Find()
+
+	if err != nil {
+		return nil, err
+	}
+	res := make(map[string]*schemas.ServerShort)
+	for _, ap := range aps {
+		res[ap.Id] = &schemas.ServerShort{
+			Id:           ap.Id,
+			Name:         ap.Name,
+			ManagementIp: ap.ManagementIp,
+			Status:       ap.Status,
+		}
+	}
+	return res, nil
+}

@@ -283,6 +283,43 @@ func newMaintenance(db *gorm.DB, opts ...gen.DOOption) maintenance {
 				RelationField: field.NewRelation("Alert.Circuit.Organization", "models.Organization"),
 			},
 		},
+		Server: struct {
+			field.RelationField
+			Rack struct {
+				field.RelationField
+			}
+			Template struct {
+				field.RelationField
+			}
+			Site struct {
+				field.RelationField
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}{
+			RelationField: field.NewRelation("Alert.Server", "models.Server"),
+			Rack: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.Server.Rack", "models.Rack"),
+			},
+			Template: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.Server.Template", "models.Template"),
+			},
+			Site: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.Server.Site", "models.Site"),
+			},
+			Organization: struct {
+				field.RelationField
+			}{
+				RelationField: field.NewRelation("Alert.Server.Organization", "models.Organization"),
+			},
+		},
 		RootCause: struct {
 			field.RelationField
 			Organization struct {
@@ -600,6 +637,21 @@ type maintenanceHasManyAlert struct {
 			Site struct {
 				field.RelationField
 			}
+		}
+		Organization struct {
+			field.RelationField
+		}
+	}
+	Server struct {
+		field.RelationField
+		Rack struct {
+			field.RelationField
+		}
+		Template struct {
+			field.RelationField
+		}
+		Site struct {
+			field.RelationField
 		}
 		Organization struct {
 			field.RelationField

@@ -62,3 +62,49 @@ func mockDevice(siteIds []string, orgId string) {
 	}
 
 }
+
+func mockScanDevice(orgId string) {
+	mockScanDevices := make([]*models.ScanDevice, 0)
+	devices := []struct {
+		platform     string
+		manufacturer string
+		deviceModel  string
+	}{
+		{"ciscoXe", "Cisco", "C9300-24T"},
+		{"ciscoXe", "Cisco", "C9300-48UMX-A"},
+		{"ciscoIos", "Cisco", "C2960-24T"},
+		{"ciscoXe", "Cisco", "C9800-L"},
+		{"ciscoNxos", "Cisco", "N9504"},
+		{"huaweiVrp", "Huawei", "S5270-52P"},
+		{"arubaOs", "Aruba", "A7030"},
+		{"arubaOs", "Aruba", "A7205"},
+		{"fortinet", "Fortinet", "60F"},
+		{"fortinet", "Fortinet", "90F"},
+		{"ruijie", "Ruijie", "RJ-S5310-24T"},
+		{"ruijie", "Ruijie", "RJ-WX2560-X"},
+		{"h3c", "H3C", "H3C-24T"},
+		{"paloAlto", "Palo Alto", "PA-5050"},
+		{"juniper", "Juniper", "MX-24T"},
+	}
+	for i := 0; i < 10; i++ {
+		for deviceIndex, device := range devices {
+			name := fmt.Sprintf("%s-%s-%s-%d", device.platform, device.manufacturer, device.deviceModel, deviceIndex)
+			ip := fixtures.RandomIpv4PrivateAddress(deviceIndex, deviceIndex)
+			chassisId := fixtures.RandomMacAddress()
+			mockScanDevices = append(mockScanDevices, &models.ScanDevice{
+				Name:           name,
+				ManagementIp:   ip,
+				DeviceModel:    device.deviceModel,
+				Manufacturer:   device.manufacturer,
+				Platform:       device.platform,
+				ChassisId:      chassisId,
+				Description:    "Mock_" + name,
+				OrganizationId: orgId,
+			})
+		}
+	}
+	err := gen.ScanDevice.CreateInBatches(mockScanDevices, 500)
+	if err != nil {
+		panic(err)
+	}
+}

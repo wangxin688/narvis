@@ -40,7 +40,32 @@ func GenerateMockData(orgId string, db *gorm.DB) {
 				panic(err)
 			}
 			mockCircuit(siteId, orgId, interfaces)
+			mockDeviceAlerts(orgId, siteId, deviceId)
+		}
+		apIds, err := fixtures.GetRandomApIds(siteId)
+		if err != nil {
+			panic(err)
+		}
+		for _, apId := range apIds {
+			mockApAlerts(orgId, siteId, apId)
 		}
 
+		circuitIds, err := fixtures.GetRandomCircuitIds(siteId)
+		if err != nil {
+			panic(err)
+		}
+		for _, circuitId := range circuitIds {
+			mockCircuitAlerts(orgId, siteId, circuitId)
+		}
+
+		serverIds, err := fixtures.GetRandomServerIds(siteId)
+		if err != nil {
+			panic(err)
+		}
+		for _, serverId := range serverIds {
+			mockServerAlerts(orgId, siteId, serverId)
+		}
+
+		mockPrefix(orgId, siteId)
 	}
 }

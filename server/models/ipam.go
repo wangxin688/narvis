@@ -12,10 +12,10 @@ type Prefix struct {
 	Range          string       `gorm:"column:range;type:cidr;index;not null"`
 	Version        string       `gorm:"column:version;not null"`     // IPv4 or IPv6
 	Type           string       `gorm:"column:type;default:Dynamic"` // Dynamic or Static
-	VlanId         *uint32      `gorm:"column:vlanId;default:null;uniqueIndex:idx_pvlan_id_site_id;index"`
+	VlanId         *uint32      `gorm:"column:vlanId;default:null;index"`
 	VlanName       *string      `gorm:"column:vlanName;default:null"`
 	Gateway        *string      `gorm:"column:gateway;default:null"`
-	SiteId         string       `gorm:"column:siteId;type:uuid;index;uniqueIndex:idx_pvlan_id_site_id;index"`
+	SiteId         string       `gorm:"column:siteId;type:uuid;index;index"`
 	Site           Site         `gorm:"constraint:Ondelete:CASCADE"`
 	OrganizationId string       `gorm:"column:organizationId;type:uuid;index"`
 	Organization   Organization `gorm:"constraint:Ondelete:CASCADE"`

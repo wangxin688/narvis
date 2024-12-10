@@ -123,6 +123,7 @@ type AlertConcrete struct {
 	DeviceId       *string
 	CircuitId      *string
 	ApId           *string
+	ServerId       *string
 	InterfaceId    *string
 	DeviceRole     *string
 	OrganizationId string
@@ -197,6 +198,7 @@ type AlertQuery struct {
 	AlertName         *[]string  `form:"alertName" binding:"omitempty"`
 	DeviceId          *[]string  `form:"deviceId" binding:"omitempty,list_uuid"`
 	ApId              *[]string  `form:"apId" binding:"omitempty,list_uuid"`
+	ServerId          *[]string  `form:"serverId" binding:"omitempty,list_uuid"`
 	CircuitId         *[]string  `form:"circuitId" binding:"omitempty,list_uuid"`
 	DeviceInterfaceId *[]string  `form:"deviceInterfaceId" binding:"omitempty,list_uuid"`
 	DeviceRole        *[]string  `form:"deviceRole" binding:"omitempty"`

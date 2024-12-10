@@ -54,6 +54,8 @@ type Alert struct {
 	Ap                AP                         `gorm:"constraint:Ondelete:CASCADE"`
 	CircuitId         *string                    `gorm:"column:circuitId;type:uuid;index"`
 	Circuit           Circuit                    `gorm:"constraint:Ondelete:CASCADE"`
+	ServerId          *string                    `gorm:"column:serverId;type:uuid;index"`
+	Server            Server                     `gorm:"constraint:Ondelete:CASCADE"`
 	RootCauseId       *string                    `gorm:"column:rootCauseId;type:uuid;default:null"`
 	RootCause         RootCause                  `gorm:"constraint:Ondelete:SET NULL"`
 	AlertGroupId      *string                    `gorm:"column:alertGroupId;type:uuid;default:null"`

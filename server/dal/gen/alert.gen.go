@@ -44,6 +44,7 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 	_alert.DeviceId = field.NewString(tableName, "deviceId")
 	_alert.ApId = field.NewString(tableName, "apId")
 	_alert.CircuitId = field.NewString(tableName, "circuitId")
+	_alert.ServerId = field.NewString(tableName, "serverId")
 	_alert.RootCauseId = field.NewString(tableName, "rootCauseId")
 	_alert.AlertGroupId = field.NewString(tableName, "alertGroupId")
 	_alert.DeviceRole = field.NewString(tableName, "deviceRole")
@@ -217,6 +218,21 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 					Site struct {
 						field.RelationField
 					}
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}
+			Server struct {
+				field.RelationField
+				Rack struct {
+					field.RelationField
+				}
+				Template struct {
+					field.RelationField
+				}
+				Site struct {
+					field.RelationField
 				}
 				Organization struct {
 					field.RelationField
@@ -417,6 +433,43 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 					RelationField: field.NewRelation("ActionLog.Alert.Circuit.Organization", "models.Organization"),
 				},
 			},
+			Server: struct {
+				field.RelationField
+				Rack struct {
+					field.RelationField
+				}
+				Template struct {
+					field.RelationField
+				}
+				Site struct {
+					field.RelationField
+				}
+				Organization struct {
+					field.RelationField
+				}
+			}{
+				RelationField: field.NewRelation("ActionLog.Alert.Server", "models.Server"),
+				Rack: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Server.Rack", "models.Rack"),
+				},
+				Template: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Server.Template", "models.Template"),
+				},
+				Site: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Server.Site", "models.Site"),
+				},
+				Organization: struct {
+					field.RelationField
+				}{
+					RelationField: field.NewRelation("ActionLog.Alert.Server.Organization", "models.Organization"),
+				},
+			},
 			RootCause: struct {
 				field.RelationField
 			}{
@@ -528,6 +581,12 @@ func newAlert(db *gorm.DB, opts ...gen.DOOption) alert {
 		RelationField: field.NewRelation("Circuit", "models.Circuit"),
 	}
 
+	_alert.Server = alertBelongsToServer{
+		db: db.Session(&gorm.Session{}),
+
+		RelationField: field.NewRelation("Server", "models.Server"),
+	}
+
 	_alert.RootCause = alertBelongsToRootCause{
 		db: db.Session(&gorm.Session{}),
 
@@ -584,6 +643,7 @@ type alert struct {
 	DeviceId          field.String
 	ApId              field.String
 	CircuitId         field.String
+	ServerId          field.String
 	RootCauseId       field.String
 	AlertGroupId      field.String
 	DeviceRole        field.String
@@ -601,6 +661,8 @@ type alert struct {
 	Ap alertBelongsToAp
 
 	Circuit alertBelongsToCircuit
+
+	Server alertBelongsToServer
 
 	RootCause alertBelongsToRootCause
 
@@ -644,6 +706,7 @@ func (a *alert) updateTableName(table string) *alert {
 	a.DeviceId = field.NewString(table, "deviceId")
 	a.ApId = field.NewString(table, "apId")
 	a.CircuitId = field.NewString(table, "circuitId")
+	a.ServerId = field.NewString(table, "serverId")
 	a.RootCauseId = field.NewString(table, "rootCauseId")
 	a.AlertGroupId = field.NewString(table, "alertGroupId")
 	a.DeviceRole = field.NewString(table, "deviceRole")
@@ -666,7 +729,7 @@ func (a *alert) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (a *alert) fillFieldMap() {
-	a.fieldMap = make(map[string]field.Expr, 34)
+	a.fieldMap = make(map[string]field.Expr, 36)
 	a.fieldMap["Id"] = a.Id
 	a.fieldMap["status"] = a.Status
 	a.fieldMap["startedAt"] = a.StartedAt
@@ -684,6 +747,7 @@ func (a *alert) fillFieldMap() {
 	a.fieldMap["deviceId"] = a.DeviceId
 	a.fieldMap["apId"] = a.ApId
 	a.fieldMap["circuitId"] = a.CircuitId
+	a.fieldMap["serverId"] = a.ServerId
 	a.fieldMap["rootCauseId"] = a.RootCauseId
 	a.fieldMap["alertGroupId"] = a.AlertGroupId
 	a.fieldMap["deviceRole"] = a.DeviceRole
@@ -798,6 +862,21 @@ type alertHasManyActionLog struct {
 				Site struct {
 					field.RelationField
 				}
+			}
+			Organization struct {
+				field.RelationField
+			}
+		}
+		Server struct {
+			field.RelationField
+			Rack struct {
+				field.RelationField
+			}
+			Template struct {
+				field.RelationField
+			}
+			Site struct {
+				field.RelationField
 			}
 			Organization struct {
 				field.RelationField
@@ -1259,6 +1338,77 @@ func (a alertBelongsToCircuitTx) Clear() error {
 }
 
 func (a alertBelongsToCircuitTx) Count() int64 {
+	return a.tx.Count()
+}
+
+type alertBelongsToServer struct {
+	db *gorm.DB
+
+	field.RelationField
+}
+
+func (a alertBelongsToServer) Where(conds ...field.Expr) *alertBelongsToServer {
+	if len(conds) == 0 {
+		return &a
+	}
+
+	exprs := make([]clause.Expression, 0, len(conds))
+	for _, cond := range conds {
+		exprs = append(exprs, cond.BeCond().(clause.Expression))
+	}
+	a.db = a.db.Clauses(clause.Where{Exprs: exprs})
+	return &a
+}
+
+func (a alertBelongsToServer) WithContext(ctx context.Context) *alertBelongsToServer {
+	a.db = a.db.WithContext(ctx)
+	return &a
+}
+
+func (a alertBelongsToServer) Session(session *gorm.Session) *alertBelongsToServer {
+	a.db = a.db.Session(session)
+	return &a
+}
+
+func (a alertBelongsToServer) Model(m *models.Alert) *alertBelongsToServerTx {
+	return &alertBelongsToServerTx{a.db.Model(m).Association(a.Name())}
+}
+
+type alertBelongsToServerTx struct{ tx *gorm.Association }
+
+func (a alertBelongsToServerTx) Find() (result *models.Server, err error) {
+	return result, a.tx.Find(&result)
+}
+
+func (a alertBelongsToServerTx) Append(values ...*models.Server) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Append(targetValues...)
+}
+
+func (a alertBelongsToServerTx) Replace(values ...*models.Server) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Replace(targetValues...)
+}
+
+func (a alertBelongsToServerTx) Delete(values ...*models.Server) (err error) {
+	targetValues := make([]interface{}, len(values))
+	for i, v := range values {
+		targetValues[i] = v
+	}
+	return a.tx.Delete(targetValues...)
+}
+
+func (a alertBelongsToServerTx) Clear() error {
+	return a.tx.Clear()
+}
+
+func (a alertBelongsToServerTx) Count() int64 {
 	return a.tx.Count()
 }
 

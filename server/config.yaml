@@ -36,7 +36,7 @@ sentry:
 env: dev
 zbx:
   url: http://127.0.0.1:8088
-  token: cfee4dce8780b33996f357308f97562bdeb28fc981d29678edc95f90e73c958b
+  token: 5642794a0cd23666463922afaf50755e5eddf368724ca1acc9e1c023f14855ed
 vtm:
   url: http://127.0.0.1:8428
   username: narvis

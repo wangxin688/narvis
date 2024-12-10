@@ -61,6 +61,7 @@ func (a *AlertService) CreateAlert(alert *schemas.AlertCreate) (*models.Alert, e
 			Severity:          alertPre.Severity,
 			SiteId:            alertPre.SiteId,
 			DeviceId:          alertPre.DeviceId,
+			ServerId:          alertPre.ServerId,
 			ApId:              alertPre.ApId,
 			DeviceInterfaceId: alertPre.InterfaceId,
 			DeviceRole:        alertPre.DeviceRole,
@@ -152,6 +153,19 @@ func (a *AlertService) alertPreProcess(alert *schemas.AlertCreate) (*schemas.Ale
 		} else {
 			acc.Severity = string(alerts.SeverityWarning)
 		}
+	} else if strings.Contains(alert.HostId, "s_") {
+		server, err := gen.Server.Where(gen.Server.Id.Eq(hostId)).First()
+		if err != nil {
+			return nil, errors.NewError(errors.CodeNotFound, errors.MsgNotFound, gen.Server.TableName(), "Id", hostId)
+		}
+		acc.ServerId = &server.Id
+		acc.SiteId = server.SiteId
+		acc.OrganizationId = server.OrganizationId
+		if alert.AlertName == string(alerts.NodePingTimeout) {
+			acc.Severity = string(alerts.SeverityDisaster)
+		} else {
+			acc.Severity = string(alerts.SeverityWarning)
+		}
 	}
 	return acc, nil
 }
@@ -201,7 +215,7 @@ func (a *AlertService) getInterfaceInfo(alert *schemas.AlertCreate, deviceId str
 
 func (a *AlertService) severity(alertName string, deviceRole devicerole.DeviceRole) string {
 	sev := alerts.GetAlertName(alertName).Severity
-	if deviceRole == devicerole.Switch || deviceRole == devicerole.FireWall || deviceRole == devicerole.Router {
+	if deviceRole == devicerole.Switch || deviceRole == devicerole.FireWall || deviceRole == devicerole.Router || deviceRole == devicerole.Server {
 		if sev == alerts.SeverityInfo {
 			return string(alerts.SeverityWarning)
 		}
@@ -328,6 +342,9 @@ func (a *AlertService) ListAlerts(query schemas.AlertQuery) (int64, []*schemas.A
 	if query.DeviceId != nil {
 		stmt = stmt.Where(gen.Alert.DeviceId.In(*query.DeviceId...))
 	}
+	if query.ServerId != nil {
+		stmt = stmt.Where(gen.Alert.ServerId.In(*query.ServerId...))
+	}
 	if query.ApId != nil {
 		stmt = stmt.Where(gen.Alert.ApId.In(*query.ApId...))
 	}
@@ -410,6 +427,7 @@ func (a *AlertService) formatAlert(alert []*models.Alert) ([]*schemas.Alert, err
 	apIds := make([]string, 0)
 	results := make([]*schemas.Alert, 0)
 	alertIds := make([]string, 0)
+	serverIds := make([]string, 0)
 	for _, item := range alert {
 		siteIds = append(siteIds, item.SiteId)
 		alertIds = append(alertIds, item.Id)
@@ -422,11 +440,15 @@ func (a *AlertService) formatAlert(alert []*models.Alert) ([]*schemas.Alert, err
 		if item.ApId != nil {
 			apIds = append(apIds, *item.ApId)
 		}
+		if item.ServerId != nil {
+			serverIds = append(serverIds, *item.ServerId)
+		}
 	}
 	siteMap, err := infra_biz.NewSiteService().GetSiteShortMap(lo.Uniq(siteIds))
 	deviceMap := make(map[string]*infra_sc.DeviceShort)
 	circuitMap := make(map[string]*infra_sc.CircuitShort)
 	apMap := make(map[string]*infra_sc.APShort)
+	serverMap := make(map[string]*infra_sc.ServerShort)
 	if err != nil {
 		logger.Logger.Error("[alertQuery]: get site short map error", zap.Error(err))
 		return results, err
@@ -449,6 +471,13 @@ func (a *AlertService) formatAlert(alert []*models.Alert) ([]*schemas.Alert, err
 		apMap, err = infra_biz.NewApService().GetApShortMap(apIds)
 		if err != nil {
 			logger.Logger.Error("[alertQuery]: get ap short map error", zap.Error(err))
+			return results, err
+		}
+	}
+	if len(serverIds) > 0 {
+		serverMap, err = infra_biz.NewServerService().GetServerShortMap(serverIds)
+		if err != nil {
+			logger.Logger.Error("[alertQuery]: get server short map error", zap.Error(err))
 			return results, err
 		}
 	}
@@ -493,6 +522,13 @@ func (a *AlertService) formatAlert(alert []*models.Alert) ([]*schemas.Alert, err
 				Id:   *item.ApId,
 				Name: apMap[*item.ApId].Name,
 				Type: "ap",
+			}
+		}
+		if item.ServerId != nil {
+			as.Entity = schemas.Entity{
+				Id:   *item.ServerId,
+				Name: serverMap[*item.ServerId].Name,
+				Type: "server",
 			}
 		}
 		results = append(results, as)
@@ -607,7 +643,7 @@ func (a *AlertService) GetById(id string) (*schemas.AlertDetail, error) {
 	alert, err := gen.Alert.Where(
 		gen.Alert.Id.Eq(id),
 		gen.Alert.OrganizationId.Eq(contextvar.OrganizationId.Get()),
-	).Preload(gen.Alert.Device).Preload(gen.Alert.Circuit).
+	).Preload(gen.Alert.Device).Preload(gen.Alert.Circuit).Preload(gen.Alert.Server).
 		Preload(gen.Alert.Ap).Preload(gen.Alert.Site).Preload(gen.Alert.RootCause).
 		Preload(gen.Alert.ActionLog.AssignUser).First()
 
@@ -689,6 +725,34 @@ func (a *AlertService) GetById(id string) (*schemas.AlertDetail, error) {
 			}
 			acLog.GenerateActions()
 			am.ActionLog = append(am.ActionLog, acLog)
+		}
+	}
+	if alert.DeviceId != nil {
+		am.Entity = schemas.Entity{
+			Id:   *alert.DeviceId,
+			Name: alert.Device.Name,
+			Type: "device",
+		}
+	}
+	if alert.CircuitId != nil {
+		am.Entity = schemas.Entity{
+			Id:   *alert.CircuitId,
+			Name: alert.Circuit.Name,
+			Type: "circuit",
+		}
+	}
+	if alert.ApId != nil {
+		am.Entity = schemas.Entity{
+			Id:   *alert.ApId,
+			Name: alert.Ap.Name,
+			Type: "ap",
+		}
+	}
+	if alert.ServerId != nil {
+		am.Entity = schemas.Entity{
+			Id:   *alert.ServerId,
+			Name: alert.Server.Name,
+			Type: "server",
 		}
 	}
 
