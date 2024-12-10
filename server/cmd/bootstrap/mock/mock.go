@@ -16,6 +16,7 @@ func GenerateMockData(orgId string, db *gorm.DB) {
 		return
 	}
 	mockSite(orgId)
+	mockScanDevice(orgId)
 	siteIds, err = fixtures.GetRandomSiteIds(orgId)
 	if err != nil {
 		logger.Logger.Error("[bootstrap]: failed to get site ids", zap.Error(err))

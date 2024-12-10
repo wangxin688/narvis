@@ -89,7 +89,7 @@ func mockScanDevice(orgId string) {
 	for i := 0; i < 10; i++ {
 		for deviceIndex, device := range devices {
 			name := fmt.Sprintf("%s-%s-%s-%d", device.platform, device.manufacturer, device.deviceModel, deviceIndex)
-			ip := fixtures.RandomIpv4PrivateAddress(deviceIndex, deviceIndex)
+			ip := fixtures.RandomIpv4PrivateAddress(i, deviceIndex)
 			chassisId := fixtures.RandomMacAddress()
 			mockScanDevices = append(mockScanDevices, &models.ScanDevice{
 				Name:           name,
