@@ -39,7 +39,7 @@ docker buildx build --platform linux/amd64 \
 Bootstrap
 ```
 docker buildx build --platform linux/amd64 \
--t jeffry688/narvis-bootstrap:latest -t jeffry688/narvis-bootstrap:all-0.0.7 \
+-t jeffry688/narvis-bootstrap:latest -t jeffry688/narvis-bootstrap:all-0.0.8 \
 -f server/cmd/bootstrap/Dockerfile . \
 --build-arg GOFLAGS=-ldflags="-w -s" \
 --push

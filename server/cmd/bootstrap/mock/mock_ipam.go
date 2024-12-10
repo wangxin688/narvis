@@ -35,6 +35,7 @@ func mockPrefix(orgId string, siteId string) {
 		if err != nil {
 			panic(err)
 		}
+		ipAddrs = lo.Uniq(ipAddrs)
 		for _, addr := range ipAddrs {
 			macAddr := fixtures.RandomMacAddress()
 			mockDescr := fmt.Sprintf("Mock descr %s", addr)
