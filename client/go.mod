@@ -5,7 +5,6 @@ go 1.23.0
 replace github.com/wangxin688/narvis/intend => ../intend
 
 require (
-	github.com/go-ping/ping v1.1.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/gosnmp/gosnmp v1.38.0
 	github.com/imroc/req/v3 v3.46.0
@@ -23,6 +22,7 @@ require (
 	github.com/cloudflare/circl v1.4.0 // indirect
 	github.com/creack/pty v1.1.23 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/go-ping/ping v1.1.0 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/pprof v0.0.0-20240910150728-a0b0bb1d4134 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -36,7 +36,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
-	github.com/quic-go/quic-go v0.47.0 // indirect
+	github.com/quic-go/quic-go v0.48.2 // indirect
 	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	github.com/refraction-networking/utls v1.6.7 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
