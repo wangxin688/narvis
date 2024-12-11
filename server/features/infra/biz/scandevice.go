@@ -113,6 +113,17 @@ func (s *ScanDeviceService) UpdateById(id string, update *schemas.ScanDeviceUpda
 	if err != nil {
 		return "", err
 	}
+	err = NewIsolationService().CheckSiteNotFound(update.SiteId, orgId)
+	if err != nil {
+		return "", err
+	}
+	if update.RackId != nil || *update.RackId != "" {
+		err = NewIsolationService().CheckRackNotFound(*update.RackId, orgId)
+		if err != nil {
+			return "", err
+		}
+	}
+
 	newDevice := schemas.DeviceCreate{
 		Name:         device.Name,
 		ManagementIp: device.ManagementIp,
@@ -157,6 +168,10 @@ func (s *ScanDeviceService) BatchUpdate(device *schemas.ScanDeviceBatchUpdate) (
 	}
 	if !ok {
 		return nil, errors.NewError(errors.CodeLicenseCountExceeded, errors.MsgLicenseCountExceeded)
+	}
+	err = NewIsolationService().CheckSiteNotFound(device.SiteId, orgId)
+	if err != nil {
+		return nil, err
 	}
 	for _, id := range device.Ids {
 		_, err := s.UpdateById(id, &schemas.ScanDeviceUpdate{

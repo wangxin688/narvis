@@ -61,7 +61,7 @@ type ScanDeviceQuery struct {
 type ScanDeviceUpdate struct {
 	SiteId       string   `json:"siteId" binding:"required,uuid"`
 	Status       string   `json:"status" binding:"required,oneof= Active Inactive"`
-	DeviceRole   string   `json:"deviceRole" binding:"required"`
+	DeviceRole   string   `json:"deviceRole" binding:"required,oneof=Switch Router Firewall WlanAC"`
 	Floor        *string  `json:"floor" binding:"omitempty"`
 	RackId       *string  `json:"rackId" binding:"omitempty,uuid"`
 	RackPosition *[]uint8 `json:"rackPosition" binding:"omitempty"`
@@ -71,7 +71,7 @@ type ScanDeviceBatchUpdate struct {
 	Ids        []string `json:"ids" binding:"required,list_uuid"`
 	SiteId     string   `json:"siteId" binding:"required,uuid"`
 	Status     string   `json:"status" binding:"required,oneof= Active Inactive"`
-	DeviceRole string   `json:"deviceRole" binding:"required"`
+	DeviceRole string   `json:"deviceRole" binding:"required,oneof=Switch Router Firewall WlanAC"`
 	Floor      *string  `json:"floor" binding:"omitempty"`
 }
 

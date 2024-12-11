@@ -19,31 +19,22 @@ func NewRestConfCredentialService() *RestConfCredentialService {
 }
 
 func (r *RestConfCredentialService) CreateCredential(deviceId string, credential *schemas.RestconfCredentialCreate) (string, error) {
+	orgId := contextvar.OrganizationId.Get()
+	err := NewIsolationService().CheckDeviceNotFound(deviceId, orgId)
+	if err != nil {
+		return "", err
+	}
 	cred := &models.RestconfCredential{
 		OrganizationId: contextvar.OrganizationId.Get(),
 		DeviceId:       &deviceId,
 		Username:       credential.Username,
 		Password:       credential.Password,
 	}
-	if err := gen.RestconfCredential.Create(cred); err != nil {
+	if err = gen.RestconfCredential.Create(cred); err != nil {
 		return "", err
 	}
 	return cred.Id, nil
 }
-
-// func (r *RestConfCredentialService) validateCreateCredential(deviceId string, credential *schemas.RestconfCredentialCreate) error {
-// 	dbCred, err := gen.RestconfCredential.Where(
-// 		gen.RestconfCredential.OrganizationId.Eq(contextvar.OrganizationId.Get()),
-// 		gen.RestconfCredential.DeviceId.Eq(deviceId),
-// 	).First()
-// 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-// 		return err
-// 	}
-// 	if dbCred != nil {
-// 		return te.NewError(te.CodeCredentialDeviceIdMissing, te.MsgCredentialDeviceIdMissing)
-// 	}
-// 	return nil
-// }
 
 func (r *RestConfCredentialService) UpdateCredential(deviceId string, credential *schemas.RestconfCredentialUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
 	dbCred, err := gen.RestconfCredential.Where(

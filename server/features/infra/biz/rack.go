@@ -25,15 +25,20 @@ func (r *RackService) CreateRack(rack *schemas.RackCreate) (string, error) {
 		rack.UHeight = new(uint8)
 		*rack.UHeight = 42
 	}
+	orgId := contextvar.OrganizationId.Get()
+	err := NewIsolationService().CheckSiteNotFound(rack.SiteId, orgId)
+	if err != nil {
+		return "", err
+	}
 	newRack := models.Rack{
 		Name:           rack.Name,
 		SerialNumber:   rack.SerialNumber,
 		UHeight:        *rack.UHeight,
 		SiteId:         rack.SiteId,
 		DescUnit:       true, // default as true, for backward compatibility
-		OrganizationId: contextvar.OrganizationId.Get(),
+		OrganizationId: orgId,
 	}
-	err := gen.Rack.Create(&newRack)
+	err = gen.Rack.Create(&newRack)
 	if err != nil {
 		return "", err
 	}

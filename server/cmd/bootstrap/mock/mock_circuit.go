@@ -22,7 +22,7 @@ func mockCircuit(siteId, orgId string, interfaceId []string) {
 		ipv4 := fixtures.RandomIpv4()
 		ipv6 := fixtures.RandomIpv6Address()
 		provider := lo.Sample([]string{"CU", "CT", "CM", "GTT", "NTT", "ATT"})
-		deviceId, _, err := circuitService.GetDeviceSiteIdByInterfaceId(iface)
+		deviceId, _, err := circuitService.GetDeviceSiteIdByInterfaceId(iface, orgId)
 		if err != nil {
 			panic(err)
 		}

@@ -13,13 +13,16 @@ func NewCircuitService() *CircuitService {
 	return &CircuitService{}
 }
 
-func (c *CircuitService) GetDeviceSiteIdByInterfaceId(interfaceId string) (deviceId string, siteId string, err error) {
+func (c *CircuitService) GetDeviceSiteIdByInterfaceId(interfaceId, orgId string) (deviceId string, siteId string, err error) {
 
-	di, err := gen.DeviceInterface.Select(gen.DeviceInterface.DeviceId).Where(gen.DeviceInterface.Id.Eq(interfaceId)).First()
+	di, err := gen.DeviceInterface.Select(gen.DeviceInterface.DeviceId).
+		Where(gen.DeviceInterface.Id.Eq(interfaceId)).First()
 	if err != nil {
 		return "", "", err
 	}
-	site, err := gen.Device.Select(gen.Device.SiteId).Where(gen.Device.Id.Eq(di.DeviceId)).First()
+	site, err := gen.Device.Select(gen.Device.SiteId).Where(
+		gen.Device.Id.Eq(di.DeviceId),
+		gen.Device.OrganizationId.Eq(orgId)).First()
 	if err != nil {
 		return "", "", err
 	}
@@ -27,6 +30,7 @@ func (c *CircuitService) GetDeviceSiteIdByInterfaceId(interfaceId string) (devic
 }
 
 func (c *CircuitService) CreateCircuit(circuit *schemas.CircuitCreate) (string, error) {
+	orgId := contextvar.OrganizationId.Get()
 	newCircuit := &models.Circuit{
 		Name:           circuit.Name,
 		CId:            circuit.CId,
@@ -37,9 +41,9 @@ func (c *CircuitService) CreateCircuit(circuit *schemas.CircuitCreate) (string, 
 		Description:    circuit.Description,
 		CircuitType:    circuit.CircuitType,
 		Provider:       circuit.Provider,
-		OrganizationId: contextvar.OrganizationId.Get(),
+		OrganizationId: orgId,
 	}
-	deviceId, siteId, err := c.GetDeviceSiteIdByInterfaceId(circuit.InterfaceId)
+	deviceId, siteId, err := c.GetDeviceSiteIdByInterfaceId(circuit.InterfaceId, orgId)
 	if err != nil {
 		return "", err
 	}
@@ -54,7 +58,10 @@ func (c *CircuitService) CreateCircuit(circuit *schemas.CircuitCreate) (string, 
 }
 
 func (c *CircuitService) UpdateCircuit(circuitId string, circuit *schemas.CircuitUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
-	dbCircuit, err := gen.Circuit.Where(gen.Circuit.Id.Eq(circuitId), gen.Circuit.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
+	orgId := contextvar.OrganizationId.Get()
+	dbCircuit, err := gen.Circuit.Where(
+		gen.Circuit.Id.Eq(circuitId),
+		gen.Circuit.OrganizationId.Eq(orgId)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -100,6 +107,10 @@ func (c *CircuitService) UpdateCircuit(circuitId string, circuit *schemas.Circui
 		dbCircuit.Provider = *circuit.Provider
 	}
 	if circuit.InterfaceId != nil && *circuit.InterfaceId != dbCircuit.InterfaceId {
+		err := NewIsolationService().CheckDeviceInterfaceNotFound(*circuit.InterfaceId, orgId)
+		if err != nil {
+			return nil, err
+		}
 		updateFields["InterfaceId"] = &contextvar.Diff{Before: dbCircuit.InterfaceId, After: *circuit.InterfaceId}
 		dbCircuit.InterfaceId = *circuit.InterfaceId
 	}
@@ -147,7 +158,8 @@ func (c *CircuitService) GetCircuitById(id string) (*schemas.Circuit, error) {
 }
 
 func (c *CircuitService) DeleteCircuit(id string) (*models.Circuit, error) {
-	dbCircuit, err := gen.Circuit.Where(gen.Circuit.Id.Eq(id), gen.Circuit.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
+	dbCircuit, err := gen.Circuit.Where(gen.Circuit.Id.Eq(id),
+		gen.Circuit.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, err
 	}

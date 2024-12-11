@@ -30,6 +30,14 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 	if !ok {
 		return "", errors.NewError(errors.CodeLicenseCountExceeded, errors.MsgLicenseCountExceeded)
 	}
+	_, err = gen.Site.Select(gen.Site.Id).Where(gen.Site.Id.Eq(device.SiteId), gen.Site.OrganizationId.Eq(orgId)).First()
+	if err != nil {
+		logger.Logger.Warn(
+			"[createDevice]: attacking may happened, not found siteId under org",
+			zap.String("siteId", device.SiteId),
+			zap.String("orgId", orgId))
+		return "", nil
+	}
 	newDevice := models.Device{
 		Name:           device.Name,
 		ManagementIp:   device.ManagementIp,
@@ -71,7 +79,8 @@ func (d *DeviceService) CreateDevice(device *schemas.DeviceCreate) (string, erro
 }
 
 func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *schemas.DeviceUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
-	dbDevice, err := gen.Device.Where(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
+	orgId := contextvar.OrganizationId.Get()
+	dbDevice, err := gen.Device.Where(gen.Device.Id.Eq(deviceId), gen.Device.OrganizationId.Eq(orgId)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -117,6 +126,10 @@ func (d *DeviceService) UpdateDevice(g *gin.Context, deviceId string, device *sc
 		dbDevice.SerialNumber = device.SerialNumber
 	}
 	if helpers.HasParams(g, "rackId") && device.RackId != dbDevice.RackId {
+		err := NewIsolationService().CheckRackNotFound(*device.RackId, orgId)
+		if err != nil {
+			return nil, err
+		}
 		updateFields["rackId"] = &contextvar.Diff{Before: dbDevice.RackId, After: *device.RackId}
 		dbDevice.RackId = device.RackId
 	}

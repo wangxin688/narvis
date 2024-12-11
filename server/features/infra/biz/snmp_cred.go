@@ -20,6 +20,11 @@ func NewSnmpCredentialService() *SnmpCredentialService {
 
 func (s *SnmpCredentialService) CreateSnmpCredential(deviceId string, snmp *schemas.SnmpV2CredentialCreate) (string, error) {
 	snmp.SetDefaultValue()
+	orgId := contextvar.OrganizationId.Get()
+	err := NewIsolationService().CheckDeviceNotFound(deviceId, orgId)
+	if err != nil {
+		return "", err
+	}
 	cred := &models.SnmpV2Credential{
 		OrganizationId: contextvar.OrganizationId.Get(),
 		DeviceId:       &deviceId,
@@ -28,7 +33,7 @@ func (s *SnmpCredentialService) CreateSnmpCredential(deviceId string, snmp *sche
 		Timeout:        *snmp.Timeout,
 		MaxRepetitions: *snmp.MaxRepetitions,
 	}
-	err := gen.SnmpV2Credential.Create(cred)
+	err = gen.SnmpV2Credential.Create(cred)
 	if err != nil {
 		return "", err
 	}
@@ -37,6 +42,11 @@ func (s *SnmpCredentialService) CreateSnmpCredential(deviceId string, snmp *sche
 
 func (s *SnmpCredentialService) CreateServerSnmpCredential(serverId string, snmp *schemas.SnmpV2CredentialCreate) (string, error) {
 	snmp.SetDefaultValue()
+	orgId := contextvar.OrganizationId.Get()
+	err := NewIsolationService().CheckServerNotFound(serverId, orgId)
+	if err != nil {
+		return "", err
+	}
 	cred := &models.ServerSnmpCredential{
 		OrganizationId: contextvar.OrganizationId.Get(),
 		ServerId:       &serverId,
@@ -45,7 +55,7 @@ func (s *SnmpCredentialService) CreateServerSnmpCredential(serverId string, snmp
 		Timeout:        *snmp.Timeout,
 		MaxRepetitions: *snmp.MaxRepetitions,
 	}
-	err := gen.ServerSnmpCredential.Create(cred)
+	err = gen.ServerSnmpCredential.Create(cred)
 	if err != nil {
 		return "", err
 	}

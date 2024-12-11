@@ -853,6 +853,15 @@ const docTemplate = `{
                             "type": "string"
                         },
                         "collectionFormat": "csv",
+                        "name": "serverId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
                         "name": "severity",
                         "in": "query"
                     },
@@ -8467,7 +8476,13 @@ const docTemplate = `{
             ],
             "properties": {
                 "deviceRole": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Switch",
+                        "Router",
+                        "Firewall",
+                        "WlanAC"
+                    ]
                 },
                 "floor": {
                     "type": "string"
@@ -8550,7 +8565,13 @@ const docTemplate = `{
             ],
             "properties": {
                 "deviceRole": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Switch",
+                        "Router",
+                        "Firewall",
+                        "WlanAC"
+                    ]
                 },
                 "floor": {
                     "type": "string"

@@ -19,8 +19,13 @@ func NewCliCredentialService() *CliCredentialService {
 }
 
 func (s *CliCredentialService) CreateCredential(deviceId string, credential *schemas.CliCredentialCreate) (string, error) {
+	orgId := contextvar.OrganizationId.Get()
+	err := NewIsolationService().CheckDeviceNotFound(deviceId, orgId)
+	if err != nil {
+		return "", err
+	}
 	cred := &models.CliCredential{
-		OrganizationId: contextvar.OrganizationId.Get(),
+		OrganizationId: orgId,
 		DeviceId:       &deviceId,
 		Username:       credential.Username,
 		Password:       credential.Password,
@@ -32,8 +37,13 @@ func (s *CliCredentialService) CreateCredential(deviceId string, credential *sch
 }
 
 func (s *CliCredentialService) CreateServerCredential(serverId string, credential *schemas.CliCredentialCreate) (string, error) {
+	orgId := contextvar.OrganizationId.Get()
+	err := NewIsolationService().CheckServerNotFound(serverId, orgId)
+	if err != nil {
+		return "", err
+	}
 	cred := &models.ServerCredential{
-		OrganizationId: contextvar.OrganizationId.Get(),
+		OrganizationId: orgId,
 		ServerId:       &serverId,
 		Username:       credential.Username,
 		Password:       credential.Password,
@@ -44,21 +54,10 @@ func (s *CliCredentialService) CreateServerCredential(serverId string, credentia
 	return cred.Id, nil
 }
 
-// func (s *CliCredentialService) validateCreateCredential(credential *schemas.CliCredentialCreate) error {
-// 	if credential.DeviceId == nil {
-// 		orgCred, err := s.GetCredentialByOrgId(contextvar.OrganizationId.Get())
-// 		if err != nil {
-// 			return err
-// 		}
-// 		if orgCred != nil {
-// 			return te.NewError(te.CodeCredentialDeviceIdMissing, te.MsgCredentialDeviceIdMissing)
-// 		}
-// 	}
-// 	return nil
-// }
-
 func (s *CliCredentialService) UpdateCredential(deviceId string, credential *schemas.CliCredentialUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
-	dbCred, err := gen.CliCredential.Where(gen.CliCredential.DeviceId.Eq(deviceId), gen.CliCredential.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
+	dbCred, err := gen.CliCredential.Where(
+		gen.CliCredential.DeviceId.Eq(deviceId),
+		gen.CliCredential.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
 	if err != nil {
 		return nil, &te.GenericError{
 			Code:    te.CodeCredentialUpdateNotFound,

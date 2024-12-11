@@ -66,7 +66,8 @@ func (s *ServerService) CreateServer(server *schemas.ServerCreate) (string, erro
 }
 
 func (s *ServerService) UpdateServer(g *gin.Context, serverId string, server *schemas.ServerUpdate) (diff map[string]map[string]*contextvar.Diff, err error) {
-	dbServer, err := gen.Server.Where(gen.Server.Id.Eq(serverId), gen.Server.OrganizationId.Eq(contextvar.OrganizationId.Get())).First()
+	orgId := contextvar.OrganizationId.Get()
+	dbServer, err := gen.Server.Where(gen.Server.Id.Eq(serverId), gen.Server.OrganizationId.Eq(orgId)).First()
 	if err != nil {
 		return nil, err
 	}
@@ -104,6 +105,10 @@ func (s *ServerService) UpdateServer(g *gin.Context, serverId string, server *sc
 		dbServer.Disk = *server.Disk
 	}
 	if helpers.HasParams(g, "rackId") && server.RackId != dbServer.RackId {
+		err = NewIsolationService().CheckSiteNotFound(*server.RackId, orgId)
+		if err != nil {
+			return nil, err
+		}
 		updateFields["rackId"] = &contextvar.Diff{Before: dbServer.RackId, After: *server.RackId}
 		dbServer.RackId = server.RackId
 	}
