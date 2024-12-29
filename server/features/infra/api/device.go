@@ -629,3 +629,31 @@ func deleteSnmpV2Credential(c *gin.Context) {
 	})
 	c.JSON(http.StatusOK, ts.IdResponse{Id: id})
 }
+
+// @Tags Infra.Device
+// @Summary Get device backup configuration
+// @X-func {"name": "GetDeviceBackupConfig"}
+// @Description Get device backup configuration
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "uuid formatted deviceId"
+// @Success 200 {object} []schemas.DeviceConfig
+// @Router /infra/devices/{id}/config [get]
+func getDeviceBackupConfig(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			errors.ResponseErrorHandler(c, err)
+		}
+	}()
+	id := c.Param("id")
+	if err = helpers.ValidateUuidString(id); err != nil {
+		return
+	}
+	config, err := infra_biz.NewDeviceService().GetDeviceConfiguration(id)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, config)
+}

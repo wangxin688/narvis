@@ -90,15 +90,49 @@ func (s *WlanUserService) ListWlanUsers(query *schemas.WlanUserQuery) (*schemas.
 	}
 	rawSql := fmt.Sprintf(
 		`
+		SELECT DISTINCT ON ("stationMac")
+			TO_TIMESTAMP(EXTRACT(EPOCH FROM "time")) AS "lastSeenAt",
+			CASE
+				WHEN (EXTRACT(EPOCH FROM TIMESTAMP '%s') - EXTRACT(EPOCH FROM "lastSeenAt")) < 600 THEN TRUE
+				ELSE FALSE
+			END AS "isActive",
+			"stationMac",
+			"stationIp",
+			"stationUsername",
+			"stationApMac",
+			"stationApName",
+			"stationESSID",
+			"stationVlan",
+			"stationChannel",   
+			"stationChanBandWidth",
+			"stationRadioType",
+			"stationSNR",
+			"stationRSSI",
+			"stationMaxSpeed",
+			"stationOnlineTime"
+		FROM wlan_station
+		WHERE
+			"organizationId" = '%s'
+			AND "time" >= '%s'
+			AND "time" <= '%s'
+			AND "siteId" = '%s'
+			AND %s
+		ORDER BY stationMac, "time" DESC;
+		LIMIT %d OFFSET %d
+		`, query.EndedAt.Format(time.RFC3339), orgId, query.StartedAt, query.EndedAt, query.SiteId, subQuery, (*query.PageInfo.Page-1)**query.PageInfo.PageSize, query.PageInfo.PageSize,
+	)
+	countRawSql := fmt.Sprintf(
+		`
 		SELECT
-			*
+			COUNT(*) AS "totalCount",
+			SUM(CASE WHEN isActive = TRUE THEN 1 ELSE 0 END) AS "onlineCount"
 		FROM (
 			SELECT
 				EXTRACT(EPOCH FROM "time") AS "lastSeenAt",
 				CASE
-        			WHEN (EXTRACT(EPOCH FROM "endedAt") - EXTRACT(EPOCH FROM "time")) < 600 THEN TRUE
-        			ELSE FALSE
-    			END AS "isActive",
+					WHEN (EXTRACT(EPOCH FROM TIMESTAMP '%s') - EXTRACT(EPOCH FROM "lastSeenAt")) < 500 THEN TRUE
+					ELSE FALSE
+				END AS isActive,
 				"stationMac",
 				"stationIp",
 				"stationUsername",
@@ -113,68 +147,30 @@ func (s *WlanUserService) ListWlanUsers(query *schemas.WlanUserQuery) (*schemas.
 				"stationRSSI",
 				"stationMaxSpeed",
 				"stationOnlineTime"
-			FROM
-				wlan_station
-			WHERE
-				organizationId = '%s'
-				AND time >= '%s'
-				AND time <= '%s'
-				AND siteId = '%s'
-			ORDER BY stationMac, ts DESC
-			LIMIT 1 BY stationMac
-		)
-		WHERE %s LIMIT %d OFFSET %d
-		`, orgId, query.StartedAt, query.EndedAt, query.SiteId, subQuery, (*query.PageInfo.Page-1)**query.PageInfo.PageSize, query.PageInfo.PageSize,
-	)
-	countRawSql := fmt.Sprintf(
-		`
-		SELECT
-			COUNT(*) AS totalCount,
-			SUM(CASE WHEN isActive = TRUE THEN 1 ELSE 0 END) AS onlineCount
-		FROM (
-			SELECT
-				toUnixTimestamp(ts) AS lastSeenAt,
-				if ((toUnit32(endedAt)-toUint32(lastSeenAt))<500, TRUE, FALSE)) AS isActive,
-				stationMac,
-				stationIp,
-				stationUsername,
-				stationApMac,
-				stationApName,
-				stationESSID,
-				stationVlan,
-				stationChannel,
-				stationChanBandWidth,
-				stationRadioType,
-				stationSNR,
-				stationRSSI,
-				stationMaxSpeed,
-				stationOnlineTime
-			FROM
-				wlan_station
+			FROM wlan_station
 			WHERE
 				organizationId = '%s'
 				AND ts >= '%s'
 				AND ts <= '%s'
 				AND siteId = '%s'
+				AND %s
 			ORDER BY stationMac, ts DESC
-			LIMIT 1 BY stationMac
 		)
-		WHERE %s 
-		`, orgId, query.StartedAt, query.EndedAt, query.SiteId, subQuery,
+		`, query.EndedAt.Format(time.RFC3339), orgId, query.StartedAt, query.EndedAt, query.SiteId, subQuery,
 	)
 
-	err := infra.ClickHouseDB.Raw(countRawSql).Scan(&countUser).Error
+	err := infra.DB.Raw(countRawSql).Scan(&countUser).Error
 	if err != nil {
 		return response, nil
 	}
 	if countUser.TotalCount == 0 {
 		return response, nil
 	}
-	err = infra.ClickHouseDB.Raw(rawSql).Scan(&results).Error
+	err = infra.DB.Raw(rawSql).Scan(&results).Error
 	if err != nil {
 		return response, nil
 	}
-	err = infra.ClickHouseDB.Raw(rawSql).Scan(&results).Error
+	err = infra.DB.Raw(rawSql).Scan(&results).Error
 	if err != nil {
 		return response, nil
 	}
@@ -207,35 +203,38 @@ func (s *WlanUserService) getWlanUserThroughput(macAddr []string, startedAt, end
 	dbResults := make([]*schemas.WlanUserThroughput, 0)
 	rawSql := fmt.Sprintf(
 		`
-			WITH 
-				toUnixTimestamp('%s') - toUnixTimestamp('%s') AS time_interval
-			SELECT
-				stationMac,
-				maxRx - minRx AS rxBits,
-				maxTx - minTx AS txBits,
-			FROM (
-				SELECT 
-					stationMac,
-					-- 首尾值
-					anyIf(stationRxBits, ts = min_time) AS minRx,
-					anyIf(stationRxBits, ts = max_time) AS maxRx,
-					anyIf(stationTxBits, ts = min_time) AS minTx,
-					anyIf(stationTxBits, ts = max_time) AS maxTx
-				FROM (
-					SELECT 
-						stationMac,
-						ts,
-						stationRxBits,
-						stationTxBits,
-						-- 时间区间首尾
-						min(ts) OVER (PARTITION BY stationMac) AS min_time,
-						max(ts) OVER (PARTITION BY stationMac) AS max_time
-					FROM station_data
-					WHERE ts BETWEEN '%s' AND '%s' AND stationMac IN ('%s')
-				)
-				GROUP BY stationMac
-			)
-			ORDER BY stationMac;
+	WITH time_interval AS (
+		SELECT 
+			EXTRACT(EPOCH FROM TIMESTAMP '%s') - EXTRACT(EPOCH FROM TIMESTAMP '%s') AS interval_in_seconds
+		),
+		cte_station_data AS (
+			SELECT 
+				"stationMac",
+				"time",
+				"stationRxBits",
+				"stationTxBits",
+				MIN("time") OVER (PARTITION BY "stationMac") AS min_time,
+				MAX("time") OVER (PARTITION BY "stationMac") AS max_time
+			FROM wlan_station
+			WHERE "time" BETWEEN '%s' AND '%s' 
+			AND "stationMac" IN ('%s')
+		),
+		cte_min_max AS (
+			SELECT 
+				"stationMac",
+				MAX(CASE WHEN ts = min_time THEN "stationRxBits" END) AS minRx,
+				MAX(CASE WHEN ts = max_time THEN "stationRxBits" END) AS maxRx,
+				MAX(CASE WHEN ts = min_time THEN "stationTxBits" END) AS minTx,
+				MAX(CASE WHEN ts = max_time THEN "stationTxBits" END) AS maxTx
+			FROM cte_station_data
+			GROUP BY "stationMac"
+		)
+		SELECT 
+			"stationMac",
+			(maxRx - minRx) AS rxBits,
+			(maxTx - minTx) AS txBits
+		FROM cte_min_max
+		ORDER BY "stationMac";
 		`, startedAt, endedAt, startedAt, endedAt, macArrayString,
 	)
 
@@ -266,23 +265,30 @@ func (s *WlanUserService) getWlanUserThroughput(macAddr []string, startedAt, end
 func (s *WlanUserService) getWlanUserThroughputSerial(macAddr string, startedAt, endedAt time.Time) string {
 	rawsql := fmt.Sprintf(
 		`
-		WITH
-			-- 计算前一条记录的值和时间戳
-			lagInFrame(stationRxBits) OVER (PARTITION BY stationMac ORDER BY timestamp) AS prev_rx,
-			lagInFrame(stationTxBits) OVER (PARTITION BY stationMac ORDER BY timestamp) AS prev_tx,
-			lagInFrame(timestamp) OVER (PARTITION BY stationMac ORDER BY timestamp) AS prev_time
+		WITH cte_lagged_data AS (
+			SELECT
+				stationMac,
+				timestamp AS current_time,
+				LAG(timestamp) OVER (PARTITION BY stationMac ORDER BY timestamp) AS prev_time,
+				stationRxBits,
+				LAG(stationRxBits) OVER (PARTITION BY stationMac ORDER BY timestamp) AS prev_rx,
+				stationTxBits,
+				LAG(stationTxBits) OVER (PARTITION BY stationMac ORDER BY timestamp) AS prev_tx
+			FROM station_data
+			WHERE timestamp BETWEEN '%s' AND '%s' 
+			AND stationMac = '%s'
+		)
 		SELECT
 			stationMac,
-			timestamp AS current_time,
+			current_time,
 			prev_time AS previous_time,
-			stationRxBits - prev_rx AS rx_diff,
-			stationTxBits - prev_tx AS tx_diff,
-			toUnixTimestamp(timestamp) - toUnixTimestamp(prev_time) AS time_diff_seconds,
-			(stationRxBits - prev_rx) / (toUnixTimestamp(timestamp) - toUnixTimestamp(prev_time)) AS rx_trend_per_second,
-			(stationTxBits - prev_tx) / (toUnixTimestamp(timestamp) - toUnixTimestamp(prev_time)) AS tx_trend_per_second
-		FROM station_data
-		WHERE timestamp BETWEEN '%s' AND '%s' AND stationMac = '%s'
-		AND prev_time IS NOT NULL -- 排除第一条记录无前值的情况
+			(stationRxBits - prev_rx) AS rx_diff,
+			(stationTxBits - prev_tx) AS tx_diff,
+			EXTRACT(EPOCH FROM current_time) - EXTRACT(EPOCH FROM prev_time) AS time_diff_seconds,
+			(stationRxBits - prev_rx) / NULLIF(EXTRACT(EPOCH FROM current_time) - EXTRACT(EPOCH FROM prev_time), 0) AS rx_trend_per_second,
+			(stationTxBits - prev_tx) / NULLIF(EXTRACT(EPOCH FROM current_time) - EXTRACT(EPOCH FROM prev_time), 0) AS tx_trend_per_second
+		FROM cte_lagged_data
+		WHERE prev_time IS NOT NULL -- Exclude the first record
 		ORDER BY stationMac, current_time;
 		`, startedAt, endedAt, macAddr,
 	)

@@ -45,6 +45,8 @@ func RegisterInfraRoutes(e *gin.Engine) {
 		router.PUT("/devices/:id/snmpv2", updateSnmpV2Credential)
 		router.DELETE("/devices/:id/snmpv2", deleteSnmpV2Credential)
 
+		router.GET("/devices/:id/config", getDeviceBackupConfig)
+
 		router.PUT("/interfaces/:id", updateDeviceInterface)
 
 		router.GET("/aps/:id", getAp)

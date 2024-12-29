@@ -2816,6 +2816,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/infra/devices/{id}/config": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get device backup configuration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Infra.Device"
+                ],
+                "summary": "Get device backup configuration",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "uuid formatted deviceId",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/schemas.DeviceConfig"
+                            }
+                        }
+                    }
+                },
+                "X-func": {
+                    "name": "GetDeviceBackupConfig"
+                }
+            }
+        },
         "/infra/devices/{id}/interfaces": {
             "get": {
                 "security": [
@@ -7396,6 +7439,35 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "schemas.DeviceConfig": {
+            "type": "object",
+            "properties": {
+                "configuration": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deviceId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "linesAdded": {
+                    "type": "integer"
+                },
+                "linesDeleted": {
+                    "type": "integer"
+                },
+                "md5Checksum": {
+                    "type": "string"
+                },
+                "totalLines": {
+                    "type": "integer"
                 }
             }
         },

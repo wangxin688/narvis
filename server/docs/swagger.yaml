@@ -800,6 +800,25 @@ definitions:
       updatedAt:
         type: string
     type: object
+  schemas.DeviceConfig:
+    properties:
+      configuration:
+        type: string
+      createdAt:
+        type: string
+      deviceId:
+        type: string
+      id:
+        type: string
+      linesAdded:
+        type: integer
+      linesDeleted:
+        type: integer
+      md5Checksum:
+        type: string
+      totalLines:
+        type: integer
+    type: object
   schemas.DeviceCreate:
     properties:
       Platform:
@@ -3959,6 +3978,33 @@ paths:
       security:
       - BearerAuth: []
       summary: Update device cli credential
+      tags:
+      - Infra.Device
+  /infra/devices/{id}/config:
+    get:
+      X-func:
+        name: GetDeviceBackupConfig
+      consumes:
+      - application/json
+      description: Get device backup configuration
+      parameters:
+      - description: uuid formatted deviceId
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schemas.DeviceConfig'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Get device backup configuration
       tags:
       - Infra.Device
   /infra/devices/{id}/interfaces:

@@ -87,3 +87,14 @@ type Device struct {
 	TemplateId   *string   `json:"templateId"`
 	SiteId       string    `json:"siteId"`
 }
+
+type DeviceConfig struct {
+	Id            string    `json:"id"`
+	CreatedAt     time.Time `json:"createdAt"`
+	Configuration string    `json:"configuration"`
+	TotalLines    uint32    `json:"totalLines"`
+	LinesAdded    uint32    `json:"linesAdded"`
+	LinesDeleted  uint32    `json:"linesDeleted"`
+	Md5Checksum   string    `json:"md5Checksum"`
+	DeviceId      string    `json:"deviceId"`
+}

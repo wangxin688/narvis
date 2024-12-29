@@ -476,3 +476,32 @@ func (d *DeviceService) UpdateDeviceInterface(interfaceId string, deviceInterfac
 	)
 	return err
 }
+
+func (d *DeviceService) GetDeviceConfiguration(deviceId string) ([]*schemas.DeviceConfig, error) {
+	maxLimit := 10
+	org := contextvar.OrganizationId.Get()
+	err := NewIsolationService().CheckDeviceNotFound(deviceId, org)
+	if err != nil {
+		return nil, err
+	}
+	deviceConfiguration, err := gen.DeviceConfig.
+		Where(gen.DeviceConfig.DeviceId.Eq(deviceId)).
+		Order(gen.DeviceConfig.CreatedAt.Desc()).Limit(maxLimit).Find()
+	if err != nil {
+		return nil, err
+	}
+	results := make([]*schemas.DeviceConfig, 0)
+	for _, item := range deviceConfiguration {
+		results = append(results, &schemas.DeviceConfig{
+			Id:            item.Id,
+			CreatedAt:     item.CreatedAt,
+			Configuration: item.Configuration,
+			TotalLines:    item.TotalLines,
+			LinesAdded:    item.LinesAdded,
+			LinesDeleted:  item.LinesDeleted,
+			Md5Checksum:   item.Md5Checksum,
+			DeviceId:      item.DeviceId,
+		})
+	}
+	return results, nil
+}
