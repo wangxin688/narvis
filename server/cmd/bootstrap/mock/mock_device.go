@@ -2,10 +2,15 @@ package mock
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/wangxin688/narvis/intend/intendtask"
+	"github.com/wangxin688/narvis/intend/logger"
 	"github.com/wangxin688/narvis/server/dal/gen"
+	infra_tasks "github.com/wangxin688/narvis/server/features/infra/tasks"
 	"github.com/wangxin688/narvis/server/models"
 	"github.com/wangxin688/narvis/server/tests/fixtures"
+	"go.uber.org/zap"
 	"golang.org/x/exp/rand"
 )
 
@@ -106,5 +111,22 @@ func mockScanDevice(orgId string) {
 	err := gen.ScanDevice.CreateInBatches(mockScanDevices, 500)
 	if err != nil {
 		panic(err)
+	}
+}
+
+func mockDeviceConfig(siteId string) {
+	deviceIds, err := fixtures.GetRandomDeviceIds(siteId)
+	if err != nil {
+		logger.Logger.Error("[bootstrap]: failed to get site ids", zap.Error(err))
+		panic(err)
+	}
+	for _, deviceId := range deviceIds {
+		deviceConfig := &intendtask.ConfigurationBackupTaskResult{
+			Configuration: "mockConfig" + fixtures.RandomString(100),
+			DeviceId:      deviceId,
+			BackupTime:    time.Now().Format(time.RFC3339),
+		}
+
+		infra_tasks.ConfigBackUpCallback(deviceConfig)
 	}
 }

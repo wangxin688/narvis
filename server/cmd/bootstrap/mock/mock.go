@@ -12,6 +12,7 @@ func GenerateMockData(orgId string, db *gorm.DB) {
 	if len(siteIds) > 0 || err != nil {
 		for _, siteId := range siteIds {
 			mockWlanUser(orgId, siteId)
+			mockDeviceConfig(siteId)
 		}
 		return
 	}
@@ -29,6 +30,7 @@ func GenerateMockData(orgId string, db *gorm.DB) {
 		mockWlanUser(orgId, siteId)
 		mockRack(orgId, siteId)
 		mockServer(orgId, siteId)
+		mockDeviceConfig(siteId)
 		deviceIds, err := fixtures.GetRandomDeviceIds(siteId)
 		if err != nil {
 			logger.Logger.Error("[bootstrap]: failed to get site ids", zap.Error(err))
