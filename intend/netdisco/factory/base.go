@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-ping/ping"
 	"github.com/gosnmp/gosnmp"
+	probing "github.com/prometheus-community/pro-bing"
 	"github.com/samber/lo"
 	"github.com/wangxin688/narvis/intend/logger"
 	intend_device "github.com/wangxin688/narvis/intend/model/device"
@@ -75,7 +75,7 @@ func NewSnmpDiscovery(sc *snmp.SnmpConfig) (*SnmpDiscovery, error) {
 // IcmpReachable returns true if the target is reachable via ICMP.
 // linux need privilege for udp
 func (sd *SnmpDiscovery) IcmpReachable() bool {
-	pinger, err := ping.NewPinger(sd.IpAddress)
+	pinger, err := probing.NewPinger(sd.IpAddress)
 	if err != nil {
 		logger.Logger.Info("IcmpReachable failed", zap.String("target", sd.IpAddress), zap.Error(err))
 		return false
