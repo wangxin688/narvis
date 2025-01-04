@@ -92,7 +92,7 @@ func (d *Dispatcher) Driver() (SnmpDriver, *devicemodel.DeviceModel, error) {
 		return nil, nil, fmt.Errorf("[netdisco]: Unable to get sysObjectId, target manufacturer is not supported: %s", d.Target.IpAddress)
 	}
 	deviceModel := getDeviceModel(sysObjectId)
-	driver, err := getFactory(*d.Target.Platform, d.Target)
+	driver, err := getFactory(deviceModel.Platform, d.Target)
 	return driver, deviceModel, err
 }
 
