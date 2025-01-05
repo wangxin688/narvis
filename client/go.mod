@@ -22,7 +22,6 @@ require (
 	github.com/cloudflare/circl v1.5.0 // indirect
 	github.com/creack/pty v1.1.23 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/go-ping/ping v1.1.0 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -35,6 +34,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.22.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
+	github.com/prometheus-community/pro-bing v0.5.0 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.48.2 // indirect
 	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
